@@ -21,29 +21,72 @@ object ScalaJSExample {
     ctx.canvas.width = dom.window.innerWidth.toInt
     ctx.canvas.height = dom.window.innerHeight.toInt
 
-    val heights = Seq(10, 100, 200)
+    val scale = 3
+
+    val heights = Seq(10, 100, 200).map(_ * scale)
 
     val colors = Seq("red", "green", "blue")
 
-    val textAndPadHeight = 10 + 5
+    val textAndPadHeight = 20 + 5 + 0.25 // text size, label pad, stroke width
 
-    val yAxis = Pad(top = textAndPadHeight){
-      Rotate(-90)(Line(heights.max) titled "Awesomeness")
+    val tickThick = 0.25
+    val tickWidth = 10 * scale
+    val yAxis = Pad(top = textAndPadHeight - tickWidth){ // + tickWidth for the extra last tick
+      val numTicks = heights.max / tickWidth
+      val ticks = DistributeH(
+        Seq.fill(numTicks + 1)(
+          Pad(right = tickWidth - tickThick)(Rotate(90)(Line(5 * scale, tickThick)))
+        )
+      )
+
+      Rotate(-90)(
+        Group(
+          Line(heights.max, 2),
+          ticks
+        ) titled "Awesomeness")
+    }
+
+    val barWidth = 50 * scale
+    val barSpacing = 5
+
+    val bars = DistributeH(
+      Align.bottom {
+        val rects = heights.map(h => Pad(right = barSpacing)(Rect(barWidth, h) titled (h / scale).toString))
+        rects.zip(colors).map { case (rect, color) => Style(color)(rect) labeled color }
+      }
+    )
+
+    val textHeight = 20
+
+    val gridLines = DistributeV {
+      val lineEveryXUnits = 40 * scale
+      val lineThick = 0.25
+      val textHalfHeight = textHeight / 2
+
+      Seq.tabulate(heights.max / lineEveryXUnits){ x =>
+        val yHeightLabel = (heights.max / lineEveryXUnits - x) * lineEveryXUnits / scale
+        Pad(bottom = lineEveryXUnits - lineThick){
+          val label = Translate(y = -textHeight)(Style("grey")(Text(yHeightLabel.toString)))
+          Group(
+            Line(bars.boundingBox.width, lineThick),
+            label
+          )
+        }
+      }
     }
 
     val barChart =
       yAxis beside
-      DistributeH(
-        Align.bottom {
-          val rects = heights.map(h => Rect(50, h) titled h.toString)
-          rects.zip(colors).map { case (rect, color) => Style(color)(rect) labeled color }
-        }
+      Group(
+        Pad(top = textAndPadHeight)(gridLines),
+        bars
       )
+
 
     Pad(10){
       DistributeV(
         Align.center(Seq(
-          Pad(10)(Text("A Swanky BarChart", size = 20)),
+          Pad(10)(Text("A Swanky BarChart", size = 20 * scale)),
           barChart
         ))
       )
@@ -69,14 +112,15 @@ case class Style(color: String)(r: Renderable) extends Renderable {
   }
 }
 
-case class Line(length: Double, strokeWidth: Double = 2) extends Renderable {
+case class Line(length: Double, strokeWidth: Double) extends Renderable {
+
   val boundingBox = BoundingBox(length, strokeWidth)
 
   def render(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
       canvas.lineWidth = strokeWidth
-      canvas.moveTo(0, strokeWidth / 2)
-      canvas.lineTo(length, strokeWidth / 2)
+      canvas.moveTo(0, strokeWidth / 2.0)
+      canvas.lineTo(length, strokeWidth / 2.0)
       canvas.stroke()
     }
 }
@@ -89,7 +133,7 @@ object Rect {
   def apply(side: Double): Rect = Rect(side, side)
 }
 
-case class Text(msg: String, size: Double = 10) extends Renderable {
+case class Text(msg: String, size: Double = 20) extends Renderable {
   val boundingBox: BoundingBox = Text.measure(size)(msg)
 
   def render(canvas: CanvasRenderingContext2D): Unit = Text.withStyle(size){_.fillText(msg, 0, 0)}(canvas)
