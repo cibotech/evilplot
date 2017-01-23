@@ -28,17 +28,17 @@ object ScalaJSExample {
     ctx.scale(canvasResolutionScaleHack, canvasResolutionScaleHack)
   }
 
-  private def createGridLines(heights: Seq[Double], bars: Renderable): Renderable =
+  private def createGridLines(maxHeight: Double, width: Double): Renderable =
     DistributeV {
       val lineEveryXUnits     = 40
       val lineThick           = 0.25
       val textHeight          = Text.defaultSize
       val labelFloatAboveLine = 2
 
-      val countOfGridLines = (heights.max / lineEveryXUnits).toInt
+      val countOfGridLines = (maxHeight / lineEveryXUnits).toInt
 
       Seq.tabulate(countOfGridLines){ x =>
-        val yHeightLabel = (heights.max / lineEveryXUnits - x) * lineEveryXUnits
+        val yHeightLabel = (maxHeight / lineEveryXUnits - x) * lineEveryXUnits
 
         Pad(bottom = lineEveryXUnits - lineThick){
 
@@ -46,22 +46,32 @@ object ScalaJSExample {
             Text(yHeightLabel) filled "grey"
           }
 
-          Line(bars.extent.width, lineThick) behind label
+          Line(width, lineThick) behind label
         }
       }
     }
 
-  private def createYAxis(maxValue: Double, tickThick: Double, textAndPadHeight: Double, interTickDist: Double, tickLength: Double = 5) = {
+  private def yAxis(maxValue: Double, textAndPadHeight: Double): Renderable = createYAxis(maxValue, textAndPadHeight)()()
+  private def createYAxis(maxValue: Double, textAndPadHeight: Double)
+                         (figureWidth: Double = maxValue)
+                         (tickThick: Double = figureWidth * 0.0025, tickLength: Double = figureWidth * 0.025) = {
+
+    val textSize = (12 / 300.0) * maxValue
+
+    val spacingIfTenTicks = maxValue / 10D
+    // round to nearest multiple of 5 in the scale
+    val fiveInTheScale = maxValue / 20.0 // TODO Is this sane????
+    val interTickDist = math.min((spacingIfTenTicks / fiveInTheScale).toInt, 1) * fiveInTheScale
 
     val numTicks = (maxValue / interTickDist).floor.toInt
     val ticks = Seq.fill(numTicks + 1)(
       Line(tickLength, tickThick) rotated 90 padRight (interTickDist - tickThick)
     ).distributeH
 
-    Line(maxValue, tickThick * 2) behind ticks /*titled "Awesomeness"*/ rotated -90 padTop (textAndPadHeight - interTickDist)
+    Line(maxValue, tickThick * 2) behind ticks titled ("Awesomeness", textSize) rotated -90 padTop (textAndPadHeight - interTickDist)
   }
 
-  private def createBarChart(heights: Seq[Double], colors: Seq[String]) = {
+  private def createBars(heights: Seq[Double], colors: Seq[String]) = {
     val barWidth = 50
     val barSpacing = 5
 
@@ -78,13 +88,13 @@ object ScalaJSExample {
     val tickThick = 0.5
     val textAndPadHeight = Text.defaultSize + 5 + tickThick / 2D // text size, label pad, stroke width
 
-    val yAxis     = createYAxis(    heights.max, tickThick, textAndPadHeight, 10)
-    val bars      = createBarChart( heights, colors)
-    val gridLines = createGridLines(heights, bars)
+    val barChart = Fit(size){
+      val justBars = createBars(heights, colors)
+      val yAx = yAxis(heights.max, textAndPadHeight)
+      val grid = createGridLines(heights.max, justBars.extent.width) padTop (textAndPadHeight - tickThick / 2D)
 
-    val barChart =
-      yAxis beside
-        (gridLines padTop (textAndPadHeight - tickThick/2D) behind bars)
+      (grid --> yAx.extent.width) behind (yAx beside justBars)
+    }
 
     barChart titled ("A Swanky BarChart", 20) padAll 10
   }
@@ -96,7 +106,7 @@ object ScalaJSExample {
 
     fullscreenAndHiRes(ctx)
 
-    val graphSize = Extent(200,200)
+    val graphSize = Extent(200, 300)
     val barGraph = createBarGraph(graphSize)
 
     val scatterPlotGraph = {
@@ -109,20 +119,19 @@ object ScalaJSExample {
       }
 
       val minX = data.map(_.x).min
-      val maxY = data.map(_.y).max
       val minY = data.map(_.y).min
 
-      Fit(barGraph.extent){
-        val scatter = data.map{ case Point(x, y) => Disc(x - math.min(0, minX), maxY - y - math.min(0, minY), 0.01) }.group
-        createYAxis(scatter.extent.height, scatter.extent.width * 0.0025, 0.25, 0.25, scatter.extent.width * 0.05) beside scatter
-      } titled "A Scatter Plot" titled "A"
+      val fitScatter = FlipY(Fit(graphSize){
+        val scatter = data.map{ case Point(x, y) => Disc(x - math.min(0, minX), y - math.min(0, minY), 0.01) }.group
+        FlipY(yAxis(scatter.extent.height, 0)) beside scatter
+      })
+
+      fitScatter titled ("A Scatter Plot", 20) padAll 10
     }
 
-//    val letterbox = Rect(160, 90) filled "red" behind Fit(160, 90){
-//      Rect(4, 3)
-//    }
-
-    (barGraph beside scatterPlotGraph).render(ctx)
+    (Scale(200, 200)(Text("Hiiiiiiiiiiiii!", 0.49999))
+      beside barGraph beside scatterPlotGraph
+      ).render(ctx)
   }
 }
 
@@ -136,12 +145,11 @@ trait Renderable {
 
 case class Style(fill: String)(r: Renderable) extends Renderable {
   val extent = r.extent
-  def render(canvas: CanvasRenderingContext2D): Unit = {
+  def render(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas){ c =>
       c.fillStyle = fill
       r.render(c)
     }
-  }
 }
 
 case class Line(length: Double, strokeWidth: Double) extends Renderable {
@@ -165,13 +173,12 @@ case class Rect(width: Double, height: Double) extends Renderable {
 }
 object Rect {
   def apply(side: Double): Rect = Rect(side, side)
+  def apply(size: Extent): Rect = Rect(size.width, size.height)
 }
 
-
-//TODO: Dont allow negatives?
 case class Disc(x: Double, y: Double, radius: Double) extends Renderable {
   require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
-  val extent = Extent(x + radius*2, y + radius*2)
+  val extent = Extent(x + radius * 2, y + radius * 2)
 
   def render(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
@@ -196,14 +203,18 @@ object Text {
   private val offscreenBuffer = dom.window.document.getElementById("measureBuffer").asInstanceOf[html.Canvas].getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
   private val replaceSize = """\d+px""".r
-  private val fontSize = """[^\d]*(\d+)px.*""".r
+  // TODO: Text this regex esp on 1px 1.0px 1.px .1px, what is valid in CSS?
+  private val fontSize = """[^\d]*([\d(?:\.\d*)]+)px.*""".r
   private def extractHeight = {
     val fontSize(size) = offscreenBuffer.font
     size.toDouble
   }
 
-  private def swapFont(canvas: CanvasRenderingContext2D, size: Double) =
-    Text.replaceSize.replaceFirstIn(canvas.font, size.toString + "px")
+  private def swapFont(canvas: CanvasRenderingContext2D, size: Double) = {
+    val res = Text.replaceSize.replaceFirstIn(canvas.font, size.toString + "px")
+    println("Text Size! " + res)
+    res
+  }
 
   private def withStyle[T](size: Double)(f: CanvasRenderingContext2D => T): CanvasRenderingContext2D => T = {
     c =>
@@ -225,6 +236,34 @@ object CanvasOp {
     canvas.restore()
   }
 }
+
+case class Scale(x: Double = 1, y: Double = 1)(r: Renderable) extends Renderable {
+  val extent = Extent( r.extent.width * y, r.extent.height * x )
+
+  def render(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas){ c =>
+    c.scale(x, y)
+    r.render(c)
+  }
+}
+
+case class FlipY(r: Renderable) extends Renderable {
+  val extent = r.extent
+
+  def render(canvas: CanvasRenderingContext2D): Unit =
+    Translate(y = r.extent.height){
+      Scale(1, -1)(r)
+    }.render(canvas)
+}
+
+case class FlipX(r: Renderable) extends Renderable {
+  val extent = r.extent
+
+  def render(canvas: CanvasRenderingContext2D): Unit =
+    Translate(x = r.extent.width){
+      Scale(-1, 1)(r)
+    }.render(canvas)
+}
+
 case class Translate(x: Double = 0, y: Double = 0)(r: Renderable) extends Renderable {
   // TODO: is this correct with negative translations?
   val extent: Extent = Extent(
@@ -353,7 +392,7 @@ case class Labeled(msg: String, r: Renderable, textSize: Double = Text.defaultSi
 
 case class Titled(msg: String, r: Renderable, textSize: Double = Text.defaultSize) extends Renderable {
 
-  private val paddedTitle = Pad(bottom = 5)(Text(msg, textSize))
+  private val paddedTitle = Pad(bottom = textSize / 2.0)(Text(msg, textSize))
   private val composite = Align.center(paddedTitle, r).reduce(Above)
 
   val extent = composite.extent
