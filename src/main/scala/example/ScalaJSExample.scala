@@ -120,13 +120,13 @@ object ScalaJSExample {
 
     fullscreenAndHiRes(ctx)
 
-    val graphSize = Extent(200, 300)
+    val plotAreaSize = Extent(300, 300)
 
     val barGraph = {
       val colors = Seq("red", "green", "blue")
       val data = Seq(10D, 100D, 200D)
 
-      createBarGraph(graphSize, data, colors)
+      createBarGraph(plotAreaSize, data, colors)
     }
 
     val scatterPlotGraph = {
@@ -137,10 +137,17 @@ object ScalaJSExample {
         Point(x, x + scale * (Random.nextDouble()/2.0 - 0.5))
       }
 
-      createScatterPlot(graphSize, scatterData)
+      createScatterPlot(plotAreaSize, scatterData)
     }
 
-    (barGraph beside scatterPlotGraph).render(ctx)
+    val pieChart = {
+
+      val fractions = Seq(.1, .3, .6)
+//      fractions.map(f => Wedge(360 * f))
+      Disc(0,0,1)
+    }
+
+    (pieChart beside barGraph beside scatterPlotGraph).render(ctx)
   }
 }
 
@@ -196,6 +203,14 @@ case class Disc(x: Double, y: Double, radius: Double) extends Renderable {
       c.closePath()
       c.fill()
     }
+}
+
+case class Wedge(angleDegrees: Double, radius: Double) extends Renderable {
+  val extent = Extent(2 * radius, 2 * radius)
+
+  def render(canvas: CanvasRenderingContext2D): Unit = {
+
+  }
 }
 
 case class Text(msgAny: Any, size: Double = Text.defaultSize) extends Renderable {
