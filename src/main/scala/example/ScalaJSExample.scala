@@ -6,10 +6,7 @@ import DSL._
 
 import scala.util.Random
 
-case class Point(x: Int, y: Int){
-  def +(p: Point) = Point(x + p.x, y + p.y)
-  def /(d: Int) = Point(x / d, y / d)
-}
+case class Point(x: Double, y: Double)
 
 @JSExport
 object ScalaJSExample {
@@ -81,22 +78,39 @@ object ScalaJSExample {
       }.distributeH(barSpacing)
   }
 
-  def createBarGraph(size: Extent): Renderable = {
-    val heights = Seq(10D, 100D, 200D)
-    val colors = Seq("red", "green", "blue")
+  def createBarGraph(size: Extent, data: Seq[Double], colors: Seq[String]): Renderable = {
 
     val tickThick = 0.5
     val textAndPadHeight = Text.defaultSize + 5 + tickThick / 2D // text size, label pad, stroke width
 
     val barChart = Fit(size){
-      val justBars = createBars(heights, colors)
-      val yAx = yAxis(heights.max, textAndPadHeight)
-      val grid = createGridLines(heights.max, justBars.extent.width) padTop (textAndPadHeight - tickThick / 2D)
+      val justBars = createBars(data, colors)
+      val yAx = yAxis(data.max, textAndPadHeight)
+      val grid = createGridLines(data.max, justBars.extent.width) padTop (textAndPadHeight - tickThick / 2D)
 
       (grid --> yAx.extent.width) behind (yAx beside justBars)
     }
 
     barChart titled ("A Swanky BarChart", 20) padAll 10
+  }
+
+  def createScatterPlot(graphSize: Extent, data: Seq[Point]) = {
+
+    val minX = data.map(_.x).min
+    val minY = data.map(_.y).min
+
+    val pointSize = {
+      val maxX = data.map(_.x).max
+      val maxY = data.map(_.y).max
+      math.min(maxX, maxY) / 100.0
+    }
+
+    val fitScatter = FlipY(Fit(graphSize){
+      val scatter = data.map{ case Point(x, y) => Disc(x - math.min(0, minX), y - math.min(0, minY), pointSize) }.group
+      FlipY(yAxis(scatter.extent.height, 0)) beside scatter
+    })
+
+    fitScatter titled ("A Scatter Plot", 20) padAll 10
   }
 
   @JSExport
@@ -107,31 +121,26 @@ object ScalaJSExample {
     fullscreenAndHiRes(ctx)
 
     val graphSize = Extent(200, 300)
-    val barGraph = createBarGraph(graphSize)
+
+    val barGraph = {
+      val colors = Seq("red", "green", "blue")
+      val data = Seq(10D, 100D, 200D)
+
+      createBarGraph(graphSize, data, colors)
+    }
 
     val scatterPlotGraph = {
 
-      case class Point(x: Double, y: Double)
-
-      val data = Seq.tabulate(50){ i =>
-        val x = Random.nextDouble()
-        Point(x, x + Random.nextDouble()/2.0 - 0.5)
+      val scale = 100
+      val scatterData = Seq.tabulate(50){ i =>
+        val x = Random.nextDouble() * scale
+        Point(x, x + scale * (Random.nextDouble()/2.0 - 0.5))
       }
 
-      val minX = data.map(_.x).min
-      val minY = data.map(_.y).min
-
-      val fitScatter = FlipY(Fit(graphSize){
-        val scatter = data.map{ case Point(x, y) => Disc(x - math.min(0, minX), y - math.min(0, minY), 0.01) }.group
-        FlipY(yAxis(scatter.extent.height, 0)) beside scatter
-      })
-
-      fitScatter titled ("A Scatter Plot", 20) padAll 10
+      createScatterPlot(graphSize, scatterData)
     }
 
-    (Scale(200, 200)(Text("Hiiiiiiiiiiiii!", 0.49999))
-      beside barGraph beside scatterPlotGraph
-      ).render(ctx)
+    (barGraph beside scatterPlotGraph).render(ctx)
   }
 }
 
@@ -190,6 +199,7 @@ case class Disc(x: Double, y: Double, radius: Double) extends Renderable {
 }
 
 case class Text(msgAny: Any, size: Double = Text.defaultSize) extends Renderable {
+  require(size >= 0.5, s"Cannot use ${size}, canvas will not render text initially sized < 0.5px even when scaling")
   private val msg = msgAny.toString
 
   val extent: Extent = Text.measure(size)(msg)
@@ -211,9 +221,7 @@ object Text {
   }
 
   private def swapFont(canvas: CanvasRenderingContext2D, size: Double) = {
-    val res = Text.replaceSize.replaceFirstIn(canvas.font, size.toString + "px")
-    println("Text Size! " + res)
-    res
+    Text.replaceSize.replaceFirstIn(canvas.font, size.toString + "px")
   }
 
   private def withStyle[T](size: Double)(f: CanvasRenderingContext2D => T): CanvasRenderingContext2D => T = {
