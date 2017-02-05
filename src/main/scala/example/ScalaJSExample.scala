@@ -144,21 +144,86 @@ object ScalaJSExample {
       createScatterPlot(plotAreaSize, scatterData)
     }
 
+
     val pieChart = {
 
       val scale = 100
-      val fractions = Seq(.1, .3, .5, .1)
-      val colors = Seq(Pink, Purple, HSL(120, 60, 70), SkyBlue)
-      val cumulativeRotate = fractions.scanLeft(0D)(_ + _).init
-      val wedges = fractions.zip(cumulativeRotate).map{ case (frac, cumRot) => UnsafeRotate(360 * cumRot)(Wedge(360 * frac, scale)) }
-      wedges.zip(colors).map{ case (r, color) => r filled color }.reverse
-    }.group
+      val data = Seq(.5, .1, .3, .1)
+
+      val pieWedges = {
+        val cumulativeRotate = data.scanLeft(0D)(_ + _).init
+        val wedges = data.zip(cumulativeRotate).map { case (frac, cumRot) =>
+
+          val rotDegrees = 360 * cumRot
+
+          val wedge = UnsafeRotate(rotDegrees)(Wedge(360 * frac, scale) padAll 10)
+          val labelRotateDeg = 360 * cumRot + frac * 360 / 2.0
+          val label =
+            UnsafeRotate(labelRotateDeg) {
+              DistributeH(
+                Align.middle(
+                  Rect(2 * scale) filled Clear padAll 10,
+                  Rotate(-labelRotateDeg)(Text(frac.toString))
+                )
+              )
+            }
+
+          wedge behind label
+        }
+
+        wedges.zip(Colors.stream).map { case (r, color) => r filled color }
+      }.group
+
+      val legend = FlowH(data.zip(Colors.stream).map{ case (d, c) => Rect(scale / 5.0) filled c labeled f"${d*100}%.1f%%" }, pieWedges.extent) padTop 20
+
+      pieWedges above legend titled("A Smooth Pie Chart", 20) padAll 10
+    }
 
     (pieChart beside barGraph beside scatterPlotGraph).render(ctx)
   }
 }
 
 object Colors {
+
+  // TODO: this needs work
+  def stream = {
+    val hueSpan = 7
+    Stream.from(0).map{ i =>
+      // if hueSpan = 8, for instance:
+      // Epoch 0 ->  8 equally spaced  0 -  7
+      // Epoch 1 -> 16 equally spaced  8 - 21
+      // Epoch 2 -> 32 equally spaced 22 - 53
+      // Epoch 3 -> 64 equally spaced 54 - 117
+      // Epoch 4 -> 128 equally spaced 118 - 245
+      // ..
+      // e^2 * 8
+      // pt = sum_epoch( 8 * 2 ^ (e) ) - log(8)/log(2) // not quite right this last term?
+      // pt = 8 * 2 ^ (2) + 8 * 2 ^ (1) + 8 * 2 ^ (0) - 3
+      // pt = 8 * (2 ^ (2) + 2 ^ (1) + 2 ^ (0)) - 3
+      // pt = 8 * (2^(e+1) - 1) - 3
+
+      import math._
+      def log2(x: Double) = log(x) / log(2)
+      val magicFactor = log2(hueSpan) // TODO: this may or may not be correct for other hueSpan's
+      val epoch = if( i < hueSpan ) 0 else ceil(log2(((i + magicFactor) / hueSpan) + 1) - 1).toInt
+
+      def endIndexOfThisEpoch(e: Int) = 8 * (pow(2,(e + 1)) - 1) - magicFactor
+
+      val slicesThisEpoch = hueSpan * Math.pow(2, epoch)
+      val initialRotate = 360.0 / slicesThisEpoch / 2.0
+
+      val zeroBasedIndexInThisEpoch = i - endIndexOfThisEpoch(epoch - 1) - 1
+
+      val saturationDropoff = 2
+      def saturationLevel(e: Int) = 100 * 1.0 / pow(saturationDropoff, epoch + 1)
+      val saturationBase = 50//100 - saturationLevel(0)
+      HSL(
+        abs(round(initialRotate + 360.0 / slicesThisEpoch * zeroBasedIndexInThisEpoch).toInt % 360),
+        (saturationBase + saturationLevel(epoch)).round.toInt,
+        50
+      )
+    }
+  }
 
   sealed trait Color {
     val repr: String
@@ -170,6 +235,10 @@ object Colors {
     require(lightness  >= 0 && lightness  <= 100,  s"lightness must be within [0, 100] {was $lightness}")
 
     val repr = s"hsl($hue, $saturation%, $lightness%)"
+  }
+
+  case object Clear extends Color {
+    val repr: String = "rgba(0,0,0,0)"
   }
 
   sealed abstract class NamedColor(val repr: String) extends Color
@@ -362,9 +431,7 @@ object Rect {
   def apply(size: Extent): Rect = Rect(size.width, size.height)
 }
 
-trait CircularExtented extends Renderable
-
-case class Disc(x: Double, y: Double, radius: Double) extends Renderable with CircularExtented {
+case class Disc(x: Double, y: Double, radius: Double) extends Renderable {
   require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
   val extent = Extent(x + radius * 2, y + radius * 2)
 
@@ -377,7 +444,7 @@ case class Disc(x: Double, y: Double, radius: Double) extends Renderable with Ci
     }
 }
 
-case class Wedge(angleDegrees: Double, radius: Double) extends Renderable with CircularExtented {
+case class Wedge(angleDegrees: Double, radius: Double) extends Renderable {
   val extent = Extent(2 * radius, 2 * radius)
 
   def render(canvas: CanvasRenderingContext2D): Unit = {
@@ -528,15 +595,15 @@ case class Rotate(degrees: Double)(r: Renderable) extends Renderable {
 
 // Our rotate semantics are, rotate about your centroid, and shift back to all positive coordinates
 // BUT CircularExtented things' rotated extents cannot be computed as a rotated rectangles, they are assumed invariant
-case class UnsafeRotate(degrees: Double)(r: CircularExtented) extends Renderable {
+case class UnsafeRotate(degrees: Double)(r: Renderable) extends Renderable {
 
   val extent = r.extent
 
   def render(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
-      c.translate(r.extent.width / 2, r.extent.height / 2)
+      c.translate(extent.width / 2, extent.height / 2)
       c.rotate(math.toRadians(degrees))
-      c.translate(r.extent.width / -2, r.extent.height / -2)
+      c.translate(extent.width / -2, extent.height / -2)
 
       r.render(c)
     }
@@ -592,7 +659,7 @@ object Align {
   def bottomSeq(items: Seq[Renderable]) = bottom(items :_*)
 
   def bottom(items: Renderable*): Seq[Renderable] = {
-    val groupHeight = items.foldLeft(0D)((max, elem) => math.max(max, elem.extent.height))
+    val groupHeight = items.maxBy(_.extent.height).extent.height
 
     items.map(r => Translate(y = groupHeight - r.extent.height)(r) )
   }
@@ -600,9 +667,15 @@ object Align {
   def centerSeq(items: Seq[Renderable]) = center(items :_*)
 
   def center(items: Renderable*): Seq[Renderable] = {
-    val groupWidth = items.foldLeft(0D)((max, elem) => math.max(max, elem.extent.width))
+    val groupWidth = items.maxBy(_.extent.width).extent.width
 
     items.map( r => Translate(x = (groupWidth - r.extent.width) / 2.0)(r) )
+  }
+
+  def middle(items: Renderable*): Seq[Renderable] = {
+    val groupHeight = items.maxBy(_.extent.height).extent.height
+
+    items.map( r => Translate(y = (groupHeight - r.extent.width) / 2.0)(r) )
   }
 }
 
@@ -698,6 +771,13 @@ object DSL {
     def group: Renderable = Group(sp :_*)
   }
 
+
+  def FlowH(rs: Seq[Renderable], hasWidth: Extent): Renderable = {
+    val consumed = rs.map(_.extent.width).sum
+    val inBetween = (hasWidth.width - consumed) / (rs.length - 1)
+    val padded = rs.init.map(_ padRight inBetween) :+ rs.last
+    padded.reduce(Beside)
+  }
 
   def DistributeH(rs: Seq[Renderable], spacing: Double = 0): Renderable =
     if(spacing == 0) rs.reduce(Beside)
