@@ -174,12 +174,15 @@ object ScalaJSExample {
         wedges.zip(Colors.stream).map { case (r, color) => r filled color }
       }.group
 
-      val legend = FlowH(data.zip(Colors.stream).map{ case (d, c) => Rect(scale / 5.0) filled c labeled f"${d*100}%.1f%%" }, pieWedges.extent) padTop 20
+      val legend = FlowH(
+        data.zip(Colors.stream).map{ case (d, c) => Rect(scale / 5.0) filled c labeled f"${d*100}%.1f%%" },
+        pieWedges.extent
+      ) padTop 20
 
       pieWedges above legend titled("A Smooth Pie Chart", 20) padAll 10
     }
 
-    (pieChart beside barGraph beside scatterPlotGraph).render(ctx)
+    DistributeH(Align.middle(pieChart, barGraph, scatterPlotGraph)).render(ctx)
   }
 }
 
@@ -675,7 +678,7 @@ object Align {
   def middle(items: Renderable*): Seq[Renderable] = {
     val groupHeight = items.maxBy(_.extent.height).extent.height
 
-    items.map( r => Translate(y = (groupHeight - r.extent.width) / 2.0)(r) )
+    items.map( r => Translate(y = (groupHeight - r.extent.height) / 2.0)(r) )
   }
 }
 
