@@ -5,6 +5,7 @@ import org.scalajs.dom.{CanvasRenderingContext2D, html}
 import DSL._
 
 import scala.util.Random
+import Colors.{Color, Grey}
 
 case class Point(x: Double, y: Double)
 
@@ -40,7 +41,7 @@ object ScalaJSExample {
         Pad(bottom = lineEveryXUnits - lineThick){
 
           val label = Translate(y = -textHeight - labelFloatAboveLine){
-            Text(yHeightLabel) filled "grey"
+            Text(yHeightLabel) filled Grey
           }
 
           Line(width, lineThick) behind label
@@ -68,17 +69,17 @@ object ScalaJSExample {
     Line(maxValue, tickThick * 2) behind ticks titled ("Awesomeness", textSize) rotated -90 padTop (textAndPadHeight - interTickDist)
   }
 
-  private def createBars(heights: Seq[Double], colors: Seq[String]) = {
+  private def createBars(heights: Seq[Double], colors: Seq[Color]) = {
     val barWidth = 50
     val barSpacing = 5
 
       Align.bottomSeq {
         val rects = heights.map { h => Rect(barWidth, h) titled h.toString}
-        rects.zip(colors).map { case (rect, color) => rect filled color labeled color }
+        rects.zip(colors).map { case (rect, color) => rect filled color labeled color.repr }
       }.distributeH(barSpacing)
   }
 
-  def createBarGraph(size: Extent, data: Seq[Double], colors: Seq[String]): Renderable = {
+  def createBarGraph(size: Extent, data: Seq[Double], colors: Seq[Color]): Renderable = {
 
     val tickThick = 0.5
     val textAndPadHeight = Text.defaultSize + 5 + tickThick / 2D // text size, label pad, stroke width
@@ -115,6 +116,9 @@ object ScalaJSExample {
 
   @JSExport
   def main(canvasDiv: html.Canvas): Unit = {
+
+    import Colors._
+
     val ctx: CanvasRenderingContext2D = canvasDiv.getContext("2d")
                     .asInstanceOf[CanvasRenderingContext2D]
 
@@ -123,7 +127,7 @@ object ScalaJSExample {
     val plotAreaSize = Extent(300, 300)
 
     val barGraph = {
-      val colors = Seq("red", "green", "blue")
+      val colors = Seq(Red, Green, Blue)
       val data = Seq(10D, 100D, 200D)
 
       createBarGraph(plotAreaSize, data, colors)
@@ -142,15 +146,181 @@ object ScalaJSExample {
 
     val pieChart = {
 
-      val fractions = Seq(.1, .3, .6)
-//      fractions.map(f => Wedge(360 * f))
-      Disc(0,0,1)
-    }
+      val scale = 100
+      val fractions = Seq(.1, .3, .5, .1)
+      val colors = Seq(Pink, Purple, HSL(120, 60, 70), SkyBlue)
+      val cumulativeRotate = fractions.scanLeft(0D)(_ + _).init
+      val wedges = fractions.zip(cumulativeRotate).map{ case (frac, cumRot) => UnsafeRotate(360 * cumRot)(Wedge(360 * frac, scale)) }
+      wedges.zip(colors).map{ case (r, color) => r filled color }.reverse
+    }.group
 
     (pieChart beside barGraph beside scatterPlotGraph).render(ctx)
   }
 }
 
+object Colors {
+
+  sealed trait Color {
+    val repr: String
+  }
+
+  case class HSL(hue: Int, saturation: Int, lightness: Int) extends Color {
+    require(hue        >= 0 && hue        <  360,        s"hue must be within [0, 360) {was $hue}")
+    require(saturation >= 0 && saturation <= 100, s"saturation must be within [0, 100] {was $saturation}")
+    require(lightness  >= 0 && lightness  <= 100,  s"lightness must be within [0, 100] {was $lightness}")
+
+    val repr = s"hsl($hue, $saturation%, $lightness%)"
+  }
+
+  sealed abstract class NamedColor(val repr: String) extends Color
+  case object AliceBlue             extends NamedColor("aliceblue")
+  case object AntiqueWhite          extends NamedColor("antiquewhite")
+  case object Aqua                  extends NamedColor("aqua")
+  case object Aquamarine            extends NamedColor("aquamarine")
+  case object Azure                 extends NamedColor("azure")
+  case object Beige                 extends NamedColor("beige")
+  case object Bisque                extends NamedColor("bisque")
+  case object Black                 extends NamedColor("black")
+  case object BlanchedAlmond        extends NamedColor("blanchedalmond")
+  case object Blue                  extends NamedColor("blue")
+  case object BlueViolet            extends NamedColor("blueviolet")
+  case object Brown                 extends NamedColor("brown")
+  case object Burlywood             extends NamedColor("burlywood")
+  case object CadetBlue             extends NamedColor("cadetblue")
+  case object Chartreuse            extends NamedColor("chartreuse")
+  case object Chocolate             extends NamedColor("chocolate")
+  case object Coral                 extends NamedColor("coral")
+  case object CornflowerBlue        extends NamedColor("cornflowerblue")
+  case object Cornsilk              extends NamedColor("cornsilk")
+  case object Crimson               extends NamedColor("crimson")
+  case object Cyan                  extends NamedColor("cyan")
+  case object DarkBlue              extends NamedColor("darkblue")
+  case object DarkCyan              extends NamedColor("darkcyan")
+  case object DarkGoldenrod         extends NamedColor("darkgoldenrod")
+  case object DarkGray              extends NamedColor("darkgray")
+  case object DarkGreen             extends NamedColor("darkgreen")
+  case object DarkGrey              extends NamedColor("darkgrey")
+  case object DarkKhaki             extends NamedColor("darkkhaki")
+  case object DarkMagenta           extends NamedColor("darkmagenta")
+  case object DarkOliveGreen        extends NamedColor("darkolivegreen")
+  case object DarkOrange            extends NamedColor("darkorange")
+  case object DarkOrchid            extends NamedColor("darkorchid")
+  case object DarkRed               extends NamedColor("darkred")
+  case object DarkSalmon            extends NamedColor("darksalmon")
+  case object DarkSeagreen          extends NamedColor("darkseagreen")
+  case object DarkSlateBlue         extends NamedColor("darkslateblue")
+  case object DarkSlateGray         extends NamedColor("darkslategray")
+  case object DarkSlateGrey         extends NamedColor("darkslategrey")
+  case object DarkTurquoise         extends NamedColor("darkturquoise")
+  case object DarkViolet            extends NamedColor("darkviolet")
+  case object DeepPink              extends NamedColor("deeppink")
+  case object DeepskyBlue           extends NamedColor("deepskyblue")
+  case object DimGray               extends NamedColor("dimgray")
+  case object DimGrey               extends NamedColor("dimgrey")
+  case object DodgerBlue            extends NamedColor("dodgerblue")
+  case object Firebrick             extends NamedColor("firebrick")
+  case object FloralWhite           extends NamedColor("floralwhite")
+  case object ForestGreen           extends NamedColor("forestgreen")
+  case object Fuchsia               extends NamedColor("fuchsia")
+  case object Gainsboro             extends NamedColor("gainsboro")
+  case object Ghostwhite            extends NamedColor("ghostwhite")
+  case object Gold                  extends NamedColor("gold")
+  case object Goldenrod             extends NamedColor("goldenrod")
+  case object Gray                  extends NamedColor("gray")
+  case object Green                 extends NamedColor("green")
+  case object GreenYellow           extends NamedColor("greenyellow")
+  case object Grey                  extends NamedColor("grey")
+  case object Honeydew              extends NamedColor("honeydew")
+  case object HotPink               extends NamedColor("hotpink")
+  case object IndianRed             extends NamedColor("indianred")
+  case object Indigo                extends NamedColor("indigo")
+  case object Ivory                 extends NamedColor("ivory")
+  case object Khaki                 extends NamedColor("khaki")
+  case object Lavender              extends NamedColor("lavender")
+  case object LavenderBlush         extends NamedColor("lavenderblush")
+  case object LawnGreen             extends NamedColor("lawngreen")
+  case object LemonChiffon          extends NamedColor("lemonchiffon")
+  case object LightBlue             extends NamedColor("lightblue")
+  case object LightCoral            extends NamedColor("lightcoral")
+  case object Lightyan              extends NamedColor("lightcyan")
+  case object LightGoldenrodYellow  extends NamedColor("lightgoldenrodyellow")
+  case object LightGray             extends NamedColor("lightgray")
+  case object LightGreen            extends NamedColor("lightgreen")
+  case object LightGrey             extends NamedColor("lightgrey")
+  case object LightPink             extends NamedColor("lightpink")
+  case object LightSalmon           extends NamedColor("lightsalmon")
+  case object LightSeaGreen         extends NamedColor("lightseagreen")
+  case object LightSkyBlue          extends NamedColor("lightskyblue")
+  case object LightSlateGray        extends NamedColor("lightslategray")
+  case object LightSlateGrey        extends NamedColor("lightslategrey")
+  case object LightSteelblue        extends NamedColor("lightsteelblue")
+  case object LightYellow           extends NamedColor("lightyellow")
+  case object Lime                  extends NamedColor("lime")
+  case object LimeGreen             extends NamedColor("limegreen")
+  case object Linen                 extends NamedColor("linen")
+  case object Magenta               extends NamedColor("magenta")
+  case object Maroon                extends NamedColor("maroon")
+  case object MediumAquamarine      extends NamedColor("mediumaquamarine")
+  case object MediumBlue            extends NamedColor("mediumblue")
+  case object MediumOrchid          extends NamedColor("mediumorchid")
+  case object MediumPurple          extends NamedColor("mediumpurple")
+  case object MediumSeagreen        extends NamedColor("mediumseagreen")
+  case object MediumSlateBlue       extends NamedColor("mediumslateblue")
+  case object MediumSpringGreen     extends NamedColor("mediumspringgreen")
+  case object MediumTurquoise       extends NamedColor("mediumturquoise")
+  case object MediumVioletRed       extends NamedColor("mediumvioletred")
+  case object MidnightBlue          extends NamedColor("midnightblue")
+  case object MintCream             extends NamedColor("mintcream")
+  case object MistyRose             extends NamedColor("mistyrose")
+  case object Moccasin              extends NamedColor("moccasin")
+  case object NavajoWhite           extends NamedColor("navajowhite")
+  case object Navy                  extends NamedColor("navy")
+  case object Oldlace               extends NamedColor("oldlace")
+  case object Olive                 extends NamedColor("olive")
+  case object Olivedrab             extends NamedColor("olivedrab")
+  case object Orange                extends NamedColor("orange")
+  case object OrangeRed             extends NamedColor("orangered")
+  case object Orchid                extends NamedColor("orchid")
+  case object PaleGoldenrod         extends NamedColor("palegoldenrod")
+  case object PaleGreen             extends NamedColor("palegreen")
+  case object PaleTurquoise         extends NamedColor("paleturquoise")
+  case object PaleVioletRed         extends NamedColor("palevioletred")
+  case object Papayawhip            extends NamedColor("papayawhip")
+  case object PeachPuff             extends NamedColor("peachpuff")
+  case object Peru                  extends NamedColor("peru")
+  case object Pink                  extends NamedColor("pink")
+  case object Plum                  extends NamedColor("plum")
+  case object PowderBlue            extends NamedColor("powderblue")
+  case object Purple                extends NamedColor("purple")
+  case object Red                   extends NamedColor("red")
+  case object RosyBrown             extends NamedColor("rosybrown")
+  case object RoyalBlue             extends NamedColor("royalblue")
+  case object SaddleBrown           extends NamedColor("saddlebrown")
+  case object Salmon                extends NamedColor("salmon")
+  case object SandyBrown            extends NamedColor("sandybrown")
+  case object Seagreen              extends NamedColor("seagreen")
+  case object Seashell              extends NamedColor("seashell")
+  case object Sienna                extends NamedColor("sienna")
+  case object Silver                extends NamedColor("silver")
+  case object SkyBlue               extends NamedColor("skyblue")
+  case object SlateBlue             extends NamedColor("slateblue")
+  case object SlateGray             extends NamedColor("slategray")
+  case object SlateGrey             extends NamedColor("slategrey")
+  case object Snow                  extends NamedColor("snow")
+  case object SpringGreen           extends NamedColor("springgreen")
+  case object SteelBlue             extends NamedColor("steelblue")
+  case object Tan                   extends NamedColor("tan")
+  case object Teal                  extends NamedColor("teal")
+  case object Thistle               extends NamedColor("thistle")
+  case object Tomato                extends NamedColor("tomato")
+  case object Turquoise             extends NamedColor("turquoise")
+  case object Violet                extends NamedColor("violet")
+  case object Wheat                 extends NamedColor("wheat")
+  case object White                 extends NamedColor("white")
+  case object WhiteSmoke            extends NamedColor("whitesmoke")
+  case object Yellow                extends NamedColor("yellow")
+  case object YellowGreen           extends NamedColor("yellowgreen")
+}
 
 case class Extent(width: Double, height: Double)
 trait Renderable {
@@ -159,11 +329,11 @@ trait Renderable {
   def render(canvas: CanvasRenderingContext2D): Unit
 }
 
-case class Style(fill: String)(r: Renderable) extends Renderable {
+case class Style(fill: Colors.Color)(r: Renderable) extends Renderable {
   val extent = r.extent
   def render(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas){ c =>
-      c.fillStyle = fill
+      c.fillStyle = fill.repr
       r.render(c)
     }
 }
@@ -192,7 +362,9 @@ object Rect {
   def apply(size: Extent): Rect = Rect(size.width, size.height)
 }
 
-case class Disc(x: Double, y: Double, radius: Double) extends Renderable {
+trait CircularExtented extends Renderable
+
+case class Disc(x: Double, y: Double, radius: Double) extends Renderable with CircularExtented {
   require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
   val extent = Extent(x + radius * 2, y + radius * 2)
 
@@ -205,11 +377,18 @@ case class Disc(x: Double, y: Double, radius: Double) extends Renderable {
     }
 }
 
-case class Wedge(angleDegrees: Double, radius: Double) extends Renderable {
+case class Wedge(angleDegrees: Double, radius: Double) extends Renderable with CircularExtented {
   val extent = Extent(2 * radius, 2 * radius)
 
   def render(canvas: CanvasRenderingContext2D): Unit = {
-
+    CanvasOp(canvas) { c =>
+      c.translate(radius, radius)
+      c.beginPath()
+      c.moveTo(0, 0)
+      c.arc(0, 0, radius, 0, 2 * Math.PI * angleDegrees / 360.0)
+      c.closePath()
+      c.fill()
+    }
   }
 }
 
@@ -334,6 +513,28 @@ case class Rotate(degrees: Double)(r: Renderable) extends Renderable {
   def render(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
       c.translate(-1 * minX , -1 * minY)
+      c.rotate(math.toRadians(degrees))
+      c.translate(r.extent.width / -2, r.extent.height / -2)
+
+      r.render(c)
+    }
+}
+
+//TODO: A future way to eliminate this is:
+// * replace "extents" and reaching into the object with a more sophisticated class
+// * that class should support widestWidth, tallestHeight, and a rotate method that returns a new copy with same wW/tH
+// * then extents can be arbitrary polygons instead of just Rect's
+// end TODO
+
+// Our rotate semantics are, rotate about your centroid, and shift back to all positive coordinates
+// BUT CircularExtented things' rotated extents cannot be computed as a rotated rectangles, they are assumed invariant
+case class UnsafeRotate(degrees: Double)(r: CircularExtented) extends Renderable {
+
+  val extent = r.extent
+
+  def render(canvas: CanvasRenderingContext2D): Unit =
+    CanvasOp(canvas) { c =>
+      c.translate(r.extent.width / 2, r.extent.height / 2)
       c.rotate(math.toRadians(degrees))
       c.translate(r.extent.width / -2, r.extent.height / -2)
 
@@ -476,7 +677,7 @@ object DSL {
 
     def rotated(degress: Double) = Rotate(degress)(r)
 
-    def filled(color: String) = Style(fill = color)(r)
+    def filled(color: Colors.Color) = Style(fill = color)(r)
 
     // Experimental
     def -->(nudge: Double) = Translate(x = nudge)(r)
