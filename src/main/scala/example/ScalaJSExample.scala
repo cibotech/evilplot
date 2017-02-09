@@ -49,28 +49,53 @@ object ScalaJSExample {
       }
     }
 
-  private def yAxis(maxValue: Double, textAndPadHeight: Double, labelTicks: Boolean = false): Renderable = {
+  // TODO: this sort of sucks, and textAndPadHeight is a hack that doesnt work right in my barchart case with tick labels?
+  private def yAxis(maxValue: Double, textAndPadHeight: Double, labelTicks: Boolean = true): Renderable = {
 
     val figureWidth = maxValue
     val tickThick = figureWidth * 0.0025
-    val tickLength: Double = figureWidth * 0.025
+    val tickLength = figureWidth * 0.025
     val textSize = (12 / 300.0) * maxValue
+    val tickLabelTextSize = 0.8 * textSize
     val labelEveryKTicks = 5
 
-    val spacingIfTenTicks = maxValue / 10D
-    // round to nearest multiple of 5 in the scale
-    val fiveInTheScale = maxValue / 20.0 // TODO Is this sane????
-    val interTickDist = math.min((spacingIfTenTicks / fiveInTheScale).toInt, 1) * fiveInTheScale
+    val interTickDist = {
+      val spacingIfTenTicks = maxValue / 10D
+      // round to nearest multiple of 5 in the scale
+      val fiveInTheScale = maxValue / 20.0 // TODO Is this sane????
+      math.min((spacingIfTenTicks / fiveInTheScale).toInt, 1) * fiveInTheScale
+    }
 
     val numTicks = (maxValue / interTickDist).floor.toInt
     val ticks = Seq.tabulate(numTicks + 1){ i =>
       val tick = Line(tickLength, tickThick) rotated 90 padRight (interTickDist - tickThick)
 
       tick
-//      if( i % labelEveryKTicks == 0 ) tick beside Text(i * interTickDist) rotated 90 else tick
     }.distributeH
 
-    Line(maxValue, tickThick * 2) behind ticks titled ("Awesomeness", textSize) rotated -90 padTop (textAndPadHeight - interTickDist)
+    val labels = {
+      val labelCount = 1 + math.floor(numTicks / labelEveryKTicks).toInt
+      val interLabelDist = interTickDist * labelEveryKTicks
+
+      val labelColl = Seq.tabulate(labelCount) { i =>
+        val value = i * interLabelDist
+        Text(f"$value%.1f", tickLabelTextSize) padRight textSize / 4
+      }.reverse
+
+      val combined = DistributeV(
+        labelColl,
+        interLabelDist - labelColl.head.extent.height
+      )
+
+      val leftOverTop = maxValue - combined.extent.height
+      val textCentering = tickLabelTextSize / 3
+      combined padTop leftOverTop + textCentering
+    }
+
+    val axisTitle = Text("Awesomeness", textSize) rotated -90
+    val justAxis = Line(maxValue, tickThick * 2) behind ticks rotated -90 padTop (textAndPadHeight - interTickDist)
+    val labeledTickAxis = if(labelTicks) labels beside justAxis else justAxis
+    Align.middle(axisTitle padRight textSize / 2, labeledTickAxis).reduce(Beside)
   }
 
   private def createBars(heights: Seq[Double], colors: Seq[Color]) = {
@@ -90,7 +115,7 @@ object ScalaJSExample {
 
     val barChart = Fit(size){
       val justBars = createBars(data, colors)
-      val yAx = yAxis(data.max, textAndPadHeight)
+      val yAx = yAxis(data.max, textAndPadHeight, labelTicks = false)
       val grid = createGridLines(data.max, justBars.extent.width) padTop (textAndPadHeight - tickThick / 2D)
 
       (grid --> yAx.extent.width) behind (yAx beside justBars)
@@ -797,5 +822,10 @@ object DSL {
       padded.reduce(Beside)
     }
 
-  def DistributeV(rs: Seq[Renderable]): Renderable = rs.reduce(Above)
+  def DistributeV(rs: Seq[Renderable], spacing: Double = 0): Renderable =
+    if(spacing == 0) rs.reduce(Above)
+    else {
+      val padded = rs.init.map(_ padBottom spacing) :+ rs.last
+      padded.reduce(Above)
+    }
 }
