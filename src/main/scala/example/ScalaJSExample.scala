@@ -49,12 +49,13 @@ object ScalaJSExample {
       }
     }
 
-  private def yAxis(maxValue: Double, textAndPadHeight: Double): Renderable = createYAxis(maxValue, textAndPadHeight)()()
-  private def createYAxis(maxValue: Double, textAndPadHeight: Double)
-                         (figureWidth: Double = maxValue)
-                         (tickThick: Double = figureWidth * 0.0025, tickLength: Double = figureWidth * 0.025) = {
+  private def yAxis(maxValue: Double, textAndPadHeight: Double, labelTicks: Boolean = false): Renderable = {
 
+    val figureWidth = maxValue
+    val tickThick = figureWidth * 0.0025
+    val tickLength: Double = figureWidth * 0.025
     val textSize = (12 / 300.0) * maxValue
+    val labelEveryKTicks = 5
 
     val spacingIfTenTicks = maxValue / 10D
     // round to nearest multiple of 5 in the scale
@@ -62,9 +63,12 @@ object ScalaJSExample {
     val interTickDist = math.min((spacingIfTenTicks / fiveInTheScale).toInt, 1) * fiveInTheScale
 
     val numTicks = (maxValue / interTickDist).floor.toInt
-    val ticks = Seq.fill(numTicks + 1)(
-      Line(tickLength, tickThick) rotated 90 padRight (interTickDist - tickThick)
-    ).distributeH
+    val ticks = Seq.tabulate(numTicks + 1){ i =>
+      val tick = Line(tickLength, tickThick) rotated 90 padRight (interTickDist - tickThick)
+
+      tick
+//      if( i % labelEveryKTicks == 0 ) tick beside Text(i * interTickDist) rotated 90 else tick
+    }.distributeH
 
     Line(maxValue, tickThick * 2) behind ticks titled ("Awesomeness", textSize) rotated -90 padTop (textAndPadHeight - interTickDist)
   }
@@ -107,11 +111,46 @@ object ScalaJSExample {
     }
 
     val fitScatter = FlipY(Fit(graphSize){
-      val scatter = data.map{ case Point(x, y) => Disc(x - math.min(0, minX), y - math.min(0, minY), pointSize) }.group
+      val scatter = data.map{ case Point(x, y) => Disc(pointSize, x - math.min(0, minX), y - math.min(0, minY)) }.group
       FlipY(yAxis(scatter.extent.height, 0)) beside scatter
     })
 
     fitScatter titled ("A Scatter Plot", 20) padAll 10
+  }
+
+  def createPieChart(scale: Int, data: Seq[Double]) = {
+    val pieWedges = {
+      val labelPad = 10 // TODO: should be maxTextWidth?
+
+      // cumulativeRotate is complicated b/c we draw wedges straddling the X axis, but that makes labels easier
+      val cumulativeRotate = data.map(_ / 2).sliding(2).map(_.sum).scanLeft(0D)(_+_).toVector
+      val wedges = data.zip(cumulativeRotate).map { case (frac, cumRot) =>
+
+        val rotate = 360 * cumRot
+        val wedge = UnsafeRotate(rotate)(Wedge(360 * frac, scale))
+        val label =
+          UnsafeRotate(rotate) {
+            val text = {
+              val baseText = Text(frac.toString) filled Colors.Black
+              if (rotate > 90 && rotate < 270) baseText --> (-baseText.extent.width - labelPad) else baseText // TODO: same as left aligned txt?
+            }
+            val spacer = Disc(scale) filled Colors.Clear padRight labelPad
+
+            DistributeH(Align.middle(spacer, UnsafeRotate(-rotate)(text) ))
+          }
+
+        wedge behind label
+      }
+
+      wedges.zip(Colors.stream).map { case (r, color) => r filled color }
+    }.group
+
+    val legend = FlowH(
+      data.zip(Colors.stream).map{ case (d, c) => Rect(scale / 5.0) filled c labeled f"${d*100}%.1f%%" },
+      pieWedges.extent
+    ) padTop 20
+
+    pieWedges padAll 15 above legend titled("A Smooth Pie Chart", 20) padAll 10
   }
 
   @JSExport
@@ -134,7 +173,6 @@ object ScalaJSExample {
     }
 
     val scatterPlotGraph = {
-
       val scale = 100
       val scatterData = Seq.tabulate(50){ i =>
         val x = Random.nextDouble() * scale
@@ -144,42 +182,11 @@ object ScalaJSExample {
       createScatterPlot(plotAreaSize, scatterData)
     }
 
-
     val pieChart = {
-
       val scale = 100
-      val data = Seq(.5, .1, .3, .1)
+      val data = Seq(.3, .2, .1, .3, .1)
 
-      val pieWedges = {
-        val cumulativeRotate = data.scanLeft(0D)(_ + _).init
-        val wedges = data.zip(cumulativeRotate).map { case (frac, cumRot) =>
-
-          val rotDegrees = 360 * cumRot
-
-          val wedge = UnsafeRotate(rotDegrees)(Wedge(360 * frac, scale) padAll 10)
-          val labelRotateDeg = 360 * cumRot + frac * 360 / 2.0
-          val label =
-            UnsafeRotate(labelRotateDeg) {
-              DistributeH(
-                Align.middle(
-                  Rect(2 * scale) filled Clear padAll 10,
-                  Rotate(-labelRotateDeg)(Text(frac.toString))
-                )
-              )
-            }
-
-          wedge behind label
-        }
-
-        wedges.zip(Colors.stream).map { case (r, color) => r filled color }
-      }.group
-
-      val legend = FlowH(
-        data.zip(Colors.stream).map{ case (d, c) => Rect(scale / 5.0) filled c labeled f"${d*100}%.1f%%" },
-        pieWedges.extent
-      ) padTop 20
-
-      pieWedges above legend titled("A Smooth Pie Chart", 20) padAll 10
+      createPieChart(scale, data)
     }
 
     DistributeH(Align.middle(pieChart, barGraph, scatterPlotGraph)).render(ctx)
@@ -434,7 +441,7 @@ object Rect {
   def apply(size: Extent): Rect = Rect(size.width, size.height)
 }
 
-case class Disc(x: Double, y: Double, radius: Double) extends Renderable {
+case class Disc(radius: Double, x: Double = 0, y: Double = 0) extends Renderable {
   require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
   val extent = Extent(x + radius * 2, y + radius * 2)
 
@@ -455,7 +462,7 @@ case class Wedge(angleDegrees: Double, radius: Double) extends Renderable {
       c.translate(radius, radius)
       c.beginPath()
       c.moveTo(0, 0)
-      c.arc(0, 0, radius, 0, 2 * Math.PI * angleDegrees / 360.0)
+      c.arc(0, 0, radius, -Math.PI * angleDegrees / 360.0, Math.PI * angleDegrees / 360.0)
       c.closePath()
       c.fill()
     }
@@ -737,6 +744,7 @@ object Fit {
 object DSL {
   implicit class Placeable(r: Renderable){
     def above(other: Renderable) = Above(r, other)
+    def below(other: Renderable) = Above(other, r)
     def beside(other: Renderable) = Beside(r, other)
     def behind(other: Renderable) = Group(r, other)
 
