@@ -50,7 +50,7 @@ object ScalaJSExample {
     }
 
   // TODO: this sort of sucks, and textAndPadHeight is a hack that doesnt work right in my barchart case with tick labels?
-  private def yAxis(maxValue: Double, textAndPadHeight: Double, labelTicks: Boolean = true): Renderable = {
+  private def axis(horizontal: Boolean, maxValue: Double, textAndPadHeight: Double, doLabelTicks: Boolean = true): Renderable = {
 
     val figureWidth = maxValue
     val tickThick = figureWidth * 0.0025
@@ -79,7 +79,7 @@ object ScalaJSExample {
 
       val labelColl = Seq.tabulate(labelCount) { i =>
         val value = i * interLabelDist
-        Text(f"$value%.1f", tickLabelTextSize) padRight textSize / 4
+        Text(f"$value%.1f", tickLabelTextSize) padRight textSize / 4 rotated (if (horizontal) -90 else 0)
       }.reverse
 
       val combined = DistributeV(
@@ -92,10 +92,23 @@ object ScalaJSExample {
       combined padTop leftOverTop + textCentering
     }
 
-    val axisTitle = Text("Awesomeness", textSize) rotated -90
-    val justAxis = Line(maxValue, tickThick * 2) behind ticks rotated -90 padTop (textAndPadHeight - interTickDist)
-    val labeledTickAxis = if(labelTicks) labels beside justAxis else justAxis
-    Align.middle(axisTitle padRight textSize / 2, labeledTickAxis).reduce(Beside)
+    val axisTitle = Text("Awesomeness", textSize) rotated (if (horizontal) 0 else -90)
+    val linePart = Line(maxValue, tickThick * 2) behind ticks rotated (if (horizontal) 90 else -90)
+    val justAxis = if(doLabelTicks){
+      if (horizontal)
+        linePart beside (labels padLeft tickLabelTextSize) rotated 90
+      else
+        (labels padTop interTickDist) beside linePart // todo: why padTop interTickDist ?
+    } else {
+      if (horizontal) linePart rotated 90 else linePart
+    }
+
+    val labeledTickAxis = justAxis padTop textAndPadHeight + tickThick / 2
+
+    if(horizontal)
+      Align.center(labeledTickAxis, axisTitle padTop textSize / 2).reduce(Above)
+    else
+      Align.middle(axisTitle padRight textSize / 2, labeledTickAxis).reduce(Beside)
   }
 
   private def createBars(heights: Seq[Double], colors: Seq[Color]) = {
@@ -111,12 +124,12 @@ object ScalaJSExample {
   def createBarGraph(size: Extent, data: Seq[Double], colors: Seq[Color]): Renderable = {
 
     val tickThick = 0.5
-    val textAndPadHeight = Text.defaultSize + 5 + tickThick / 2D // text size, label pad, stroke width
+    val textAndPadHeight = Text.defaultSize + 5 // text size, stroke width
 
     val barChart = Fit(size){
       val justBars = createBars(data, colors)
-      val yAx = yAxis(data.max, textAndPadHeight, labelTicks = false)
-      val grid = createGridLines(data.max, justBars.extent.width) padTop (textAndPadHeight - tickThick / 2D)
+      val yAx = axis(false, data.max, 5, doLabelTicks = false) // todo: why is this cheat of 5 necessary still?
+      val grid = createGridLines(data.max, justBars.extent.width) padTop textAndPadHeight
 
       (grid --> yAx.extent.width) behind (yAx beside justBars)
     }
@@ -137,7 +150,9 @@ object ScalaJSExample {
 
     val fitScatter = FlipY(Fit(graphSize){
       val scatter = data.map{ case Point(x, y) => Disc(pointSize, x - math.min(0, minX), y - math.min(0, minY)) }.group
-      FlipY(yAxis(scatter.extent.height, 0)) beside scatter
+      val xAxis = axis(true, scatter.extent.width, 0)
+      val pointAndY = FlipY(axis(false, scatter.extent.height, 0)) beside scatter
+      Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
     })
 
     fitScatter titled ("A Scatter Plot", 20) padAll 10
@@ -705,6 +720,12 @@ object Align {
     val groupWidth = items.maxBy(_.extent.width).extent.width
 
     items.map( r => Translate(x = (groupWidth - r.extent.width) / 2.0)(r) )
+  }
+
+  def right(items: Renderable*): Seq[Renderable] = {
+    val groupWidth = items.maxBy(_.extent.width).extent.width
+
+    items.map( r => Translate(x = groupWidth - r.extent.width)(r) )
   }
 
   def middle(items: Renderable*): Seq[Renderable] = {
