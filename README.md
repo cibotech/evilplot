@@ -1,4 +1,11 @@
+1. open sbt console
+2. run fastOptJS listening for changes
+```bash
+$sbt
+> ~ fastOptJS
+```
 
-`localhost:12345/target/scala-2.11/classes/index-dev.html` in your browser
+
+go to `localhost:12345/index.html` in your browser
 
 combinators for graphics
