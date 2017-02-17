@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example Scala.js application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        body{
+            margin: 0px
+        }
+        canvas{
+            position: fixed;
+            top: 0px; right: 0px; bottom: 0px; left: 0px;
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <canvas id="canvas" width="255" height="255"></canvas>
+    </div>
+    <div>
+        <canvas id="measureBuffer" width="255" height="255" hidden="true"></canvas>
+    </div>
+
+    <script type="text/javascript" src="/target/scala-2.11/evilplot-fastopt.js"></script>
+    <script type="text/javascript" src="/target/scala-2.11/evilplot-launcher.js"></script>
+
+    <script type="text/javascript" src="/workbench.js"></script>
+
+</body>
+</html>
