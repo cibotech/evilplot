@@ -160,11 +160,11 @@ object Charts {
         wedge behind label
       }
 
-      wedges.zip(Colors.stream).map { case (r, color) => r filled color }
+      wedges.zip(Colors.triAnalStream()).map { case (r, color) => r filled color }
     }.group
 
     val legend = FlowH(
-      data.zip(Colors.stream).map{ case (d, c) => Rect(scale / 5.0) filled c labeled f"${d*100}%.1f%%" },
+      data.zip(Colors.triAnalStream()).map{ case (d, c) => Rect(scale / 5.0) filled c labeled f"${d*100}%.1f%%" },
       pieWedges.extent
     ) padTop 20
 
