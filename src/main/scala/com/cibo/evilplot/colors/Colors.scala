@@ -9,13 +9,15 @@ case class HSL(hue: Int, saturation: Int, lightness: Int) extends Color {
   require(saturation >= 0 && saturation <= 100, s"saturation must be within [0, 100] {was $saturation}")
   require(lightness  >= 0 && lightness  <= 100, s"lightness must be within [0, 100] {was $lightness}")
 
+  def triadic  : (HSL, HSL) = (this.copy(hue = this.hue - 120), this.copy(hue = this.hue + 120))
+  def analogous: (HSL, HSL) = (this.copy(hue = this.hue - 30), this.copy(hue = this.hue + 30))
+
   val repr = s"hsl($hue, $saturation%, $lightness%)"
 }
 
 case object Clear extends Color {
   val repr: String = "rgba(0,0,0,0)"
 }
-
 
 object Colors {
 
@@ -39,7 +41,7 @@ object Colors {
       import math._
       def log2(x: Double) = log(x) / log(2)
       val magicFactor = log2(hueSpan) // TODO: this may or may not be correct for other hueSpan's
-    val epoch = if( i < hueSpan ) 0 else ceil(log2(((i + magicFactor) / hueSpan) + 1) - 1).toInt
+      val epoch = if( i < hueSpan ) 0 else ceil(log2(((i + magicFactor) / hueSpan) + 1) - 1).toInt
 
       def endIndexOfThisEpoch(e: Int) = 8 * (pow(2,(e + 1)) - 1) - magicFactor
 

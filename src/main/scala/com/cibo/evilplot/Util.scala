@@ -5,11 +5,6 @@ import com.cibo.evilplot.geometry.{Extent, Renderable}
 import org.scalajs.dom
 import org.scalajs.dom.{html, _}
 
-import scala.util.matching.Regex
-
-
-
-
 case class Style(fill: Color)(r: Renderable) extends Renderable {
   val extent = r.extent
   def render(canvas: CanvasRenderingContext2D): Unit =

@@ -2,6 +2,7 @@ package com.cibo.evilplot
 
 package object colors {
 
+  // These are bad and you should feel bad for using them
   sealed abstract class NamedColor(val repr: String) extends Color
   case object AliceBlue             extends NamedColor("aliceblue")
   case object AntiqueWhite          extends NamedColor("antiquewhite")
