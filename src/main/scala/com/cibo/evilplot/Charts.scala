@@ -4,7 +4,7 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 
 object Charts {
-  
+
   private def createGridLines(maxHeight: Double, width: Double): Renderable =
     DistributeV {
       val lineEveryXUnits     = 40
