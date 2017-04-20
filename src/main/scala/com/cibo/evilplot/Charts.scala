@@ -143,13 +143,25 @@ object Charts {
   def createLinePlot(graphSize: Extent, data: Seq[Point]) = {
 
     val fitLine = FlipY(Fit(graphSize){
-      val line = Segment(data, 1.0)
+      val line = Segment(data, 0.5)
       val xAxis = axis(true, line.extent.width, 0)
       val pointAndY = FlipY(axis(false, line.yS.max, 0, line.yS.min)) beside line
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
     })
 
     fitLine titled ("A Line Plot", 20) padAll 10
+  }
+
+  def createMultiLinePlot(graphSize: Extent, datas: Seq[Seq[Point]]) = {
+
+    val fitLine = FlipY(Fit(graphSize){
+      val lines = datas.map(data => Segment(data, 0.5))
+      val xAxis = axis(true, lines.map(_.xS.max).max, 0, lines.map(_.xS.min).min) // TODO: wut
+      val pointAndY = FlipY(axis(false, lines.map(_.yS.max).max, 0, lines.map(_.yS.min).min)) beside lines.group
+      Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
+    })
+
+    fitLine titled ("A Multi Line Plot", 20) padAll 10
   }
 
 
