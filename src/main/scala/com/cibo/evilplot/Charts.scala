@@ -28,26 +28,28 @@ object Charts {
       }
     }
 
-  // TODO: this sort of sucks, and textAndPadHeight is a hack that doesnt work right in my barchart case with tick labels?
-  private def axis(horizontal: Boolean, maxValue: Double, textAndPadHeight: Double, doLabelTicks: Boolean = true): Renderable = {
 
-    val figureWidth = maxValue
+  // TODO: this sort of sucks, and textAndPadHeight is a hack that doesnt work right in my barchart case with tick labels?
+  private def axis(horizontal: Boolean, maxValue: Double, textAndPadHeight: Double, minValue: Double = 0, doLabelTicks: Boolean = true): Renderable = {
+
+    val rangeSize = maxValue - minValue
+    val figureWidth = rangeSize
     val tickThick = figureWidth * 0.0025
     val tickLength = figureWidth * 0.025
     //TODO: Fix dis, extent is being improperly used in some cases, text size should also not be dependent on the with for readability reasons and the scaling is wack
     // requirement failed: Cannot use 0.096, canvas will not render text initially sized < 0.5px even when scaling
-    val textSize = (12 / 300.0) * maxValue
+    val textSize = (12 / 300.0) * rangeSize
     val tickLabelTextSize = 0.8 * textSize
     val labelEveryKTicks = 5
 
     val interTickDist = {
-      val spacingIfTenTicks = maxValue / 10D
+      val spacingIfTenTicks = rangeSize / 10D
       // round to nearest multiple of 5 in the scale
-      val fiveInTheScale = maxValue / 20.0 // TODO Is this sane????
+      val fiveInTheScale = rangeSize / 20.0 // TODO Is this sane????
       math.min((spacingIfTenTicks / fiveInTheScale).toInt, 1) * fiveInTheScale
     }
 
-    val numTicks = (maxValue / interTickDist).floor.toInt
+    val numTicks = (rangeSize / interTickDist).floor.toInt
     val ticks = Seq.tabulate(numTicks + 1){ i =>
       val tick = Line(tickLength, tickThick) rotated 90 padRight (interTickDist - tickThick)
 
@@ -60,7 +62,7 @@ object Charts {
 
       val labelColl = Seq.tabulate(labelCount) { i =>
         val value = i * interLabelDist
-        Text(f"$value%.1f", tickLabelTextSize) padRight textSize / 4 rotated (if (horizontal) -90 else 0)
+        Text(f"${value + minValue}%.1f", tickLabelTextSize) padRight textSize / 4 rotated (if (horizontal) -90 else 0)
       }.reverse
 
       val combined = DistributeV(
@@ -68,13 +70,13 @@ object Charts {
         interLabelDist - labelColl.head.extent.height
       )
 
-      val leftOverTop = maxValue - combined.extent.height
+      val leftOverTop = rangeSize - combined.extent.height
       val textCentering = tickLabelTextSize / 3
       combined padTop leftOverTop + textCentering
     }
 
     val axisTitle = Text("Awesomeness", textSize) rotated (if (horizontal) 0 else -90)
-    val linePart = Line(maxValue, tickThick * 2) behind ticks rotated (if (horizontal) 90 else -90)
+    val linePart = Line(rangeSize, tickThick * 2) behind ticks rotated (if (horizontal) 90 else -90)
     val justAxis = if(doLabelTicks){
       if (horizontal)
         linePart beside (labels padLeft tickLabelTextSize) rotated 90
@@ -143,7 +145,7 @@ object Charts {
     val fitLine = FlipY(Fit(graphSize){
       val line = Segment(data, 1.0)
       val xAxis = axis(true, line.extent.width, 0)
-      val pointAndY = FlipY(axis(false, line.extent.height, 0)) beside line
+      val pointAndY = FlipY(axis(false, line.yS.max, 0, line.yS.min)) beside line
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
     })
 
