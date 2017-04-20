@@ -25,6 +25,21 @@ case class Line(length: Double, strokeWidth: Double) extends Renderable {
     }
 }
 
+case class Segment(points: Seq[Point], strokeWidth: Double) extends Renderable {
+
+  private lazy val xS = points.map(_.x)
+  private lazy val yS = points.map(_.y)
+  val extent = Extent(xS.max - xS.min, yS.max - yS.min)
+
+  def render(canvas: CanvasRenderingContext2D): Unit =
+    CanvasOp(canvas) { c =>
+      canvas.moveTo(points.head.x, points.head.y)
+      canvas.lineWidth = strokeWidth
+      points.tail.foreach(point => canvas.lineTo(point.x, point.y))
+      canvas.stroke()
+    }
+}
+
 case class Rect(width: Double, height: Double) extends Renderable {
   def render(canvas: CanvasRenderingContext2D): Unit = canvas.fillRect(0, 0, width, height)
   val extent: Extent = Extent(width, height)

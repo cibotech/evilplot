@@ -34,6 +34,8 @@ object Charts {
     val figureWidth = maxValue
     val tickThick = figureWidth * 0.0025
     val tickLength = figureWidth * 0.025
+    //TODO: Fix dis, extent is being improperly used in some cases, text size should also not be dependent on the with for readability reasons and the scaling is wack
+    // requirement failed: Cannot use 0.096, canvas will not render text initially sized < 0.5px even when scaling
     val textSize = (12 / 300.0) * maxValue
     val tickLabelTextSize = 0.8 * textSize
     val labelEveryKTicks = 5
@@ -135,6 +137,20 @@ object Charts {
 
     fitScatter titled ("A Scatter Plot", 20) padAll 10
   }
+
+  def createLinePlot(graphSize: Extent, data: Seq[Point]) = {
+
+    val fitLine = FlipY(Fit(graphSize){
+      val line = Segment(data, 1.0)
+      val xAxis = axis(true, line.extent.width, 0)
+      val pointAndY = FlipY(axis(false, line.extent.height, 0)) beside line
+      Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
+    })
+
+    fitLine titled ("A Line Plot", 20) padAll 10
+  }
+
+
 
   def createPieChart(scale: Int, data: Seq[Double]) = {
     val pieWedges = {
