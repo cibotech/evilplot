@@ -28,30 +28,24 @@ object Charts {
       }
     }
 
-
   // TODO: this sort of sucks, and textAndPadHeight is a hack that doesnt work right in my barchart case with tick labels?
-  private def axis(horizontal: Boolean, maxValue: Double, textAndPadHeight: Double, minValue: Double = 0, doLabelTicks: Boolean = true): Renderable = {
+  private def axis(graphSize: Extent, horizontal: Boolean, maxValue: Double, textAndPadHeight: Double, minValue: Double = 0, doLabelTicks: Boolean = true): Renderable = {
 
     val rangeSize = maxValue - minValue
-    val figureWidth = rangeSize
-    val tickThick = figureWidth * 0.0025
-    val tickLength = figureWidth * 0.025
+    val figureSize = if (horizontal) graphSize.width else graphSize.height
+    val tickThick = 1
+    val tickLength = 5
     //TODO: Fix dis, extent is being improperly used in some cases, text size should also not be dependent on the with for readability reasons and the scaling is wack
     // requirement failed: Cannot use 0.096, canvas will not render text initially sized < 0.5px even when scaling
-    val textSize = (12 / 300.0) * rangeSize
+    val textSize = textAndPadHeight.max(5.0) * 0.75
     val tickLabelTextSize = 0.8 * textSize
-    val labelEveryKTicks = 5
 
-    val interTickDist = {
-      val spacingIfTenTicks = rangeSize / 10D
-      // round to nearest multiple of 5 in the scale
-      val fiveInTheScale = rangeSize / 20.0 // TODO Is this sane????
-      math.min((spacingIfTenTicks / fiveInTheScale).toInt, 1) * fiveInTheScale
-    }
+    val numTicks = 10
+    val interTickDist = figureSize / numTicks
 
-    val numTicks = (rangeSize / interTickDist).floor.toInt
+    val labelEveryKTicks = 2
     val ticks = Seq.tabulate(numTicks + 1){ i =>
-      val tick = Line(tickLength, tickThick) rotated 90 padRight (interTickDist - tickThick)
+      val tick = Line(tickLength, tickThick).rotated(90).padRight(interTickDist - tickThick)
 
       tick
     }.distributeH
@@ -61,8 +55,12 @@ object Charts {
       val interLabelDist = interTickDist * labelEveryKTicks
 
       val labelColl = Seq.tabulate(labelCount) { i =>
-        val value = i * interLabelDist
-        Text(f"${value + minValue}%.1f", tickLabelTextSize) padRight textSize / 4 rotated (if (horizontal) -90 else 0)
+        val scale = rangeSize / figureSize
+        require(scale > 0, "scale")
+        require(rangeSize > 0, "range")
+        require(figureSize > 0, "figure")
+        val value = i * interLabelDist * scale + minValue
+        Text(f"$value%.1f", tickLabelTextSize).padRight(textSize / 4).rotated(if (horizontal) -90 else 0)
       }.reverse
 
       val combined = DistributeV(
@@ -70,23 +68,20 @@ object Charts {
         interLabelDist - labelColl.head.extent.height
       )
 
-      val leftOverTop = rangeSize - combined.extent.height
       val textCentering = tickLabelTextSize / 3
-      combined padTop leftOverTop + textCentering
+      combined //padTop textCentering
     }
 
     val axisTitle = Text("Awesomeness", textSize) rotated (if (horizontal) 0 else -90)
-    val linePart = Line(rangeSize, tickThick * 2) behind ticks rotated (if (horizontal) 90 else -90)
-    val justAxis = if(doLabelTicks){
+    val line = ticks behind Line(figureSize, tickThick * 2).padTop(tickLength) rotated (if (horizontal) 90 else -90)
+    val labeledTickAxis = if(doLabelTicks){
       if (horizontal)
-        linePart beside (labels padLeft tickLabelTextSize) rotated 90
+        line behind (labels padLeft tickLabelTextSize) rotated 90
       else
-        (labels padTop interTickDist) beside linePart // todo: why padTop interTickDist ?
+        (labels padTop tickLabelTextSize) behind line.padLeft(labels.extent.width)
     } else {
-      if (horizontal) linePart rotated 90 else linePart
+      if (horizontal) line rotated 90 else line
     }
-
-    val labeledTickAxis = justAxis padTop textAndPadHeight + tickThick / 2
 
     if(horizontal)
       Align.center(labeledTickAxis, axisTitle padTop textSize / 2).reduce(Above)
@@ -110,7 +105,7 @@ object Charts {
 
     val barChart = Fit(size){
       val justBars = createBars(data, colors)
-      val yAx = axis(false, data.max, 5, doLabelTicks = false) // todo: why is this cheat of 5 necessary still?
+      val yAx = axis(size, false, data.max, 5, doLabelTicks = false) // todo: why is this cheat of 5 necessary still?
       val grid = createGridLines(data.max, justBars.extent.width) padTop textAndPadHeight
 
       (grid --> yAx.extent.width) behind (yAx beside justBars)
@@ -121,19 +116,22 @@ object Charts {
 
   def createScatterPlot(graphSize: Extent, data: Seq[Point]) = {
 
-    val minX = data.map(_.x).min
-    val minY = data.map(_.y).min
+    val minX = data.minBy(_.x).x
+    val maxX = data.maxBy(_.x).x
+    val minY = data.minBy(_.y).y
+    val maxY = data.maxBy(_.y).y
 
-    val pointSize = {
-      val maxX = data.map(_.x).max
-      val maxY = data.map(_.y).max
-      math.min(maxX, maxY) / 100.0
-    }
+    val pointSize = 1
+    val textSize = 24
+    val scalex = graphSize.width / (maxX - minX)
+    val scaley = graphSize.height / (maxY - minY)
 
     val fitScatter = FlipY(Fit(graphSize){
-      val scatter = data.map{ case Point(x, y) => Disc(pointSize, x - math.min(0, minX), y - math.min(0, minY)) }.group
-      val xAxis = axis(true, scatter.extent.width, 0)
-      val pointAndY = FlipY(axis(false, scatter.extent.height, 0)) beside scatter
+      val scatter = data.map { case Point(x, y) =>
+        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley)
+      }.group
+      val xAxis = axis(graphSize, true, maxX, textSize, minX)
+      val pointAndY = FlipY(axis(graphSize, false, maxY, textSize, minY)) beside scatter
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
     })
 
@@ -142,10 +140,19 @@ object Charts {
 
   def createLinePlot(graphSize: Extent, data: Seq[Point]) = {
 
+    val textSize = 24
+
+    val minX = data.minBy(_.x).x
+    val maxX = data.maxBy(_.x).x
+    val minY = data.minBy(_.y).y
+    val maxY = data.maxBy(_.y).y
+
     val fitLine = FlipY(Fit(graphSize){
-      val line = Segment(data, 0.5)
-      val xAxis = axis(true, line.extent.width, 0)
-      val pointAndY = FlipY(axis(false, line.yS.max, 0, line.yS.min)) beside line
+      val scalex = graphSize.width / (maxX - minX)
+      val scaley = graphSize.height / (maxY - minY)
+      val line = Segment(data.map(p => Point(p.x * scalex, p.y * scaley)), 0.5)
+      val xAxis = axis(graphSize, true, maxX, textSize, minX)
+      val pointAndY = FlipY(axis(graphSize, false, maxY, textSize, minY)) beside line
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
     })
 
@@ -156,8 +163,8 @@ object Charts {
 
     val fitLine = FlipY(Fit(graphSize){
       val lines = datas.map(data => Segment(data, 0.5))
-      val xAxis = axis(true, lines.map(_.xS.max).max, 0, lines.map(_.xS.min).min) // TODO: wut
-      val pointAndY = FlipY(axis(false, lines.map(_.yS.max).max, 0, lines.map(_.yS.min).min)) beside lines.group
+      val xAxis = axis(graphSize, true, lines.map(_.xS.max).max, 0, lines.map(_.xS.min).min) // TODO: wut
+      val pointAndY = FlipY(axis(graphSize, false, lines.map(_.yS.max).max, 0, lines.map(_.yS.min).min)) beside lines.group
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
     })
 

@@ -4,9 +4,12 @@ import com.cibo.evilplot.{CanvasOp}
 import org.scalajs.dom._
 
 case class Extent(width: Double, height: Double)
+
 trait Renderable {
   // bounding boxen must be of stable size
+  val debug = true
   val extent: Extent
+
   def render(canvas: CanvasRenderingContext2D): Unit
 }
 

@@ -116,7 +116,14 @@ case class Pad(left: Double = 0, right: Double = 0, top: Double = 0, bottom: Dou
     item.extent.height + top + bottom
   )
 
-  def render(canvas: CanvasRenderingContext2D): Unit = Translate(x = left, y = top)(item).render(canvas)
+  def render(canvas: CanvasRenderingContext2D): Unit = {
+    CanvasOp(canvas){ c =>
+      val what = "0123456789ABCDEF"
+      c.strokeStyle = (0 until 3).map(_ => math.random * 255.0).map(v => s"${what(v.toInt >> 4)}${what(v.toInt & 15)}").mkString("#", "", "")
+      c.strokeRect(0, 0, extent.width, extent.height)
+    }
+    Translate(x = left, y = top)(item).render(canvas)
+  }
 }
 object Pad {
   def apply(surround: Double)(item: Renderable): Pad = Pad(surround, surround, surround, surround)(item)
