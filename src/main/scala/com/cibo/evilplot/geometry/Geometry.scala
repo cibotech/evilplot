@@ -4,9 +4,12 @@ import com.cibo.evilplot.{CanvasOp}
 import org.scalajs.dom._
 
 case class Extent(width: Double, height: Double)
+
 trait Renderable {
   // bounding boxen must be of stable size
+  val debug = true
   val extent: Extent
+
   def render(canvas: CanvasRenderingContext2D): Unit
 }
 
@@ -21,6 +24,22 @@ case class Line(length: Double, strokeWidth: Double) extends Renderable {
       canvas.moveTo(0, strokeWidth / 2.0)
       canvas.lineTo(length, strokeWidth / 2.0)
       canvas.closePath()
+      canvas.stroke()
+    }
+}
+
+case class Segment(points: Seq[Point], strokeWidth: Double) extends Renderable {
+
+  lazy val xS = points.map(_.x)
+  lazy val yS = points.map(_.y)
+  val extent = Extent(xS.max - xS.min, yS.max - yS.min)
+
+  def render(canvas: CanvasRenderingContext2D): Unit =
+    CanvasOp(canvas) { c =>
+      canvas.moveTo(points.head.x, points.head.y)
+      canvas.beginPath()
+      canvas.lineWidth = strokeWidth
+      points.tail.foreach(point => canvas.lineTo(point.x - xS.min, point.y - yS.min)) // Dirty dirty hack -.-
       canvas.stroke()
     }
 }

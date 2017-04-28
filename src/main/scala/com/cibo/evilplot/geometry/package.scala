@@ -25,7 +25,7 @@ package object geometry {
 
     def filled(color: Color) = Style(fill = color)(r)
 
-    // Experimental
+    // Experimental ... NO! These are silly.
     def -->(nudge: Double) = Translate(x = nudge)(r)
     def |^(nudge: Double) = Translate(y = nudge)(r)
     def -|(pad: Double) = Pad(right = pad)(r)
