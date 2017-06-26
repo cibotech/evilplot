@@ -25,15 +25,12 @@ package object geometry {
 
     def filled(color: Color) = Style(fill = color)(r)
 
-    // Experimental ... NO! These are silly.
-    def -->(nudge: Double) = Translate(x = nudge)(r)
-    def |^(nudge: Double) = Translate(y = nudge)(r)
-    def -|(pad: Double) = Pad(right = pad)(r)
-    def |-(pad: Double) = Pad(left  = pad)(r)
-    def ⊥(pad: Double) = Pad(bottom = pad)(r)
-    def ⊤(pad: Double) = Pad(top = pad)(r)
-
-    // end Experimental
+    def xTrans(nudge: Double) = Translate(x = nudge)(r)
+    def yTrans(nudge: Double) = Translate(y = nudge)(r)
+    def rPad(pad: Double) = Pad(right = pad)(r)
+    def lPad(pad: Double) = Pad(left = pad)(r)
+    def bPad(pad: Double) = Pad(bottom = pad)(r)
+    def tPad(pad: Double) = Pad(top = pad)(r)
   }
 
   implicit class SeqPlaceable(sp: Seq[Renderable]) {

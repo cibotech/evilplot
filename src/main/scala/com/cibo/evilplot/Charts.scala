@@ -108,7 +108,7 @@ object Charts {
       val yAx = axis(size, false, data.max, 5, doLabelTicks = false) // todo: why is this cheat of 5 necessary still?
       val grid = createGridLines(data.max, justBars.extent.width) padTop textAndPadHeight
 
-      (grid --> yAx.extent.width) behind (yAx beside justBars)
+      (grid xTrans yAx.extent.width) behind (yAx beside justBars)
     }
 
     barChart titled ("A Swanky BarChart", 20) padAll 10
@@ -187,7 +187,7 @@ object Charts {
           UnsafeRotate(rotate) {
             val text = {
               val baseText = Text(frac.toString) filled Black
-              if (rotate > 90 && rotate < 270) baseText --> (-baseText.extent.width - labelPad) else baseText // TODO: same as left aligned txt?
+              if (rotate > 90 && rotate < 270) baseText xTrans (-baseText.extent.width - labelPad) else baseText // TODO: same as left aligned txt?
             }
             val spacer = Disc(scale) filled Clear padRight labelPad
 
