@@ -12,7 +12,7 @@ case class Translate(x: Double = 0, y: Double = 0)(r: Renderable) extends Render
     r.extent.height + y
   )
 
-  def render(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas){ c =>
+  def render(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas) { c =>
     c.translate(x, y)
     r.render(c)
   }
@@ -24,7 +24,7 @@ object Translate {
 case class Scale(x: Double = 1, y: Double = 1)(r: Renderable) extends Renderable {
   val extent = Extent( r.extent.width * y, r.extent.height * x )
 
-  def render(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas){ c =>
+  def render(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas) { c =>
     c.scale(x, y)
     r.render(c)
   }
@@ -34,7 +34,7 @@ case class FlipY(r: Renderable) extends Renderable {
   val extent = r.extent
 
   def render(canvas: CanvasRenderingContext2D): Unit =
-    Translate(y = r.extent.height){
+    Translate(y = r.extent.height) {
       Scale(1, -1)(r)
     }.render(canvas)
 }
@@ -43,7 +43,7 @@ case class FlipX(r: Renderable) extends Renderable {
   val extent = r.extent
 
   def render(canvas: CanvasRenderingContext2D): Unit =
-    Translate(x = r.extent.width){
+    Translate(x = r.extent.width) {
       Scale(-1, 1)(r)
     }.render(canvas)
 }
@@ -117,7 +117,7 @@ case class Pad(left: Double = 0, right: Double = 0, top: Double = 0, bottom: Dou
   )
 
   def render(canvas: CanvasRenderingContext2D): Unit = {
-    CanvasOp(canvas){ c =>
+    CanvasOp(canvas) { c =>
       val what = "0123456789ABCDEF"
       c.strokeStyle = (0 until 3).map(_ => math.random * 255.0).map(v => s"${what(v.toInt >> 4)}${what(v.toInt & 15)}").mkString("#", "", "")
       c.strokeRect(0, 0, extent.width, extent.height)
@@ -235,7 +235,7 @@ case class Fit(width: Double, height: Double)(item: Renderable) extends Renderab
         )
     }
 
-    CanvasOp(canvas){c =>
+    CanvasOp(canvas) {c =>
       c.scale(scale, scale)
       padFun(item).render(c)
     }

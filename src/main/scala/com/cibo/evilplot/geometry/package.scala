@@ -4,7 +4,7 @@ import com.cibo.evilplot.colors.Color
 
 package object geometry {
 
-  implicit class Placeable(r: Renderable){
+  implicit class Placeable(r: Renderable) {
     def above(other: Renderable) = Above(r, other)
     def below(other: Renderable) = Above(other, r)
     def beside(other: Renderable) = Beside(r, other)
@@ -36,7 +36,7 @@ package object geometry {
     // end Experimental
   }
 
-  implicit class SeqPlaceable(sp: Seq[Renderable]){
+  implicit class SeqPlaceable(sp: Seq[Renderable]) {
     def distributeH: Renderable = DistributeH(sp)
     def distributeH(spacing: Double = 0): Renderable = DistributeH(sp, spacing)
     def distributeV: Renderable = DistributeV(sp)

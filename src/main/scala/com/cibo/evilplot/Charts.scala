@@ -14,12 +14,12 @@ object Charts {
 
       val countOfGridLines = (maxHeight / lineEveryXUnits).toInt
 
-      Seq.tabulate(countOfGridLines){ x =>
+      Seq.tabulate(countOfGridLines) { x =>
         val yHeightLabel = (maxHeight / lineEveryXUnits - x) * lineEveryXUnits
 
-        Pad(bottom = lineEveryXUnits - lineThick){
+        Pad(bottom = lineEveryXUnits - lineThick) {
 
-          val label = Translate(y = -textHeight - labelFloatAboveLine){
+          val label = Translate(y = -textHeight - labelFloatAboveLine) {
             Text(yHeightLabel) filled Grey
           }
 
@@ -44,7 +44,7 @@ object Charts {
     val interTickDist = figureSize / numTicks
 
     val labelEveryKTicks = 2
-    val ticks = Seq.tabulate(numTicks + 1){ i =>
+    val ticks = Seq.tabulate(numTicks + 1) { i =>
       val tick = Line(tickLength, tickThick).rotated(90).padRight(interTickDist - tickThick)
 
       tick
@@ -74,7 +74,7 @@ object Charts {
 
     val axisTitle = Text("Awesomeness", textSize) rotated (if (horizontal) 0 else -90)
     val line = ticks behind Line(figureSize, tickThick * 2).padTop(tickLength) rotated (if (horizontal) 90 else -90)
-    val labeledTickAxis = if(doLabelTicks){
+    val labeledTickAxis = if(doLabelTicks) {
       if (horizontal)
         line behind (labels padLeft tickLabelTextSize) rotated 90
       else
@@ -103,7 +103,7 @@ object Charts {
     val tickThick = 0.5
     val textAndPadHeight = Text.defaultSize + 5 // text size, stroke width
 
-    val barChart = Fit(size){
+    val barChart = Fit(size) {
       val justBars = createBars(data, colors)
       val yAx = axis(size, false, data.max, 5, doLabelTicks = false) // todo: why is this cheat of 5 necessary still?
       val grid = createGridLines(data.max, justBars.extent.width) padTop textAndPadHeight
@@ -126,7 +126,7 @@ object Charts {
     val scalex = graphSize.width / (maxX - minX)
     val scaley = graphSize.height / (maxY - minY)
 
-    val fitScatter = FlipY(Fit(graphSize){
+    val fitScatter = FlipY(Fit(graphSize) {
       val scatter = data.map { case Point(x, y) =>
         Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley)
       }.group
@@ -147,7 +147,7 @@ object Charts {
     val minY = data.minBy(_.y).y
     val maxY = data.maxBy(_.y).y
 
-    val fitLine = FlipY(Fit(graphSize){
+    val fitLine = FlipY(Fit(graphSize) {
       val scalex = graphSize.width / (maxX - minX)
       val scaley = graphSize.height / (maxY - minY)
       val line = Segment(data.map(p => Point(p.x * scalex, p.y * scaley)), 0.5)
@@ -161,7 +161,7 @@ object Charts {
 
   def createMultiLinePlot(graphSize: Extent, datas: Seq[Seq[Point]]) = {
 
-    val fitLine = FlipY(Fit(graphSize){
+    val fitLine = FlipY(Fit(graphSize) {
       val lines = datas.map(data => Segment(data, 0.5))
       val xAxis = axis(graphSize, true, lines.map(_.xS.max).max, 0, lines.map(_.xS.min).min) // TODO: wut
       val pointAndY = FlipY(axis(graphSize, false, lines.map(_.yS.max).max, 0, lines.map(_.yS.min).min)) beside lines.group
