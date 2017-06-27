@@ -5,53 +5,53 @@ import org.scalajs.dom._
 
 case class Point(x: Double, y: Double)
 
-case class Translate(x: Double = 0, y: Double = 0)(r: Renderable) extends Renderable {
+case class Translate(x: Double = 0, y: Double = 0)(r: Drawable) extends Drawable {
   // TODO: is this correct with negative translations?
   val extent: Extent = Extent(
     r.extent.width + x,
     r.extent.height + y
   )
 
-  def render(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas) { c =>
+  def draw(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas) { c =>
     c.translate(x, y)
-    r.render(c)
+    r.draw(c)
   }
 }
 object Translate {
-  def apply(r: Renderable, bbox: Extent): Translate = Translate(bbox.width, bbox.height)(r)
+  def apply(r: Drawable, bbox: Extent): Translate = Translate(bbox.width, bbox.height)(r)
 }
 
-case class Scale(x: Double = 1, y: Double = 1)(r: Renderable) extends Renderable {
+case class Scale(x: Double = 1, y: Double = 1)(r: Drawable) extends Drawable {
   val extent = Extent( r.extent.width * y, r.extent.height * x )
 
-  def render(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas) { c =>
+  def draw(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas) { c =>
     c.scale(x, y)
-    r.render(c)
+    r.draw(c)
   }
 }
 
-case class FlipY(r: Renderable) extends Renderable {
+case class FlipY(r: Drawable) extends Drawable {
   val extent = r.extent
 
-  def render(canvas: CanvasRenderingContext2D): Unit =
+  def draw(canvas: CanvasRenderingContext2D): Unit =
     Translate(y = r.extent.height) {
       Scale(1, -1)(r)
-    }.render(canvas)
+    }.draw(canvas)
 }
 
-case class FlipX(r: Renderable) extends Renderable {
+case class FlipX(r: Drawable) extends Drawable {
   val extent = r.extent
 
-  def render(canvas: CanvasRenderingContext2D): Unit =
+  def draw(canvas: CanvasRenderingContext2D): Unit =
     Translate(x = r.extent.width) {
       Scale(-1, 1)(r)
-    }.render(canvas)
+    }.draw(canvas)
 }
 
 
 
 // Our rotate semantics are, rotate about your centroid, and shift back to all positive coordinates
-case class Rotate(degrees: Double)(r: Renderable) extends Renderable {
+case class Rotate(degrees: Double)(r: Drawable) extends Drawable {
 
   // TODO: not bringing in a matrix library for just this one thing ... yet
   private case class Point(x: Double, y: Double) {
@@ -78,13 +78,13 @@ case class Rotate(degrees: Double)(r: Renderable) extends Renderable {
 
   val extent = Extent(maxX - minX, maxY - minY)
 
-  def render(canvas: CanvasRenderingContext2D): Unit =
+  def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
-      c.translate(-1 * minX , -1 * minY)
+      c.translate(-1 * minX, -1 * minY)
       c.rotate(math.toRadians(degrees))
       c.translate(r.extent.width / -2, r.extent.height / -2)
 
-      r.render(c)
+      r.draw(c)
     }
 }
 
@@ -96,65 +96,70 @@ case class Rotate(degrees: Double)(r: Renderable) extends Renderable {
 
 // Our rotate semantics are, rotate about your centroid, and shift back to all positive coordinates
 // BUT CircularExtented things' rotated extents cannot be computed as a rotated rectangles, they are assumed invariant
-case class UnsafeRotate(degrees: Double)(r: Renderable) extends Renderable {
+case class UnsafeRotate(degrees: Double)(r: Drawable) extends Drawable {
 
   val extent = r.extent
 
-  def render(canvas: CanvasRenderingContext2D): Unit =
+  def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
       c.translate(extent.width / 2, extent.height / 2)
       c.rotate(math.toRadians(degrees))
       c.translate(extent.width / -2, extent.height / -2)
 
-      r.render(c)
+      r.draw(c)
     }
 }
 
-case class Pad(left: Double = 0, right: Double = 0, top: Double = 0, bottom: Double = 0)(item: Renderable) extends Renderable {
+case class Pad(left: Double = 0, right: Double = 0, top: Double = 0, bottom: Double = 0)(item: Drawable)
+  extends Drawable {
   val extent = Extent(
     item.extent.width + left + right,
     item.extent.height + top + bottom
   )
 
-  def render(canvas: CanvasRenderingContext2D): Unit = {
+  def draw(canvas: CanvasRenderingContext2D): Unit = {
+    // Draw a rectangle around the extent, to make it visible for debugging
     CanvasOp(canvas) { c =>
       val what = "0123456789ABCDEF"
-      c.strokeStyle = (0 until 3).map(_ => math.random * 255.0).map(v => s"${what(v.toInt >> 4)}${what(v.toInt & 15)}").mkString("#", "", "")
+      c.strokeStyle = (0 until 3).map(_ => math.random * 255.0)
+        .map(v => s"${what(v.toInt >> 4)}${what(v.toInt & 15)}")
+        .mkString("#", "", "")
+
       c.strokeRect(0, 0, extent.width, extent.height)
     }
-    Translate(x = left, y = top)(item).render(canvas)
+    Translate(x = left, y = top)(item).draw(canvas)
   }
 }
 object Pad {
-  def apply(surround: Double)(item: Renderable): Pad = Pad(surround, surround, surround, surround)(item)
-  def apply(x: Double, y: Double)(item: Renderable): Pad = Pad(x, x, y, y)(item)
+  def apply(surround: Double)(item: Drawable): Pad = Pad(surround, surround, surround, surround)(item)
+  def apply(x: Double, y: Double)(item: Drawable): Pad = Pad(x, x, y, y)(item)
 }
 
-case class Group(items: Renderable*) extends Renderable {
+case class Group(items: Drawable*) extends Drawable {
   val extent: Extent = Extent(
     items.map(_.extent.width).max,
     items.map(_.extent.height).max
   )
 
-  def render(canvas: CanvasRenderingContext2D): Unit = items.foreach(_.render(canvas))
+  def draw(canvas: CanvasRenderingContext2D): Unit = items.foreach(_.draw(canvas))
 }
 
-case class Above(top: Renderable, bottom: Renderable) extends Renderable {
+case class Above(top: Drawable, bottom: Drawable) extends Drawable {
   val extent: Extent = Extent(
     math.max(top.extent.width, bottom.extent.width),
     top.extent.height + bottom.extent.height
   )
 
-  def render(canvas: CanvasRenderingContext2D): Unit = (
+  def draw(canvas: CanvasRenderingContext2D): Unit = (
     top behind Translate(y = top.extent.height)(bottom)
-    ).render(canvas)
+    ).draw(canvas)
 }
 
-case class Beside(head: Renderable, tail: Renderable) extends Renderable {
-  def render(canvas: CanvasRenderingContext2D): Unit =
+case class Beside(head: Drawable, tail: Drawable) extends Drawable {
+  def draw(canvas: CanvasRenderingContext2D): Unit =
     (
       head behind Translate(x = head.extent.width)(tail)
-      ).render(canvas)
+      ).draw(canvas)
 
   val extent: Extent = Extent(
     head.extent.width + tail.extent.width,
@@ -164,56 +169,56 @@ case class Beside(head: Renderable, tail: Renderable) extends Renderable {
 
 
 object Align {
-  def bottomSeq(items: Seq[Renderable]) = bottom(items :_*)
+  def bottomSeq(items: Seq[Drawable]): Seq[Drawable] = bottom(items: _*)
 
-  def bottom(items: Renderable*): Seq[Renderable] = {
+  def bottom(items: Drawable*): Seq[Drawable] = {
     val groupHeight = items.maxBy(_.extent.height).extent.height
 
-    items.map(r => Translate(y = groupHeight - r.extent.height)(r) )
+    items.map(r => Translate(y = groupHeight - r.extent.height)(r))
   }
 
-  def centerSeq(items: Seq[Renderable]) = center(items :_*)
+  def centerSeq(items: Seq[Drawable]): Seq[Drawable] = center(items: _*)
 
-  def center(items: Renderable*): Seq[Renderable] = {
+  def center(items: Drawable*): Seq[Drawable] = {
     val groupWidth = items.maxBy(_.extent.width).extent.width
 
-    items.map( r => Translate(x = (groupWidth - r.extent.width) / 2.0)(r) )
+    items.map(r => Translate(x = (groupWidth - r.extent.width) / 2.0)(r))
   }
 
-  def right(items: Renderable*): Seq[Renderable] = {
+  def right(items: Drawable*): Seq[Drawable] = {
     val groupWidth = items.maxBy(_.extent.width).extent.width
 
-    items.map( r => Translate(x = groupWidth - r.extent.width)(r) )
+    items.map(r => Translate(x = groupWidth - r.extent.width)(r))
   }
 
-  def middle(items: Renderable*): Seq[Renderable] = {
+  def middle(items: Drawable*): Seq[Drawable] = {
     val groupHeight = items.maxBy(_.extent.height).extent.height
 
-    items.map( r => Translate(y = (groupHeight - r.extent.height) / 2.0)(r) )
+    items.map(r => Translate(y = (groupHeight - r.extent.height) / 2.0)(r))
   }
 }
 
-case class Labeled(msg: String, r: Renderable, textSize: Double = Text.defaultSize) extends Renderable {
+case class Labeled(msg: String, r: Drawable, textSize: Double = Text.defaultSize) extends Drawable {
 
-  private val composite = Align.center(r, Text(msg, textSize) padTop 5 ).reduce(Above)
+  private val composite = Align.center(r, Text(msg, textSize) padTop 5).reduce(Above)
 
   val extent: Extent = composite.extent
-  def render(canvas: CanvasRenderingContext2D): Unit = composite.render(canvas)
+  def draw(canvas: CanvasRenderingContext2D): Unit = composite.draw(canvas)
 }
 
-case class Titled(msg: String, r: Renderable, textSize: Double = Text.defaultSize) extends Renderable {
+case class Titled(msg: String, r: Drawable, textSize: Double = Text.defaultSize) extends Drawable {
 
   private val paddedTitle = Pad(bottom = textSize / 2.0)(Text(msg, textSize))
   private val composite = Align.center(paddedTitle, r).reduce(Above)
 
   val extent = composite.extent
-  def render(canvas: CanvasRenderingContext2D): Unit = composite.render(canvas)
+  def draw(canvas: CanvasRenderingContext2D): Unit = composite.draw(canvas)
 }
 
-case class Fit(width: Double, height: Double)(item: Renderable) extends Renderable {
+case class Fit(width: Double, height: Double)(item: Drawable) extends Drawable {
   val extent = Extent(width, height)
 
-  def render(canvas: CanvasRenderingContext2D): Unit = {
+  def draw(canvas: CanvasRenderingContext2D): Unit = {
     val oldExtent = item.extent
 
     val newAspectRatio = width / height
@@ -221,7 +226,7 @@ case class Fit(width: Double, height: Double)(item: Renderable) extends Renderab
 
     val widthIsLimiting = newAspectRatio < oldAspectRatio
 
-    val (scale, padFun) = if(widthIsLimiting) {
+    val (scale, padFun) = if (widthIsLimiting) {
       val scale = width / oldExtent.width
       (
         scale,
@@ -237,12 +242,12 @@ case class Fit(width: Double, height: Double)(item: Renderable) extends Renderab
 
     CanvasOp(canvas) {c =>
       c.scale(scale, scale)
-      padFun(item).render(c)
+      padFun(item).draw(c)
     }
   }
 }
 object Fit {
-  def apply(extent: Extent)(item: Renderable): Fit = Fit(extent.width, extent.height)(item)
+  def apply(extent: Extent)(item: Drawable): Fit = Fit(extent.width, extent.height)(item)
 }
 
 

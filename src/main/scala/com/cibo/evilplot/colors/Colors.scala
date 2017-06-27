@@ -9,7 +9,7 @@ case class HSL(hue: Int, saturation: Int, lightness: Int) extends Color {
   require(saturation >= 0 && saturation <= 100, s"saturation must be within [0, 100] {was $saturation}")
   require(lightness  >= 0 && lightness  <= 100, s"lightness must be within [0, 100] {was $lightness}")
 
-  private def boundHue(hue: Int) = if(hue < 0) hue + 360 else if(hue > 360) hue - 360 else hue
+  private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue > 360) hue - 360 else hue
   def triadic  : (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 120)), this.copy(hue = boundHue(this.hue + 120)))
   def analogous: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 14)), this.copy(hue = boundHue(this.hue + 14)))
 
@@ -42,9 +42,9 @@ object Colors {
       import math._
       def log2(x: Double) = log(x) / log(2)
       val magicFactor = log2(hueSpan) // TODO: this may or may not be correct for other hueSpan's
-      val epoch = if( i < hueSpan ) 0 else ceil(log2(((i + magicFactor) / hueSpan) + 1) - 1).toInt
+      val epoch = if ( i < hueSpan ) 0 else ceil(log2(((i + magicFactor) / hueSpan) + 1) - 1).toInt
 
-      def endIndexOfThisEpoch(e: Int) = 8 * (pow(2,(e + 1)) - 1) - magicFactor
+      def endIndexOfThisEpoch(e: Int) = 8 * (pow(2, e + 1) - 1) - magicFactor
 
       val slicesThisEpoch = hueSpan * Math.pow(2, epoch)
       val initialRotate = 360.0 / slicesThisEpoch / 2.0
@@ -65,17 +65,17 @@ object Colors {
 
   //TODO: Experimental doesn't split analogous colors up properly
   object ColorSeq{
-    def analGrow(node: HSL, depth: Int): Seq[HSL] = {
+    def analogGrow(node: HSL, depth: Int): Seq[HSL] = {
       val left = node.analogous._1
       val right = node.analogous._2
-      if(depth > 0) node +: (triadGrow(left, depth - 1) ++ triadGrow(right, depth - 1))
+      if (depth > 0) node +: (triadGrow(left, depth - 1) ++ triadGrow(right, depth - 1))
       else Seq()
     }
 
     def triadGrow(node: HSL, depth: Int): Seq[HSL] = {
       val left = node.triadic._1
       val right = node.triadic._2
-      if(depth > 0) node +: (analGrow(left, depth - 1) ++ analGrow(right, depth - 1))
+      if (depth > 0) node +: (analogGrow(left, depth - 1) ++ analogGrow(right, depth - 1))
       else Seq()
     }
 
@@ -84,11 +84,9 @@ object Colors {
     }
   }
 
-  def triAnalStream(seed: HSL = HSL(207, 90, 54)) = {
+  def triAnalogStream(seed: HSL = HSL(207, 90, 54)) = {
     val colors = ColorSeq(seed, 5)
-    println(colors.length)
     Stream.from(0).map{ x =>
-      println(x % colors.length)
       colors(x % colors.length)
     }
   }

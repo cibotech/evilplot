@@ -1,27 +1,27 @@
 package com.cibo.evilplot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Extent, Renderable}
+import com.cibo.evilplot.geometry.{Extent, Drawable}
 import org.scalajs.dom
 import org.scalajs.dom.{html, _}
 
-case class Style(fill: Color)(r: Renderable) extends Renderable {
+case class Style(fill: Color)(r: Drawable) extends Drawable {
   val extent = r.extent
-  def render(canvas: CanvasRenderingContext2D): Unit =
+  def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
       c.fillStyle = fill.repr
-      r.render(c)
+      r.draw(c)
     }
 }
 
 
-case class Text(msgAny: Any, size: Double = Text.defaultSize) extends Renderable {
-  require(size >= 0.5, s"Cannot use $size, canvas will not render text initially sized < 0.5px even when scaling")
+case class Text(msgAny: Any, size: Double = Text.defaultSize) extends Drawable {
+  require(size >= 0.5, s"Cannot use $size, canvas will not draw text initially sized < 0.5px even when scaling")
   private val msg = msgAny.toString
 
   val extent: Extent = Text.measure(size)(msg)
 
-  def render(canvas: CanvasRenderingContext2D): Unit = Text.withStyle(size) {_.fillText(msg, 0, 0)}(canvas)
+  def draw(canvas: CanvasRenderingContext2D): Unit = Text.withStyle(size) {_.fillText(msg, 0, 0)}(canvas)
 }
 object Text {
   val defaultSize = 10
