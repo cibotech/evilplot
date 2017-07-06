@@ -79,6 +79,14 @@ object Colors {
       else Seq()
     }
 
+    // TODO: Quite possible this will have to be moved.
+    def rainbowSeq(length: Int): Seq[HSL] = {
+      val startH = 0
+      val endH = 300
+      val deltaH = (endH - startH) / length.toFloat
+      Seq.tabulate(length)(x => HSL(startH + (x * deltaH).toInt, 100, 50))
+    }
+
     def apply(seed: HSL, depth: Int) = {
       triadGrow(seed, depth)
     }

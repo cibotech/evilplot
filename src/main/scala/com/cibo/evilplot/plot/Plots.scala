@@ -1,5 +1,6 @@
 package com.cibo.evilplot.plot
 
+import com.cibo.evilplot.colors.Colors.ColorSeq
 import com.cibo.evilplot.{Text, colors}
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
@@ -14,21 +15,23 @@ object Plots {
     new BarChart(size, graphData)
   }
 
-  def createScatterPlot(graphSize: Extent, data: Seq[Point]): Pad = {
+  def createScatterPlot(graphSize: Extent, data: Seq[Point], zData: Seq[Double]): Pad = {
     val minX = data.minBy(_.x).x
     val maxX = data.maxBy(_.x).x
     val minY = data.minBy(_.y).y
     val maxY = data.maxBy(_.y).y
 
-    val pointSize = 1
+    val pointSize = 2
     val textSize = 24
     val scalex = graphSize.width / (maxX - minX)
     val scaley = graphSize.height / (maxY - minY)
 
     val fitScatter = FlipY(Fit(graphSize) {
-      val scatter = data.map { case Point(x, y) =>
-        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley)
-      }.group
+      val colorBar = ColorSeq.rainbowSeq(zData.length)
+//      val scatter = data.map { case Point(x, y) =>
+//        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley) filled Clear }.group
+      val scatter = (data zip colorBar).map { case (Point(x, y), color) =>
+        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley) filled color }.group
       val xAxis = axis(graphSize, true, maxX, textSize, minX)
       val pointAndY = FlipY(axis(graphSize, false, maxY, textSize, minY)) beside scatter
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
