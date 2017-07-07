@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.Colors.ColorSeq
+import com.cibo.evilplot.colors.Colors.{ColorSeq, RainbowSeq}
 import com.cibo.evilplot.{Text, colors}
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
@@ -27,11 +27,9 @@ object Plots {
     val scaley = graphSize.height / (maxY - minY)
 
     val fitScatter = FlipY(Fit(graphSize) {
-      val colorBar = ColorSeq.rainbowSeq(zData.length)
-//      val scatter = data.map { case Point(x, y) =>
-//        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley) filled Clear }.group
-      val scatter = (data zip colorBar).map { case (Point(x, y), color) =>
-        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley) filled color }.group
+      val colorBar = RainbowSeq(10, zData.min, zData.max)
+      val scatter = (data zip zData).map { case (Point(x, y), zVal) =>
+        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley) filled colorBar.getColor(zVal) }.group
       val xAxis = axis(graphSize, true, maxX, textSize, minX)
       val pointAndY = FlipY(axis(graphSize, false, maxY, textSize, minY)) beside scatter
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)

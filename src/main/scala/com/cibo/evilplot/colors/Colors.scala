@@ -61,7 +61,19 @@ object Colors {
       )
     }
   }
+  // TODO: probably don't want to keep S & L fixed
+  case class RainbowSeq(nColors: Int, zMin: Double, zMax: Double) {
+    private val startH = 0
+    private val endH = 300
+    private val deltaH = (endH - startH) / nColors.toFloat
+    private val zWidth = (zMax - zMin) / nColors.toFloat
+    private val colorBar = Seq.tabulate(nColors)(x => HSL(startH + (x * deltaH).toInt, 100, 50))
 
+    def getColor(zValue: Double): Color = {
+      def colorIndex: Int = math.min(math.round(math.floor((zValue - zMin) / zWidth)).toInt, nColors - 1)
+      colorBar(colorIndex)
+    }
+  }
 
   //TODO: Experimental doesn't split analogous colors up properly
   object ColorSeq{
@@ -77,14 +89,6 @@ object Colors {
       val right = node.triadic._2
       if (depth > 0) node +: (analogGrow(left, depth - 1) ++ analogGrow(right, depth - 1))
       else Seq()
-    }
-
-    // TODO: Quite possible this will have to be moved.
-    def rainbowSeq(length: Int): Seq[HSL] = {
-      val startH = 0
-      val endH = 300
-      val deltaH = (endH - startH) / length.toFloat
-      Seq.tabulate(length)(x => HSL(startH + (x * deltaH).toInt, 100, 50))
     }
 
     def apply(seed: HSL, depth: Int) = {
