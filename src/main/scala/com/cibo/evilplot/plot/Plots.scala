@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.Colors.{ColorSeq, RainbowSeq}
+import com.cibo.evilplot.colors.Colors.{ColorSeq, GradientColorBar}
 import com.cibo.evilplot.{Text, colors}
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
@@ -15,7 +15,7 @@ object Plots {
     new BarChart(size, graphData)
   }
 
-  def createScatterPlot(graphSize: Extent, data: Seq[Point], zData: Seq[Double]): Pad = {
+  def createScatterPlot(graphSize: Extent, data: Seq[Point], zData: Seq[Double], nColors: Int): Pad = {
     val minX = data.minBy(_.x).x
     val maxX = data.maxBy(_.x).x
     val minY = data.minBy(_.y).y
@@ -25,17 +25,26 @@ object Plots {
     val textSize = 24
     val scalex = graphSize.width / (maxX - minX)
     val scaley = graphSize.height / (maxY - minY)
+    val colorBar = GradientColorBar(nColors, zData.min, zData.max)
 
     val fitScatter = FlipY(Fit(graphSize) {
-      val colorBar = RainbowSeq(10, zData.min, zData.max)
       val scatter = (data zip zData).map { case (Point(x, y), zVal) =>
         Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley) filled colorBar.getColor(zVal) }.group
+//     val scatter = (data zip zData).map { case (Point(x, y), zVal) =>
+//        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley) filled colorBar.getColor(zVal) labeled f"($x%.2f,$y%.2f, $zVal%.1f)"}.group
+
       val xAxis = axis(graphSize, true, maxX, textSize, minX)
       val pointAndY = FlipY(axis(graphSize, false, maxY, textSize, minY)) beside scatter
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
     })
 
-    fitScatter titled ("A Scatter Plot", 20) padAll 10
+    // TODO: Generate the labels from the given data.
+    val labels = Seq[Int](2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015)
+    val legend = distributeV(
+      labels.zip(colorBar.colors).map { case (l, c) =>
+        Disc(3) filled c labeled f"$l%4d" }, 10
+    ) padLeft(10)
+    fitScatter padAll 10 beside legend titled ("A Scatter Plot", 20) padAll 10
   }
 
   def createLinePlot(graphSize: Extent, data: Seq[Point]): Pad = {
@@ -200,5 +209,6 @@ object Plots {
     else
       Align.middle(axisTitle padRight textSize / 2, labeledTickAxis).reduce(Beside)
   }
+
 
 }
