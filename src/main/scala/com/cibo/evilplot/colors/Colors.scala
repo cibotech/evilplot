@@ -61,7 +61,19 @@ object Colors {
       )
     }
   }
+  case class GradientColorBar(nColors: Int, zMin: Double, zMax: Double) {
+    private val startH = 0
+    private val endH = 359
+    private val deltaH = (endH - startH) / nColors.toFloat
+    private val zWidth = (zMax - zMin) / nColors.toFloat
+    val colors = Seq.tabulate(nColors)(x => HSL(startH + (x * deltaH).toInt, 90, 54))
+//    val colorBar = ColorSeq(HSL(207, 90, 54), 3)
 
+    def getColor(zValue: Double): Color = {
+      def colorIndex: Int = math.min(math.round(math.floor((zValue - zMin) / zWidth)).toInt, nColors - 1)
+      colors(colorIndex)
+    }
+  }
 
   //TODO: Experimental doesn't split analogous colors up properly
   object ColorSeq{
@@ -80,7 +92,7 @@ object Colors {
     }
 
     def apply(seed: HSL, depth: Int) = {
-      triadGrow(seed, depth)
+      analogGrow(seed, depth)
     }
   }
 
