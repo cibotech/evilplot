@@ -7,14 +7,18 @@ version := "0.1-SNAPSHOT"
 scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-dom" % "0.9.1",
+  "org.scala-js" %%% "scalajs-dom" % "0.9.3",
   "com.lihaoyi" %%% "scalatags" % "0.6.1",
   "org.scalactic" %% "scalactic" % "3.0.1",
-  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+  "org.scalatest" %%% "scalatest" % "3.0.1" % "test",
   "org.mockito" % "mockito-core" % "1.9.5"
 )
 
 // see http://www.scalatest.org/install
 resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
 
-persistLauncher in Compile := true
+
+// See https://www.scala-js.org/tutorial/basic/index.html
+// This is an application with a main method
+scalaJSUseMainModuleInitializer := true
+jsDependencies += RuntimeDOM
