@@ -2,7 +2,7 @@
  * Copyright 2017 CiBO Technologies
  */
 package com.cibo.evilplot.geometry
-
+/*
 import org.mockito.{InOrder, Mockito}
 import org.scalajs.dom.CanvasRenderingContext2D
 import org.scalatest.{FunSpec, Matchers}
@@ -52,3 +52,4 @@ class GeometrySpec extends FunSpec with Matchers with MockitoSugar {
   }
 
 }
+*/
