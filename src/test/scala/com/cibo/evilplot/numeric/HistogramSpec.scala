@@ -30,6 +30,7 @@ class HistogramSpec extends FunSpec {
       hist.bins shouldEqual List(1L, 2L, 3L, 4L)
     }
 
+
   }
 
 }

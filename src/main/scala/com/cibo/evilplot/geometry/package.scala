@@ -23,6 +23,7 @@ package object geometry {
 
     def rotated(degrees: Double) = Rotate(degrees)(r)
 
+    def colored(color: Color) = StrokeStyle(fill = color)(r)
     def filled(color: Color) = Style(fill = color)(r)
 
     def transX(nudge: Double) = Translate(x = nudge)(r)

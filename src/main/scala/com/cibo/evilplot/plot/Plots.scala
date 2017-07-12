@@ -13,7 +13,7 @@ object Plots {
     size: Extent, data: Seq[Double], numBins: Int, title: Option[String] = None, vScale: Double = 1.0): Drawable = {
     val hist = new Histogram(data, numBins)
     val graphData: Seq[Double] = hist.bins.map(_.toDouble)
-    new BarChart(size, graphData, title, vScale)
+    new BarChart(size, Some(hist.min, hist.max), graphData, title, vScale, Some(15))
   }
 
   def createScatterPlot(graphSize: Extent, data: Seq[Point], zData: Seq[Double], nColors: Int): Pad = {
@@ -31,9 +31,6 @@ object Plots {
     val fitScatter = FlipY(Fit(graphSize) {
       val scatter = (data zip zData).map { case (Point(x, y), zVal) =>
         Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley) filled colorBar.getColor(zVal) }.group
-//     val scatter = (data zip zData).map { case (Point(x, y), zVal) =>
-//        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley) filled colorBar.getColor(zVal) labeled f"($x%.2f,$y%.2f, $zVal%.1f)"}.group
-
       val xAxis = axis(graphSize, true, maxX, textSize, minX)
       val pointAndY = FlipY(axis(graphSize, false, maxY, textSize, minY)) beside scatter
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
@@ -121,7 +118,7 @@ object Plots {
 
   private[plot] def createGridLines(maxHeight: Double, width: Double): Drawable =
     distributeV {
-      val lineEveryXUnits     = 40
+      val lineEveryXUnits     = 2
       val lineThick           = 0.25
       val textHeight          = Text.defaultSize
       val labelFloatAboveLine = 2

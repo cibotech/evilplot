@@ -14,6 +14,18 @@ case class Style(fill: Color)(r: Drawable) extends Drawable {
     }
 }
 
+/* for styling lines.
+ * TODO: patterned (e.g. dashed, dotted) lines
+ */
+case class StrokeStyle(fill: Color)(r: Drawable) extends Drawable {
+  val extent = r.extent
+  def draw(canvas: CanvasRenderingContext2D): Unit =
+    CanvasOp(canvas) { c =>
+      c.strokeStyle = fill.repr
+      r.draw(c)
+    }
+}
+
 
 case class Text(msgAny: Any, size: Double = Text.defaultSize) extends Drawable {
   require(size >= 0.5, s"Cannot use $size, canvas will not draw text initially sized < 0.5px even when scaling")

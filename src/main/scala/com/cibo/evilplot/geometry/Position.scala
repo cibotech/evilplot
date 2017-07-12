@@ -125,7 +125,7 @@ case class Pad(left: Double = 0, right: Double = 0, top: Double = 0, bottom: Dou
         .map(v => s"${what(v.toInt >> 4)}${what(v.toInt & 15)}")
         .mkString("#", "", "")
 
-      c.strokeRect(0, 0, extent.width, extent.height)
+//      c.strokeRect(0, 0, extent.width, extent.height)
     }
     Translate(x = left, y = top)(item).draw(canvas)
   }
