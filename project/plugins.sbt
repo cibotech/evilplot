@@ -8,3 +8,6 @@ addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.18")
 
 // Tooling around scala-js: see https://github.com/lihaoyi/workbench
 addSbtPlugin("com.lihaoyi" % "workbench" % "0.3.0")
+
+// see http://www.scalatest.org/install
+resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
