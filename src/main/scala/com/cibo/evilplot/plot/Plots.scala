@@ -10,10 +10,11 @@ import com.cibo.evilplot.numeric.Histogram
 object Plots {
 
   def createHistogramPlot(
-    size: Extent, data: Seq[Double], numBins: Int, title: Option[String] = None, vScale: Double = 1.0): Drawable = {
+    size: Extent, data: Seq[Double], numBins: Int, title: Option[String] = None,
+    annotation: Option[ChartAnnotation], vScale: Double = 1.0): Drawable = {
     val hist = new Histogram(data, numBins)
     val graphData: Seq[Double] = hist.bins.map(_.toDouble)
-    new BarChart(size, Some(hist.min, hist.max), graphData, title, vScale, Some(15))
+    new BarChart(size, Some(hist.min, hist.max), graphData, title, vScale, Some(15), annotation)
   }
 
   def createScatterPlot(graphSize: Extent, data: Seq[Point], zData: Seq[Double], nColors: Int): Pad = {
