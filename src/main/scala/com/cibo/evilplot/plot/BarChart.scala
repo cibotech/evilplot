@@ -13,12 +13,13 @@ import org.scalajs.dom.CanvasRenderingContext2D
 // a histogram that has an extended x-axis and plots the data in that context.
 class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], data: Seq[Double],
                title: Option[String] = None, vScale: Double = 1.0, withinMetrics: Option[Double] = None,
-               annotation: Option[ChartAnnotation] = None) extends Drawable {
+               annotation: Option[ChartAnnotation] = None, backgroundColor: Color = HSL(0, 0, 92),
+               barColor: Color = HSL(0, 0, 35)) extends Drawable {
   val textAndPadHeight: Int = Text.defaultSize + 5 // text size, stroke width
   val xAxisBounds = Option(-75.0, 225.0)
 
   private val barChart = Fit(extent) {
-    val bars = new Bars(xBounds, xAxisBounds, data, vScale)
+    val bars = new Bars(xBounds, xAxisBounds, data, vScale, barColor)
     // For now assume minValue is zero, we'll need to fix that for graphs that go negative
     //val minValue = data.reduce[Double](math.min)
     val minValue = 0.0
@@ -67,12 +68,13 @@ class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], d
       case None => chart
     }) behind translatedAnnotation
   }
-  private val assembledChart = (Rect(barChart.extent.width, barChart.extent.height) filled LightGray) behind barChart
+  private val assembledChart = (Rect(barChart.extent.width, barChart.extent.height)
+    filled backgroundColor) behind barChart
 
   override def draw(canvas: CanvasRenderingContext2D): Unit = assembledChart.draw(canvas)
 
   private class Bars(dataXBounds: Option[(Double, Double)], drawXBounds: Option[(Double, Double)],
-                     heights: Seq[Double], vScale: Double = 1.0) extends WrapDrawable {
+                     heights: Seq[Double], vScale: Double = 1.0, color: Color) extends WrapDrawable {
     val barWidth = 20
     val barSpacing = 0
 
@@ -89,7 +91,7 @@ class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], d
       //      val rects = heightsToDraw.map { h => Rect(barWidth, h * vScale) titled h.toString }
       val rects = heightsToDraw.map { h => Rect(barWidth, h * vScale) }
       rects.map {
-        rect => rect filled colors.DarkGrey //labeled color.repr
+        rect => rect filled color
       }
     }.seqDistributeH(barSpacing)
 
@@ -140,7 +142,7 @@ class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], d
     val linePadding: Double = spacing * pixelsPerUnit
   }
 
-  private class VerticalGridLines(val axis: XAxis, val spacing: Double, color: Color) extends GridLines {
+  private class VerticalGridLines(val axis: XAxis, val spacing: Double, color: Color = White) extends GridLines {
     override def drawable: Drawable = {
       (for {
         nLine <- 0 until nLines
