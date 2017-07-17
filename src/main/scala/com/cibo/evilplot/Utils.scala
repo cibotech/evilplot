@@ -74,9 +74,9 @@ object Text {
   }(offscreenBuffer)
 }
 
+// Run the passed-in rendering function, saving the canvas state before that, and restoring it afterwards.
 object CanvasOp {
-  // loan it out
-  def apply(canvas: CanvasRenderingContext2D)(f: CanvasRenderingContext2D => Unit) = {
+  def apply(canvas: CanvasRenderingContext2D)(f: CanvasRenderingContext2D => Unit): Unit = {
     canvas.save()
     f(canvas)
     canvas.restore()
