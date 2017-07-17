@@ -12,9 +12,8 @@ import org.scalajs.dom.CanvasRenderingContext2D
 // Should be able to draw either a histogram with an x-axis that directly labels the bins or
 // a histogram that has an extended x-axis and plots the data in that context.
 class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], data: Seq[Double],
-               title: Option[String] = None, vScale: Double = 1.0, withinMetrics: Option[Double],
-               annotation: Option[ChartAnnotation]) extends Drawable {
-
+               title: Option[String] = None, vScale: Double = 1.0, withinMetrics: Option[Double] = None,
+               annotation: Option[ChartAnnotation] = None) extends Drawable {
   val textAndPadHeight: Int = Text.defaultSize + 5 // text size, stroke width
   val xAxisBounds = Option(-75.0, 225.0)
 

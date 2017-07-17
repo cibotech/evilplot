@@ -10,8 +10,7 @@ libraryDependencies ++= Seq(
   "org.scala-js" %%% "scalajs-dom" % "0.9.3",
   "com.lihaoyi" %%% "scalatags" % "0.6.1",
   "org.scalactic" %% "scalactic" % "3.0.1",
-  "org.scalatest" %%% "scalatest" % "3.0.1" % "test",
-  "org.mockito" % "mockito-core" % "1.9.5"
+  "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
 )
 
 // see http://www.scalatest.org/install
