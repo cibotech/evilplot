@@ -35,7 +35,7 @@ class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], d
     val _yAxis = new YAxis(bars.extent.height, bars.extent.width, minValue, maxValue, vScale, 10, gridSpacing)
 
     val _xGridLines = withinMetrics match {
-      case Some(metric) if (_xAxis.isDefined) =>
+      case Some(metric) if _xAxis.isDefined =>
         new MetricLines(Seq(-metric, metric), _xAxis.get, data.length, bars, vScale, Red)
       case None => new EmptyDrawable
     }
@@ -76,8 +76,8 @@ class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], d
     protected val numTicks: Int = math.round((tickMax - tickMin) / spacing).toInt + 1
     protected val tickThick = 1
     protected val tickLength = 5
-    protected val tickMaxScaled = tickMax * vScale
-    protected val spacingScaled = spacing * vScale
+    protected val tickMaxScaled: Double = tickMax * vScale
+    protected val spacingScaled: Double = spacing * vScale
 
     // will fail if 2^-31 <= num < 2^31 is false. there are a lot of problems with this method...
     // TODO: actually employ the numFrac variable to create good tick labels
@@ -91,7 +91,7 @@ class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], d
                       barWidth: Int, barSpacing: Int) extends Axis {
     private val ticks = {
       (for {
-        numTick <- 0 to (nTicks - 1)
+        numTick <- 0 until nTicks
         label = createNumericLabel(tickMin + numTick * spacing, numFrac)
         tick = new VerticalTick(tickLength, tickThick, Some(label))
         tickWidth = tick.extent.width
@@ -127,7 +127,7 @@ class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], d
           case None => new EmptyDrawable
         }
       } yield {
-        (Align.middle(tick, gridLine).reduce(Beside)).padTop(padTop)
+        Align.middle(tick, gridLine).reduce(Beside).padTop(padTop)
       }).seqDistributeV
     }
     override def drawable: Drawable = ticks
