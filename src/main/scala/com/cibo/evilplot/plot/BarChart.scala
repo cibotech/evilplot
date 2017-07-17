@@ -11,7 +11,8 @@ import org.scalajs.dom.CanvasRenderingContext2D
 
 
 class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], data: Seq[Double],
-               title: Option[String] = None, vScale: Double = 1.0, withinMetrics: Option[Double]) extends Drawable {
+               title: Option[String] = None, vScale: Double = 1.0, withinMetrics: Option[Double] = None)
+  extends Drawable {
 
   val textAndPadHeight = Text.defaultSize + 5 // text size, stroke width
 
