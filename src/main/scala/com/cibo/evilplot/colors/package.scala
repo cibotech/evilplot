@@ -1,8 +1,8 @@
 package com.cibo.evilplot
 
+// turn off the warning about too many types defined in a file
+// scalastyle:off
 package object colors {
-
-  // These are bad and you should feel bad for using them
   sealed abstract class NamedColor(val repr: String) extends Color
   case object AliceBlue             extends NamedColor("aliceblue")
   case object AntiqueWhite          extends NamedColor("antiquewhite")
@@ -151,5 +151,5 @@ package object colors {
   case object WhiteSmoke            extends NamedColor("whitesmoke")
   case object Yellow                extends NamedColor("yellow")
   case object YellowGreen           extends NamedColor("yellowgreen")
-
+  // scalastyle:on
 }

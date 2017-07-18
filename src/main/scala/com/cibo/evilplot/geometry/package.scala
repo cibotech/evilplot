@@ -5,29 +5,29 @@ import com.cibo.evilplot.colors.Color
 package object geometry {
 
   implicit class Placeable(r: Drawable) {
-    def above(other: Drawable) = Above(r, other)
-    def below(other: Drawable) = Above(other, r)
-    def beside(other: Drawable) = Beside(r, other)
-    def behind(other: Drawable) = Group(r, other)
+    def above(other: Drawable): Above = Above(r, other)
+    def below(other: Drawable): Above = Above(other, r)
+    def beside(other: Drawable): Beside = Beside(r, other)
+    def behind(other: Drawable): Group = Group(r, other)
 
-    def labeled(msg: String) = Labeled(msg, r)
-    def labeled(msgSize: (String, Double)) = Labeled(msgSize._1, r, msgSize._2)
-    def titled(msg: String) = Titled(msg, r)
-    def titled(msgSize: (String, Double)) = Titled(msgSize._1, r, msgSize._2)
+    def labeled(msg: String): Labeled = Labeled(msg, r)
+    def labeled(msgSize: (String, Double)): Labeled = Labeled(msgSize._1, r, msgSize._2)
+    def titled(msg: String): Titled = Titled(msg, r)
+    def titled(msgSize: (String, Double)): Titled = Titled(msgSize._1, r, msgSize._2)
 
-    def padRight(pad: Double) = Pad(right = pad)(r)
-    def padLeft(pad: Double) = Pad(left  = pad)(r)
-    def padBottom(pad: Double) = Pad(bottom = pad)(r)
-    def padTop(pad: Double) = Pad(top = pad)(r)
-    def padAll(pad: Double) = Pad(pad)(r)
+    def padRight(pad: Double): Pad = Pad(right = pad)(r)
+    def padLeft(pad: Double): Pad = Pad(left  = pad)(r)
+    def padBottom(pad: Double): Pad = Pad(bottom = pad)(r)
+    def padTop(pad: Double): Pad = Pad(top = pad)(r)
+    def padAll(pad: Double): Pad = Pad(pad)(r)
 
-    def rotated(degrees: Double) = Rotate(degrees)(r)
+    def rotated(degrees: Double): Rotate = Rotate(degrees)(r)
 
-    def colored(color: Color) = StrokeStyle(fill = color)(r)
-    def filled(color: Color) = Style(fill = color)(r)
+    def colored(color: Color): StrokeStyle = StrokeStyle(fill = color)(r)
+    def filled(color: Color): Style = Style(fill = color)(r)
 
-    def transX(nudge: Double) = Translate(x = nudge)(r)
-    def transY(nudge: Double) = Translate(y = nudge)(r)
+    def transX(nudge: Double): Translate = Translate(x = nudge)(r)
+    def transY(nudge: Double): Translate = Translate(y = nudge)(r)
   }
 
   implicit class SeqPlaceable(sp: Seq[Drawable]) {
@@ -35,7 +35,7 @@ package object geometry {
     def seqDistributeH(spacing: Double = 0): Drawable = distributeH(sp, spacing)
     def seqDistributeV: Drawable = distributeV(sp)
 
-    def group: Drawable = Group(sp :_*)
+    def group: Drawable = Group(sp: _*)
   }
 
 

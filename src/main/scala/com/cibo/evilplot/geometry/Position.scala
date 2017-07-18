@@ -22,7 +22,7 @@ object Translate {
 }
 
 case class Scale(x: Double = 1, y: Double = 1)(r: Drawable) extends Drawable {
-  val extent = Extent( r.extent.width * y, r.extent.height * x )
+  val extent = Extent(r.extent.width * y, r.extent.height * x)
 
   def draw(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas) { c =>
     c.scale(x, y)
@@ -66,9 +66,9 @@ case class Rotate(degrees: Double)(r: Drawable) extends Drawable {
 
   private val rotatedCorners = Seq(
     Point(-0.5 * r.extent.width, -0.5 * r.extent.height),
-    Point( 0.5 * r.extent.width, -0.5 * r.extent.height),
-    Point(-0.5 * r.extent.width,  0.5 * r.extent.height),
-    Point( 0.5 * r.extent.width,  0.5 * r.extent.height)
+    Point(0.5 * r.extent.width, -0.5 * r.extent.height),
+    Point(-0.5 * r.extent.width, 0.5 * r.extent.height),
+    Point(0.5 * r.extent.width, 0.5 * r.extent.height)
   ).map(_.originRotate(degrees))
 
   private val minX = rotatedCorners.map(_.x).min

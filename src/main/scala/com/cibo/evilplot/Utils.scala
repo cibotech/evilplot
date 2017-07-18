@@ -5,6 +5,16 @@ import com.cibo.evilplot.geometry.{Extent, Drawable}
 import org.scalajs.dom
 import org.scalajs.dom.{html, _}
 
+object Utils {
+  def getCanvasFromElementId(id: String): dom.CanvasRenderingContext2D = {
+    // Muuuuuwahahahaha
+    dom.window.document.getElementById(id)
+      .asInstanceOf[html.Canvas]
+      .getContext("2d")
+      .asInstanceOf[dom.CanvasRenderingContext2D]
+  }
+}
+
 case class Style(fill: Color)(r: Drawable) extends Drawable {
   val extent = r.extent
   def draw(canvas: CanvasRenderingContext2D): Unit =
@@ -39,12 +49,7 @@ object Text {
   val defaultSize = 10
 
   // TODO: THIS IS A DIRTY HACK
-  private val offscreenBuffer =
-    dom.window.document.getElementById("measureBuffer")
-      .asInstanceOf[html.Canvas]
-      .getContext("2d")
-      .asInstanceOf[dom.CanvasRenderingContext2D]
-
+  private val offscreenBuffer: CanvasRenderingContext2D = Utils.getCanvasFromElementId("measureBuffer")
   private val replaceSize = """\d+px""".r
   // TODO: Text this regex esp on 1px 1.0px 1.px .1px, what is valid in CSS?
   private val fontSize = """[^\d]*([\d(?:\.\d*)]+)px.*""".r
@@ -69,9 +74,9 @@ object Text {
   }(offscreenBuffer)
 }
 
+// Run the passed-in rendering function, saving the canvas state before that, and restoring it afterwards.
 object CanvasOp {
-  // loan it out
-  def apply(canvas: CanvasRenderingContext2D)(f: CanvasRenderingContext2D => Unit) = {
+  def apply(canvas: CanvasRenderingContext2D)(f: CanvasRenderingContext2D => Unit): Unit = {
     canvas.save()
     f(canvas)
     canvas.restore()

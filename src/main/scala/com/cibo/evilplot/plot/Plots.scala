@@ -31,7 +31,8 @@ object Plots {
 
     val fitScatter = FlipY(Fit(graphSize) {
       val scatter = (data zip zData).map { case (Point(x, y), zVal) =>
-        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley) filled colorBar.getColor(zVal) }.group
+        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley)
+          .filled(colorBar.getColor(zVal)) }.group
       val xAxis = axis(graphSize, true, maxX, textSize, minX)
       val pointAndY = FlipY(axis(graphSize, false, maxY, textSize, minY)) beside scatter
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
@@ -83,7 +84,7 @@ object Plots {
       val labelPad = 10 // TODO: should be maxTextWidth?
 
       // cumulativeRotate is complicated b/c we draw wedges straddling the X axis, but that makes labels easier
-      val cumulativeRotate = data.map(_ / 2).sliding(2).map(_.sum).scanLeft(0D)(_+_).toVector
+      val cumulativeRotate = data.map(_ / 2).sliding(2).map(_.sum).scanLeft(0D)(_ + _).toVector
       val wedges = data.zip(cumulativeRotate).map { case (frac, cumRot) =>
 
         val rotate = 360 * cumRot
@@ -100,7 +101,7 @@ object Plots {
             }
             val spacer = Disc(scale) filled Clear padRight labelPad
 
-            distributeH(Align.middle(spacer, UnsafeRotate(-rotate)(text) ))
+            distributeH(Align.middle(spacer, UnsafeRotate(-rotate)(text)))
           }
 
         wedge behind label
