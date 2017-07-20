@@ -11,7 +11,6 @@ class Histogram(data: Seq[Double], numBins: Int) {
   // Expose an immutable Seq, not the mutable Array. We don't want the caller to be able to change values.
   lazy val bins: Seq[Long] = _bins.toSeq
 
-  require(data.length > numBins, s"Data size = ${data.length} must be bigger than the number of bins = $numBins")
   private val sorted = data.sorted
 
   /** smallest data value */

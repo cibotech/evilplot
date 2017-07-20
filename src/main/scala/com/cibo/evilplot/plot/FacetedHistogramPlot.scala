@@ -13,11 +13,17 @@ import scala.collection.immutable.{SortedMap, TreeMap}
 // A FacetedHistogramPlot is like facets in ggplot2. Divide the `data` in subsets according to `categories`.
 // `data` and `categories` must have the same length. Each entry in `categories` is a label for the entry at the same
 // position in `data`.
-// TODO: what about withinMetrics arg for bar chart?
 // TODO: generalize faceting beyond histograms.
 // LATER: generalize `categories` to type T, not just String. Consider sort order.
+
+// Could eventually use this for all plots, simplifying their constructors?
+case class PlotOptions(xAxisBounds: Option[(Double, Double)] = None, yAxisBounds: Option[(Double, Double)] = None,
+                       annotation: Option[ChartAnnotation] = None, xGridSpacing: Option[Double] = None,
+                       yGridSpacing: Option[Double] = None, barWidth: Option[Double] = None)
+
 class FacetedHistogramPlot(extent: Extent, xBounds: Option[(Double, Double)], data: Seq[Double], numBins: Int,
-  title: Option[String] = None, vScale: Double = 1.0, categories: Seq[String])
+                           title: Option[String] = None, categories: Seq[String],
+                           optionsByCategory: Map[String, PlotOptions])
   extends WrapDrawable {
   require(data.length == categories.length)
   private val _drawable: Drawable = {
@@ -29,6 +35,7 @@ class FacetedHistogramPlot(extent: Extent, xBounds: Option[(Double, Double)], da
     val sortedHistMap: SortedMap[String, Histogram] = scala.collection.immutable.TreeMap(histMap.toArray: _*)
 
     // Create subcharts with spacing between them
+    // TODO: Bar charts with the same bar width still have scaling issues.
     val nCharts = sortedHistMap.size
     val chartSpacing = 5
     val totalChartSpacing = (nCharts - 1) * chartSpacing
@@ -38,7 +45,15 @@ class FacetedHistogramPlot(extent: Extent, xBounds: Option[(Double, Double)], da
       (category, hist) <- sortedHistMap
       histData = hist.bins.map(_.toDouble)
       xBounds = Some(hist.min, hist.max)
-    } yield new BarChart(Extent(subchartWidth, extent.height), xBounds, histData, Some(category), vScale, None))
+      options = optionsByCategory(category)
+    } yield new BarChart(Extent(subchartWidth, extent.height), xBounds, histData,
+                         xAxisDrawBounds = options.xAxisBounds,
+                         yAxisDrawBounds = options.yAxisBounds,
+                         xGridSpacing = options.xGridSpacing,
+                         yGridSpacing = options.yGridSpacing,
+                         annotation = options.annotation,
+                         withinMetrics = Some(15.0),
+                         title = Some(category)))
       .toSeq
       .seqDistributeH(chartSpacing)
 
