@@ -12,12 +12,21 @@ import org.scalajs.dom.CanvasRenderingContext2D
 // Should be able to draw either a histogram with an x-axis that directly labels the bins or
 // a histogram that has an extended x-axis and plots the data in that context.
 
-class BarChart(override val extent: Extent, xBounds: Option[(Double, Double)], data: Seq[Double],
-               xAxisDrawBounds: Option[(Double, Double)] = None, yAxisDrawBounds: Option[(Double, Double)] = None,
-               title: Option[String] = None, vScale: Double = 1.0, withinMetrics: Option[Double] = None,
-               annotation: Option[ChartAnnotation] = None, barWidth: Option[Double] = None,
-               xGridSpacing: Option[Double] = None, yGridSpacing: Option[Double] = None,
-               backgroundColor: Color = HSL(0, 0, 92), barColor: Color = HSL(0, 0, 35)) extends Drawable {
+class BarChart(
+  override val extent: Extent,
+  xBounds: Option[(Double, Double)],
+  data: Seq[Double],
+  xAxisDrawBounds: Option[(Double, Double)] = None,
+  yAxisDrawBounds: Option[(Double, Double)] = None,
+  title: Option[String] = None,
+  vScale: Double = 1.0, withinMetrics: Option[Double] = None,
+  annotation: Option[ChartAnnotation] = None,
+  barWidth: Option[Double] = None,
+  xGridSpacing: Option[Double] = None,
+  yGridSpacing: Option[Double] = None,
+  backgroundColor: Color = HSL(0, 0, 92),
+  barColor: Color = HSL(0, 0, 35))
+  extends Drawable {
   val textAndPadHeight: Int = Text.defaultSize + 5 // text size, stroke width
 
   private val barChart = Fit(extent) {
