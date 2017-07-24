@@ -30,36 +30,37 @@ package object geometry {
     def transY(nudge: Double): Translate = Translate(y = nudge)(r)
   }
 
-  implicit class SeqPlaceable(sp: Seq[Drawable]) {
-    def seqDistributeH: Drawable = distributeH(sp)
-    def seqDistributeH(spacing: Double = 0): Drawable = distributeH(sp, spacing)
-    def seqDistributeV: Drawable = distributeV(sp)
+  implicit class SeqPlaceable(drawables: Seq[Drawable]) {
+    def seqDistributeH: Drawable = distributeH(drawables)
+    def seqDistributeH(spacing: Double = 0): Drawable = distributeH(drawables, spacing)
+    def seqDistributeV: Drawable = distributeV(drawables)
+    def seqDistributeV(spacing: Double = 0): Drawable = distributeV(drawables, spacing)
 
-    def group: Drawable = Group(sp: _*)
+    def group: Drawable = Group(drawables: _*)
   }
 
 
-  def flowH(rs: Seq[Drawable], hasWidth: Extent): Drawable = {
-    val consumed = rs.map(_.extent.width).sum
-    val inBetween = (hasWidth.width - consumed) / (rs.length - 1)
-    val padded = rs.init.map(_ padRight inBetween) :+ rs.last
+  def flowH(drawables: Seq[Drawable], hasWidth: Extent): Drawable = {
+    val consumed = drawables.map(_.extent.width).sum
+    val inBetween = (hasWidth.width - consumed) / (drawables.length - 1)
+    val padded = drawables.init.map(_ padRight inBetween) :+ drawables.last
     padded.reduce(Beside)
   }
 
-  def distributeH(rs: Seq[Drawable], spacing: Double = 0): Drawable = {
-    require(rs.nonEmpty, "distributeH must be called with a non-empty Seq[Drawable]")
-    if (spacing == 0) rs.reduce(Beside)
+  def distributeH(drawables: Seq[Drawable], spacing: Double = 0): Drawable = {
+    require(drawables.nonEmpty, "distributeH must be called with a non-empty Seq[Drawable]")
+    if (spacing == 0) drawables.reduce(Beside)
     else {
-      val padded = rs.init.map(_ padRight spacing) :+ rs.last
+      val padded = drawables.init.map(_ padRight spacing) :+ drawables.last
       padded.reduce(Beside)
     }
   }
 
-  def distributeV(rs: Seq[Drawable], spacing: Double = 0): Drawable = {
-    require(rs.nonEmpty, "distributeV must be called with a non-empty Seq[Drawable]")
-    if (spacing == 0) rs.reduce(Above)
+  def distributeV(drawables: Seq[Drawable], spacing: Double = 0): Drawable = {
+    require(drawables.nonEmpty, "distributeV must be called with a non-empty Seq[Drawable]")
+    if (spacing == 0) drawables.reduce(Above)
     else {
-      val padded = rs.init.map(_ padBottom spacing) :+ rs.last
+      val padded = drawables.init.map(_ padBottom spacing) :+ drawables.last
       padded.reduce(Above)
     }
   }
