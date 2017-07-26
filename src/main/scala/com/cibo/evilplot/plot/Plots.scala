@@ -14,10 +14,10 @@ object Plots {
     annotation: Option[ChartAnnotation], vScale: Double = 1.0): Drawable = {
     val hist = new Histogram(data, numBins)
     val graphData: Seq[Double] = hist.bins.map(_.toDouble)
-    new BarChart(size, Some(hist.min, hist.max), graphData,
-      title = title, xAxisDrawBounds = Some((-75, 225)), yAxisDrawBounds = Some(0, 15),
-      xGridSpacing = Some(50), yGridSpacing = Some(5), annotation = annotation,
-      withinMetrics = Some(15))
+    val options = PlotOptions(xAxisBounds = Some(Bounds(-75, 225)), yAxisBounds = Some(Bounds(0, 15)),
+      xGridSpacing = Some(50), yGridSpacing = Some(5), withinMetrics = Some(15), annotation = annotation,
+      title = title)
+    new BarChart(size, Some(Bounds(hist.min, hist.max)), graphData, options = options)
   }
 
   def createScatterPlot(graphSize: Extent, data: Seq[Point], zData: Seq[Double], nColors: Int): Pad = {

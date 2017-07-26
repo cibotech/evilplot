@@ -26,12 +26,12 @@ class BarChartSpec extends FunSpec with Matchers {
 
   val chartSize = Extent(500, 400)
   val data = GaussianData.data
-  val xBounds = (7.0, 13.0)
+  val xBounds = Bounds(7.0, 13.0)
   val hist = new Histogram(data, 10)
   val graphData: Seq[Double] = hist.bins.map(_.toDouble)
-   val bars1 = new Bars(chartSize, Some((data.min, data.max)), Some(xBounds),
-     (graphData.min, graphData.max), graphData, HSL(0, 0, 0), barWidth = Some(10))
-   val xAxis = new XAxis(bars1, xBounds._1, xBounds._2, 5)
+   val bars1 = new Bars(chartSize, Some(Bounds(data.min, data.max)), Some(xBounds),
+     Bounds(graphData.min, graphData.max), graphData, HSL(0, 0, 0), barWidth = Some(10))
+   val xAxis = new XAxis(chartSize, xBounds.min, xBounds.max, 5)
 
   describe("BarChart") {
     it("should produce the correct number of bars when given a range tight around the bounds of the data") {

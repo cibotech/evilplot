@@ -15,10 +15,6 @@ import scala.collection.immutable.{SortedMap, TreeMap}
 // TODO: generalize faceting beyond histograms.
 // LATER: generalize `categories` to type T, not just String. Consider sort order.
 
-// Could eventually use this for all plots, simplifying their constructors?
-case class PlotOptions(xAxisBounds: Option[(Double, Double)] = None, yAxisBounds: Option[(Double, Double)] = None,
-                       annotation: Option[ChartAnnotation] = None, xGridSpacing: Option[Double] = None,
-                       yGridSpacing: Option[Double] = None, barWidth: Option[Double] = None)
 
 class FacetedHistogramPlot(extent: Extent, xBounds: Option[(Double, Double)], data: Seq[Seq[Double]], numBins: Int,
                            title: Option[String] = None, categories: Seq[String],
@@ -47,23 +43,15 @@ class FacetedHistogramPlot(extent: Extent, xBounds: Option[(Double, Double)], da
       (for {
         (category, hist) <- sortedHistMap
         histData = hist.bins.map(_.toDouble)
-        xBounds = Some(hist.min, hist.max)
+        xBounds = Some(Bounds(hist.min, hist.max))
         options = optionsByCategory(category)(index)
-      } yield new BarChart(Extent(subchartWidth, extent.height), xBounds, histData,
-        xAxisDrawBounds = options.xAxisBounds,
-        yAxisDrawBounds = options.yAxisBounds,
-        xGridSpacing = options.xGridSpacing,
-        yGridSpacing = options.yGridSpacing,
-        annotation = options.annotation,
-        withinMetrics = Some(15.0),
-        title = Some(category)))
+      } yield new BarChart(Extent(subchartWidth, extent.height), xBounds, histData, options))
         .toSeq
         .seqDistributeH(chartSpacing)
     })
     // Stack the horizontal charts vertically. Reverse the order so as to fill in from the bottom up.
       .reverse.seqDistributeV(chartSpacing)
 
-    // Add the title if one was provided
     title match {
       case Some(_title) => charts titled (_title, 20) padAll 10
       case None => charts
