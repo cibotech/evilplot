@@ -43,10 +43,11 @@ object Plots {
 
     // TODO: Generate the labels from the given data.
     val labels = Seq[Int](2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015)
-    val legend = distributeV(
-      labels.zip(colorBar.colors).map { case (l, c) =>
-        Disc(3) filled c labeled f"$l%4d" }, 10
-    ) padLeft(10)
+//    val legend = distributeV(
+//      labels.zip(colorBar.colors).map { case (l, c) =>
+//        Disc(3) filled c labeled f"$l%4d" }, 10
+//    ) padLeft(10)
+    val legend = EmptyDrawable()
     fitScatter padAll 10 beside legend titled ("A Scatter Plot", 20) padAll 10
   }
 

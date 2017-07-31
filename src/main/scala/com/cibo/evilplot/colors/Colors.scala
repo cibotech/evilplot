@@ -61,16 +61,26 @@ object Colors {
       )
     }
   }
-  case class GradientColorBar(nColors: Int, zMin: Double, zMax: Double) {
+
+  trait ColorBar
+
+  // Use when one color is wanted but a ColorBar is needed.
+  case class SingletonColorBar(color: Color) extends ColorBar
+
+  case class GradientColorBar(nColors: Int, zMin: Double, zMax: Double) extends ColorBar {
     private val startH = 0
     private val endH = 359
     private val deltaH = (endH - startH) / nColors.toFloat
     private val zWidth = (zMax - zMin) / nColors.toFloat
-    val colors = Seq.tabulate(nColors)(x => HSL(startH + (x * deltaH).toInt, 90, 54))
-//    val colorBar = ColorSeq(HSL(207, 90, 54), 3)
+    private val colors: Seq[Color] = Seq.tabulate(nColors)(x => HSL(startH + (x * deltaH).toInt, 90, 54))
 
-    def getColor(zValue: Double): Color = {
-      def colorIndex: Int = math.min(math.round(math.floor((zValue - zMin) / zWidth)).toInt, nColors - 1)
+    def getColor(i: Int): Color = {
+      require((i >= 0) && (i < colors.length))
+      colors(i)
+    }
+
+    def getColor(z: Double): Color = {
+      val colorIndex = math.min(math.round(math.floor((z - zMin) / zWidth)).toInt, nColors - 1)
       colors(colorIndex)
     }
   }

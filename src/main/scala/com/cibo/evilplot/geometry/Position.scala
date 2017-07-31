@@ -191,6 +191,8 @@ object Align {
     items.map(r => Translate(x = groupWidth - r.extent.width)(r))
   }
 
+  def rightSeq(items: Seq[Drawable]): Seq[Drawable] = right(items: _*)
+
   def middle(items: Drawable*): Seq[Drawable] = {
     val groupHeight = items.maxBy(_.extent.height).extent.height
 

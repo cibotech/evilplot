@@ -5,8 +5,9 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Text
+import com.cibo.evilplot.colors.Colors.{ColorBar, GradientColorBar, SingletonColorBar}
 import com.cibo.evilplot.colors.{Black, Color, HSL}
-import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, Extent, Line, WrapDrawable}
+import com.cibo.evilplot.geometry.{Above, Align, Beside, Disc, Drawable, Extent, Line, Rect, WrapDrawable}
 import com.cibo.evilplot.numeric.Ticks
 
 case class PlotOptions(title: Option[String] = None,
@@ -22,7 +23,34 @@ case class PlotOptions(title: Option[String] = None,
                        barWidth: Option[Double] = None,
                        barColor: Color = HSL(0, 0, 35))
 
-case class Bounds(min: Double, max: Double)
+case class Bounds(min: Double, max: Double) {
+  lazy val range: Double = max - min
+  def isInBounds(x: Double): Boolean = x >= min && x <= max
+}
+
+class Legend[T](colorBar: ColorBar, categories: Seq[T],
+             pointSize: Double, backgroundRectangle: Option[Color] = None)
+               (implicit cmp: Ordering[T]) extends WrapDrawable {
+
+  private val categoriesColors = categories.sorted.zipWithIndex.map { case (category, index) =>
+    colorBar match {
+      case SingletonColorBar(color) => (category, color)
+      case _colorBar@GradientColorBar(nColors, _, _) =>
+        require(nColors == categories.length, "Color bar must have exactly as many colors as category list.")
+        (category, _colorBar.getColor(index))
+    }
+  }
+
+  private val points = categoriesColors.map { case (label, color) =>
+    val point = Disc(pointSize) filled color
+    Align.middle(backgroundRectangle match {
+      case Some(bc) => Align.centerSeq(Align.middle(Rect(4 * pointSize, 4 * pointSize) filled bc, point)).group
+      case None => point
+    }, Text(label.toString)).reduce(Beside)
+  }
+
+  override def drawable: Drawable = points.seqDistributeV(pointSize)
+}
 
 /* Base trait for axes. */
 trait ChartAxis extends WrapDrawable {
@@ -80,7 +108,7 @@ class YAxis(extent: Extent, val minValue: Double, val maxValue: Double, val nTic
     padTop = chartHeight - getLinePosition(coordToDraw) - tick.extent.height / 2.0
   } yield tick padTop padTop
 
-  override def drawable: Drawable = ticks.group
+  override def drawable: Drawable = Align.rightSeq(ticks).group
 }
 
 trait GridLines extends WrapDrawable {

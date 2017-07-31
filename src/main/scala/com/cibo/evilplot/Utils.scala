@@ -6,6 +6,7 @@ import org.scalajs.dom
 import org.scalajs.dom.{html, _}
 
 object Utils {
+
   def getCanvasFromElementId(id: String): dom.CanvasRenderingContext2D = {
     // Muuuuuwahahahaha
     dom.window.document.getElementById(id)
@@ -13,6 +14,9 @@ object Utils {
       .getContext("2d")
       .asInstanceOf[dom.CanvasRenderingContext2D]
   }
+
+  val canvas: String = "CANVAS"
+  val measureBuffer: String = "measureBuffer"
 }
 
 case class Style(fill: Color)(r: Drawable) extends Drawable {

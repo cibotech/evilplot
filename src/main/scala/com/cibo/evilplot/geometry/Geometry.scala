@@ -76,6 +76,11 @@ object Rect {
   def apply(size: Extent): Rect = Rect(size.width, size.height)
 }
 
+/* TODO: The positioning of discs is accomplished by creating a big bounding box and
+ * sticking the disc at its corner. It might be better to have a tight bounding box
+ * and get the disc to the right position?
+ */
+
 case class Disc(radius: Double, x: Double = 0, y: Double = 0) extends Drawable {
   require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
   val extent = Extent(x + radius * 2, y + radius * 2)
@@ -86,6 +91,7 @@ case class Disc(radius: Double, x: Double = 0, y: Double = 0) extends Drawable {
       c.arc(x + radius, y + radius, radius, 0, 2 * Math.PI)
       c.closePath()
       c.fill()
+//      c.strokeRect(0, 0, extent.width, extent.height)
     }
 }
 

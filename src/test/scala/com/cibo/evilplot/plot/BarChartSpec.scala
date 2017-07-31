@@ -3,26 +3,17 @@
  */
 package com.cibo.evilplot.plot
 
+import com.cibo.evilplot.DOMInitializer
 import com.cibo.evilplot.colors.HSL
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric._
 import org.scalatest._
 
 
-object DomInitializer {
-  import org.scalajs.dom
-
-  def init(): Unit = {
-    var node = dom.document.createElement("CANVAS")
-    node.setAttribute("id", "measureBuffer")
-    dom.document.body.appendChild(node)
-  }
-}
-
 // TODO: These tests need a lot of work before they are actually useful!
 class BarChartSpec extends FunSpec with Matchers {
 
-  DomInitializer.init()
+  DOMInitializer.init()
 
   val chartSize = Extent(500, 400)
   val data = GaussianData.data
