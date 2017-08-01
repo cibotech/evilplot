@@ -20,7 +20,7 @@ class BarChart(override val extent: Extent, xBounds: Option[Bounds], data: Seq[D
     val minValue = 0.0
     val maxValue = data.reduce[Double](math.max)
 
-    val xAxisDrawBounds: Option[Bounds] = if (options.xAxisBounds.isDefined) options.xAxisBounds else xBounds
+    val xAxisDrawBounds: Option[Bounds] = options.xAxisBounds.orElse(xBounds)
     val yAxisDrawBounds = options.yAxisBounds.getOrElse(Bounds(minValue, maxValue))
 
     val bars = new Bars(extent, xBounds, xAxisDrawBounds, yAxisDrawBounds, data,
