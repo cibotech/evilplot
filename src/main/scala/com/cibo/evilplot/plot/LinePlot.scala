@@ -16,10 +16,6 @@ class LinePlot(override val extent: Extent, data: Seq[Seq[Point]], colors: Seq[C
   extends Drawable {
   require(data.length == colors.length)
   val layout: Drawable = {
-    val paths: Seq[Drawable] = (data zip colors).map { case (_data: Seq[Point], color: Color) =>
-      FlipY(StrokeStyle(color)(Path(_data, strokeWidth = 0.1)))
-    }
-    val groupedPaths = Group(paths: _*)
     val xvals: Seq[Double] = data.flatMap(_.map(_.x))
     val xMin: Double = xvals.reduce[Double](math.min)
     val xMax: Double = xvals.reduce[Double](math.max)
@@ -42,10 +38,15 @@ class LinePlot(override val extent: Extent, data: Seq[Seq[Point]], colors: Seq[C
           (yGridSpacing: Double) => HorizontalGridLines(yTicks, yGridSpacing, color = White)(extent))
         val xScale = extent.width / xAxisDrawBounds.range
         val yScale = extent.height / yAxisDrawBounds.range
+        val paths: Seq[Drawable] = (data zip colors).map { case (_data: Seq[Point], color: Color) =>
+          FlipY(Scale(xScale, yScale)(StrokeStyle(color)(Path(_data, strokeWidth = 0.1))))
+        }
+        val groupedPaths = Group(paths: _*)
+
         //val scaledPaths = Scale(xScale, yScale)(groupedPaths)
-        //val scaledPaths = groupedPaths
+        val scaledPaths = groupedPaths
         //val scaledPaths = FlipY(Scale(xScale, yScale)(groupedPaths transY yMax * yScale))
-        val scaledPaths = groupedPaths transY yAxisDrawBounds.range * yScale
+        //val scaledPaths = groupedPaths transY yAxisDrawBounds.range * yScale
         Rect(extent) filled options.backgroundColor behind
           scaledPaths behind xGridLines behind yGridLines
       }
