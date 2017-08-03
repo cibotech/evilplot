@@ -3,7 +3,9 @@
  */
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Extent, WrapDrawable}
+import com.cibo.evilplot.Text
+import com.cibo.evilplot.colors.{Color, HSL}
+import com.cibo.evilplot.geometry.{Align, Drawable, Extent, Rect, WrapDrawable}
 import com.cibo.evilplot.numeric.Histogram
 
 import scala.collection.immutable.{SortedMap, TreeMap}
@@ -21,6 +23,7 @@ class FacetedHistogramPlot(extent: Extent, xBounds: Option[(Double, Double)], da
                            optionsByCategory: Map[String, Seq[PlotOptions]])
   extends WrapDrawable {
   for (_data <- data) require(_data.length == categories.length)
+
 
   private val _drawable: Drawable = {
     // For each Seq in `data`, construct a set of horizontal bar charts faceted by category
@@ -45,17 +48,30 @@ class FacetedHistogramPlot(extent: Extent, xBounds: Option[(Double, Double)], da
         histData = hist.bins.map(_.toDouble)
         xBounds = Some(Bounds(hist.min, hist.max))
         options = optionsByCategory(category)(index)
-      } yield new BarChart(Extent(subchartWidth, extent.height), xBounds, histData, options))
+//        y = println(category, histData)
+        chart = new BarChart(Extent(subchartWidth, extent.height), xBounds, histData, options)
+        titledChart = chart
+        // if (true) chart beside horizontalLabel("type of error", chart.layout._center.extent.height) else chart
+      } yield titledChart)
         .toSeq
         .seqDistributeH(chartSpacing)
     })
     // Stack the horizontal charts vertically. Reverse the order so as to fill in from the bottom up.
-      .reverse.seqDistributeV(chartSpacing)
-
+      .reverse.seqDistributeV(chartSpacing) // below verticalLabel("crop name", 0.5 * (extent.width - 5))
     title match {
       case Some(_title) => charts titled (_title, 20) padAll 10
       case None => charts
     }
+  }
+
+  def horizontalLabel(message: String, height: Double, color: Color = HSL(0, 0, 85)): Drawable = {
+    val text = Text(message) rotated 90
+    Align.centerSeq(Align.middle(Rect(2 * text.extent.width, height) filled color, text)).group
+  }
+
+  def verticalLabel(message: String, width: Double, color: Color = HSL(0, 0, 85)): Drawable = {
+    val text = Text(message)
+    Align.centerSeq(Align.middle(Rect(width, 2 * text.extent.height) filled color, text)).group
   }
 
   override def drawable: Drawable = _drawable

@@ -15,13 +15,29 @@ import org.scalajs.dom._
 case class Extent(width: Double, height: Double)
 
 /**
+  * A DrawableLater defines an apply method that takes an extent and returns a Drawable. It enables plot element
+  * construction without knowing size.
+  */
+
+trait DrawableLater {
+  def apply(extent: Extent): Drawable
+}
+
+class DrawableLaterMaker(f: Extent => Drawable) extends DrawableLater {
+  def apply(extent: Extent): Drawable = f(extent)
+}
+
+object EmptyDrawableLater extends DrawableLater {
+  def apply(extent: Extent = Extent(0, 0)): Drawable = EmptyDrawable()
+}
+
+/**
   * All Drawable objects define a draw method that draws to a 2D canvas, and a bounding box (Extent).
   * The bounding box must not change.
   */
 trait Drawable {
   val debug = true
   val extent: Extent
-
   def draw(canvas: CanvasRenderingContext2D): Unit
 }
 

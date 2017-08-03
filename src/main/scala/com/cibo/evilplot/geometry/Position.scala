@@ -120,9 +120,9 @@ case class Pad(left: Double = 0, right: Double = 0, top: Double = 0, bottom: Dou
   def draw(canvas: CanvasRenderingContext2D): Unit = {
     // Draw a rectangle around the extent, to make it visible for debugging
     CanvasOp(canvas) { c =>
-      val what = "0123456789ABCDEF"
+      val hexDigits = "0123456789ABCDEF"
       c.strokeStyle = (0 until 3).map(_ => math.random * 255.0)
-        .map(v => s"${what(v.toInt >> 4)}${what(v.toInt & 15)}")
+        .map(v => s"${hexDigits(v.toInt >> 4)}${hexDigits(v.toInt & 15)}")
         .mkString("#", "", "")
 
 //      c.strokeRect(0, 0, extent.width, extent.height)

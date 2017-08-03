@@ -7,7 +7,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.Text
 import com.cibo.evilplot.colors.Colors.{ColorBar, GradientColorBar, SingletonColorBar}
 import com.cibo.evilplot.colors.{Black, Color, HSL}
-import com.cibo.evilplot.geometry.{Above, Align, Beside, Disc, Drawable, Extent, Line, Rect, WrapDrawable}
+import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.Ticks
 
 case class PlotOptions(title: Option[String] = None,
@@ -52,126 +52,104 @@ class Legend[T](colorBar: ColorBar, categories: Seq[T],
   override def drawable: Drawable = points.seqDistributeV(pointSize)
 }
 
-/* Base trait for axes. */
-trait ChartAxis extends WrapDrawable {
-  val minValue: Double
-  val maxValue: Double
-  lazy val axisRange: Double = maxValue - minValue
-  protected val nTicks: Int
-  private[plot] val principalDimension: Double // e.g. either length or width
-  private[plot] val (tickMin, tickMax, spacing, numFrac) = Ticks.niceTicks(minValue, maxValue, nTicks)
-  private[plot] val numTicks: Int = math.round((tickMax - tickMin) / spacing).toInt + 1
+/* Base trait for axes and grid lines. */
+trait ChartDistributable extends DrawableLater {
+  private[plot] val ticks: Ticks
   protected val tickThick = 1
   protected val tickLength = 5
+  private[plot] lazy val bounds: Bounds = ticks.bounds
+  private[plot] def pixelsPerUnit(distributableDimension: Double): Double = distributableDimension / bounds.range
 
-  private[plot] lazy val pixelsPerUnit: Double = principalDimension / axisRange
-
-  // Kinda hacky...
+  // TODO: Move this somewhere else where it could be used by things other than axes.
   def createNumericLabel(num: Double, numFrac: Int): String = {
     val fmtString = "%%.%df".format(numFrac)
     fmtString.format(num)
   }
-  def getLinePosition(coord: Double): Double = (coord - minValue) * pixelsPerUnit
+  def getLinePosition(coord: Double, distributableDimension: Double): Double =
+    (coord - bounds.min) * pixelsPerUnit(distributableDimension)
 
 }
 
-class XAxis(extent: Extent, val minValue: Double, val maxValue: Double, val nTicks: Int,
-                          drawTicks: Boolean = true) extends ChartAxis {
-  private[plot] val chartWidth = extent.width
-  private[plot] val chartHeight = extent.height
-  private[plot] val principalDimension = chartWidth
+case class XAxis(ticks: Ticks, drawTicks: Boolean = true) extends ChartDistributable {
+  def apply(extent: Extent): Drawable = {
+    val ticks_ = for {
+      numTick <- 0 until ticks.numTicks
+      coordToDraw = ticks.tickMin + numTick * ticks.spacing
+      label = createNumericLabel(coordToDraw, ticks.numFrac)
+      tick = new VerticalTick(tickLength, tickThick, Some(label))
 
-  private val ticks = for {
-    numTick <- 0 until numTicks
-    coordToDraw = tickMin + numTick * spacing
-    label = createNumericLabel(coordToDraw, numFrac)
-    tick = new VerticalTick(tickLength, tickThick, Some(label))
+      padLeft = getLinePosition(coordToDraw, extent.width) - tick.extent.width / 2.0
+    } yield tick padLeft padLeft
 
-    padLeft = getLinePosition(coordToDraw) - tick.extent.width / 2.0
-  } yield tick padLeft padLeft
-
-  override def drawable: Drawable = ticks.group
+    ticks_.group
+  }
 }
 
-class YAxis(extent: Extent, val minValue: Double, val maxValue: Double, val nTicks: Int,
-                    drawTicks: Boolean = true) extends ChartAxis {
-  private[plot] val chartWidth = extent.width
-  private[plot] val chartHeight = extent.height
-  private[plot] val principalDimension = extent.height
+case class YAxis(ticks: Ticks, drawTicks: Boolean = true) extends ChartDistributable {
+  def apply(extent: Extent): Drawable = {
+    val ticks_ = for {
+      numTick <- (ticks.numTicks - 1) to 0 by -1
+      coordToDraw = ticks.tickMin + numTick * ticks.spacing
+      label = createNumericLabel(coordToDraw, ticks.numFrac)
+      tick = new HorizontalTick(tickLength, tickThick, Some(label))
 
-  private val ticks = for {
-    numTick <- (numTicks - 1) to 0 by -1
-    coordToDraw = tickMin + numTick * spacing
-    label = createNumericLabel(coordToDraw, numFrac)
-    tick = new HorizontalTick(tickLength, tickThick, Some(label))
+      padTop = extent.height - getLinePosition(coordToDraw, extent.height) - tick.extent.height / 2.0
+    } yield tick padTop padTop
 
-    padTop = chartHeight - getLinePosition(coordToDraw) - tick.extent.height / 2.0
-  } yield tick padTop padTop
-
-  override def drawable: Drawable = Align.rightSeq(ticks).group
+    Align.rightSeq(ticks_).group
+  }
 }
 
-trait GridLines extends WrapDrawable {
-  protected val axis: ChartAxis
-  val axisRange: Double = axis.axisRange
-  protected val pixelsPerUnit: Double = axis.pixelsPerUnit
-  val spacing: Double
-  private[plot] val nLines: Int = math.ceil(axisRange / spacing).toInt
+
+trait GridLines extends ChartDistributable {
+  val lineSpacing: Double
+  private[plot] val nLines: Int = math.ceil(ticks.bounds.range / lineSpacing).toInt
 
   // Calculate the coordinate of the first grid line to be drawn.
-  private val maxNumLines = math.ceil((axis.tickMin - axis.minValue) / spacing).toInt
+  private val maxNumLines = math.ceil((ticks.tickMin - ticks.bounds.min) / lineSpacing).toInt
   protected val minGridLineCoord: Double = {
-    if (maxNumLines == 0) axis.minValue
-    else List.tabulate[Double](maxNumLines)(axis.tickMin - _ * spacing).filter(_ >= axis.minValue).min
+    if (maxNumLines == 0) ticks.bounds.min
+    else List.tabulate[Double](maxNumLines)(ticks.tickMin - _ * lineSpacing).filter(_ >= ticks.bounds.min).min
   }
-
-  val minLine: Double = axis.getLinePosition(minGridLineCoord)
-  val linePadding: Double = spacing * pixelsPerUnit
 }
 
-class VerticalGridLines(val axis: XAxis, val spacing: Double, color: Color = Black) extends GridLines {
-  require(nLines != 0)
-  private[plot] val lines = for {
-    nLine <- 0 until nLines
-    line = Line(axis.chartHeight, 1) rotated 90 colored color
-    lineWidthCorrection = line.extent.width / 2.0
-    padding = axis.getLinePosition(minGridLineCoord + nLine * spacing) - lineWidthCorrection
-  } yield {
-    line transY -axis.chartHeight padLeft padding
+case class VerticalGridLines(ticks: Ticks, lineSpacing: Double, color: Color = Black) extends GridLines {
+  def apply(extent: Extent): Drawable = {
+    require(nLines != 0)
+    val lines = for {
+      nLine <- 0 until nLines
+      line = Line(extent.height, 1) rotated 90 colored color
+      lineWidthCorrection = line.extent.width / 2.0
+      padding = getLinePosition(minGridLineCoord + nLine * lineSpacing, extent.width) - lineWidthCorrection
+    } yield {
+      line padLeft padding
+    }
+    lines.group
   }
-
-  override def drawable: Drawable = lines.group
 }
 
-class HorizontalGridLines(val axis: YAxis, val spacing: Double, color: Color = Black) extends GridLines {
+case class HorizontalGridLines(ticks: Ticks, lineSpacing: Double, color: Color = Black) extends GridLines {
+  def apply(extent: Extent): Drawable = {
   require(nLines != 0)
-  private val lines = for {
+  val lines = for {
     nLines <- (nLines - 1) to 0 by -1
-    line = Line(axis.chartWidth, 1) colored color
+    line = Line(extent.width, 1) colored color
     lineCorrection = line.extent.height / 2.0
-    padding = axis.principalDimension - axis.getLinePosition(minGridLineCoord + nLines * spacing) - lineCorrection
+    padding = extent.height - getLinePosition(minGridLineCoord + nLines * lineSpacing, extent.height) - lineCorrection
   } yield line padTop padding
-
-  override def drawable: Drawable = lines.group
+    lines.group
+  }
 }
 
 // TODO: Labeling these vertical lines in a way that doesn't mess up their positioning!
-class MetricLines(linesToDraw: Seq[Double], xAxis: ChartAxis, bars: Bars,
-                                color: Color) extends WrapDrawable {
-  val length: Double = bars.nBars * (bars._barWidth + bars.barSpacing)
-  val chartHeight: Double = bars.extent.height
-  val pixelsPerUnit: Double = length.toDouble / (xAxis.maxValue - xAxis.minValue)
-  val lines: Drawable = (for {
-    line <- linesToDraw
-    padLeft = (line - xAxis.minValue) * pixelsPerUnit
-  //      label = f"$line%.1f%%"
-  } yield {
-    //      Align.center(label, Line(chartHeight - label.extent.height, 2)
-    //      colored color rotated 90).reduce(Above).padLeft(padLeft)
-    Line(chartHeight, 2) colored color rotated 90 padLeft padLeft
-  }).group
-
-  override def drawable: Drawable = lines
+case class MetricLines(ticks: Ticks, linesToDraw: Seq[Double], color: Color) extends ChartDistributable {
+  def apply(extent: Extent): Drawable = {
+    val lines = for {
+      line <- linesToDraw
+      padLeft = (line - ticks.bounds.min) * pixelsPerUnit(extent.width)
+    } yield Line(extent.height, 2) colored color rotated 90 padLeft padLeft
+    lines.group
+  }
 }
 
 // TODO: fix the padding fudge factors
