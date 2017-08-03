@@ -36,7 +36,7 @@ class BarChart(override val extent: Extent, xBounds: Option[Bounds], data: Seq[D
         case Some(_annotation) =>
           ((_annotation transX _annotation.position._1 * extent.width)
             transY (_annotation.position._2 * extent.height))
-        case None => new EmptyDrawable
+        case None => EmptyDrawable()
       }
 
       val xGridLines = options.xGridSpacing match {
