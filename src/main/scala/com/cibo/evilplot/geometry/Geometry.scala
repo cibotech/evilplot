@@ -27,7 +27,7 @@ trait Drawable {
 
 trait WrapDrawable extends Drawable {
   def drawable: Drawable
-  override lazy val extent = drawable.extent
+  override lazy val extent: Extent = drawable.extent
   override def draw(canvas: CanvasRenderingContext2D): Unit = drawable.draw(canvas)
 }
 
@@ -50,10 +50,10 @@ case class Line(length: Double, strokeWidth: Double) extends Drawable {
     }
 }
 
-case class Segment(points: Seq[Point], strokeWidth: Double) extends Drawable {
+case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
 
-  lazy val xS = points.map(_.x)
-  lazy val yS = points.map(_.y)
+  lazy val xS: Seq[Double] = points.map(_.x)
+  lazy val yS: Seq[Double] = points.map(_.y)
   val extent = Extent(xS.max - xS.min, yS.max - yS.min)
 
   def draw(canvas: CanvasRenderingContext2D): Unit =

@@ -20,7 +20,7 @@ object Utils {
 }
 
 case class Style(fill: Color)(r: Drawable) extends Drawable {
-  val extent = r.extent
+  val extent: Extent = r.extent
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
       c.fillStyle = fill.repr
@@ -32,7 +32,7 @@ case class Style(fill: Color)(r: Drawable) extends Drawable {
  * TODO: patterned (e.g. dashed, dotted) lines
  */
 case class StrokeStyle(fill: Color)(r: Drawable) extends Drawable {
-  val extent = r.extent
+  val extent: Extent = r.extent
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
       c.strokeStyle = fill.repr

@@ -3,32 +3,33 @@
  */
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Extent, Fit, FlipY, Point, Scale, Segment, WrapDrawable}
+import com.cibo.evilplot.StrokeStyle
+import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.geometry.{Drawable, Extent, FlipY, Group, Path, Point, Scale}
 import org.scalajs.dom.CanvasRenderingContext2D
 
 
+// Plot paths connecting the points in data. Each Seq[Point] makes a path, drawn using the corresponding color.
 // TODO: use a layout manager to abstract out common logic
-class LinePlot(override val extent: Extent, data: Seq[Point], options: PlotOptions)
+class LinePlot(override val extent: Extent, data: Seq[Seq[Point]], colors: Seq[Color], options: PlotOptions)
   extends Drawable {
 
-  private val _drawable = {
-    val xvals: Seq[Double] = data.map(_.x)
-    val yvals: Seq[Double] = data.map(_.y)
-    val xMin = xvals.reduce[Double](math.min)
-    val xMax = xvals.reduce[Double](math.max)
-    val yMin = yvals.reduce[Double](math.min)
-    val yMax = yvals.reduce[Double](math.max)
-    val yAxisDrawBounds = options.yAxisBounds.getOrElse(Bounds(yMin, yMax))
+  private val _drawable: Drawable = {
+    require(data.length == colors.length)
 
-    val xAxis = new XAxis(extent, xMin, xMax, options.numXTicks.getOrElse(4))
-    val yAxis = new YAxis(extent, yAxisDrawBounds.min, yAxisDrawBounds.max, options.numYTicks.getOrElse(4))
+    val paths: Seq[Drawable] = (data zip colors).map { case (_data: Seq[Point], color: Color) =>
+      FlipY(StrokeStyle(color)(Path(_data, strokeWidth = 0.1)))
+    }
+    val group = Group(paths: _*)
 
+    // Scale to fit all the paths.
+    // TODO: don't assume that the x size dominates, factor in the y size as well.
+    val xvals: Seq[Double] = data.flatMap(_.map(_.x))
+    val xMin: Double = xvals.reduce[Double](math.min)
+    val xMax: Double = xvals.reduce[Double](math.max)
     val xscale = extent.width / (xMax - xMin)
-    val segment = Scale(xscale, xscale)(FlipY(Segment(data, strokeWidth = 0.1)))
-    val assembled = yAxis beside (xAxis below segment)
-
-    Fit(extent)(assembled)
+    Scale(xscale, xscale)(group)
   }
 
-  override def draw(canvas: CanvasRenderingContext2D) = _drawable.draw(canvas)
+  override def draw(canvas: CanvasRenderingContext2D): Unit = _drawable.draw(canvas)
 }
