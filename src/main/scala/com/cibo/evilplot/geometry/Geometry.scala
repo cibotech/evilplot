@@ -12,7 +12,9 @@ import org.scalajs.dom._
   * @param width bounding box width
   * @param height bounding box height
   */
-case class Extent(width: Double, height: Double)
+case class Extent(width: Double, height: Double) {
+  def *(scale: Double): Extent = Extent(scale * width, scale * height)
+}
 
 /**
   * A DrawableLater defines an apply method that takes an extent and returns a Drawable. It enables plot element
