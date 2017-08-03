@@ -4,7 +4,9 @@
 
 package com.cibo.evilplot.numeric
 
-class Histogram(data: Seq[Double], numBins: Int) {
+import com.cibo.evilplot.plot.Bounds
+
+class Histogram(data: Seq[Double], numBins: Int, bounds: Option[Bounds] = None) {
   private val _bins: Array[Long] = Array.fill(numBins){0}
 
   /** Histogram bins: a sequence of counts */
@@ -13,11 +15,10 @@ class Histogram(data: Seq[Double], numBins: Int) {
 
   private val sorted = data.sorted
 
-  /** smallest data value */
-  val min: Double = sorted.head
-
-  /** largest data value */
-  val max: Double = sorted.last
+  val (min, max) = bounds match {
+    case Some(Bounds(_min, _max)) => (_min, _max)
+    case None => (sorted.head, sorted.last)
+  }
 
   /** width of histogram bin */
   val binWidth: Double = (max - min) / numBins
