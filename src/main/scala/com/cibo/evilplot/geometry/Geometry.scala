@@ -12,7 +12,9 @@ import org.scalajs.dom._
   * @param width bounding box width
   * @param height bounding box height
   */
-case class Extent(width: Double, height: Double)
+case class Extent(width: Double, height: Double) {
+  def *(scale: Double): Extent = Extent(scale * width, scale * height)
+}
 
 /**
   * A DrawableLater defines an apply method that takes an extent and returns a Drawable. It enables plot element
@@ -43,7 +45,7 @@ trait Drawable {
 
 trait WrapDrawable extends Drawable {
   def drawable: Drawable
-  override lazy val extent = drawable.extent
+  override lazy val extent: Extent = drawable.extent
   override def draw(canvas: CanvasRenderingContext2D): Unit = drawable.draw(canvas)
 }
 
@@ -66,10 +68,10 @@ case class Line(length: Double, strokeWidth: Double) extends Drawable {
     }
 }
 
-case class Segment(points: Seq[Point], strokeWidth: Double) extends Drawable {
+case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
 
-  lazy val xS = points.map(_.x)
-  lazy val yS = points.map(_.y)
+  lazy val xS: Seq[Double] = points.map(_.x)
+  lazy val yS: Seq[Double] = points.map(_.y)
   val extent = Extent(xS.max - xS.min, yS.max - yS.min)
 
   def draw(canvas: CanvasRenderingContext2D): Unit =

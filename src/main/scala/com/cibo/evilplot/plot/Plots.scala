@@ -62,7 +62,7 @@ object Plots {
     val fitLine = FlipY(Fit(graphSize) {
       val scalex = graphSize.width / (maxX - minX)
       val scaley = graphSize.height / (maxY - minY)
-      val line = Segment(data.map(p => Point(p.x * scalex, p.y * scaley)), 0.5)
+      val line = Path(data.map(p => Point(p.x * scalex, p.y * scaley)), 0.5)
       val xAxis = axis(graphSize, true, maxX, textSize, minX)
       val pointAndY = FlipY(axis(graphSize, false, maxY, textSize, minY)) beside line
       Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
@@ -73,7 +73,7 @@ object Plots {
 
   def createMultiLinePlot(graphSize: Extent, datas: Seq[Seq[Point]]): Pad = {
     val fitLine = FlipY(Fit(graphSize) {
-      val lines = datas.map(data => Segment(data, 0.5))
+      val lines = datas.map(data => Path(data, 0.5))
       val xAxis = axis(graphSize, true, lines.map(_.xS.max).max, 0, lines.map(_.xS.min).min) // TODO: wut
       val pointAndY =
         FlipY(axis(graphSize, false, lines.map(_.yS.max).max, 0, lines.map(_.yS.min).min)) beside lines.group

@@ -1,11 +1,13 @@
 package com.cibo.evilplot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Extent, Drawable}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import org.scalajs.dom
 import org.scalajs.dom.{html, _}
 
 object Utils {
+  val canvas: String = "CANVAS"
+  val measureBuffer: String = "measureBuffer"
 
   def getCanvasFromElementId(id: String): dom.CanvasRenderingContext2D = {
     // Muuuuuwahahahaha
@@ -15,12 +17,16 @@ object Utils {
       .asInstanceOf[dom.CanvasRenderingContext2D]
   }
 
-  val canvas: String = "CANVAS"
-  val measureBuffer: String = "measureBuffer"
+  def maybeDrawable[T](value: Option[T], maker: T => Drawable): Drawable = {
+    value match {
+      case Some(t) => maker(t)
+      case None => EmptyDrawable()
+    }
+  }
 }
 
 case class Style(fill: Color)(r: Drawable) extends Drawable {
-  val extent = r.extent
+  val extent: Extent = r.extent
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
       c.fillStyle = fill.repr
@@ -32,7 +38,7 @@ case class Style(fill: Color)(r: Drawable) extends Drawable {
  * TODO: patterned (e.g. dashed, dotted) lines
  */
 case class StrokeStyle(fill: Color)(r: Drawable) extends Drawable {
-  val extent = r.extent
+  val extent: Extent = r.extent
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
       c.strokeStyle = fill.repr
