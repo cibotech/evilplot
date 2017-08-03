@@ -34,14 +34,18 @@ class LinePlot(override val extent: Extent, data: Seq[Seq[Point]], colors: Seq[C
     val yAxis = YAxis(yTicks)
     val centerFactor = 0.85   // proportion of the plot to allocate to the center
     val centerExtent = extent * centerFactor
-    val scale = math.min(extent.width / (xMax - xMin), extent.height / (yMax - yMin))
-    val scaledPaths = Scale(scale, scale)(groupedPaths)
     val chartArea: DrawableLater = {
       def chartArea(extent: Extent): Drawable = {
         val xGridLines = Utils.maybeDrawable(options.xGridSpacing,
           (xGridSpacing: Double) => VerticalGridLines(xTicks, xGridSpacing, color = White)(extent))
         val yGridLines = Utils.maybeDrawable(options.yGridSpacing,
           (yGridSpacing: Double) => HorizontalGridLines(yTicks, yGridSpacing, color = White)(extent))
+        val xScale = extent.width / xAxisDrawBounds.range
+        val yScale = extent.height / yAxisDrawBounds.range
+        //val scaledPaths = Scale(xScale, yScale)(groupedPaths)
+        //val scaledPaths = groupedPaths
+        //val scaledPaths = FlipY(Scale(xScale, yScale)(groupedPaths transY yMax * yScale))
+        val scaledPaths = groupedPaths transY yAxisDrawBounds.range * yScale
         Rect(extent) filled options.backgroundColor behind
           scaledPaths behind xGridLines behind yGridLines
       }
