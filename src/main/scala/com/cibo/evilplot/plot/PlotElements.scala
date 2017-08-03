@@ -72,7 +72,7 @@ trait ChartDistributable extends DrawableLater {
 
 case class XAxis(ticks: Ticks, drawTicks: Boolean = true) extends ChartDistributable {
   def apply(extent: Extent): Drawable = {
-    val ticks_ = for {
+    val _ticks = for {
       numTick <- 0 until ticks.numTicks
       coordToDraw = ticks.tickMin + numTick * ticks.spacing
       label = createNumericLabel(coordToDraw, ticks.numFrac)
@@ -81,13 +81,13 @@ case class XAxis(ticks: Ticks, drawTicks: Boolean = true) extends ChartDistribut
       padLeft = getLinePosition(coordToDraw, extent.width) - tick.extent.width / 2.0
     } yield tick padLeft padLeft
 
-    ticks_.group
+    _ticks.group
   }
 }
 
 case class YAxis(ticks: Ticks, drawTicks: Boolean = true) extends ChartDistributable {
   def apply(extent: Extent): Drawable = {
-    val ticks_ = for {
+    val _ticks = for {
       numTick <- (ticks.numTicks - 1) to 0 by -1
       coordToDraw = ticks.tickMin + numTick * ticks.spacing
       label = createNumericLabel(coordToDraw, ticks.numFrac)
@@ -96,7 +96,7 @@ case class YAxis(ticks: Ticks, drawTicks: Boolean = true) extends ChartDistribut
       padTop = extent.height - getLinePosition(coordToDraw, extent.height) - tick.extent.height / 2.0
     } yield tick padTop padTop
 
-    Align.rightSeq(ticks_).group
+    Align.rightSeq(_ticks).group
   }
 }
 
