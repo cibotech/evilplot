@@ -4,7 +4,7 @@ import com.cibo.evilplot.geometry.{Drawable, DrawableLater, EmptyDrawable, Empty
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 /** LayoutManagers take DrawableLaters, objects which take an extent and return a Drawable.
- * The LayoutMangers determine the extents of the rendered drawables and place them appropriately.
+ * The LayoutManagers determine the extents of the rendered drawables and place them appropriately.
  */
 
 trait LayoutManager extends Drawable {

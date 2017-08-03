@@ -19,14 +19,15 @@ class BarChart(override val extent: Extent, xBounds: Option[Bounds], data: Seq[D
   val textAndPadHeight: Int = Text.defaultSize + 5 // text size, stroke width
   private val minValue = 0.0
   private val maxValue = data.reduce[Double](math.max)
-  private val xAxisDrawBounds = if (options.xAxisBounds.isDefined) options.xAxisBounds else xBounds
+  private val xAxisDrawBounds: Bounds =
+    options.xAxisBounds.getOrElse(xBounds
+      .getOrElse(throw new IllegalArgumentException("xAxisDrawBounds must be defined")))
   private val yAxisDrawBounds: Bounds = options.yAxisBounds.getOrElse(Bounds(minValue, maxValue))
 
-  // Fix this .get later. I think it's probably time to just do HistogramChart and BarChart and have them extend
-  // some common trait.
-  private val xTicks = Ticks(xAxisDrawBounds.get, options.numXTicks.getOrElse(10))
+  // I think it's probably time to just do HistogramChart and BarChart and have them extend some common trait.
+  private val xTicks = Ticks(xAxisDrawBounds, options.numXTicks.getOrElse(10))
   private val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
-  private val bars = Bars(xBounds, xAxisDrawBounds, yAxisDrawBounds, data, options.barColor)
+  private val bars = Bars(xBounds, Some(xAxisDrawBounds), yAxisDrawBounds, data, options.barColor)
   private val xAxis = XAxis(xTicks)
   private val yAxis = YAxis(yTicks)
   private val chartArea: DrawableLater = {
