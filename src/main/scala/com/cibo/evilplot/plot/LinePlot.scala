@@ -86,7 +86,8 @@ class LinePlot(override val extent: Extent, data: Seq[Seq[Point]], colors: Seq[C
     val xScale = extent.width / xAxisDrawBounds.range
     val yScale = extent.height / yAxisDrawBounds.range
     val pathSeq: Seq[Drawable] = (data zip colors).map { case (_data: Seq[Point], color: Color) =>
-      FlipY(Scale(xScale, yScale)(StrokeStyle(color)(Path(_data, strokeWidth = 0.1))))
+      //FlipY(Scale(xScale, yScale)(StrokeStyle(color)(Path(_data, strokeWidth = 0.1))))
+      FlipY(Scale(100, 100)(StrokeStyle(color)(Path(_data, strokeWidth = 0.1))))
     }
     val paths = Group(pathSeq: _*)
 
@@ -96,7 +97,9 @@ class LinePlot(override val extent: Extent, data: Seq[Seq[Point]], colors: Seq[C
     //val scaledPaths = groupedPaths transY yAxisDrawBounds.range * yScale
 //    Rect(extent) filled options.backgroundColor behind
 //      scaledPaths behind xGridLines behind yGridLines
-    yAxis(extent) above xAxis(extent)
+    val _yAxis = yAxis(extent)
+//    (_yAxis beside paths) above (xAxis(extent) padLeft _yAxis.extent.width)
+    paths
   }
 
 
