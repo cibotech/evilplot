@@ -16,7 +16,7 @@ object Plots {
     val graphData: Seq[Double] = hist.bins.map(_.toDouble)
     val options = PlotOptions(xAxisBounds = Some(Bounds(-75, 225)), yAxisBounds = Some(Bounds(0, 15)),
       xGridSpacing = Some(50), yGridSpacing = Some(5), withinMetrics = Some(15), annotation = annotation,
-      title = title)
+      topLabel = title)
     new BarChart(size, Some(Bounds(hist.min, hist.max)), graphData, options = options)
   }
 
