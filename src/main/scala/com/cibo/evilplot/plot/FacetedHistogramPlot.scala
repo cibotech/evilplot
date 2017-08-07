@@ -3,12 +3,13 @@
  */
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.Text
-import com.cibo.evilplot.colors.{Color, HSL}
-import com.cibo.evilplot.geometry.{Align, Drawable, Extent, Rect, WrapDrawable}
+import com.cibo.evilplot.Utils
+import com.cibo.evilplot.colors.White
+import com.cibo.evilplot.geometry.{Drawable, DrawableLaterMaker, Extent, WrapDrawable}
+import com.cibo.evilplot.layout.{ChartLayout, GridLayout}
 import com.cibo.evilplot.numeric.Histogram
 
-import scala.collection.immutable.{SortedMap, TreeMap}
+import scala.collection.immutable.TreeMap
 
 
 // A FacetedHistogramPlot is like facets in ggplot2. Divide the `data` in subsets according to `categories`.
@@ -16,63 +17,83 @@ import scala.collection.immutable.{SortedMap, TreeMap}
 // position in `data`.
 // TODO: generalize faceting beyond histograms.
 // LATER: generalize `categories` to type T, not just String. Consider sort order.
+// LATER: Right now, categories are columns and rows are metrics. Consider allowing the opposite.
 
-
-class FacetedHistogramPlot(extent: Extent, xBounds: Option[(Double, Double)], data: Seq[Seq[Double]], numBins: Int,
-                           title: Option[String] = None, categories: Seq[String],
-                           optionsByCategory: Map[String, Seq[PlotOptions]])
-  extends WrapDrawable {
+/**
+  * @param data a sequence of datasets; each sequence inside is the data for a different metric. All sequences in data
+  *             must have the same length.
+  * @param categories each entry is a label for the entry at the same position in each sequence of `data`.
+  * @param metricNames labels for the sequences of `data`. If defined, must have the same number of entries as `data`
+*/
+class FacetedHistogramPlot(extent: Extent, data: Seq[Seq[Double]], numBins: Int, title: Option[String] = None,
+                           categories: Seq[String], optionsByCategory: Map[String, Seq[PlotOptions]],
+                           xLabel: Option[String] = None, yLabel: Option[String] = None,
+                           metricNames: Option[Seq[String]] = None) extends WrapDrawable {
+  // Check arguments
   for (_data <- data) require(_data.length == categories.length)
+  if (metricNames.isDefined) require(metricNames.get.length == data.length)
 
 
-  private val _drawable: Drawable = {
-    // For each Seq in `data`, construct a set of horizontal bar charts faceted by category
-    val chartSpacing = 5
-    // See https://stackoverflow.com/questions/6833501/efficient-iteration-with-index-in-scala
-    val charts = (for ((_data, index) <- data.view.zipWithIndex) yield {
-      // Partition the data according to categories. Create a histogram for each partition. Sort by category.
-      val catMap: Map[String, Seq[Double]] =
-        (categories zip _data).groupBy(_._1)
-          .map {case (category: String, labeledData: Seq[(String, Double)]) => category -> labeledData.map(_._2)}
-      val histMap: Map[String, Histogram] = catMap.mapValues(new Histogram(_, numBins))
-      val sortedHistMap: SortedMap[String, Histogram] = TreeMap(histMap.toArray: _*)
-
-      // Create subcharts horizontally with spacing between them
-      // TODO: Bar charts with the same bar width still have scaling issues.
-      val nCharts = sortedHistMap.size
-      val totalChartSpacing = (nCharts - 1) * chartSpacing
-      val subchartWidth = (extent.width - totalChartSpacing) / nCharts
-      require(subchartWidth > chartSpacing, "FacetedHistogramPlot: not enough horizontal space")
-      (for {
-        (category, hist) <- sortedHistMap
-        histData = hist.bins.map(_.toDouble)
-        xBounds = Some(Bounds(hist.min, hist.max))
-        options = optionsByCategory(category)(index)
-//        y = println(category, histData)
-        chart = new BarChart(Extent(subchartWidth, extent.height), xBounds, histData, options)
-        titledChart = chart
-        // if (true) chart beside horizontalLabel("type of error", chart.layout._center.extent.height) else chart
-      } yield titledChart)
-        .toSeq
-        .seqDistributeH(chartSpacing)
-    })
-    // Stack the horizontal charts vertically. Reverse the order so as to fill in from the bottom up.
-      .reverse.seqDistributeV(chartSpacing) // below verticalLabel("crop name", 0.5 * (extent.width - 5))
-    title match {
-      case Some(_title) => charts titled (_title, 20) padAll 10
-      case None => charts
+  private val allCharts: Drawable= {
+    def makeChart(xBounds: Option[Bounds], data: Seq[Double], options: PlotOptions)(extent: Extent): Drawable = {
+      new BarChart(extent, xBounds, data, options)
     }
-  }
 
-  def horizontalLabel(message: String, height: Double, color: Color = HSL(0, 0, 85)): Drawable = {
-    val text = Text(message) rotated 90
-    Align.centerSeq(Align.middle(Rect(2 * text.extent.width, height) filled color, text)).group
-  }
+    // Each element in the Seq corresponds to a Seq[Double] in data, but split by category.
+    val groupedByCategory: Seq[Map[String, Seq[Double]]] = for { dataSet <- data
+      categoryMap = (dataSet zip categories).groupBy{ case (_, category) => category } // group by category
+                            .mapValues(_. map { case (datum, _) => datum })  // but don't want a (datum, category) pair
+      sortedMap = TreeMap(categoryMap.toArray: _*)
+    } yield sortedMap
 
-  def verticalLabel(message: String, width: Double, color: Color = HSL(0, 0, 85)): Drawable = {
-    val text = Text(message)
-    Align.centerSeq(Align.middle(Rect(width, 2 * text.extent.height) filled color, text)).group
-  }
+    val sortedCategories: Iterable[String] = groupedByCategory.head.keys
 
-  override def drawable: Drawable = _drawable
+    // Modify the chart options for each facet: only the top row should be labeled by category. Only the bottom
+    // should have x-axes. Only the left column should have y-axes. Only the right column should have metric name.
+    def buildOptions(category: String, catIdx: Int, dataSetIdx: Int): PlotOptions = {
+      val suppliedOptions = optionsByCategory(category)(dataSetIdx)
+      val xAxisOptions = if (dataSetIdx == 0) suppliedOptions.copy(drawXAxis = true)
+      else suppliedOptions.copy(drawXAxis = false, topLabel = Some(category))
+      val yAxisOptions = if (catIdx != 0) xAxisOptions.copy(drawYAxis = false) else xAxisOptions.copy(drawYAxis = true)
+      metricNames match {
+        case Some(names) if catIdx == sortedCategories.size - 1 =>
+          yAxisOptions.copy(rightLabel = Some(names(dataSetIdx)))
+        case _ => yAxisOptions
+      }
+    }
+
+    // Each category gets binned across the same x-range, so we need to find extrema by category.
+    val categoryBounds: Map[String, Bounds] = (for {
+      category <- sortedCategories
+      allValuesForCategory: Seq[Double] = groupedByCategory.flatMap(_(category))
+      bounds = Bounds(allValuesForCategory.min, allValuesForCategory.max)
+    } yield category -> bounds)(scala.collection.breakOut)
+
+    val plots: Iterable[DrawableLaterMaker] = for {
+      (category, catIdx) <- sortedCategories.zipWithIndex
+      (dataSetMap, dataSetIdx) <- groupedByCategory.zipWithIndex
+      _data = dataSetMap(category)
+      xBounds = Some(categoryBounds(category))
+      hist = new Histogram(_data, numBins, bounds = xBounds)
+      histData = hist.bins.map(_.toDouble)
+      options = buildOptions(category, catIdx, dataSetIdx)
+    } yield new DrawableLaterMaker(makeChart(xBounds, histData, options))
+
+    new GridLayout(data.length, sortedCategories.size, plots.toSeq, Extent(600, 300))
+  }
+  private def drawCharts(e: Extent): Drawable = allCharts
+  val _allCharts = new DrawableLaterMaker(drawCharts)
+
+  private val layout = {
+    val _xLabel = Utils.maybeDrawableLater(xLabel,
+      (label: String) => Label(label, textSize = Some(20), color = White, rotate = 270))
+    val _yLabel = Utils.maybeDrawableLater(yLabel,
+      (label: String) => Label(label, textSize = Some(20), color = White))
+
+    new ChartLayout(allCharts.extent, preferredSizeOfCenter = allCharts.extent, center = _allCharts, bottom = _yLabel,
+      left = _xLabel)
+  }
+  val finalChart: Drawable = Utils.maybeDrawable(title, (_title: String) => layout titled (_title, 20),
+    default = layout)
+  override def drawable: Drawable = finalChart
 }

@@ -4,23 +4,29 @@
 
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.Text
+import com.cibo.evilplot.{Text, Utils}
 import com.cibo.evilplot.colors.Colors.{ColorBar, GradientColorBar, SingletonColorBar}
-import com.cibo.evilplot.colors.{Black, Color, HSL}
+import com.cibo.evilplot.colors.{Black, Color, HSL, White}
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.Ticks
 
 case class PlotOptions(title: Option[String] = None,
                        xAxisBounds: Option[Bounds] = None,
                        yAxisBounds: Option[Bounds] = None,
+                       drawXAxis: Boolean = true,
+                       drawYAxis: Boolean = true,
                        annotation: Option[ChartAnnotation] = None,
                        numXTicks: Option[Int] = None,
                        numYTicks: Option[Int] = None,
+                       xAxisLabel: Option[String] = None,
+                       yAxisLabel: Option[String] = None,
+                       topLabel: Option[String] = None,
+                       rightLabel: Option[String] = None,
                        xGridSpacing: Option[Double] = None,
                        yGridSpacing: Option[Double] = None,
+                       gridColor: Color = White,
                        withinMetrics: Option[Double] = None,
                        backgroundColor: Color = HSL(0, 0, 92),
-                       barWidth: Option[Double] = None,
                        barColor: Color = HSL(0, 0, 35))
 
 case class Bounds(min: Double, max: Double) {
@@ -70,24 +76,26 @@ trait ChartDistributable extends DrawableLater {
 
 }
 
-case class XAxis(ticks: Ticks, drawTicks: Boolean = true) extends ChartDistributable {
+case class XAxis(ticks: Ticks, label: Option[String] = None, drawTicks: Boolean = true) extends ChartDistributable {
   def apply(extent: Extent): Drawable = {
-    val ticks_ = for {
+    lazy val text = Utils.maybeDrawable(label, (msg: String) => Text(msg, 22))
+    val _ticks = (for {
       numTick <- 0 until ticks.numTicks
       coordToDraw = ticks.tickMin + numTick * ticks.spacing
       label = createNumericLabel(coordToDraw, ticks.numFrac)
       tick = new VerticalTick(tickLength, tickThick, Some(label))
 
       padLeft = getLinePosition(coordToDraw, extent.width) - tick.extent.width / 2.0
-    } yield tick padLeft padLeft
-
-    ticks_.group
+    } yield tick padLeft padLeft).group
+    lazy val _drawable = Align.center(_ticks, text).reduce(Above)
+    if (drawTicks) _drawable else EmptyDrawable()
   }
 }
 
-case class YAxis(ticks: Ticks, drawTicks: Boolean = true) extends ChartDistributable {
+case class YAxis(ticks: Ticks, label: Option[String] = None, drawTicks: Boolean = true) extends ChartDistributable {
   def apply(extent: Extent): Drawable = {
-    val ticks_ = for {
+    lazy val text = Utils.maybeDrawable(label, (msg: String) => Text(msg, 22) rotated 270)
+    val _ticks = for {
       numTick <- (ticks.numTicks - 1) to 0 by -1
       coordToDraw = ticks.tickMin + numTick * ticks.spacing
       label = createNumericLabel(coordToDraw, ticks.numFrac)
@@ -96,7 +104,8 @@ case class YAxis(ticks: Ticks, drawTicks: Boolean = true) extends ChartDistribut
       padTop = extent.height - getLinePosition(coordToDraw, extent.height) - tick.extent.height / 2.0
     } yield tick padTop padTop
 
-    Align.rightSeq(ticks_).group
+    lazy val _drawable = Align.middle(text, Align.rightSeq(_ticks).group).reduce(Beside)
+    if (drawTicks) _drawable else EmptyDrawable()
   }
 }
 
@@ -151,6 +160,24 @@ case class MetricLines(ticks: Ticks, linesToDraw: Seq[Double], color: Color) ext
     lines.group
   }
 }
+
+case class Label(message: String, textSize: Option[Double] = None, color: Color = HSL(0, 0, 85), rotate: Double = 0)
+  extends DrawableLater {
+  def apply(extent: Extent): Drawable = {
+    val text = (textSize match {
+      case Some(size) => Text(message, size)
+      case None => Text(message)
+    }) rotated rotate
+    Align.centerSeq(Align.middle(Rect(extent) filled color, text)).group
+  }
+}
+
+//case class HorizontalLabel(message: String, color: Color = HSL(0, 0, 85)) extends DrawableLater {
+//  def apply(extent: Extent): Drawable = {
+//    val text = Text(message)
+//    Align.centerSeq(Align.middle(Rect(extent) filled color, text)).group
+//  }
+//}
 
 // TODO: fix the padding fudge factors
 class HorizontalTick(length: Double, thickness: Double, label: Option[String] = None)

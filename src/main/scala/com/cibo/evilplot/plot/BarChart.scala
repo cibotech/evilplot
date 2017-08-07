@@ -1,11 +1,12 @@
+
 /*
  * Copyright 2017 CiBO Technologies
  */
 package com.cibo.evilplot.plot
 
+import com.cibo.evilplot.Utils
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.{Text, Utils}
 import com.cibo.evilplot.layout.ChartLayout
 import com.cibo.evilplot.numeric.Ticks
 import org.scalajs.dom.CanvasRenderingContext2D
@@ -20,16 +21,20 @@ class BarChart(override val extent: Extent, xBounds: Option[Bounds], data: Seq[D
     val minValue = 0.0
     val maxValue = data.reduce[Double](math.max)
     val xAxisDrawBounds: Bounds =
-    options.xAxisBounds.getOrElse(xBounds
-      .getOrElse(throw new IllegalArgumentException("xAxisDrawBounds must be defined")))
+      options.xAxisBounds.getOrElse(xBounds
+        .getOrElse(throw new IllegalArgumentException("xAxisDrawBounds must be defined")))
     val yAxisDrawBounds: Bounds = options.yAxisBounds.getOrElse(Bounds(minValue, maxValue))
+
+    val topLabel: DrawableLater = Utils.maybeDrawableLater(options.topLabel, (text: String) => Label(text))
+    val rightLabel: DrawableLater = Utils.maybeDrawableLater(options.rightLabel,
+      (text: String) => Label(text, rotate = 90))
 
     // I think it's probably time to just do HistogramChart and BarChart and have them extend some common trait.
     val xTicks = Ticks(xAxisDrawBounds, options.numXTicks.getOrElse(10))
     val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
     val bars = Bars(xBounds, Some(xAxisDrawBounds), yAxisDrawBounds, data, options.barColor)
-    val xAxis = XAxis(xTicks)
-    val yAxis = YAxis(yTicks)
+    val xAxis = XAxis(xTicks, label = options.xAxisLabel, options.drawXAxis)
+    val yAxis = YAxis(yTicks, label = options.yAxisLabel, options.drawYAxis)
     val chartArea: DrawableLater = {
       def chartArea(extent: Extent): Drawable = {
         val translatedAnnotation = Utils.maybeDrawable(options.annotation,
@@ -47,7 +52,8 @@ class BarChart(override val extent: Extent, xBounds: Option[Bounds], data: Seq[D
       new DrawableLaterMaker(chartArea)
     }
     val centerFactor = 0.85   // proportion of the plot to allocate to the center
-    ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = chartArea, left = yAxis, bottom = xAxis)
+    new ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = chartArea, left = yAxis, bottom = xAxis,
+      top = topLabel, right = rightLabel)
   }
 
   override def draw(canvas: CanvasRenderingContext2D): Unit = layout.draw(canvas)

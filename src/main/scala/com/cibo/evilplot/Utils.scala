@@ -1,7 +1,7 @@
 package com.cibo.evilplot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
+import com.cibo.evilplot.geometry.{Drawable, DrawableLater, EmptyDrawable, EmptyDrawableLater, Extent}
 import org.scalajs.dom
 import org.scalajs.dom.{html, _}
 
@@ -17,10 +17,17 @@ object Utils {
       .asInstanceOf[dom.CanvasRenderingContext2D]
   }
 
-  def maybeDrawable[T](value: Option[T], maker: T => Drawable): Drawable = {
+  def maybeDrawable[T](value: Option[T], maker: T => Drawable, default: Drawable = EmptyDrawable()): Drawable = {
     value match {
       case Some(t) => maker(t)
-      case None => EmptyDrawable()
+      case None => default
+    }
+  }
+
+  def maybeDrawableLater[T](value: Option[T], maker: T => DrawableLater): DrawableLater = {
+    value match {
+      case Some(t) => maker(t)
+      case None => EmptyDrawableLater
     }
   }
 }
