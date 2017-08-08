@@ -79,7 +79,9 @@ case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
       canvas.beginPath()
       canvas.moveTo(points.head.x, points.head.y)
       canvas.lineWidth = strokeWidth
-      points.tail.foreach(point => canvas.lineTo(point.x - xS.min, point.y - yS.min)) // Dirty dirty hack -.-
+      points.tail.foreach(point => {
+        canvas.lineTo(point.x, point.y)
+      })
       canvas.stroke()
     }
 }
