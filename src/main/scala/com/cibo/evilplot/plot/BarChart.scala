@@ -29,7 +29,7 @@ class BarChart(override val extent: Extent, xBounds: Option[Bounds], data: Seq[D
     val rightLabel: DrawableLater = Utils.maybeDrawableLater(options.rightLabel,
       (text: String) => Label(text, rotate = 90))
 
-    // I think it's probably time to just do HistogramChart and BarChart and have them extend some common trait.
+    // TODO: make HistogramChart and BarChart extend some common trait
     val xTicks = Ticks(xAxisDrawBounds, options.numXTicks.getOrElse(10))
     val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
     val bars = Bars(xBounds, Some(xAxisDrawBounds), yAxisDrawBounds, data, options.barColor)
