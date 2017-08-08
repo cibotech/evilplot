@@ -146,7 +146,6 @@ case class LinesLater(lines: Seq[LineToPlot], xAxisDrawBounds: Bounds, yAxisDraw
     val yScale = extent.height / yAxisDrawBounds.range
     val pathSeq: Seq[Drawable] = lines.map { case LineToPlot(data: Seq[Point], color: Color) =>
       FlipY(Scale(xScale, yScale)(StrokeStyle(color)(Path(data, strokeWidth = 0.1))))
-      //FlipY(Scale(100, 100)(StrokeStyle(color)(Path(data, strokeWidth = 0.1))))
     }
     Group(pathSeq: _*)
   }
