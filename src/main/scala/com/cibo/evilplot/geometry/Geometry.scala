@@ -76,8 +76,8 @@ case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
 
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
-      canvas.moveTo(points.head.x, points.head.y)
       canvas.beginPath()
+      canvas.moveTo(points.head.x, points.head.y)
       canvas.lineWidth = strokeWidth
       points.tail.foreach(point => canvas.lineTo(point.x - xS.min, point.y - yS.min)) // Dirty dirty hack -.-
       canvas.stroke()
