@@ -14,7 +14,7 @@ import org.scalajs.dom.CanvasRenderingContext2D
 // Should be able to draw either a histogram with an x-axis that directly labels the bins or
 // a histogram that has an extended x-axis and plots the data in that context.
 
-// xBounds: the minimum and maximum x-value of the histogram.
+// xBounds: the minimum and maximum x-value of the BarChart.
 class BarChart(override val extent: Extent, xBounds: Option[Bounds], data: Seq[Double], options: PlotOptions)
   extends Drawable {
   val layout: Drawable = {
@@ -97,7 +97,7 @@ case class Bars(dataXBounds: Option[Bounds],
     val barSpacing = 0
     // barWidth has a meaning in terms of the interpretation of the plot.
     val barWidth = extent.width / heightsToDraw.length
-    val vScale: Double = extent.height / drawYBounds.max
+    val vScale: Double = extent.height / (drawYBounds.max - drawYBounds.min)
     val bars: Drawable = Align.bottomSeq {
       heightsToDraw.map { h => Rect(barWidth, h * vScale) filled color
         //        if (h != 0) Rect(barWidth, h * vScale) filled color

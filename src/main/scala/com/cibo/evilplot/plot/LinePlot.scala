@@ -60,6 +60,8 @@ class LinePlot(override val extent: Extent, data: Seq[Seq[Point]], colors: Seq[C
 
 }
 */
+
+/*
 // Plot paths connecting the points in data. Each Seq[Point] makes a path, drawn using the corresponding color.
 class LinePlot(override val extent: Extent, data: Seq[Seq[Point]], colors: Seq[Color], options: PlotOptions)
   extends Drawable {
@@ -102,8 +104,85 @@ class LinePlot(override val extent: Extent, data: Seq[Seq[Point]], colors: Seq[C
     paths
   }
 
+  override def draw(canvas: CanvasRenderingContext2D): Unit = layout.draw(canvas)
+}
+*/
 
+case class LineToPlot(points: Seq[Point], color: Color) {
+  def xBounds: Bounds = {
+    val xS = points.map(_.x)
+    val xMin = xS.reduce[Double](math.min)
+    val xMax = xS.reduce[Double](math.max)
+    Bounds(xMin, xMax)
+  }
+
+  def yBounds: Bounds = {
+    val yS = points.map(_.y)
+    val yMin = yS.reduce[Double](math.min)
+    val yMax = yS.reduce[Double](math.max)
+    Bounds(yMin, yMax)
+  }
+}
+
+object LineToPlot {
+  def xBounds(lines: Seq[LineToPlot]): Bounds = {
+    val bounds = lines.map(_.xBounds)
+    val xMin = bounds.map(_.min).reduce[Double](math.min)
+    val xMax = bounds.map(_.max).reduce[Double](math.max)
+    Bounds(xMin, xMax)
+  }
+
+  def yBounds(lines: Seq[LineToPlot]): Bounds = {
+    val bounds = lines.map(_.yBounds)
+    val yMin = bounds.map(_.min).reduce[Double](math.min)
+    val yMax = bounds.map(_.max).reduce[Double](math.max)
+    Bounds(yMin, yMax)
+  }
+}
+
+
+// Draw a line plot consisting of a set of lines. Each Seq in `data` is a separate line. The colors Seq
+class LinePlot(override val extent: Extent, lines: Seq[LineToPlot], options: PlotOptions)
+  extends Drawable {
+  val layout: Drawable = {
+    val xBounds = LineToPlot.xBounds(lines)
+    val yBounds = LineToPlot.yBounds(lines)
+    val xAxisDrawBounds: Bounds = options.xAxisBounds.getOrElse(xBounds)
+    val yAxisDrawBounds: Bounds = options.yAxisBounds.getOrElse(yBounds)
+    val topLabel: DrawableLater = Utils.maybeDrawableLater(options.topLabel, (text: String) => Label(text))
+    val rightLabel: DrawableLater = Utils.maybeDrawableLater(options.rightLabel,
+      (text: String) => Label(text, rotate = 90))
+
+    // TODO: centralize code that originated with BarChart
+    val xTicks = Ticks(xAxisDrawBounds, options.numXTicks.getOrElse(10))
+    val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
+
+
+
+
+//    val bars = Bars(xBounds, Some(xAxisDrawBounds), yAxisDrawBounds, data, options.barColor)
+    val xAxis = XAxis(xTicks, label = options.xAxisLabel, options.drawXAxis)
+    val yAxis = YAxis(yTicks, label = options.yAxisLabel, options.drawYAxis)
+    val chartArea: DrawableLater = {
+      def chartArea(extent: Extent): Drawable = {
+        val translatedAnnotation = Utils.maybeDrawable(options.annotation,
+          (annotation: ChartAnnotation) =>
+            ((annotation transX annotation.position._1 * extent.width)
+              transY (annotation.position._2 * extent.height)))
+        val xGridLines = Utils.maybeDrawable(options.xGridSpacing,
+          (xGridSpacing: Double) => VerticalGridLines(xTicks, xGridSpacing, color = White)(extent))
+        val yGridLines = Utils.maybeDrawable(options.yGridSpacing,
+          (yGridSpacing: Double) => HorizontalGridLines(yTicks, yGridSpacing, color = White)(extent))
+        Rect(extent) filled options.backgroundColor behind
+          //bars(extent) behind
+          xGridLines behind yGridLines behind translatedAnnotation
+      }
+      new DrawableLaterMaker(chartArea)
+    }
+    val centerFactor = 0.85   // proportion of the plot to allocate to the center
+    new ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = chartArea, left = yAxis, bottom = xAxis,
+      top = topLabel, right = rightLabel)
+  }
 
   override def draw(canvas: CanvasRenderingContext2D): Unit = layout.draw(canvas)
-
 }
