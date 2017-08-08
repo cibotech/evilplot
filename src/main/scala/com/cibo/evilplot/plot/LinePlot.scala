@@ -140,8 +140,20 @@ object LineToPlot {
   }
 }
 
+case class LinesLater(lines: Seq[LineToPlot], xAxisDrawBounds: Bounds, yAxisDrawBounds: Bounds) extends DrawableLater {
+  def apply(extent: Extent): Drawable = {
+    val xScale = extent.width / xAxisDrawBounds.range
+    val yScale = extent.height / yAxisDrawBounds.range
+    val pathSeq: Seq[Drawable] = lines.map { case LineToPlot(data: Seq[Point], color: Color) =>
+      FlipY(Scale(xScale, yScale)(StrokeStyle(color)(Path(data, strokeWidth = 0.1))))
+      //FlipY(Scale(100, 100)(StrokeStyle(color)(Path(data, strokeWidth = 0.1))))
+    }
+    Group(pathSeq: _*)
+  }
+}
 
 // Draw a line plot consisting of a set of lines. Each Seq in `data` is a separate line. The colors Seq
+// TODO: centralize code that originated with BarChart
 class LinePlot(override val extent: Extent, lines: Seq[LineToPlot], options: PlotOptions)
   extends Drawable {
   val layout: Drawable = {
@@ -152,35 +164,25 @@ class LinePlot(override val extent: Extent, lines: Seq[LineToPlot], options: Plo
     val topLabel: DrawableLater = Utils.maybeDrawableLater(options.topLabel, (text: String) => Label(text))
     val rightLabel: DrawableLater = Utils.maybeDrawableLater(options.rightLabel,
       (text: String) => Label(text, rotate = 90))
-
-    // TODO: centralize code that originated with BarChart
     val xTicks = Ticks(xAxisDrawBounds, options.numXTicks.getOrElse(10))
     val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
-
-
-
-
-//    val bars = Bars(xBounds, Some(xAxisDrawBounds), yAxisDrawBounds, data, options.barColor)
     val xAxis = XAxis(xTicks, label = options.xAxisLabel, options.drawXAxis)
     val yAxis = YAxis(yTicks, label = options.yAxisLabel, options.drawYAxis)
-    val chartArea: DrawableLater = {
-      def chartArea(extent: Extent): Drawable = {
-        val translatedAnnotation = Utils.maybeDrawable(options.annotation,
-          (annotation: ChartAnnotation) =>
-            ((annotation transX annotation.position._1 * extent.width)
-              transY (annotation.position._2 * extent.height)))
+    val linesLater = LinesLater(lines, xAxisDrawBounds, yAxisDrawBounds)
+    val plotArea: DrawableLater = {
+      def plotArea(extent: Extent): Drawable = {
         val xGridLines = Utils.maybeDrawable(options.xGridSpacing,
           (xGridSpacing: Double) => VerticalGridLines(xTicks, xGridSpacing, color = White)(extent))
         val yGridLines = Utils.maybeDrawable(options.yGridSpacing,
           (yGridSpacing: Double) => HorizontalGridLines(yTicks, yGridSpacing, color = White)(extent))
         Rect(extent) filled options.backgroundColor behind
-          //bars(extent) behind
-          xGridLines behind yGridLines behind translatedAnnotation
+          linesLater(extent) behind
+          xGridLines behind yGridLines
       }
-      new DrawableLaterMaker(chartArea)
+      new DrawableLaterMaker(plotArea)
     }
     val centerFactor = 0.85   // proportion of the plot to allocate to the center
-    new ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = chartArea, left = yAxis, bottom = xAxis,
+    new ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = plotArea, left = yAxis, bottom = xAxis,
       top = topLabel, right = rightLabel)
   }
 
