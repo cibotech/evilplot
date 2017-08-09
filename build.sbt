@@ -18,7 +18,9 @@ libraryDependencies ++= Seq(
 // see http://www.scalatest.org/install
 resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
 
+// see https://www.scala-js.org/doc/project/building.html
 scalaJSUseMainModuleInitializer := true
+
 jsDependencies += RuntimeDOM
 
 jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value)
