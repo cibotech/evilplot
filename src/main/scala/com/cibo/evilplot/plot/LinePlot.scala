@@ -145,7 +145,7 @@ case class LinesLater(lines: Seq[LineToPlot], xAxisDrawBounds: Bounds, yAxisDraw
     val xScale = extent.width / xAxisDrawBounds.range
     val yScale = extent.height / yAxisDrawBounds.range
     val pathSeq: Seq[Drawable] = lines.map { case LineToPlot(data: Seq[Point], color: Color) =>
-      FlipY(Scale(xScale, yScale)(StrokeStyle(color)(Path(data, strokeWidth = 0.1))))
+      Scale(xScale, yScale)(FlipY(StrokeStyle(color)(Path(data, strokeWidth = 0.1))))
     }
     Group(pathSeq: _*)
   }
@@ -160,6 +160,7 @@ class LinePlot(override val extent: Extent, lines: Seq[LineToPlot], options: Plo
     val yBounds = LineToPlot.yBounds(lines)
     val xAxisDrawBounds: Bounds = options.xAxisBounds.getOrElse(xBounds)
     val yAxisDrawBounds: Bounds = options.yAxisBounds.getOrElse(yBounds)
+    println(s"$xBounds $yBounds $xAxisDrawBounds $yAxisDrawBounds ")
     val topLabel: DrawableLater = Utils.maybeDrawableLater(options.topLabel, (text: String) => Label(text))
     val rightLabel: DrawableLater = Utils.maybeDrawableLater(options.rightLabel,
       (text: String) => Label(text, rotate = 90))
@@ -181,8 +182,8 @@ class LinePlot(override val extent: Extent, lines: Seq[LineToPlot], options: Plo
       new DrawableLaterMaker(plotArea)
     }
     val centerFactor = 0.85   // proportion of the plot to allocate to the center
-    new ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = plotArea, left = yAxis, bottom = xAxis,
-      top = topLabel, right = rightLabel)
+    new ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = plotArea,
+      left = yAxis, bottom = xAxis, top = topLabel, right = rightLabel)
   }
 
   override def draw(canvas: CanvasRenderingContext2D): Unit = layout.draw(canvas)

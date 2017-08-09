@@ -59,8 +59,8 @@ case class Line(length: Double, strokeWidth: Double) extends Drawable {
 
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
-      canvas.beginPath()
       canvas.lineWidth = strokeWidth
+      canvas.beginPath()
       canvas.moveTo(0, strokeWidth / 2.0)
       canvas.lineTo(length, strokeWidth / 2.0)
       canvas.closePath()
