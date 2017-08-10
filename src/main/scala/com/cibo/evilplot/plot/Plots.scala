@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.Colors.{ColorSeq, GradientColorBar}
-import com.cibo.evilplot.{Text, colors}
+import com.cibo.evilplot.Text
+import com.cibo.evilplot.colors.Colors.GradientColorBar
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.Histogram
@@ -17,7 +17,7 @@ object Plots {
     val options = PlotOptions(xAxisBounds = Some(Bounds(-75, 225)), yAxisBounds = Some(Bounds(0, 15)),
       xGridSpacing = Some(50), yGridSpacing = Some(5), withinMetrics = Some(15), annotation = annotation,
       topLabel = title)
-    new BarChart(size, Some(Bounds(hist.min, hist.max)), graphData, options = options)
+    new HistogramChart(size, Some(Bounds(hist.min, hist.max)), graphData, options = options)
   }
 
   def createScatterPlot(graphSize: Extent, data: Seq[Point], zData: Seq[Double], nColors: Int): Pad = {

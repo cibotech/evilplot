@@ -22,17 +22,17 @@ class ScatterPlot(val extent: Extent, data: Seq[Point], zData: Option[Seq[Double
     else EmptyDrawable()
   }
   private val _drawable: Drawable = {
-    val xAxis: DrawableLater = XAxis(xTicks, label = options.xAxisLabel)
-    val yAxis: DrawableLater = YAxis(yTicks, label = options.yAxisLabel)
+    val xAxis: DrawableLater = ContinuousChartDistributable.XAxis(xTicks, label = options.xAxisLabel)
+    val yAxis: DrawableLater = ContinuousChartDistributable.YAxis(yTicks, label = options.yAxisLabel)
     val topLabel = Utils.maybeDrawableLater(options.topLabel, (text: String) => Label(text, textSize = Some(22)))
 
     def chartArea(extent: Extent): Drawable = {
       val scaleX: Double = extent.width / xAxisBounds.range
       val scaleY: Double = extent.height / yAxisBounds.range
       val chartBackground = Rect(extent.width, extent.height) filled options.backgroundColor
-      val xGridLines = VerticalGridLines(xTicks, options.xGridSpacing.getOrElse(1000),
+      val xGridLines = ContinuousChartDistributable.VerticalGridLines(xTicks, options.xGridSpacing.getOrElse(1000),
         color = options.gridColor)(extent)
-      val yGridLines = HorizontalGridLines(yTicks, options.yGridSpacing.getOrElse(1000),
+      val yGridLines = ContinuousChartDistributable.HorizontalGridLines(yTicks, options.yGridSpacing.getOrElse(1000),
         color = options.gridColor)(extent)
       val _chartArea = chartBackground behind yGridLines behind xGridLines
 
