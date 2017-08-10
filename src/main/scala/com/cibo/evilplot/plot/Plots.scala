@@ -51,40 +51,6 @@ object Plots {
     fitScatter padAll 10 beside legend titled ("A Scatter Plot", 20) padAll 10
   }
 
-  // This code is probably broken now following the removal of a hack from the Path class.
-  // Keep it around for now because it has some nice tricks, but likely we should delete it eventually.
-  def createLinePlot(graphSize: Extent, data: Seq[Point]): Pad = {
-    val textSize = 24
-
-    val minX = data.minBy(_.x).x
-    val maxX = data.maxBy(_.x).x
-    val minY = data.minBy(_.y).y
-    val maxY = data.maxBy(_.y).y
-
-    val fitLine = FlipY(Fit(graphSize) {
-      val scalex = graphSize.width / (maxX - minX)
-      val scaley = graphSize.height / (maxY - minY)
-      val line = Path(data.map(p => Point(p.x * scalex, p.y * scaley)), 0.5)
-      val xAxis = axis(graphSize, true, maxX, textSize, minX)
-      val pointAndY = FlipY(axis(graphSize, false, maxY, textSize, minY)) beside line
-      Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
-    })
-
-    fitLine titled ("A Line Plot", 20) padAll 10
-  }
-
-  def createMultiLinePlot(graphSize: Extent, datas: Seq[Seq[Point]]): Pad = {
-    val fitLine = FlipY(Fit(graphSize) {
-      val lines = datas.map(data => Path(data, 0.5))
-      val xAxis = axis(graphSize, true, lines.map(_.xS.max).max, 0, lines.map(_.xS.min).min) // TODO: wut
-      val pointAndY =
-        FlipY(axis(graphSize, false, lines.map(_.yS.max).max, 0, lines.map(_.yS.min).min)) beside lines.group
-      Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
-    })
-
-    fitLine titled ("A Multi Line Plot", 20) padAll 10
-  }
-
   def createPieChart(scale: Int, data: Seq[Double]): Pad = {
     val pieWedges = {
       val labelPad = 10 // TODO: should be maxTextWidth?
