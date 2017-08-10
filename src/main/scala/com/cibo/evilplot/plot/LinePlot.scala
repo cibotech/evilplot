@@ -8,6 +8,7 @@ import com.cibo.evilplot.colors.{Color, White}
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.layout.ChartLayout
 import com.cibo.evilplot.numeric.Ticks
+import com.cibo.evilplot.plot.ContinuousChartDistributable.{HorizontalGridLines, VerticalGridLines, XAxis, YAxis}
 import org.scalajs.dom.CanvasRenderingContext2D
 
 /*
@@ -111,15 +112,15 @@ class LinePlot(override val extent: Extent, data: Seq[Seq[Point]], colors: Seq[C
 case class LineToPlot(points: Seq[Point], color: Color) {
   def xBounds: Bounds = {
     val xS = points.map(_.x)
-    val xMin = xS.reduce[Double](math.min)
-    val xMax = xS.reduce[Double](math.max)
+    val xMin = xS.min
+    val xMax = xS.max
     Bounds(xMin, xMax)
   }
 
   def yBounds: Bounds = {
     val yS = points.map(_.y)
-    val yMin = yS.reduce[Double](math.min)
-    val yMax = yS.reduce[Double](math.max)
+    val yMin = yS.min
+    val yMax = yS.max
     Bounds(yMin, yMax)
   }
 }
@@ -127,25 +128,31 @@ case class LineToPlot(points: Seq[Point], color: Color) {
 object LineToPlot {
   def xBounds(lines: Seq[LineToPlot]): Bounds = {
     val bounds = lines.map(_.xBounds)
-    val xMin = bounds.map(_.min).reduce[Double](math.min)
-    val xMax = bounds.map(_.max).reduce[Double](math.max)
+    val xMin = bounds.map(_.min).min
+    val xMax = bounds.map(_.max).max
     Bounds(xMin, xMax)
   }
 
   def yBounds(lines: Seq[LineToPlot]): Bounds = {
     val bounds = lines.map(_.yBounds)
-    val yMin = bounds.map(_.min).reduce[Double](math.min)
-    val yMax = bounds.map(_.max).reduce[Double](math.max)
+    val yMin = bounds.map(_.min).min
+    val yMax = bounds.map(_.max).max
     Bounds(yMin, yMax)
   }
 }
 
-case class LinesLater(lines: Seq[LineToPlot], xAxisDrawBounds: Bounds, yAxisDrawBounds: Bounds) extends DrawableLater {
+case class LinesLater(lines: Seq[LineToPlot], xBounds: Bounds, yBounds: Bounds, xAxisDrawBounds: Bounds, yAxisDrawBounds: Bounds) extends DrawableLater {
   def apply(extent: Extent): Drawable = {
     val xScale = extent.width / xAxisDrawBounds.range
     val yScale = extent.height / yAxisDrawBounds.range
+    println(s"LinesLater $xBounds $yBounds $xAxisDrawBounds $yAxisDrawBounds $xScale $yScale")
     val pathSeq: Seq[Drawable] = lines.map { case LineToPlot(data: Seq[Point], color: Color) =>
-      Scale(xScale, yScale)(FlipY(StrokeStyle(color)(Path(data, strokeWidth = 0.1))))
+
+      Scale(xScale, yScale)(
+        StrokeStyle(color)(
+          Translate(0, yAxisDrawBounds.max)(
+            Scale(1, -1)(Path(data, strokeWidth = 0.05)))
+        ))
     }
     Group(pathSeq: _*)
   }
@@ -168,7 +175,7 @@ class LinePlot(override val extent: Extent, lines: Seq[LineToPlot], options: Plo
     val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
     val xAxis = XAxis(xTicks, label = options.xAxisLabel, options.drawXAxis)
     val yAxis = YAxis(yTicks, label = options.yAxisLabel, options.drawYAxis)
-    val linesLater = LinesLater(lines, xAxisDrawBounds, yAxisDrawBounds)
+    val linesLater = LinesLater(lines, xBounds, yBounds, xAxisDrawBounds, yAxisDrawBounds)
     val plotArea: DrawableLater = {
       def plotArea(extent: Extent): Drawable = {
         val xGridLines = Utils.maybeDrawable(options.xGridSpacing,
@@ -184,6 +191,7 @@ class LinePlot(override val extent: Extent, lines: Seq[LineToPlot], options: Plo
     val centerFactor = 0.85   // proportion of the plot to allocate to the center
     new ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = plotArea,
       left = yAxis, bottom = xAxis, top = topLabel, right = rightLabel)
+    //linesLater(extent)
   }
 
   override def draw(canvas: CanvasRenderingContext2D): Unit = layout.draw(canvas)
