@@ -59,8 +59,8 @@ case class Line(length: Double, strokeWidth: Double) extends Drawable {
 
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
-      canvas.beginPath()
       canvas.lineWidth = strokeWidth
+      canvas.beginPath()
       canvas.moveTo(0, strokeWidth / 2.0)
       canvas.lineTo(length, strokeWidth / 2.0)
       canvas.closePath()
@@ -79,8 +79,12 @@ case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
       canvas.beginPath()
       canvas.moveTo(points.head.x, points.head.y)
       canvas.lineWidth = strokeWidth
-      points.tail.foreach(point => canvas.lineTo(point.x - xS.min, point.y - yS.min)) // Dirty dirty hack -.-
+      points.tail.foreach(point => {
+        canvas.lineTo(point.x, point.y)
+      })
       canvas.stroke()
+      // Uncomment this line in order to draw the bounding box for debugging
+      //canvas.strokeRect(xS.min, yS.min, extent.width, extent.height)
     }
 }
 

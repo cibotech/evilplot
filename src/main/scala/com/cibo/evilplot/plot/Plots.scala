@@ -51,6 +51,8 @@ object Plots {
     fitScatter padAll 10 beside legend titled ("A Scatter Plot", 20) padAll 10
   }
 
+  // This code is probably broken now following the removal of a hack from the Path class.
+  // Keep it around for now because it has some nice tricks, but likely we should delete it eventually.
   def createLinePlot(graphSize: Extent, data: Seq[Point]): Pad = {
     val textSize = 24
 
