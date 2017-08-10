@@ -4,7 +4,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.DOMInitializer
-import com.cibo.evilplot.colors.{Black, HSL}
+import com.cibo.evilplot.colors.Black
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric._
 import org.scalatest._
@@ -13,12 +13,12 @@ import scala.util.Random
 
 
 // TODO: These tests need a lot of work before they are actually useful!
-class BarChartSpec extends FunSpec with Matchers {
+class HistogramChartSpec extends FunSpec with Matchers {
 
   DOMInitializer.init()
   val chartSize = Extent(500, 400)
 
-  describe("BarChart") {
+  describe("HistogramChart") {
     it("should produce the correct number of bars when given a range tight around the bounds of the data") {
       val data = GaussianData.data
       val xBounds = Bounds(7.0, 13.0)

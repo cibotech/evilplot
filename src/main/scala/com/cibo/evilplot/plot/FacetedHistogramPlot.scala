@@ -36,7 +36,7 @@ class FacetedHistogramPlot(extent: Extent, data: Seq[Seq[Double]], numBins: Int,
 
   private val allCharts: Drawable= {
     def makeChart(xBounds: Option[Bounds], data: Seq[Double], options: PlotOptions)(extent: Extent): Drawable = {
-      new BarChart(extent, xBounds, data, options)
+      new HistogramChart(extent, xBounds, data, options)
     }
 
     // Each element in the Seq corresponds to a Seq[Double] in data, but split by category.

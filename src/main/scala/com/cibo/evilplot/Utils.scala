@@ -30,6 +30,11 @@ object Utils {
       case None => EmptyDrawableLater
     }
   }
+
+  def createNumericLabel(num: Double, numFrac: Int): String = {
+    val fmtString = "%%.%df".format(numFrac)
+    fmtString.format(num)
+  }
 }
 
 case class Style(fill: Color)(r: Drawable) extends Drawable {

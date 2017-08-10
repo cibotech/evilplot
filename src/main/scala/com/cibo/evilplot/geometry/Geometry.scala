@@ -89,6 +89,15 @@ case class Rect(width: Double, height: Double) extends Drawable {
   val extent: Extent = Extent(width, height)
 }
 
+case class BorderRect(width: Double, height: Double) extends Drawable {
+  def draw(canvas: CanvasRenderingContext2D): Unit = canvas.strokeRect(0, 0, width, height)
+  val extent: Extent = Extent(width, height)
+}
+
+case class BorderFillRect(width: Double, height: Double) extends WrapDrawable {
+  override def drawable: Drawable = BorderRect(width, height) behind Rect(width, height)
+}
+
 object Rect {
   def apply(side: Double): Rect = Rect(side, side)
   def apply(size: Extent): Rect = Rect(size.width, size.height)
