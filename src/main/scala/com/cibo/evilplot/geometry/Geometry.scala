@@ -83,6 +83,8 @@ case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
         canvas.lineTo(point.x, point.y)
       })
       canvas.stroke()
+      // Uncomment this line in order to draw the bounding box for debugging
+      //canvas.strokeRect(xS.min, yS.min, extent.width, extent.height)
     }
 }
 

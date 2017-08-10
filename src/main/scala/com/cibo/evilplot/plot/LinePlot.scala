@@ -145,14 +145,10 @@ case class LinesLater(lines: Seq[LineToPlot], xBounds: Bounds, yBounds: Bounds, 
   def apply(extent: Extent): Drawable = {
     val xScale = extent.width / xAxisDrawBounds.range
     val yScale = extent.height / yAxisDrawBounds.range
-    println(s"LinesLater $xBounds $yBounds $xAxisDrawBounds $yAxisDrawBounds $xScale $yScale")
-    val pathSeq: Seq[Drawable] = lines.map { case LineToPlot(data: Seq[Point], color: Color) =>
-
-      Scale(xScale, yScale)(
-        StrokeStyle(color)(
-          Translate(0, yAxisDrawBounds.max)(
-            Scale(1, -1)(Path(data, strokeWidth = 0.05)))
-        ))
+    val pathSeq: Seq[Drawable] = lines.map { case LineToPlot(points: Seq[Point], color: Color) =>
+      val scaledPoints =
+        points.map(pt => Point((pt.x - xAxisDrawBounds.min) * xScale, (yAxisDrawBounds.max - pt.y) * yScale))
+      StrokeStyle(color)(Path(scaledPoints, 2.0))
     }
     Group(pathSeq: _*)
   }
@@ -167,7 +163,6 @@ class LinePlot(override val extent: Extent, lines: Seq[LineToPlot], options: Plo
     val yBounds = LineToPlot.yBounds(lines)
     val xAxisDrawBounds: Bounds = options.xAxisBounds.getOrElse(xBounds)
     val yAxisDrawBounds: Bounds = options.yAxisBounds.getOrElse(yBounds)
-    println(s"$xBounds $yBounds $xAxisDrawBounds $yAxisDrawBounds ")
     val topLabel: DrawableLater = Utils.maybeDrawableLater(options.topLabel, (text: String) => Label(text))
     val rightLabel: DrawableLater = Utils.maybeDrawableLater(options.rightLabel,
       (text: String) => Label(text, rotate = 90))
