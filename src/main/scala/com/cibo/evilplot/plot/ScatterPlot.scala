@@ -18,7 +18,7 @@ class ScatterPlot(val extent: Extent, data: Seq[Point], zData: Option[Seq[Double
   // Will return an EmptyDrawable if point is out-of-bounds.
   private[plot] def scatterPoint(x: Double, y: Double)(scaleX: Double, scaleY: Double): Drawable = {
     if (xAxisBounds.isInBounds(x) && yAxisBounds.isInBounds(y)) Disc(pointSize, (x - xAxisBounds.min) * scaleX,
-      (y - yAxisBounds.min) * scaleY) transY pointSize
+      (yAxisBounds.max - y) * scaleY)
     else EmptyDrawable()
   }
   private val _drawable: Drawable = {
@@ -36,7 +36,7 @@ class ScatterPlot(val extent: Extent, data: Seq[Point], zData: Option[Seq[Double
         color = options.gridColor)(extent)
       val _chartArea = chartBackground behind yGridLines behind xGridLines
 
-      val plottedPoints = FlipY({
+      val plottedPoints = {
         val points = (zData, colorBar) match {
           case (Some(_zData), _colorBar@GradientColorBar(_, _, _)) =>
             require(_zData.length == data.length, "color and point data must have same length")
@@ -48,7 +48,7 @@ class ScatterPlot(val extent: Extent, data: Seq[Point], zData: Option[Seq[Double
           case (_, _) => throw new IllegalArgumentException
         }
         points.group
-      })
+      }
 
       (_chartArea transX pointSize transY pointSize behind plottedPoints) transX -pointSize transY -pointSize
     }

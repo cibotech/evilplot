@@ -47,9 +47,8 @@ class ScatterPlotSpec extends FunSpec with Matchers {
         p should not be an[EmptyDrawable]
         p.extent.width shouldBe ((x - plot.xAxisBounds.min) / plot.xAxisBounds.range) *
           plot.extent.width + 2 * plot.pointSize +-   .2
-        // 3 * plot.pointSize because of the transY pointSize
-        p.extent.height shouldBe ((y - plot.yAxisBounds.min) / plot.yAxisBounds.range) *
-          plot.extent.height + 3 * plot.pointSize +-   .2
+        p.extent.height shouldBe ((plot.yAxisBounds.max - y) / plot.yAxisBounds.range) *
+          plot.extent.height + 2 * plot.pointSize +-   .2
       }
     }
   }
