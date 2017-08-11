@@ -4,11 +4,11 @@ name := "EvilPlot"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.11.11"
+scalaVersion := "2.12.3"
 
 libraryDependencies ++= Seq(
   "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-  "com.lihaoyi" %%% "scalatags" % "0.6.1",
+  "com.lihaoyi" %%% "scalatags" % "0.6.5",
   "org.scalactic" %% "scalactic" % "3.0.1",
   "org.scalatest" %%% "scalatest" % "3.0.1" % "test",
   // allows us to run tests in IntellJ
