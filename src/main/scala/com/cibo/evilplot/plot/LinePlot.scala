@@ -11,6 +11,8 @@ import com.cibo.evilplot.numeric.Ticks
 import com.cibo.evilplot.plot.ContinuousChartDistributable.{HorizontalGridLines, VerticalGridLines, XAxis, YAxis}
 import org.scalajs.dom.CanvasRenderingContext2D
 
+
+// Specify a line to be plotted
 case class LineToPlot(points: Seq[Point], color: Color) {
   def xBounds: Bounds = {
     val xS = points.map(_.x)
@@ -43,7 +45,8 @@ object LineToPlot {
   }
 }
 
-case class LinesLater(lines: Seq[LineToPlot], xBounds: Bounds, yBounds: Bounds, xAxisDrawBounds: Bounds, yAxisDrawBounds: Bounds) extends DrawableLater {
+// Specify a sequence of lines to plot later, when the apply method is called
+case class LinesLater(lines: Seq[LineToPlot], xAxisDrawBounds: Bounds, yAxisDrawBounds: Bounds) extends DrawableLater {
   def apply(extent: Extent): Drawable = {
     val xScale = extent.width / xAxisDrawBounds.range
     val yScale = extent.height / yAxisDrawBounds.range
@@ -72,7 +75,7 @@ class LinePlot(override val extent: Extent, lines: Seq[LineToPlot], options: Plo
     val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
     val xAxis = XAxis(xTicks, label = options.xAxisLabel, options.drawXAxis)
     val yAxis = YAxis(yTicks, label = options.yAxisLabel, options.drawYAxis)
-    val linesLater = LinesLater(lines, xBounds, yBounds, xAxisDrawBounds, yAxisDrawBounds)
+    val linesLater = LinesLater(lines, xAxisDrawBounds, yAxisDrawBounds)
     val plotArea: DrawableLater = {
       def plotArea(extent: Extent): Drawable = {
         val xGridLines = Utils.maybeDrawable(options.xGridSpacing,
