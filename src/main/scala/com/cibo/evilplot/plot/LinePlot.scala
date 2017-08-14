@@ -3,12 +3,12 @@
  */
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.{StrokeStyle, Utils}
 import com.cibo.evilplot.colors.{Color, White}
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.layout.ChartLayout
-import com.cibo.evilplot.numeric.Ticks
+import com.cibo.evilplot.numeric.AxisDescriptor
 import com.cibo.evilplot.plot.ContinuousChartDistributable.{HorizontalGridLines, VerticalGridLines, XAxis, YAxis}
+import com.cibo.evilplot.{StrokeStyle, Utils}
 import org.scalajs.dom.CanvasRenderingContext2D
 
 
@@ -71,17 +71,17 @@ class LinePlot(override val extent: Extent, lines: Seq[LineToPlot], options: Plo
     val topLabel: DrawableLater = Utils.maybeDrawableLater(options.topLabel, (text: String) => Label(text))
     val rightLabel: DrawableLater = Utils.maybeDrawableLater(options.rightLabel,
       (text: String) => Label(text, rotate = 90))
-    val xTicks = Ticks(xAxisDrawBounds, options.numXTicks.getOrElse(10))
-    val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
-    val xAxis = XAxis(xTicks, label = options.xAxisLabel, options.drawXAxis)
-    val yAxis = YAxis(yTicks, label = options.yAxisLabel, options.drawYAxis)
-    val linesLater = LinesLater(lines, xAxisDrawBounds, yAxisDrawBounds)
+    val xAxisDescriptor = AxisDescriptor(xAxisDrawBounds, options.numXTicks.getOrElse(10))
+    val yAxisDescriptor = AxisDescriptor(yAxisDrawBounds, options.numYTicks.getOrElse(10))
+    val xAxis = XAxis(xAxisDescriptor, label = options.xAxisLabel, options.drawXAxis)
+    val yAxis = YAxis(yAxisDescriptor, label = options.yAxisLabel, options.drawYAxis)
+    val linesLater = LinesLater(lines, xAxisDescriptor.axisBounds, yAxisDescriptor.axisBounds)
     val plotArea: DrawableLater = {
       def plotArea(extent: Extent): Drawable = {
         val xGridLines = Utils.maybeDrawable(options.xGridSpacing,
-          (xGridSpacing: Double) => VerticalGridLines(xTicks, xGridSpacing, color = White)(extent))
+          (xGridSpacing: Double) => VerticalGridLines(xAxisDescriptor, xGridSpacing, color = White)(extent))
         val yGridLines = Utils.maybeDrawable(options.yGridSpacing,
-          (yGridSpacing: Double) => HorizontalGridLines(yTicks, yGridSpacing, color = White)(extent))
+          (yGridSpacing: Double) => HorizontalGridLines(yAxisDescriptor, yGridSpacing, color = White)(extent))
         Rect(extent) filled options.backgroundColor behind
           linesLater(extent) behind
           xGridLines behind yGridLines

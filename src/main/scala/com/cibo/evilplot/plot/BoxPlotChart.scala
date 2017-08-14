@@ -3,9 +3,9 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Black, Blue, Color, White}
 import com.cibo.evilplot.geometry.{Above, Align, BorderFillRect, Disc, Drawable, DrawableLaterMaker, EmptyDrawable, Extent, FlipY, Line, Rect, WrapDrawable}
 import com.cibo.evilplot.layout.ChartLayout
-import com.cibo.evilplot.numeric.{BoxPlot, Ticks}
+import com.cibo.evilplot.numeric.{AxisDescriptor, BoxPlot}
 import com.cibo.evilplot.plot.BoxPlotData.{AllPoints, BoxPlotPoints, NoPoints, OutliersOnly}
-import com.cibo.evilplot.{StrokeStyle, Style}
+import com.cibo.evilplot.{StrokeStyle, Style, Utils}
 import org.scalajs.dom.CanvasRenderingContext2D
 
 
@@ -21,22 +21,25 @@ object BoxPlotData {
 
 case class BoxPlotData[T](labels: Seq[T], distributions: Seq[Seq[Double]], drawPoints: BoxPlotPoints = AllPoints,
                           rectWidth: Option[Double] = None, rectSpacing: Option[Double] = None, rectColor: Color = Blue,
-                          pointColor: Color = Black, pointSize: Double = 2.0) {
+                          pointColor: Color = Black, pointSize: Double = 2.0) extends PlotData {
   require(labels.length == distributions.length)
   val numBoxes: Int = labels.length
-  lazy val yBounds: Bounds = {
+  override def yBounds: Option[Bounds] = {
     val pointsFromAllDistributions: Seq[Double] = distributions.flatten
-    Bounds(pointsFromAllDistributions.min, pointsFromAllDistributions.max)
+    Some(Bounds(pointsFromAllDistributions.min, pointsFromAllDistributions.max))
   }
+
+  override def createPlot(extent: Extent, options: PlotOptions): Drawable = new BoxPlotChart(extent, this, options)
 }
 
 class BoxPlotChart[T](override val extent: Extent, data: BoxPlotData[T], options: PlotOptions) extends Drawable {
-  val yAxisDrawBounds: Bounds = options.yAxisBounds.getOrElse(data.yBounds)
+  val yAxisDrawBounds: Bounds = options.yAxisBounds.getOrElse(data.yBounds
+    .getOrElse(throw new IllegalArgumentException))
 
   val (getRectWidth, getRectSpacing) = DiscreteChartDistributable
     .widthAndSpacingFunctions(data.numBoxes, data.rectWidth, data.rectSpacing)
 
-  val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
+  val yAxisDescriptor = AxisDescriptor(yAxisDrawBounds, options.numYTicks.getOrElse(10))
 
   private def createDiscs(pointsData: Seq[Double], vScale: Double): Drawable = {
     val points = for {point <- pointsData} yield Disc(data.pointSize, 0, (point - yAxisDrawBounds.min) * vScale)
@@ -45,15 +48,17 @@ class BoxPlotChart[T](override val extent: Extent, data: BoxPlotData[T], options
 
   private val _drawable = {
     val xAxis = DiscreteChartDistributable.XAxis(data.labels, getRectWidth, getRectSpacing,
-      label = options.xAxisLabel)
-    val yAxis = ContinuousChartDistributable.YAxis(yTicks, label = options.yAxisLabel)
-
+      label = options.xAxisLabel, drawAxis = options.drawXAxis)
+    val yAxis = ContinuousChartDistributable
+      .YAxis(yAxisDescriptor, label = options.yAxisLabel, drawTicks = options.drawYAxis)
+    val topLabel = Utils.maybeDrawableLater(options.topLabel, (text: String) => Label(text))
+    val rightLabel = Utils.maybeDrawableLater(options.rightLabel, (text: String) => Label(text, rotate = 90))
     def chartArea(extent: Extent): Drawable = {
       val _rectWidth = getRectWidth(extent)
       val _rectSpacing = getRectSpacing(extent)
       val vScale = extent.height / yAxisDrawBounds.range
       val xGridLines = DiscreteChartDistributable.VerticalGridLines(data.numBoxes, getRectWidth, getRectSpacing)(extent)
-      val yGridLines = ContinuousChartDistributable.HorizontalGridLines(yTicks, lineSpacing = 1000)(extent)
+      val yGridLines = ContinuousChartDistributable.HorizontalGridLines(yAxisDescriptor, lineSpacing = 1000)(extent)
       val background = Rect(extent) filled options.backgroundColor
       val boxes = (for { distribution <- data.distributions
                         boxPlot = new BoxPlot(distribution)
@@ -68,7 +73,7 @@ class BoxPlotChart[T](override val extent: Extent, data: BoxPlotData[T], options
     }
 
     new ChartLayout(extent = extent, preferredSizeOfCenter = extent * .8, center = new DrawableLaterMaker(chartArea),
-      left = yAxis, bottom = xAxis)
+      left = yAxis, bottom = xAxis, top = topLabel, right = rightLabel)
   }
 
   override def draw(canvas: CanvasRenderingContext2D): Unit = _drawable.draw(canvas)

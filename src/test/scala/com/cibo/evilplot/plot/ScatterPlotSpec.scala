@@ -24,19 +24,19 @@ class ScatterPlotSpec extends FunSpec with Matchers {
 
   describe("ScatterPlot") {
     it("should construct a chart area that is large enough for any point in the axis range to be plotted") {
-      val extrema: Seq[Drawable] = Seq(plot.scatterPoint(plot.xTicks.minValue, plot.yTicks.minValue)(scaleX, scaleY),
-        plot.scatterPoint(plot.xTicks.minValue, plot.yTicks.maxValue)(scaleX, scaleY),
-        plot.scatterPoint(plot.xTicks.maxValue, plot.yTicks.minValue)(scaleX, scaleY),
-        plot.scatterPoint(plot.xTicks.maxValue, plot.yTicks.maxValue)(scaleX, scaleY))
+      val extrema: Seq[Drawable] = Seq(plot.scatterPoint(plot.xAxisDescriptor.minValue, plot.yAxisDescriptor.minValue)(scaleX, scaleY),
+        plot.scatterPoint(plot.xAxisDescriptor.minValue, plot.yAxisDescriptor.maxValue)(scaleX, scaleY),
+        plot.scatterPoint(plot.xAxisDescriptor.maxValue, plot.yAxisDescriptor.minValue)(scaleX, scaleY),
+        plot.scatterPoint(plot.xAxisDescriptor.maxValue, plot.yAxisDescriptor.maxValue)(scaleX, scaleY))
 
       extrema.foreach { p =>
         p should not be an[EmptyDrawable]
       }
     }
     it("should yield an empty drawable when given a point outside the axis bounds") {
-      val points: Seq[Drawable] = Seq(plot.scatterPoint(plot.xTicks.maxValue + 1, plot.yTicks.minValue)(scaleX, scaleY),
-        plot.scatterPoint(plot.xTicks.minValue, plot.yTicks.maxValue + 1)(scaleX, scaleY),
-        plot.scatterPoint(plot.xTicks.maxValue + 1, plot.yTicks.maxValue + 1)(scaleX, scaleY))
+      val points: Seq[Drawable] = Seq(plot.scatterPoint(plot.xAxisDescriptor.maxValue + 1, plot.yAxisDescriptor.minValue)(scaleX, scaleY),
+        plot.scatterPoint(plot.xAxisDescriptor.minValue, plot.yAxisDescriptor.maxValue + 1)(scaleX, scaleY),
+        plot.scatterPoint(plot.xAxisDescriptor.maxValue + 1, plot.yAxisDescriptor.maxValue + 1)(scaleX, scaleY))
       points.foreach { p => p shouldBe an[EmptyDrawable] }
     }
 

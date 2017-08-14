@@ -79,7 +79,7 @@ class FacetedHistogramPlot(extent: Extent, data: Seq[Seq[Double]], numBins: Int,
       options = buildOptions(category, catIdx, dataSetIdx)
     } yield new DrawableLaterMaker(makeChart(xBounds, histData, options))
 
-    new GridLayout(data.length, sortedCategories.size, plots.toSeq, Extent(600, 300))
+    new GridLayout(extent, data.length, sortedCategories.size, plots.toSeq)
   }
   private def drawCharts(e: Extent): Drawable = allCharts
   val _allCharts = new DrawableLaterMaker(drawCharts)

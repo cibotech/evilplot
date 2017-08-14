@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, White}
 import com.cibo.evilplot.{StrokeStyle, Text, Utils}
-import com.cibo.evilplot.geometry.{Above, Align, Drawable, DrawableLater, Extent, Line}
+import com.cibo.evilplot.geometry.{Above, Align, Drawable, DrawableLater, EmptyDrawable, Extent, Line}
 
 object DiscreteChartDistributable {
   // Returns getters for width and spacing that take extent of the chart in which the drawables are to be distributed
@@ -29,7 +29,7 @@ object DiscreteChartDistributable {
   }
 
   case class XAxis[T](tickNames: Seq[T], widthGetter: (Extent => Double), spacingGetter: (Extent => Double),
-                   label: Option[String] = None, rotateText: Double = 0) extends DrawableLater {
+                   label: Option[String] = None, rotateText: Double = 0, drawAxis: Boolean = true) extends DrawableLater {
     def apply(extent: Extent): Drawable = {
       lazy val xAxisLabel = Utils.maybeDrawable(label, (msg: String) => Text(msg, 20))
       val spacing: Double = spacingGetter(extent)
@@ -41,7 +41,7 @@ object DiscreteChartDistributable {
         tick = new VerticalTick(5, 1, Some(name.toString), rotateText)
         padLeft = (firstTickOffset + numTick * tickSpacing) - tick.extent.width / 2.0
       } yield tick padLeft padLeft
-      Align.center(_ticks.group, xAxisLabel).reduce(Above)
+      if (drawAxis) Align.center(_ticks.group, xAxisLabel).reduce(Above) else EmptyDrawable()
     }
   }
 

@@ -6,7 +6,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.layout.ChartLayout
-import com.cibo.evilplot.numeric.Ticks
+import com.cibo.evilplot.numeric.AxisDescriptor
 import org.scalajs.dom.CanvasRenderingContext2D
 /**
   * A categorical bar chart. Each bar corresponds to a different category in the x-variable and is labeled by an
@@ -27,7 +27,7 @@ class BarChart(override val extent: Extent, labels: Seq[String], data: Seq[Doubl
   private val minValue = 0.0
   private val maxValue = data.reduce[Double](math.max)
   private val yAxisDrawBounds: Bounds = options.yAxisBounds.getOrElse(Bounds(minValue, maxValue))
-  private val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
+  private val yAxisDescriptor = AxisDescriptor(yAxisDrawBounds, options.numYTicks.getOrElse(10))
 
   // Create functions to get width and spacing, depending on what is specified by caller.
   private val (getBarWidth, getBarSpacing) = DiscreteChartDistributable
@@ -36,7 +36,7 @@ class BarChart(override val extent: Extent, labels: Seq[String], data: Seq[Doubl
   private val _drawable = {
     val xAxis = DiscreteChartDistributable.XAxis(labels, getBarWidth, getBarSpacing, options.xAxisLabel,
       rotateText = 90)
-    val yAxis = ContinuousChartDistributable.YAxis(yTicks, label = options.yAxisLabel)
+    val yAxis = ContinuousChartDistributable.YAxis(yAxisDescriptor, label = options.yAxisLabel)
 
     def chartArea(extent: Extent): Drawable = {
       val _barWidth: Double = getBarWidth(extent)
@@ -47,7 +47,7 @@ class BarChart(override val extent: Extent, labels: Seq[String], data: Seq[Doubl
       }.seqDistributeH(_barSpacing) padLeft _barSpacing / 2.0
       val xGridLines = DiscreteChartDistributable.VerticalGridLines(numBars, getBarWidth, getBarSpacing)(extent)
       val yGridLines = ContinuousChartDistributable
-        .HorizontalGridLines(yTicks, options.yGridSpacing.getOrElse(10))(extent)
+        .HorizontalGridLines(yAxisDescriptor, options.yGridSpacing.getOrElse(10))(extent)
       Rect(extent) filled options.backgroundColor behind xGridLines behind yGridLines behind bars
     }
     val centerProportion: Double = 0.80

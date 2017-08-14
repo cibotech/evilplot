@@ -7,9 +7,18 @@ import com.cibo.evilplot.Utils
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.layout.ChartLayout
-import com.cibo.evilplot.numeric.Ticks
+import com.cibo.evilplot.numeric.{AxisDescriptor, Histogram}
 import com.cibo.evilplot.plot.ContinuousChartDistributable._
 import org.scalajs.dom.CanvasRenderingContext2D
+
+class HistogramData(data: Seq[Double], numBins: Int) extends PlotData {
+  override def xBounds: Option[Bounds] = Some(Bounds(data.min, data.max))
+  override def createPlot(extent: Extent, options: PlotOptions): Drawable = {
+    val hist = new Histogram(data, numBins, bounds = options.xAxisBounds)
+    val histData = hist.bins.map(_.toDouble)
+    new HistogramChart(extent, options.xAxisBounds, histData, options)
+  }
+}
 
 // Should be able to draw either a histogram with an x-axis that directly labels the bins or
 // a histogram that has an extended x-axis and plots the data in that context.
@@ -29,12 +38,11 @@ class HistogramChart(override val extent: Extent, xBounds: Option[Bounds], data:
     val rightLabel: DrawableLater = Utils.maybeDrawableLater(options.rightLabel,
       (text: String) => Label(text, rotate = 90))
 
-    // I think it's probably time to just do HistogramChart and BarChart and have them extend some common trait.
-    val xTicks = Ticks(xAxisDrawBounds, options.numXTicks.getOrElse(10))
-    val yTicks = Ticks(yAxisDrawBounds, options.numYTicks.getOrElse(10))
-    val bars = Bars(xBounds, Some(xAxisDrawBounds), yAxisDrawBounds, data, options.barColor)
-    val xAxis = ContinuousChartDistributable.XAxis(xTicks, label = options.xAxisLabel, options.drawXAxis)
-    val yAxis = ContinuousChartDistributable.YAxis(yTicks, label = options.yAxisLabel, options.drawYAxis)
+    val xAxisDescriptor = AxisDescriptor(xAxisDrawBounds, options.numXTicks.getOrElse(10))
+    val yAxisDescriptor = AxisDescriptor(yAxisDrawBounds, options.numYTicks.getOrElse(10))
+    val bars = Bars(xBounds, Some(xAxisDescriptor.axisBounds), yAxisDescriptor.axisBounds, data, options.barColor)
+    val xAxis = ContinuousChartDistributable.XAxis(xAxisDescriptor, label = options.xAxisLabel, options.drawXAxis)
+    val yAxis = ContinuousChartDistributable.YAxis(yAxisDescriptor, label = options.yAxisLabel, options.drawYAxis)
     val chartArea: DrawableLater = {
       def chartArea(extent: Extent): Drawable = {
         val translatedAnnotation = Utils.maybeDrawable(options.annotation,
@@ -43,13 +51,13 @@ class HistogramChart(override val extent: Extent, xBounds: Option[Bounds], data:
               transY (annotation.position._2 * extent.height)))
         val xGridLines = Utils.maybeDrawable(options.xGridSpacing,
           (xGridSpacing: Double) => ContinuousChartDistributable
-            .VerticalGridLines(xTicks, xGridSpacing, color = White)(extent))
+            .VerticalGridLines(xAxisDescriptor, xGridSpacing, color = White)(extent))
         val yGridLines = Utils.maybeDrawable(options.yGridSpacing,
           (yGridSpacing: Double) => ContinuousChartDistributable
-            .HorizontalGridLines(yTicks, yGridSpacing, color = White)(extent))
+            .HorizontalGridLines(yAxisDescriptor, yGridSpacing, color = White)(extent))
         Rect(extent) filled options.backgroundColor behind
           bars(extent) behind xGridLines behind yGridLines behind
-          MetricLines(xTicks, Seq(-15, 15), Red)(extent) behind translatedAnnotation
+          MetricLines(xAxisDescriptor, Seq(-15, 15), Red)(extent) behind translatedAnnotation
       }
       new DrawableLaterMaker(chartArea)
     }
