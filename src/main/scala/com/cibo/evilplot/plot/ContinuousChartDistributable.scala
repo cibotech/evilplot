@@ -58,7 +58,7 @@ object ContinuousChartDistributable {
 
   trait GridLines extends ContinuousChartDistributableBase {
     val lineSpacing: Double
-    private[plot] val nLines: Int = math.ceil(bounds.range / lineSpacing).toInt + 1
+    private[plot] val nLines: Int = math.ceil(bounds.range / lineSpacing).toInt
 
     // Calculate the coordinate of the first grid line to be drawn.
     private val maxNumLines = math.ceil((axisDescriptor.tickMin - bounds.min) / lineSpacing).toInt
