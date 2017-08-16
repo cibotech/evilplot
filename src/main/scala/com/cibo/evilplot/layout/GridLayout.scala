@@ -25,7 +25,6 @@ class GridLayout(val extent: Extent, numRows: Int, numCols: Int, toBeDrawn: Seq[
 
   private val cellExtent = Extent(extent.width / numCols - (numCols - 1) * rightPadding,
     extent.height / numRows - (numRows - 1) * bottomPadding)
-  println(cellExtent)
   private val _drawable: Drawable = {
     (for (row <- 0 until numRows) yield {
       (for {

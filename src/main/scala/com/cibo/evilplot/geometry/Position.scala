@@ -22,7 +22,7 @@ object Translate {
 }
 
 case class Scale(x: Double = 1, y: Double = 1)(r: Drawable) extends Drawable {
-  val extent = Extent(r.extent.width * y, r.extent.height * x)
+  val extent: Extent = Extent(r.extent.width * x, r.extent.height * y)
 
   def draw(canvas: CanvasRenderingContext2D): Unit = CanvasOp(canvas) { c =>
     c.scale(x, y)
@@ -30,22 +30,30 @@ case class Scale(x: Double = 1, y: Double = 1)(r: Drawable) extends Drawable {
   }
 }
 
-case class FlipY(r: Drawable) extends Drawable {
-  val extent = r.extent
+case class FlipY(height: Double)(r: Drawable) extends Drawable {
+  val extent: Extent = r.extent.copy(height = height)
 
   def draw(canvas: CanvasRenderingContext2D): Unit =
-    Translate(y = r.extent.height) {
+    Translate(y = extent.height) {
       Scale(1, -1)(r)
     }.draw(canvas)
 }
 
-case class FlipX(r: Drawable) extends Drawable {
-  val extent = r.extent
+object FlipY {
+  def apply(r: Drawable): FlipY = FlipY(r.extent.height)(r)
+}
+
+case class FlipX(width: Double)(r: Drawable) extends Drawable {
+  val extent: Extent = r.extent.copy(width = width)
 
   def draw(canvas: CanvasRenderingContext2D): Unit =
-    Translate(x = r.extent.width) {
+    Translate(x = extent.width) {
       Scale(-1, 1)(r)
     }.draw(canvas)
+}
+
+object FlipX {
+  def apply(r: Drawable): FlipX = FlipX(r.extent.width)(r)
 }
 
 
@@ -251,9 +259,7 @@ case class Fit(width: Double, height: Double)(item: Drawable) extends Drawable {
     }
   }
 }
+
 object Fit {
   def apply(extent: Extent)(item: Drawable): Fit = Fit(extent.width, extent.height)(item)
 }
-
-
-

@@ -4,6 +4,7 @@
  */
 package com.cibo.evilplot.plot
 
+import com.cibo.evilplot.Style
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.layout.ChartLayout
 import com.cibo.evilplot.numeric.AxisDescriptor
@@ -41,16 +42,16 @@ class BarChart(override val extent: Extent, labels: Seq[String], data: Seq[Doubl
     def chartArea(extent: Extent): Drawable = {
       val _barWidth: Double = getBarWidth(extent)
       val _barSpacing: Double = getBarSpacing(extent)
-      val vScale: Double = extent.height / yAxisDrawBounds.range
-      val bars: Drawable = Align.bottomSeq {
-        data.map { value => Rect(_barWidth, value * vScale) filled options.barColor }
+      val vScale: Double = extent.height / yAxisDescriptor.axisBounds.range
+      val bars: Drawable = data.map { yValue => Style(options.barColor) {
+          Scale(y = vScale)(FlipY(yAxisDescriptor.axisBounds.max)(Rect(_barWidth, yValue))) }
       }.seqDistributeH(_barSpacing) padLeft _barSpacing / 2.0
       val xGridLines = DiscreteChartDistributable.VerticalGridLines(numBars, getBarWidth, getBarSpacing)(extent)
       val yGridLines = ContinuousChartDistributable
         .HorizontalGridLines(yAxisDescriptor, options.yGridSpacing.getOrElse(10))(extent)
       Rect(extent) filled options.backgroundColor behind xGridLines behind yGridLines behind bars
     }
-    val centerProportion: Double = 0.80
+    val centerProportion: Double = 0.90
     new ChartLayout(extent = extent, preferredSizeOfCenter = extent * centerProportion,
       center = new DrawableLaterMaker(chartArea), left = yAxis, bottom = xAxis)
   }

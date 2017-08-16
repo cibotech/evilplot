@@ -47,11 +47,9 @@ case class AxisDescriptor(bounds: Bounds, numTicksRequested: Int, drawBounds: Op
   val tickMin: Double = math.floor(minValue / spacing) * spacing
   val tickMax: Double = math.ceil(maxValue / spacing) * spacing
 
-  println(f"min $minValue%.2f max $maxValue%.2f tickMin $tickMin%.2f tickMax $tickMax%.2f spacing $spacing%.2f")
   val numFrac: Int = math.max(-math.floor(math.log10(spacing)), 0).toInt
   // Actual number of ticks generated.
   val numTicks: Int = ((tickMax - tickMin) / spacing).toInt + 1
-  println(numTicks)
   val axisBounds: Bounds = Bounds(tickMin, tickMax)
 }
 

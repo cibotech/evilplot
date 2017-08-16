@@ -73,7 +73,6 @@ object ContinuousChartDistributable {
   case class VerticalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White) extends GridLines {
     def apply(extent: Extent): Drawable = {
       require(nLines != 0)
-      println(f"nLines $nLines%d")
       val lines = for {
         nLine <- 0 until nLines
         line = Line(extent.height, 1) rotated 90 colored color
