@@ -12,7 +12,7 @@ case class ScatterPlotData(data: Seq[Point], zData: Option[Seq[Double]], pointSi
                            colorBar: ColorBar = SingletonColorBar(Black)) extends PlotData {
   override def xBounds: Option[Bounds] = Some(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x))
   override def yBounds: Option[Bounds] = Some(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y))
-  def createPlot(extent: Extent, options: PlotOptions): Drawable = {
+  override def createPlot(extent: Extent, options: PlotOptions): Drawable = {
     new ScatterPlot(extent, data, zData, options, pointSize = pointSize, colorBar = colorBar)
   }
 }
