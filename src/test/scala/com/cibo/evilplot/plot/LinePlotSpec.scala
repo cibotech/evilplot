@@ -11,7 +11,7 @@ class LinePlotSpec extends FunSpec with Matchers {
 
   describe("class LineToPlot") {
     val points = Seq(Point(1, 3), Point(3, 4), Point(0, 2), Point(2, 5))
-    val line = LineToPlot(points, colors.Blue)
+    val line = OneLinePlotData(points, colors.Blue)
 
     it("has the right xBounds") {
       line.xBounds shouldEqual Bounds(0, 3)
@@ -24,27 +24,29 @@ class LinePlotSpec extends FunSpec with Matchers {
 
   describe("object LineToPlot") {
     val points1 = Seq(Point(1, -2), Point(7, 4), Point(0, 2), Point(2, 5))
-    val line1 = LineToPlot(points1, colors.Blue)
+    val line1 = OneLinePlotData(points1, colors.Blue)
 
     val points2 = Seq(Point(1, 6), Point(3, 4), Point(0, 2), Point(-1, 5))
-    val line2 = LineToPlot(points2, colors.Gold)
+    val line2 = OneLinePlotData(points2, colors.Gold)
 
     val lines = Seq(line1, line2)
 
     it("has the right xBounds") {
-      LineToPlot.xBounds(lines) shouldEqual Bounds(-1, 7)
+      LinePlotData(lines).xBounds shouldEqual Some(Bounds(-1, 7))
     }
 
     it("has the right yBounds") {
-      LineToPlot.yBounds(lines) shouldEqual Bounds(-2, 6)
+      LinePlotData(lines).yBounds shouldEqual Some(Bounds(-2, 6))
     }
   }
 
   // This test is very weak because all we get back from LinesLater is a Drawable, no way to inspect it.
   // We could do much more testing given a scene graph, but that would be a lot of work.
   describe("LinesLater") {
-    val lines = Seq(LineToPlot(Seq(Point(1, 2)), colors.Oldlace), LineToPlot(Seq(Point(3, 4)), colors.Burlywood))
-    val linesLater = LinesLater(lines, Bounds(1, 3), Bounds(0, 5))(Extent(12, 15))
+    val lines = Seq(
+      OneLinePlotData(Seq(Point(1, 2)), colors.Oldlace),
+      OneLinePlotData(Seq(Point(3, 4)), colors.Burlywood))
+    val linesLater = LinesLater(LinePlotData(lines), Bounds(1, 3), Bounds(0, 5))(Extent(12, 15))
   }
 
 }
