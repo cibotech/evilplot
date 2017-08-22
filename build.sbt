@@ -2,9 +2,13 @@ enablePlugins(ScalaJSPlugin, WorkbenchPlugin)
 
 name := "EvilPlot"
 
-version := "0.1-SNAPSHOT"
+lazy val buildVersion = sys.env.getOrElse("TRAVIS_BUILD_NUMBER", (System.currentTimeMillis() / 1000).toString)
+
+version      := s"0.1.$buildVersion"
 
 scalaVersion := "2.12.3"
+
+organization := "com.cibo"
 
 libraryDependencies ++= Seq(
   "org.scala-js" %%% "scalajs-dom" % "0.9.3",
@@ -24,3 +28,12 @@ scalaJSUseMainModuleInitializer := true
 jsDependencies += RuntimeDOM
 
 jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value)
+
+publishTo in ThisBuild := {
+  val repo = ""
+  if (isSnapshot.value) {
+    Some("snapshots" at repo + "libs-snapshot-local")
+  } else {
+    Some("releases" at repo + "libs-release-local")
+  }
+}
