@@ -7,9 +7,10 @@ Install PhantomJS: `brew install phantomjs`
 To run Evil Plot:
 
 1. open sbt console
-2. run fastOptJS listening for changes
+2. compile, then run fastOptJS listening for changes
 ```bash
 $ sbt
+> compile
 > ~ fastOptJS
 ```
 3. go to `localhost:12345/index.html` in your browser
