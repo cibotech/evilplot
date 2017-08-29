@@ -25,9 +25,9 @@ class ScatterPlot(val extent: Extent, data: Seq[Point], zData: Option[Seq[Double
   private[plot] val xAxisDescriptor = AxisDescriptor(xAxisBounds, options.numXTicks.getOrElse(10))
   private[plot] val yAxisDescriptor = AxisDescriptor(yAxisBounds, options.numYTicks.getOrElse(10))
   // Will return an EmptyDrawable if point is out-of-bounds.
-  private[plot] def scatterPoint(x: Double, y: Double)(scaleX: Double, scaleY: Double): Drawable = {
+  private[plot] def scatterPoint(x: Double, y: Double): Drawable = {
     if (xAxisDescriptor.axisBounds.isInBounds(x) && yAxisDescriptor.axisBounds.isInBounds(y))
-      Disc(pointSize, (x - xAxisDescriptor.axisBounds.min) * scaleX, (yAxisDescriptor.axisBounds.max - y) * scaleY)
+      Disc(pointSize, x, y)
     else EmptyDrawable()
   }
   private val _drawable: Drawable = {
@@ -42,6 +42,11 @@ class ScatterPlot(val extent: Extent, data: Seq[Point], zData: Option[Seq[Double
     def chartArea(extent: Extent): Drawable = {
       val scaleX: Double = extent.width / xAxisDescriptor.axisBounds.range
       val scaleY: Double = extent.height / yAxisDescriptor.axisBounds.range
+
+      val affineTx = AffineTransform.identity.translate(- xAxisDescriptor.axisBounds.min, yAxisDescriptor.axisBounds.max).
+          scale(scaleX, scaleY).
+          flipOverX
+
       val chartBackground = Rect(extent.width, extent.height) filled options.backgroundColor
       val xGridLines = ContinuousChartDistributable.
         VerticalGridLines(xAxisDescriptor, options.xGridSpacing.getOrElse(1000), color = options.gridColor)(extent)
@@ -54,15 +59,16 @@ class ScatterPlot(val extent: Extent, data: Seq[Point], zData: Option[Seq[Double
           case (Some(_zData), _colorBar@GradientColorBar(_, _, _)) =>
             require(_zData.length == data.length, "color and point data must have same length")
             (data zip _zData).map { case (Point(x, y), z) =>
-              scatterPoint(x, y)(scaleX, scaleY) filled _colorBar.getColor(z)
+              scatterPoint(x, y) filled _colorBar.getColor(z)
             }
           case (_, SingletonColorBar(color)) =>
-            data.map { case Point(x, y) => scatterPoint(x, y)(scaleX, scaleY) filled color }
+            data.map { case Point(x, y) => scatterPoint(x, y) filled color }
           case (_, _) => throw new IllegalArgumentException
         }
         points.group
       }
 
+      //(_chartArea transX pointSize transY pointSize behind plottedPoints) transX -pointSize transY -pointSize
       (_chartArea transX pointSize transY pointSize behind plottedPoints) transX -pointSize transY -pointSize
     }
 

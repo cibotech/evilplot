@@ -17,8 +17,30 @@ case class Translate(x: Double = 0, y: Double = 0)(r: Drawable) extends Drawable
     r.draw(c)
   }
 }
+
+
 object Translate {
   def apply(r: Drawable, bbox: Extent): Translate = Translate(bbox.width, bbox.height)(r)
+}
+
+case class Affine(affine: AffineTransform)(r: Drawable) extends Drawable {
+  val extent: Extent = {
+    val pts = Seq(affine(0, 0),
+                  affine(r.extent.width, 0),
+                  affine(r.extent.width, r.extent.height),
+                  affine(0, r.extent.height))
+    val (xs, ys) = pts.unzip
+    val width = xs.max - xs.min
+    val height = ys.max - ys.min
+    Extent(width, height)
+  }
+
+  def draw(canvas: CanvasRenderingContext2D): Unit = {
+    CanvasOp(canvas){c =>
+      c.transform(affine.scaleX, affine.shearX, affine.shearY, affine.scaleY, affine.shiftX, affine.shiftY)
+      r.draw(c)
+    }
+  }
 }
 
 case class Scale(x: Double = 1, y: Double = 1)(r: Drawable) extends Drawable {

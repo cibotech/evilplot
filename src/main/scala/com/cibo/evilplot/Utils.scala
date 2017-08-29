@@ -1,7 +1,7 @@
 package com.cibo.evilplot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, DrawableLater, EmptyDrawable, EmptyDrawableLater, Extent}
+import com.cibo.evilplot.geometry.{AffineTransform, Drawable, DrawableLater, EmptyDrawable, EmptyDrawableLater, Extent}
 import org.scalajs.dom
 import org.scalajs.dom.{html, _}
 
@@ -103,4 +103,6 @@ object CanvasOp {
     f(canvas)
     canvas.restore()
   }
+
+
 }

@@ -24,26 +24,26 @@ class ScatterPlotSpec extends FunSpec with Matchers {
 
   describe("ScatterPlot") {
     it("should construct a chart area that is large enough for any point in the axis range to be plotted") {
-      val extrema: Seq[Drawable] = Seq(plot.scatterPoint(plot.xAxisDescriptor.minValue, plot.yAxisDescriptor.minValue)(scaleX, scaleY),
-        plot.scatterPoint(plot.xAxisDescriptor.minValue, plot.yAxisDescriptor.maxValue)(scaleX, scaleY),
-        plot.scatterPoint(plot.xAxisDescriptor.maxValue, plot.yAxisDescriptor.minValue)(scaleX, scaleY),
-        plot.scatterPoint(plot.xAxisDescriptor.maxValue, plot.yAxisDescriptor.maxValue)(scaleX, scaleY))
+      val extrema: Seq[Drawable] = Seq(plot.scatterPoint(plot.xAxisDescriptor.minValue, plot.yAxisDescriptor.minValue),
+        plot.scatterPoint(plot.xAxisDescriptor.minValue, plot.yAxisDescriptor.maxValue),
+        plot.scatterPoint(plot.xAxisDescriptor.maxValue, plot.yAxisDescriptor.minValue),
+        plot.scatterPoint(plot.xAxisDescriptor.maxValue, plot.yAxisDescriptor.maxValue))
 
       extrema.foreach { p =>
         p should not be an[EmptyDrawable]
       }
     }
     it("should yield an empty drawable when given a point outside the axis bounds") {
-      val points: Seq[Drawable] = Seq(plot.scatterPoint(plot.xAxisDescriptor.maxValue + 1, plot.yAxisDescriptor.minValue)(scaleX, scaleY),
-        plot.scatterPoint(plot.xAxisDescriptor.minValue, plot.yAxisDescriptor.maxValue + 1)(scaleX, scaleY),
-        plot.scatterPoint(plot.xAxisDescriptor.maxValue + 1, plot.yAxisDescriptor.maxValue + 1)(scaleX, scaleY))
+      val points: Seq[Drawable] = Seq(plot.scatterPoint(plot.xAxisDescriptor.maxValue + 1, plot.yAxisDescriptor.minValue),
+        plot.scatterPoint(plot.xAxisDescriptor.minValue, plot.yAxisDescriptor.maxValue + 1),
+        plot.scatterPoint(plot.xAxisDescriptor.maxValue + 1, plot.yAxisDescriptor.maxValue + 1))
       points.foreach { p => p shouldBe an[EmptyDrawable] }
     }
 
     // Each point has a bounding box that extends from the lowest point in the chart area to just beyond its boundary.
     it("should properly place the points in the chart area") {
       data.foreach { case Point(x, y) =>
-        val p = plot.scatterPoint(x, y)(scaleX, scaleY)
+        val p = plot.scatterPoint(x, y)
         p should not be an[EmptyDrawable]
         p.extent.width shouldBe ((x - plot.xAxisBounds.min) / plot.xAxisBounds.range) *
           plot.extent.width + 2 * plot.pointSize +-   .2

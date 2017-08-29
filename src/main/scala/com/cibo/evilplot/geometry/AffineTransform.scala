@@ -1,74 +1,57 @@
 package com.cibo.evilplot.geometry
 
-sealed trait AffineTransform {
+case class AffineTransform(scaleX: Double = 1,
+    shearX: Double = 0,
+    shearY: Double = 0,
+    scaleY: Double = 1,
+    shiftX: Double = 0,
+    shiftY: Double = 0) {
 
-  def scale(x: Double = 1, y: Double = 1): AffineTransform
+  def scale(x: Double = 1, y: Double = 1): AffineTransform = this.compose(AffineTransform.scale(x, y))
 
-  def shift(dx: Double, dy: Double): AffineTransform
+  def translate(dx: Double, dy: Double): AffineTransform = this.compose(AffineTransform.translate(dx, dy))
 
-  /** Rotates the transformation by `theta` radians.
-    * "Unsafe" because this can cause issues with bounding boxes if `theta` is not a multiple of pi/2.
-    */
-  def unsafeRotate(theta: Double): AffineTransform
+  /** Rotates the transformation by `theta` radians.  */
+  def rotate(theta: Double): AffineTransform = this.compose(AffineTransform.rotate(theta))
 
-  /** Rotates the transformation by `theta` degrees.
-    * "Unsafe" because this can cause issues with bounding boxes if `theta` is not a multiple of pi/2.
-    */
-  def unsafeRotateDegrees(degs: Double): AffineTransform =
-    unsafeRotate(degs / 180 * Math.PI)
+  /** Rotates the transformation by `theta` degrees. */
+  def rotateDegrees(degs: Double): AffineTransform = rotate(degs / 180 * Math.PI)
 
   def flipOverX: AffineTransform = scale(y = -1)
 
   def flipOverY: AffineTransform = scale(x = -1)
 
-  def rotateClockwise: AffineTransform =
-    unsafeRotateDegrees(-90)
+  def rotateClockwise: AffineTransform = rotateDegrees(-90)
 
-  def rotateCounterClockwise: AffineTransform =
-    unsafeRotateDegrees(90)
+  def rotateCounterClockwise: AffineTransform = rotateDegrees(90)
 
+  def compose(trans: AffineTransform): AffineTransform = {
+    val newScaleX = trans.scaleX * scaleX + trans.shearX * shearY
+    val newShearX = trans.scaleX * shearX + trans.shearX * scaleY
+    val newShiftX = trans.scaleX * shiftX + trans.shearX * shiftY + trans.shiftX
+    val newShearY = trans.shearY * scaleX + trans.scaleY * shearY
+    val newScaleY = trans.shearY * shearX + trans.scaleY * scaleY
+    val newShiftY = trans.shearY * shiftX + trans.scaleY * shiftY + trans.shiftY
+
+    AffineTransform(newScaleX, newShearX, newShearY, newScaleY, newShiftX, newShiftY)
+  }
+
+  def apply(x: Double, y: Double): (Double, Double) = {
+    val tx = x * scaleX + y * shearX + shiftX
+    val ty = x * shearY + y * scaleY + shiftY
+    (tx, ty)
+  }
 }
 
 object AffineTransform {
 
-  def identity: AffineTransform = UnsafeMake()
+  def identity: AffineTransform = AffineTransform()
 
-  /**
-    * Construct an [[AffineTransform]] by directly specifying the parameters of the affine transformation matrix.
-    * This is "unsafe" since transforms that include rotations by angles that are not integer multiples of PI/2 will
-    * distort bounding boxes and make juxtaposition combinators behave weirdly.
-    */
-  final case class UnsafeMake(scaleX: Double = 1,
-                              shearX: Double = 0,
-                              shearY: Double = 0,
-                              scaleY: Double = 1,
-                              shiftX: Double = 0,
-                              shiftY: Double = 0)
-      extends AffineTransform {
+  private def scale(sx: Double, sy: Double): AffineTransform = AffineTransform(scaleX = sx, scaleY = sy)
 
-    def scale(x: Double = 1, y: Double = 1): AffineTransform =
-      copy(scaleX = x * scaleX, scaleY = y * scaleY)
+  private def translate(dx: Double, dy: Double): AffineTransform = AffineTransform(shiftX = dx, shiftY = dy)
 
-    def shift(dx: Double, dy: Double): AffineTransform =
-      copy(shiftX = dx + shiftX, shiftY = dy + shiftY)
-
-    /** Rotates the transformation by `theta` radians.
-      * "Unsafe" because this can cause issues with bounding boxes if `theta` is not a multiple of pi/2.
-      */
-    def unsafeRotate(theta: Double): AffineTransform = {
-
-      /*
-
-      [ cos(theta)  -sin(theta  0         [ scaleX  shearX  shiftX
-        sin(theta)  cos(theta)  0     x     shearY  scaleY  shiftY      =   ???
-        0           0           1 ]         0       0       1      ]
-
-       */
-
-      ???
-
-    }
-
-  }
-
+  private def rotate(theta: Double): AffineTransform =
+    AffineTransform(scaleX = Math.cos(theta), shearX = -Math.sin(theta),
+                    shearY = Math.sin(theta), scaleY = Math.cos(theta) )
 }
