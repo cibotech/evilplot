@@ -12,6 +12,7 @@ case class HSL(hue: Int, saturation: Int, lightness: Int) extends Color {
   private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue > 360) hue - 360 else hue
   def triadic: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 120)), this.copy(hue = boundHue(this.hue + 120)))
   def analogous: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 14)), this.copy(hue = boundHue(this.hue + 14)))
+  def incremental(increment:Int): (HSL, HSL) = (this.copy(hue = boundHue(this.hue - increment)), this.copy(hue = boundHue(this.hue + increment)))
 
   val repr = s"hsl($hue, $saturation%, $lightness%)"
 }
@@ -88,16 +89,37 @@ object Colors {
   //TODO: Experimental doesn't split analogous colors up properly
   object ColorSeq{
     def analogGrow(node: HSL, depth: Int): Seq[HSL] = {
-      val left = node.analogous._1
-      val right = node.analogous._2
-      if (depth > 0) node +: (triadGrow(left, depth - 1) ++ triadGrow(right, depth - 1))
-      else Seq()
+
+      val list = for {
+        i <- Iterator.range(1, depth)
+        val newHue = ((i * 60) + node.hue) % 360
+        val newAdjHue = (newHue + 14) % 360
+        val newHSL = HSL(newHue, node.saturation, node.lightness)
+        val newAdjHSL = HSL(newAdjHue, node.saturation, node.lightness)
+        yield(newHSL, newAdjHSL)
+      }
+      println(list.fl)
+      list
     }
+
+//    def analogGrow(node: HSL, depth: Int): Seq[HSL] = {
+//      val left = node.analogous._1
+//      val right = node.analogous._2
+//      if (depth > 0) node +: (incrementalGrow(right, depth - 1))
+//      else Seq()
+//    }
 
     def triadGrow(node: HSL, depth: Int): Seq[HSL] = {
       val left = node.triadic._1
       val right = node.triadic._2
-      if (depth > 0) node +: (analogGrow(left, depth - 1) ++ analogGrow(right, depth - 1))
+      if (depth > 0) node +: (analogGrow(right, depth))
+      else Seq()
+    }
+
+    def incrementalGrow(node: HSL, depth: Int): Seq[HSL] = {
+      val left = node.incremental(60)._1
+      val right = node.incremental(60)._2
+      if (depth > 0) node +: (analogGrow(right, depth))
       else Seq()
     }
 
