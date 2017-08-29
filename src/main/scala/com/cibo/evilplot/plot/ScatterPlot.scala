@@ -63,7 +63,8 @@ class ScatterPlot(val extent: Extent, data: Seq[Point], zData: Option[Seq[Double
         points.group
       }
 
-      (_chartArea transX pointSize transY pointSize behind plottedPoints) transX -pointSize transY -pointSize
+      (_chartArea transX pointSize transY pointSize behind plottedPoints) transX -pointSize transY -pointSize titled(
+        options.title.getOrElse(""), 20.0)
     }
 
     new ChartLayout(extent, preferredSizeOfCenter = extent * 0.85, center = new DrawableLaterMaker(chartArea),

@@ -87,7 +87,7 @@ class LinePlot(override val extent: Extent, lines: LinePlotData, options: PlotOp
           (yGridSpacing: Double) => HorizontalGridLines(yAxisDescriptor, yGridSpacing, color = White)(extent))
         Rect(extent) filled options.backgroundColor behind
           linesLater(extent) behind
-          xGridLines behind yGridLines
+          xGridLines behind yGridLines titled(options.title.getOrElse(""), 20.0)
       }
       new DrawableLaterMaker(plotArea)
     }

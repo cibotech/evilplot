@@ -57,7 +57,8 @@ class HistogramChart(override val extent: Extent, xBounds: Option[Bounds], data:
             .HorizontalGridLines(yAxisDescriptor, yGridSpacing, color = White)(extent))
         Rect(extent) filled options.backgroundColor behind
           bars(extent) behind xGridLines behind yGridLines behind
-          MetricLines(xAxisDescriptor, Seq(-15, 15), Red)(extent) behind translatedAnnotation
+          MetricLines(xAxisDescriptor, Seq(-15, 15), Red)(extent) behind translatedAnnotation titled(
+            options.title.getOrElse(""), 20.0)
       }
       new DrawableLaterMaker(chartArea)
     }

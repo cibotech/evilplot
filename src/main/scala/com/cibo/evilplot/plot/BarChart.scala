@@ -49,7 +49,8 @@ class BarChart(override val extent: Extent, labels: Seq[String], data: Seq[Doubl
       val xGridLines = DiscreteChartDistributable.VerticalGridLines(numBars, getBarWidth, getBarSpacing)(extent)
       val yGridLines = ContinuousChartDistributable
         .HorizontalGridLines(yAxisDescriptor, options.yGridSpacing.getOrElse(10))(extent)
-      Rect(extent) filled options.backgroundColor behind xGridLines behind yGridLines behind bars
+      Rect(extent) filled options.backgroundColor behind xGridLines behind yGridLines behind bars titled(
+        options.title.getOrElse(""), 20.0)
     }
     val centerProportion: Double = 0.90
     new ChartLayout(extent = extent, preferredSizeOfCenter = extent * centerProportion,
