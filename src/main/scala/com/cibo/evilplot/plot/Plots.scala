@@ -1,55 +1,10 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Text
-import com.cibo.evilplot.colors.Colors.GradientColorBar
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.Histogram
-
 
 object Plots {
-
-  def createHistogramPlot(
-    size: Extent, data: Seq[Double], numBins: Int, title: Option[String] = None,
-    annotation: Option[ChartAnnotation], vScale: Double = 1.0): Drawable = {
-    val hist = new Histogram(data, numBins)
-    val graphData: Seq[Double] = hist.bins.map(_.toDouble)
-    val options = PlotOptions(xAxisBounds = Some(Bounds(-75, 225)), yAxisBounds = Some(Bounds(0, 15)),
-      xGridSpacing = Some(50), yGridSpacing = Some(5), withinMetrics = Some(15), annotation = annotation,
-      topLabel = title)
-    new HistogramChart(size, Some(Bounds(hist.min, hist.max)), graphData, options = options)
-  }
-
-  def createScatterPlot(graphSize: Extent, data: Seq[Point], zData: Seq[Double], nColors: Int): Pad = {
-    val minX = data.minBy(_.x).x
-    val maxX = data.maxBy(_.x).x
-    val minY = data.minBy(_.y).y
-    val maxY = data.maxBy(_.y).y
-
-    val pointSize = 2
-    val textSize = 24
-    val scalex = graphSize.width / (maxX - minX)
-    val scaley = graphSize.height / (maxY - minY)
-    val colorBar = GradientColorBar(nColors, zData.min, zData.max)
-
-    val fitScatter = FlipY(Fit(graphSize) {
-      val scatter = (data zip zData).map { case (Point(x, y), zVal) =>
-        Disc(pointSize, (x - math.min(0, minX)) * scalex, (y - math.min(0, minY)) * scaley)
-          .filled(colorBar.getColor(zVal)) }.group
-      val xAxis = axis(graphSize, true, maxX, textSize, minX)
-      val pointAndY = FlipY(axis(graphSize, false, maxY, textSize, minY)) beside scatter
-      Align.right(pointAndY, FlipY(xAxis)).reverse.reduce(Above)
-    })
-
-    // TODO: Generate the labels from the given data.
-    val labels = Seq[Int](2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015)
-//    val legend = distributeV(
-//      labels.zip(colorBar.colors).map { case (l, c) =>
-//        Disc(3) filled c labeled f"$l%4d" }, 10
-//    ) padLeft(10)
-    val legend = EmptyDrawable()
-    fitScatter padAll 10 beside legend titled ("A Scatter Plot", 20) padAll 10
-  }
 
   def createPieChart(scale: Int, data: Seq[Double]): Pad = {
     val pieWedges = {
@@ -83,104 +38,11 @@ object Plots {
     }.group
 
     val legend = flowH(
-      data.zip(Colors.triAnalogStream()).map{ case (d, c) => Rect(scale / 5.0) filled c labeled f"${d*100}%.1f%%" },
+      data.zip(Colors.triAnalogStream()).map { case (d, c) => Rect(scale / 5.0) filled c labeled f"${d * 100}%.1f%%" },
       pieWedges.extent
     ) padTop 20
 
     pieWedges padAll 15 above legend titled("A Smooth Pie Chart", 20) padAll 10
   }
-
-  private[plot] def createGridLines(maxHeight: Double, width: Double): Drawable =
-    distributeV {
-      val lineEveryXUnits     = 2
-      val lineThick           = 0.25
-      val textHeight          = Text.defaultSize
-      val labelFloatAboveLine = 2
-
-      val countOfGridLines = (maxHeight / lineEveryXUnits).toInt
-
-      if (countOfGridLines > 0) {
-        Seq.tabulate(countOfGridLines) { x =>
-          val yHeightLabel = (maxHeight / lineEveryXUnits - x) * lineEveryXUnits
-
-          Pad(bottom = lineEveryXUnits - lineThick) {
-
-            val label = Translate(y = -textHeight - labelFloatAboveLine) {
-              Text(yHeightLabel) filled Grey
-            }
-
-            Line(width, lineThick) behind label
-          }
-        }
-      }
-      else {
-        Seq(EmptyDrawable())
-      }
-    }
-
-  // TODO: this sort of sucks, and textAndPadHeight is a hack that doesn't work in my barchart case with tick labels?
-  private def axis(
-    graphSize: Extent, horizontal: Boolean, maxValue: Double, textAndPadHeight: Double, minValue: Double = 0,
-    doLabelTicks: Boolean = true)
-  : Drawable = {
-
-    val rangeSize = maxValue - minValue
-    val figureSize = if (horizontal) graphSize.width else graphSize.height
-    val tickThick = 1
-    val tickLength = 5
-    //TODO: Fix dis, extent is being improperly used in some cases, text size should also not be dependent on the width
-    // for readability reasons and the scaling is wack
-    // requirement failed: Cannot use 0.096, canvas will not draw text initially sized < 0.5px even when scaling
-    val textSize = textAndPadHeight.max(5.0) * 0.75
-    val tickLabelTextSize = 0.8 * textSize
-    val numTicks = 10
-    val interTickDist = figureSize / numTicks
-
-    val labelEveryKTicks = 2
-    val ticks = Seq.tabulate(numTicks + 1) { i =>
-      val tick = Line(tickLength, tickThick).rotated(90).padRight(interTickDist - tickThick)
-
-      tick
-    }.seqDistributeH
-
-    val labels = {
-      val labelCount = 1 + math.floor(numTicks / labelEveryKTicks).toInt
-      val interLabelDist = interTickDist * labelEveryKTicks
-
-      val labelColl = Seq.tabulate(labelCount) { i =>
-        val scale = rangeSize / figureSize
-        require(scale > 0, "scale")
-        require(rangeSize > 0, "range")
-        require(figureSize > 0, "figure")
-        val value = i * interLabelDist * scale + minValue
-        Text(f"$value%.1f", tickLabelTextSize).padRight(textSize / 4).rotated(if (horizontal) -90 else 0)
-      }.reverse
-
-      val combined = distributeV(
-        labelColl,
-        interLabelDist - labelColl.head.extent.height
-      )
-
-      val textCentering = tickLabelTextSize / 3
-      combined //padTop textCentering
-    }
-
-    val axisTitle = Text("Awesomeness", textSize) rotated (if (horizontal) 0 else -90)
-    val line = ticks behind Line(figureSize, tickThick * 2).padTop(tickLength) rotated (if (horizontal) 90 else -90)
-    val labeledTickAxis = if (doLabelTicks) {
-      if (horizontal)
-        line behind (labels padLeft tickLabelTextSize) rotated 90
-      else
-        (labels padTop tickLabelTextSize) behind line.padLeft(labels.extent.width)
-    } else {
-      if (horizontal) line rotated 90 else line
-    }
-
-    if (horizontal)
-      Align.center(labeledTickAxis, axisTitle padTop textSize / 2).reduce(Above)
-    else
-      Align.middle(axisTitle padRight textSize / 2, labeledTickAxis).reduce(Beside)
-  }
-
-
 }
+
