@@ -126,8 +126,19 @@ case class Pad(left: Double = 0, right: Double = 0, top: Double = 0, bottom: Dou
   )
 
   def draw(canvas: CanvasRenderingContext2D): Unit = {
-/*
-    // Draw a rectangle around the extent, to make it visible for debugging
+    Translate(x = left, y = top)(item).draw(canvas)
+  }
+}
+
+object Pad {
+  def apply(surround: Double)(item: Drawable): Pad = Pad(surround, surround, surround, surround)(item)
+  def apply(x: Double, y: Double)(item: Drawable): Pad = Pad(x, x, y, y)(item)
+}
+
+case class Debug(r: Drawable) extends Drawable {
+  val extent: Extent = r.extent
+
+  def draw(canvas: CanvasRenderingContext2D): Unit = {
     CanvasOp(canvas) { c =>
       val hexDigits = "0123456789ABCDEF"
       c.strokeStyle = (0 until 3).map(_ => math.random * 255.0)
@@ -136,14 +147,8 @@ case class Pad(left: Double = 0, right: Double = 0, top: Double = 0, bottom: Dou
 
       c.strokeRect(0, 0, extent.width, extent.height)
     }
-*/
-    Translate(x = left, y = top)(item).draw(canvas)
+    r.draw(canvas)
   }
-}
-
-object Pad {
-  def apply(surround: Double)(item: Drawable): Pad = Pad(surround, surround, surround, surround)(item)
-  def apply(x: Double, y: Double)(item: Drawable): Pad = Pad(x, x, y, y)(item)
 }
 
 case class Group(items: Drawable*) extends Drawable {
