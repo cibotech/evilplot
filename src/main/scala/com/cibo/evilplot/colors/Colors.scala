@@ -68,9 +68,9 @@ object Colors {
   // Use when one color is wanted but a ColorBar is needed.
   case class SingletonColorBar(color: Color) extends ColorBar
 
-  case class GradientColorBar(nColors: Int, zMin: Double, zMax: Double ) extends ColorBar {
+  case class GradientColorBar(nColors: Int, zMin: Double, zMax: Double, minHue:Int = 0, maxHue:Int = 359) extends ColorBar {
     val zWidth = (zMax - zMin) / nColors.toFloat
-    val colors = ColorSeq.getColorSeq(nColors)
+    val colors = ColorSeq.getColorSeq(nColors, minHue, maxHue)
     def getColor(i: Int): Color = {
       require((i >= 0) && (i < colors.length))
       colors(i)

@@ -40,7 +40,7 @@ class Legend[T](colorBar: ColorBar, categories: Seq[T],
   private val categoriesColors = categories.sorted.zipWithIndex.map { case (category, index) =>
     colorBar match {
       case SingletonColorBar(color) => (category, color)
-      case _colorBar@GradientColorBar(nColors, _, _) =>
+      case _colorBar@GradientColorBar(nColors, _, _, _, _) =>
         require(nColors == categories.length, "Color bar must have exactly as many colors as category list.")
         (category, _colorBar.getColor(index))
     }

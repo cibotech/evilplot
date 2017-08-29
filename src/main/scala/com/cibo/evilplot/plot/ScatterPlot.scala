@@ -51,7 +51,7 @@ class ScatterPlot(val extent: Extent, data: Seq[Point], zData: Option[Seq[Double
 
       val plottedPoints = {
         val points = (zData, colorBar) match {
-          case (Some(_zData), _colorBar@GradientColorBar(_, _, _)) =>
+          case (Some(_zData), _colorBar@GradientColorBar(_, _, _, _, _)) =>
             require(_zData.length == data.length, "color and point data must have same length")
             (data zip _zData).map { case (Point(x, y), z) =>
               scatterPoint(x, y)(scaleX, scaleY) filled _colorBar.getColor(z)
