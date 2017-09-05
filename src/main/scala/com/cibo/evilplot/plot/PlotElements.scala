@@ -5,7 +5,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Text
-import com.cibo.evilplot.colors.Colors.{ColorBar, GradientColorBar, SingletonColorBar}
+import com.cibo.evilplot.colors.Colors.{BaseColorBar, ColorBar, SingletonColorBar}
 import com.cibo.evilplot.colors.{Color, HSL, White}
 import com.cibo.evilplot.geometry._
 
@@ -40,8 +40,8 @@ class Legend[T](colorBar: ColorBar, categories: Seq[T],
   private val categoriesColors = categories.sorted.zipWithIndex.map { case (category, index) =>
     colorBar match {
       case SingletonColorBar(color) => (category, color)
-      case _colorBar@GradientColorBar(nColors, _, _, _, _) =>
-        require(nColors == categories.length, "Color bar must have exactly as many colors as category list.")
+      case _colorBar@BaseColorBar(colors, _, _) =>
+        require(colors.length == categories.length, "Color bar must have exactly as many colors as category list.")
         (category, _colorBar.getColor(index))
     }
   }

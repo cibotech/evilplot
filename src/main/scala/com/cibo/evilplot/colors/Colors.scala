@@ -64,27 +64,27 @@ object Colors {
   }
 
   trait ColorBar
-
   // Use when one color is wanted but a ColorBar is needed.
   case class SingletonColorBar(color: Color) extends ColorBar
 
-  case class GradientColorBar(nColors: Int, zMin: Double, zMax: Double, minHue:Int = 0, maxHue:Int = 359) extends ColorBar {
+
+  case class BaseColorBar(colorSeq: Seq[Color], zMin: Double, zMax: Double) extends ColorBar {
+    val nColors = colorSeq.length
     val zWidth = (zMax - zMin) / nColors.toFloat
-    val colors = ColorSeq.getColorSeq(nColors, minHue, maxHue)
     def getColor(i: Int): Color = {
-      require((i >= 0) && (i < colors.length))
-      colors(i)
+      require((i >= 0) && (i < colorSeq.length))
+      colorSeq(i)
     }
 
     def getColor(z: Double): Color = {
       val colorIndex = math.min(math.round(math.floor((z - zMin) / zWidth)).toInt, nColors - 1)
-      colors(colorIndex)
+      colorSeq(colorIndex)
     }
   }
 
   //TODO: Experimental doesn't split analogous colors up properly
   object ColorSeq{
-    def getColorSeq(nColors:Int, startHue:Int = 0, endHue:Int = 359) : Seq[Color] = {
+    def getGradientSeq(nColors:Int, startHue:Int = 0, endHue:Int = 359) : Seq[Color] = {
       require(endHue > startHue, "End hue not greater than start hue")
       require(endHue <= 359, "End hue must be <= 359")
       val deltaH = (endHue - startHue) / nColors.toFloat
@@ -92,8 +92,22 @@ object Colors {
       colors
     }
 
-    def apply(seed: HSL, depth: Int): Seq[Color] = {
-      getColorSeq(depth)
+    def getAnalogousSeq(seed: HSL = HSL(207, 90, 54), depth: Int): Seq[HSL] = {
+      analogGrow(seed, depth)
+    }
+
+    def analogGrow(node: HSL, depth: Int): Seq[HSL] = {
+      val left = node.analogous._1
+      val right = node.analogous._2
+      if (depth > 0) node +: (triadGrow(left, depth - 1) ++ triadGrow(right, depth - 1))
+      else Seq()
+    }
+
+    def triadGrow(node: HSL, depth: Int): Seq[HSL] = {
+      val left = node.triadic._1
+      val right = node.triadic._2
+      if (depth > 0) node +: (analogGrow(left, depth - 1) ++ analogGrow(right, depth - 1))
+      else Seq()
     }
   }
 }

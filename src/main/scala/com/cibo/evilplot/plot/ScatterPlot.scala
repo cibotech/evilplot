@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Utils
-import com.cibo.evilplot.colors.Colors.{ColorBar, GradientColorBar, SingletonColorBar}
+import com.cibo.evilplot.colors.Colors.{BaseColorBar, ColorBar, SingletonColorBar}
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.layout.ChartLayout
@@ -51,7 +51,7 @@ class ScatterPlot(val extent: Extent, data: Seq[Point], zData: Option[Seq[Double
 
       val plottedPoints = {
         val points = (zData, colorBar) match {
-          case (Some(_zData), _colorBar@GradientColorBar(_, _, _, _, _)) =>
+          case (Some(_zData), _colorBar@BaseColorBar(_, _, _)) =>
             require(_zData.length == data.length, "color and point data must have same length")
             (data zip _zData).map { case (Point(x, y), z) =>
               scatterPoint(x, y)(scaleX, scaleY) filled _colorBar.getColor(z)
