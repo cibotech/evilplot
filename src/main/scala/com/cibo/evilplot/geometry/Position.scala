@@ -106,7 +106,7 @@ case class Rotate(degrees: Double)(r: Drawable) extends Drawable {
 // BUT CircularExtented things' rotated extents cannot be computed as a rotated rectangles, they are assumed invariant
 case class UnsafeRotate(degrees: Double)(r: Drawable) extends Drawable {
 
-  val extent = r.extent
+  val extent: Extent = r.extent
 
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
@@ -229,7 +229,7 @@ case class Titled(msg: String, r: Drawable, textSize: Double = Text.defaultSize)
   private val paddedTitle = Pad(bottom = textSize / 2.0)(Text(msg, textSize))
   private val composite = Align.center(paddedTitle, r).reduce(Above)
 
-  val extent = composite.extent
+  val extent: Extent = composite.extent
   def draw(canvas: CanvasRenderingContext2D): Unit = composite.draw(canvas)
 }
 

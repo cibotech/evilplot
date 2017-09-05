@@ -14,7 +14,7 @@ class BoxPlotSpec extends FunSpec with Matchers {
       val boxPlot = new BoxPlot(data)
       // NumPy on this list: [ np.percentile(data, x) for x in xrange(25, 100, 25) ] ==
       val (first, second, third) = (-2097.9322334878475, -1254.4046354873399, 123.91405205092315)
-      val lowTol: Double = 1e-2 // low tolerance because above data is only to hundredths place
+      // low tolerance because above data is only to hundredths place
       boxPlot.lowerQuantile shouldEqual first +- tol
       boxPlot.middleQuantile shouldEqual second +- tol
       boxPlot.upperQuantile shouldEqual third +- tol
