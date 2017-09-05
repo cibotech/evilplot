@@ -12,7 +12,6 @@ import scala.util.Random
 
 // TODO: These tests need a lot of work before they are actually useful!
 class ScatterPlotSpec extends FunSpec with Matchers {
-
   DOMInitializer.init()
   val extent: Extent = Extent(500, 500)
   val gen = Random
