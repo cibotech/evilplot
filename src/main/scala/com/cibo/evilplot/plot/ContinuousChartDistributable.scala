@@ -60,8 +60,6 @@ object ContinuousChartDistributable {
     val lineSpacing: Double
     private[plot] val nLines: Int = math.ceil(bounds.range / lineSpacing).toInt
 
-    // Calculate the coordinate of the first grid line to be drawn.
-    private val maxNumLines = math.ceil((axisDescriptor.tickMin - bounds.min) / lineSpacing).toInt
     // since we're using loose labeling, minGridLineCoord is just the tickMin
     protected val minGridLineCoord: Double = axisDescriptor.tickMin
 //    protected val minGridLineCoord: Double = {
@@ -70,7 +68,8 @@ object ContinuousChartDistributable {
 //    }
   }
 
-  case class VerticalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White) extends GridLines {
+  case class VerticalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White)
+    extends GridLines {
     def apply(extent: Extent): Drawable = {
       require(nLines != 0)
       val lines = for {
@@ -85,7 +84,8 @@ object ContinuousChartDistributable {
     }
   }
 
-  case class HorizontalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White) extends GridLines {
+  case class HorizontalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White)
+    extends GridLines {
     def apply(extent: Extent): Drawable = {
       require(nLines != 0)
       val lines = for {

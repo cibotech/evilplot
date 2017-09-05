@@ -24,7 +24,7 @@ class HistogramChartSpec extends FunSpec with Matchers {
       val xBounds = Bounds(7.0, 13.0)
       val hist = new Histogram(data, 10)
       val graphData: Seq[Double] = hist.bins.map(_.toDouble)
-      val bars = Bars(Some(xBounds), None, Bounds(data.min, data.max), graphData, Black)
+      val bars = Bars(xBounds, None, Bounds(data.min, data.max), graphData, Black)
       bars.heightsToDraw.length shouldBe graphData.length
       // Now the number of bars is wrapped inside an apply method, so need to think yet again about how to access that.
     }
@@ -37,7 +37,7 @@ class HistogramChartSpec extends FunSpec with Matchers {
       val drawBounds = Bounds(-5, 20)
       val hist = new Histogram(data, 5, bounds = Some(histBounds))
       val graphData = hist.bins.map(_.toDouble)
-      val bars = Bars(Some(histBounds), Some(drawBounds), Bounds(data.min, data.max), graphData, Black)
+      val bars = Bars(histBounds, Some(drawBounds), Bounds(data.min, data.max), graphData, Black)
       // should add 1 bar on left, drop one on right
       bars.heightsToDraw.tail.length shouldEqual graphData.init.length
       (bars.heightsToDraw.tail zip graphData.init).foreach {

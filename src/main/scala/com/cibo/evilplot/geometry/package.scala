@@ -28,6 +28,8 @@ package object geometry {
 
     def transX(nudge: Double): Translate = Translate(x = nudge)(r)
     def transY(nudge: Double): Translate = Translate(y = nudge)(r)
+
+    def affine(affine: AffineTransform): Affine = Affine(affine)(r)
   }
 
   implicit class SeqPlaceable(drawables: Seq[Drawable]) {
