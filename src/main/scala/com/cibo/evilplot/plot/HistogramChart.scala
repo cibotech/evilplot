@@ -68,7 +68,7 @@ class HistogramChart(override val extent: Extent, histData: HistogramData, optio
     }
     val centerFactor = 0.85   // proportion of the plot to allocate to the center
     new ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = chartArea, left = yAxis,
-      bottom = xAxis, top = topLabel, right = rightLabel)
+      bottom = xAxis, top = topLabel, right = rightLabel) titled(options.title.getOrElse(""), 20.0)
   }
 
   override def draw(canvas: CanvasRenderingContext2D): Unit = layout.draw(canvas)

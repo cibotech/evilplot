@@ -93,7 +93,7 @@ class LinePlot(override val extent: Extent, lines: LinePlotData, options: PlotOp
     }
     val centerFactor = 0.85   // proportion of the plot to allocate to the center
     new ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = plotArea,
-      left = yAxis, bottom = xAxis, top = topLabel, right = rightLabel)
+      left = yAxis, bottom = xAxis, top = topLabel, right = rightLabel) titled(options.title.getOrElse(""), 20.0)
   }
 
   override def draw(canvas: CanvasRenderingContext2D): Unit = layout.draw(canvas)

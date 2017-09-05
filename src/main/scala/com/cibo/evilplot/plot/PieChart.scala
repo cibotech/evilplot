@@ -1,12 +1,24 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Text
-import com.cibo.evilplot.colors._
-import com.cibo.evilplot.geometry._
+import com.cibo.evilplot.colors.{Black, Clear, Colors}
+import com.cibo.evilplot.geometry.{Align, Disc, Drawable, Extent, Rect, UnsafeRotate, Wedge, distributeH, flowH, _}
+import org.scalajs.dom.CanvasRenderingContext2D
 
-object Plots {
+class PieChart(override val extent: Extent, labels: Option[Seq[String]] = None, data: Seq[Double], options: PlotOptions,
+               scale: Double = 100.0) extends Drawable {
 
-  def createPieChart(scale: Int, data: Seq[Double]): Pad = {
+  // generate labels as percent values, if labels not passed in
+  private val labs = if (labels.isDefined) {
+    require(labels.get.length == data.length, "Labels and data must have the same length.")
+    labels.get
+  }
+  else {
+    val tot = data.sum
+    data.map { x => f"${x/tot * 100}%.1f%%" }
+  }
+
+  private val _drawable = {
     val pieWedges = {
       val labelPad = 10 // TODO: should be maxTextWidth?
 
@@ -38,11 +50,14 @@ object Plots {
     }.group
 
     val legend = flowH(
-      data.zip(Colors.triAnalogStream()).map { case (d, c) => Rect(scale / 5.0) filled c labeled f"${d * 100}%.1f%%" },
+      labs.zip(Colors.triAnalogStream()).map { case (lab, c) => Rect(scale / 5.0) filled c labeled lab },
       pieWedges.extent
     ) padTop 20
 
-    pieWedges padAll 15 above legend titled("A Smooth Pie Chart", 20) padAll 10
+    pieWedges padAll 15 above legend padAll 10
   }
-}
 
+  override def draw(canvas: CanvasRenderingContext2D): Unit =
+    (_drawable titled(options.title.getOrElse(""), 20)).draw(canvas)
+
+}
