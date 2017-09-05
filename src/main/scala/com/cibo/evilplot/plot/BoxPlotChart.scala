@@ -13,7 +13,7 @@ import org.scalajs.dom.CanvasRenderingContext2D
 // TODO: Continuous x option?
 
 object BoxPlotData {
-  trait BoxPlotPoints
+  sealed trait BoxPlotPoints
   case object AllPoints extends BoxPlotPoints
   case object OutliersOnly extends BoxPlotPoints
   case object NoPoints extends BoxPlotPoints
@@ -69,11 +69,11 @@ class BoxPlotChart[T](override val extent: Extent, data: BoxPlotData[T], options
                           case NoPoints => EmptyDrawable()
                         }
       } yield Align.center(box, discs).group).seqDistributeH(_rectSpacing) padLeft _rectSpacing / 2.0
-      background behind xGridLines behind yGridLines behind boxes titled(options.title.getOrElse(""), 20.0)
+      background behind xGridLines behind yGridLines behind boxes
     }
 
     new ChartLayout(extent = extent, preferredSizeOfCenter = extent * .8, center = new DrawableLaterMaker(chartArea),
-      left = yAxis, bottom = xAxis, top = topLabel, right = rightLabel)
+      left = yAxis, bottom = xAxis, top = topLabel, right = rightLabel) titled(options.title.getOrElse(""), 20.0)
   }
 
   override def draw(canvas: CanvasRenderingContext2D): Unit = _drawable.draw(canvas)

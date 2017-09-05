@@ -54,9 +54,10 @@ class PieChart(override val extent: Extent, labels: Option[Seq[String]] = None, 
       pieWedges.extent
     ) padTop 20
 
-    pieWedges padAll 15 above legend titled(options.title.getOrElse(""), 20) padAll 10
+    pieWedges padAll 15 above legend padAll 10
   }
 
-  override def draw(canvas: CanvasRenderingContext2D): Unit = _drawable.draw(canvas)
+  override def draw(canvas: CanvasRenderingContext2D): Unit =
+    (_drawable titled(options.title.getOrElse(""), 20)).draw(canvas)
 
 }

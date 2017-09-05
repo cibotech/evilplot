@@ -57,14 +57,13 @@ class HistogramChart(override val extent: Extent, xBounds: Option[Bounds], data:
             .HorizontalGridLines(yAxisDescriptor, yGridSpacing, color = White)(extent))
         Rect(extent) filled options.backgroundColor behind
           bars(extent) behind xGridLines behind yGridLines behind
-          MetricLines(xAxisDescriptor, Seq(-15, 15), Red)(extent) behind translatedAnnotation titled(
-            options.title.getOrElse(""), 20.0)
+          MetricLines(xAxisDescriptor, Seq(-15, 15), Red)(extent) behind translatedAnnotation
       }
       new DrawableLaterMaker(chartArea)
     }
     val centerFactor = 0.85   // proportion of the plot to allocate to the center
     new ChartLayout(extent, preferredSizeOfCenter = extent * centerFactor, center = chartArea, left = yAxis,
-      bottom = xAxis, top = topLabel, right = rightLabel)
+      bottom = xAxis, top = topLabel, right = rightLabel) titled(options.title.getOrElse(""), 20.0)
   }
 
   override def draw(canvas: CanvasRenderingContext2D): Unit = layout.draw(canvas)
