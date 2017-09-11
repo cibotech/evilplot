@@ -3,7 +3,6 @@ package com.cibo.evilplot
 import com.cibo.evilplot.colors.Color
 
 package object geometry {
-
   implicit class Placeable(r: Drawable) {
     def above(other: Drawable): Above = Above(r, other)
     def below(other: Drawable): Above = Above(other, r)

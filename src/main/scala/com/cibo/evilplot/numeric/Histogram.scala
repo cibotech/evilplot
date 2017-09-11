@@ -31,3 +31,4 @@ class Histogram(data: Seq[Double], numBins: Int, bounds: Option[Bounds] = None) 
   override def toString: String =
     f"Histogram with bin boundaries: $min%.3f $max%.3f, number of bins $numBins%d and binWidth $binWidth%.1f"
 }
+

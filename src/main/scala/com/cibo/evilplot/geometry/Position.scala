@@ -1,9 +1,24 @@
 package com.cibo.evilplot.geometry
 
+import com.cibo.evilplot.plot.Bounds
 import com.cibo.evilplot.{CanvasOp, Text}
 import org.scalajs.dom._
 
-case class Point(x: Double, y: Double)
+case class Point(x: Double, y: Double) {
+  def -(that: Point): Point = Point(x - that.x, y - that.y)
+  // a temporary solution.
+  def toPixelCoords(xBounds: Bounds, yBounds: Bounds, extent: Extent): Point = {
+    Point((x - xBounds.min) * extent.width / xBounds.range, (yBounds.max - y) * extent.height / yBounds.range)
+  }
+}
+
+case class Segment(a: Point, b: Point) {
+  def toPixelCoords(xBounds: Bounds, yBounds: Bounds, extent: Extent): Segment = {
+    Segment(a.toPixelCoords(xBounds, yBounds, extent), b.toPixelCoords(xBounds, yBounds, extent))
+  }
+}
+
+
 
 case class Translate(x: Double = 0, y: Double = 0)(r: Drawable) extends Drawable {
   // TODO: is this correct with negative translations?

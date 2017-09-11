@@ -71,7 +71,6 @@ object ContinuousChartDistributable {
   case class VerticalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White)
     extends GridLines {
     def apply(extent: Extent): Drawable = {
-      require(nLines != 0)
       val lines = for {
         nLine <- 0 until nLines
         line = Line(extent.height, 1) rotated 90 colored color
@@ -80,14 +79,13 @@ object ContinuousChartDistributable {
       } yield {
         line padLeft padding
       }
-      lines.group
+      if (nLines != 0) lines.group else EmptyDrawable()
     }
   }
 
   case class HorizontalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White)
     extends GridLines {
     def apply(extent: Extent): Drawable = {
-      require(nLines != 0)
       val lines = for {
         nLines <- (nLines - 1) to 0 by -1
         line = Line(extent.width, 1) colored color
@@ -95,7 +93,7 @@ object ContinuousChartDistributable {
         padding = extent.height - getLinePosition(minGridLineCoord + nLines * lineSpacing, extent.height) -
           lineCorrection
       } yield line padTop padding
-      lines.group
+      if (nLines != 0) lines.group else EmptyDrawable()
     }
   }
 

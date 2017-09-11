@@ -39,7 +39,7 @@ case class AxisDescriptor(bounds: Bounds, numTicksRequested: Int, drawBounds: Op
     * the bounds of the data.
     */
   val (maxValue, minValue) = (bounds.max, bounds.min)
-  require(maxValue > minValue)
+  require(maxValue >= minValue)
   private val range = AxisDescriptor.nicenum(maxValue - minValue, round = false)
   // Heckbert uses (numTicks - 1) in order to have that much spacing between numTicks ticks. Crank that up.
   val spacing: Double = AxisDescriptor.nicenum(range / (numTicksRequested + 1), round = true)
