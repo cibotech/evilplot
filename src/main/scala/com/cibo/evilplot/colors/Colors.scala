@@ -12,7 +12,8 @@ case class HSL(hue: Int, saturation: Int, lightness: Int) extends Color {
   private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue > 360) hue - 360 else hue
   def triadic: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 120)), this.copy(hue = boundHue(this.hue + 120)))
   def analogous: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 14)), this.copy(hue = boundHue(this.hue + 14)))
-  def incremental(increment:Int): (HSL, HSL) = (this.copy(hue = boundHue(this.hue - increment)), this.copy(hue = boundHue(this.hue + increment)))
+  def incremental(increment: Int): (HSL, HSL) =
+    (this.copy(hue = boundHue(this.hue - increment)), this.copy(hue = boundHue(this.hue + increment)))
 
   val repr = s"hsl($hue, $saturation%, $lightness%)"
 }
@@ -67,8 +68,8 @@ object Colors {
   // Use when one color is wanted but a ColorBar is needed.
   case class SingletonColorBar(color: Color) extends ColorBar
 
-
-  case class BaseColorBar(colorSeq: Seq[Color], zMin: Double, zMax: Double) extends ColorBar {
+  // Map a sequence of colors to a continuous variable z.
+  case class ScaledColorBar(colorSeq: Seq[Color], zMin: Double, zMax: Double) extends ColorBar {
     val nColors = colorSeq.length
     val zWidth = (zMax - zMin) / nColors.toFloat
     def getColor(i: Int): Color = {
@@ -83,8 +84,8 @@ object Colors {
   }
 
   //TODO: Experimental doesn't split analogous colors up properly
-  object ColorSeq{
-    def getGradientSeq(nColors:Int, startHue:Int = 0, endHue:Int = 359) : Seq[Color] = {
+  object ColorSeq {
+    def getGradientSeq(nColors: Int, startHue: Int = 0, endHue: Int = 359): Seq[Color] = {
       require(endHue > startHue, "End hue not greater than start hue")
       require(endHue <= 359, "End hue must be <= 359")
       val deltaH = (endHue - startHue) / nColors.toFloat
