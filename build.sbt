@@ -15,6 +15,8 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
   version := Settings.version,
   scalaVersion := Settings.versions.scala,
   libraryDependencies ++= Settings.sharedDependencies.value,
+  resolvers += Resolver.sonatypeRepo("releases"),
+  addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
   publishTo in ThisBuild := {
   val repo = ""
   if (isSnapshot.value) {

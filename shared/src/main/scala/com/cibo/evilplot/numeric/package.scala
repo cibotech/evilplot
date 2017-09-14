@@ -1,5 +1,8 @@
 package com.cibo.evilplot
 
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveEncoder, deriveDecoder}
+
 
 package object numeric {
   type Grid = Vector[Vector[Double]]

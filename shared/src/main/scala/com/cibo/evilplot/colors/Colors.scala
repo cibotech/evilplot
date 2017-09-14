@@ -1,9 +1,13 @@
 package com.cibo.evilplot.colors
 
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+
 trait Color {
   val repr: String
 }
-
+object Codecs {
+}
 case class HSL(hue: Int, saturation: Int, lightness: Int) extends Color {
   require(hue        >= 0 && hue        <  360, s"hue must be within [0, 360) {was $hue}")
   require(saturation >= 0 && saturation <= 100, s"saturation must be within [0, 100] {was $saturation}")
