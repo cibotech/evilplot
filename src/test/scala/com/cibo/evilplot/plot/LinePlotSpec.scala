@@ -46,7 +46,6 @@ class LinePlotSpec extends FunSpec with Matchers {
     val lines = Seq(
       OneLinePlotData(Seq(Point(1, 2)), colors.Oldlace),
       OneLinePlotData(Seq(Point(3, 4)), colors.Burlywood))
-    val linesLater = LinesLater(LinePlotData(lines), Bounds(1, 3), Bounds(0, 5))(Extent(12, 15))
   }
 
 }

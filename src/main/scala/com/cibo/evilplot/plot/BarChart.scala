@@ -54,6 +54,7 @@ class BarChart(override val extent: Extent, labels: Seq[String], data: Seq[Doubl
     val centerProportion: Double = 0.90
     new ChartLayout(extent = extent, preferredSizeOfCenter = extent * centerProportion,
       center = new DrawableLaterMaker(chartArea), left = yAxis, bottom = xAxis)
+      .titled(options.title.getOrElse(""), 20.0)
   }
   override def draw(canvas: CanvasRenderingContext2D): Unit = _drawable.draw(canvas)
 }

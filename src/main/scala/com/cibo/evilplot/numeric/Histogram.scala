@@ -5,7 +5,6 @@
 package com.cibo.evilplot.numeric
 
 import com.cibo.evilplot.plot.Bounds
-
 class Histogram(data: Seq[Double], numBins: Int, bounds: Option[Bounds] = None) {
   private val _bins: Array[Long] = Array.fill(numBins){0}
 
@@ -28,4 +27,8 @@ class Histogram(data: Seq[Double], numBins: Int, bounds: Option[Bounds] = None) 
     val bin: Int = math.min(math.round(math.floor((value - min) / binWidth)).toInt, numBins - 1)
     _bins(bin) = _bins(bin) + 1
   }
+
+  override def toString: String =
+    f"Histogram with bin boundaries: $min%.3f $max%.3f, number of bins $numBins%d and binWidth $binWidth%.1f"
 }
+

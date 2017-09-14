@@ -60,8 +60,6 @@ object ContinuousChartDistributable {
     val lineSpacing: Double
     private[plot] val nLines: Int = math.ceil(bounds.range / lineSpacing).toInt
 
-    // Calculate the coordinate of the first grid line to be drawn.
-    private val maxNumLines = math.ceil((axisDescriptor.tickMin - bounds.min) / lineSpacing).toInt
     // since we're using loose labeling, minGridLineCoord is just the tickMin
     protected val minGridLineCoord: Double = axisDescriptor.tickMin
 //    protected val minGridLineCoord: Double = {
@@ -70,9 +68,9 @@ object ContinuousChartDistributable {
 //    }
   }
 
-  case class VerticalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White) extends GridLines {
+  case class VerticalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White)
+    extends GridLines {
     def apply(extent: Extent): Drawable = {
-      require(nLines != 0)
       val lines = for {
         nLine <- 0 until nLines
         line = Line(extent.height, 1) rotated 90 colored color
@@ -81,13 +79,13 @@ object ContinuousChartDistributable {
       } yield {
         line padLeft padding
       }
-      lines.group
+      if (nLines != 0) lines.group else EmptyDrawable()
     }
   }
 
-  case class HorizontalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White) extends GridLines {
+  case class HorizontalGridLines(axisDescriptor: AxisDescriptor, lineSpacing: Double, color: Color = White)
+    extends GridLines {
     def apply(extent: Extent): Drawable = {
-      require(nLines != 0)
       val lines = for {
         nLines <- (nLines - 1) to 0 by -1
         line = Line(extent.width, 1) colored color
@@ -95,7 +93,7 @@ object ContinuousChartDistributable {
         padding = extent.height - getLinePosition(minGridLineCoord + nLines * lineSpacing, extent.height) -
           lineCorrection
       } yield line padTop padding
-      lines.group
+      if (nLines != 0) lines.group else EmptyDrawable()
     }
   }
 

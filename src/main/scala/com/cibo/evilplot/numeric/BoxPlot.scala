@@ -8,27 +8,14 @@ package com.cibo.evilplot.numeric
  */
 class BoxPlot(data: Seq[Double], quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75)) {
   private val sorted = data.sorted
-  private val length = sorted.length
 
-  private def getQuantile(quantile: Double) = {
-    require(quantile >= 0.0 && quantile <= 1.0)
-    val index: Double = quantile * (length - 1)
-    if (index >= length - 1) sorted.last
-    else {
-      val lower = sorted(math.floor(index).toInt)
-      val upper = sorted(math.ceil(index).toInt)
-      lower + (upper - lower) * (index - math.floor(index))
-    }
-  }
+  require(quantiles._1 < quantiles._2 && quantiles._2 < quantiles._3, "Supplied quantiles must be strictly increasing")
+  val (lowerQuantile, middleQuantile, upperQuantile) = quantile(data,
+    quantiles match { case (l, m, u) => Seq(l, m, u) }) match { case Seq(l, m, u) => (l, m, u) }
 
-  private val (lower, middle, upper) = quantiles
-  require(lower < middle && middle < upper, "Supplied quantiles must be strictly increasing.")
   // Summary stats
   val min: Double = sorted.head
   val max: Double = sorted.last
-  val lowerQuantile: Double = getQuantile(lower)
-  val middleQuantile: Double = getQuantile(middle)
-  val upperQuantile: Double = getQuantile(upper)
 
 
   private val interQuartileRange = upperQuantile - lowerQuantile

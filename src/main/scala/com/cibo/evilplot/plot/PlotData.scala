@@ -6,7 +6,9 @@ import com.cibo.evilplot.geometry.{Drawable, Extent}
   *
   */
 trait PlotData {
-  def createPlot(extent: Extent, options: PlotOptions): Drawable
   def xBounds: Option[Bounds] = None
   def yBounds: Option[Bounds] = None
+  def createPlot(extent: Extent, options: PlotOptions): Drawable
+  def defaultAnnotationMaker: Seq[String] = Seq[String]()
 }
+

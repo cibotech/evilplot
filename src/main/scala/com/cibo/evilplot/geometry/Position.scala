@@ -1,9 +1,24 @@
 package com.cibo.evilplot.geometry
 
+import com.cibo.evilplot.plot.Bounds
 import com.cibo.evilplot.{CanvasOp, Text}
 import org.scalajs.dom._
 
-case class Point(x: Double, y: Double)
+case class Point(x: Double, y: Double) {
+  def -(that: Point): Point = Point(x - that.x, y - that.y)
+  // a temporary solution.
+  def toPixelCoords(xBounds: Bounds, yBounds: Bounds, extent: Extent): Point = {
+    Point((x - xBounds.min) * extent.width / xBounds.range, (yBounds.max - y) * extent.height / yBounds.range)
+  }
+}
+
+case class Segment(a: Point, b: Point) {
+  def toPixelCoords(xBounds: Bounds, yBounds: Bounds, extent: Extent): Segment = {
+    Segment(a.toPixelCoords(xBounds, yBounds, extent), b.toPixelCoords(xBounds, yBounds, extent))
+  }
+}
+
+
 
 case class Translate(x: Double = 0, y: Double = 0)(r: Drawable) extends Drawable {
   // TODO: is this correct with negative translations?
@@ -17,8 +32,30 @@ case class Translate(x: Double = 0, y: Double = 0)(r: Drawable) extends Drawable
     r.draw(c)
   }
 }
+
+
 object Translate {
   def apply(r: Drawable, bbox: Extent): Translate = Translate(bbox.width, bbox.height)(r)
+}
+
+case class Affine(affine: AffineTransform)(r: Drawable) extends Drawable {
+  val extent: Extent = {
+    val pts = Seq(affine(0, 0),
+                  affine(r.extent.width, 0),
+                  affine(r.extent.width, r.extent.height),
+                  affine(0, r.extent.height))
+    val (xs, ys) = pts.unzip
+    val width = xs.max - xs.min
+    val height = ys.max - ys.min
+    Extent(width, height)
+  }
+
+  def draw(canvas: CanvasRenderingContext2D): Unit = {
+    CanvasOp(canvas){c =>
+      c.transform(affine.scaleX, affine.shearX, affine.shearY, affine.scaleY, affine.shiftX, affine.shiftY)
+      r.draw(c)
+    }
+  }
 }
 
 case class Scale(x: Double = 1, y: Double = 1)(r: Drawable) extends Drawable {
@@ -106,7 +143,7 @@ case class Rotate(degrees: Double)(r: Drawable) extends Drawable {
 // BUT CircularExtented things' rotated extents cannot be computed as a rotated rectangles, they are assumed invariant
 case class UnsafeRotate(degrees: Double)(r: Drawable) extends Drawable {
 
-  val extent = r.extent
+  val extent: Extent = r.extent
 
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
@@ -229,7 +266,7 @@ case class Titled(msg: String, r: Drawable, textSize: Double = Text.defaultSize)
   private val paddedTitle = Pad(bottom = textSize / 2.0)(Text(msg, textSize))
   private val composite = Align.center(paddedTitle, r).reduce(Above)
 
-  val extent = composite.extent
+  val extent: Extent = composite.extent
   def draw(canvas: CanvasRenderingContext2D): Unit = composite.draw(canvas)
 }
 

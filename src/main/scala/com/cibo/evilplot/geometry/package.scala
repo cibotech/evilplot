@@ -3,7 +3,6 @@ package com.cibo.evilplot
 import com.cibo.evilplot.colors.Color
 
 package object geometry {
-
   implicit class Placeable(r: Drawable) {
     def above(other: Drawable): Above = Above(r, other)
     def below(other: Drawable): Above = Above(other, r)
@@ -28,6 +27,8 @@ package object geometry {
 
     def transX(nudge: Double): Translate = Translate(x = nudge)(r)
     def transY(nudge: Double): Translate = Translate(y = nudge)(r)
+
+    def affine(affine: AffineTransform): Affine = Affine(affine)(r)
   }
 
   implicit class SeqPlaceable(drawables: Seq[Drawable]) {

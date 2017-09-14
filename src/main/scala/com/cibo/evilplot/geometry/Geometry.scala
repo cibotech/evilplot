@@ -68,6 +68,13 @@ case class Line(length: Double, strokeWidth: Double) extends Drawable {
     }
 }
 
+case class Points(points: Seq[Point], pointSize: Double) extends WrapDrawable {
+  val pts = (for { Point(x, y) <- points } yield Disc(pointSize, x, y)).group
+
+  override def drawable: Drawable = pts
+
+}
+
 case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
 
   lazy val xS: Seq[Double] = points.map(_.x)
@@ -86,6 +93,10 @@ case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
       // Uncomment this line in order to draw the bounding box for debugging
       //canvas.strokeRect(xS.min, yS.min, extent.width, extent.height)
     }
+}
+
+object Path {
+  def apply(segment: Segment, strokeWidth: Double): Path = Path(Seq(segment.a, segment.b), strokeWidth)
 }
 
 case class Rect(width: Double, height: Double) extends Drawable {
@@ -126,6 +137,9 @@ case class Disc(radius: Double, x: Double = 0, y: Double = 0) extends Drawable {
     }
 }
 
+object Disc {
+  def apply(radius: Double, p: Point): Disc = p match { case Point(x, y) => Disc(radius, x, y) }
+}
 case class Wedge(angleDegrees: Double, radius: Double) extends Drawable {
   val extent = Extent(2 * radius, 2 * radius)
 
