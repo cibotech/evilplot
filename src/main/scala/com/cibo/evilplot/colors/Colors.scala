@@ -12,6 +12,8 @@ case class HSL(hue: Int, saturation: Int, lightness: Int) extends Color {
   private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue > 360) hue - 360 else hue
   def triadic: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 120)), this.copy(hue = boundHue(this.hue + 120)))
   def analogous: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 14)), this.copy(hue = boundHue(this.hue + 14)))
+  def incremental(increment: Int): (HSL, HSL) =
+    (this.copy(hue = boundHue(this.hue - increment)), this.copy(hue = boundHue(this.hue + increment)))
 
   val repr = s"hsl($hue, $saturation%, $lightness%)"
 }
@@ -63,30 +65,38 @@ object Colors {
   }
 
   trait ColorBar
-
   // Use when one color is wanted but a ColorBar is needed.
   case class SingletonColorBar(color: Color) extends ColorBar
 
-  case class GradientColorBar(nColors: Int, zMin: Double, zMax: Double) extends ColorBar {
-    private val startH = 0
-    private val endH = 359
-    private val deltaH = (endH - startH) / nColors.toFloat
-    private val zWidth = (zMax - zMin) / nColors.toFloat
-    private val colors: Seq[Color] = Seq.tabulate(nColors)(x => HSL(startH + (x * deltaH).toInt, 90, 54))
-
+  // Map a sequence of colors to a continuous variable z.
+  case class ScaledColorBar(colorSeq: Seq[Color], zMin: Double, zMax: Double) extends ColorBar {
+    val nColors = colorSeq.length
+    val zWidth = (zMax - zMin) / nColors.toFloat
     def getColor(i: Int): Color = {
-      require((i >= 0) && (i < colors.length))
-      colors(i)
+      require((i >= 0) && (i < colorSeq.length))
+      colorSeq(i)
     }
 
     def getColor(z: Double): Color = {
       val colorIndex = math.min(math.round(math.floor((z - zMin) / zWidth)).toInt, nColors - 1)
-      colors(colorIndex)
+      colorSeq(colorIndex)
     }
   }
 
   //TODO: Experimental doesn't split analogous colors up properly
-  object ColorSeq{
+  object ColorSeq {
+    def getGradientSeq(nColors: Int, startHue: Int = 0, endHue: Int = 359): Seq[Color] = {
+      require(endHue > startHue, "End hue not greater than start hue")
+      require(endHue <= 359, "End hue must be <= 359")
+      val deltaH = (endHue - startHue) / nColors.toFloat
+      val colors: Seq[Color] = Seq.tabulate(nColors)(x => HSL(startHue + (x * deltaH).toInt, 90, 54))
+      colors
+    }
+
+    def getAnalogousSeq(seed: HSL = HSL(207, 90, 54), depth: Int): Seq[HSL] = {
+      analogGrow(seed, depth)
+    }
+
     def analogGrow(node: HSL, depth: Int): Seq[HSL] = {
       val left = node.analogous._1
       val right = node.analogous._2
@@ -100,17 +110,5 @@ object Colors {
       if (depth > 0) node +: (analogGrow(left, depth - 1) ++ analogGrow(right, depth - 1))
       else Seq()
     }
-
-    def apply(seed: HSL, depth: Int): Seq[HSL] = {
-      analogGrow(seed, depth)
-    }
   }
-
-  def triAnalogStream(seed: HSL = HSL(207, 90, 54)): Seq[HSL] = {
-    val colors = ColorSeq(seed, 5)
-    Stream.from(0).map{ x =>
-      colors(x % colors.length)
-    }
-  }
-
 }

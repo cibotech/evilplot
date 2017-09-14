@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.Colors.GradientColorBar
+import com.cibo.evilplot.colors.Colors.{ColorSeq, ScaledColorBar}
 import com.cibo.evilplot.geometry.{Drawable, DrawableLater, DrawableLaterMaker, Extent, Path, Rect}
 import com.cibo.evilplot.layout.ChartLayout
 import com.cibo.evilplot.numeric.MarchingSquares.Grid
@@ -56,8 +56,8 @@ class ContourPlot(val extent: Extent, data: ContourData, options: PlotOptions) e
       val xGridLines = ContinuousChartDistributable.VerticalGridLines(xAxisDescriptor, xSpacing)(extent)
       val yGridLines = ContinuousChartDistributable.HorizontalGridLines(yAxisDescriptor, ySpacing)(extent)
       val _chartArea = chartBackground behind yGridLines behind xGridLines
-
-      val colorBar = GradientColorBar(numContours, grid.zBounds.min, grid.zBounds.max)
+      val colors = ColorSeq.getGradientSeq(numContours)
+      val colorBar = ScaledColorBar(colors, grid.zBounds.min, grid.zBounds.max)
       val binWidth = data.zBounds.range / numContours
       val levels = Seq.tabulate[Double](numContours - 1)(bin => grid.zBounds.min + (bin + 1) * binWidth)
       val contours = for { z <- levels
