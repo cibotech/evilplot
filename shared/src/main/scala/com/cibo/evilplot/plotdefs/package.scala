@@ -1,10 +1,7 @@
 package com.cibo.evilplot
 
-import com.cibo.evilplot.colors.{Color, HSL, White}
+import com.cibo.evilplot.colors.HSL
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import io.circe.{Decoder, Encoder}
-import io.circe.generic.semiauto.{deriveEncoder, deriveDecoder}
-import com.cibo.evilplot.colors.Codecs._
 
 package object plotdefs {
   sealed trait PlotDef

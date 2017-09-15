@@ -1,7 +1,5 @@
 package com.cibo.evilplot.plotdefs
 
-import io.circe.generic.JsonCodec
-
 object FacetsDef {
   // type bound is too tight temporarily
   def apply[T, U, V <: ScatterPlotDef](dataObject: T,
