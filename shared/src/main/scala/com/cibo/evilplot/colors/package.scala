@@ -1,5 +1,5 @@
 package com.cibo.evilplot
-
+import com.cibo.evilplot.SerializationUtils.withCaseClassConstructorName
 // turn off the warning about too many types defined in a file
 // scalastyle:off
 package object colors {
@@ -23,7 +23,7 @@ package object colors {
   case object Clear extends Color {
     val repr: String = "rgba(0,0,0,0)"
   }
-/*  sealed abstract class NamedColor(val repr: String) extends Color
+  sealed abstract class NamedColor(val repr: String) extends Color
   case object AliceBlue             extends NamedColor("aliceblue")
   case object AntiqueWhite          extends NamedColor("antiquewhite")
   case object Aqua                  extends NamedColor("aqua")
@@ -170,6 +170,6 @@ package object colors {
   case object White                 extends NamedColor("white")
   case object WhiteSmoke            extends NamedColor("whitesmoke")
   case object Yellow                extends NamedColor("yellow")
-  case object YellowGreen           extends NamedColor("yellowgreen")*/
+  case object YellowGreen           extends NamedColor("yellowgreen")
   // scalastyle:on
 }
