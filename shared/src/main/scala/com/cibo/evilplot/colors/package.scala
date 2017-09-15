@@ -3,7 +3,27 @@ package com.cibo.evilplot
 // turn off the warning about too many types defined in a file
 // scalastyle:off
 package object colors {
-  sealed abstract class NamedColor(val repr: String) extends Color
+  sealed trait Color {
+    val repr: String
+  }
+  case class HSL(hue: Int, saturation: Int, lightness: Int) extends Color {
+    require(hue        >= 0 && hue        <  360, s"hue must be within [0, 360) {was $hue}")
+    require(saturation >= 0 && saturation <= 100, s"saturation must be within [0, 100] {was $saturation}")
+    require(lightness  >= 0 && lightness  <= 100, s"lightness must be within [0, 100] {was $lightness}")
+
+    private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue > 360) hue - 360 else hue
+    def triadic: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 120)), this.copy(hue = boundHue(this.hue + 120)))
+    def analogous: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 14)), this.copy(hue = boundHue(this.hue + 14)))
+    def incremental(increment: Int): (HSL, HSL) =
+      (this.copy(hue = boundHue(this.hue - increment)), this.copy(hue = boundHue(this.hue + increment)))
+
+    val repr = s"hsl($hue, $saturation%, $lightness%)"
+  }
+
+  case object Clear extends Color {
+    val repr: String = "rgba(0,0,0,0)"
+  }
+/*  sealed abstract class NamedColor(val repr: String) extends Color
   case object AliceBlue             extends NamedColor("aliceblue")
   case object AntiqueWhite          extends NamedColor("antiquewhite")
   case object Aqua                  extends NamedColor("aqua")
@@ -150,6 +170,6 @@ package object colors {
   case object White                 extends NamedColor("white")
   case object WhiteSmoke            extends NamedColor("whitesmoke")
   case object Yellow                extends NamedColor("yellow")
-  case object YellowGreen           extends NamedColor("yellowgreen")
+  case object YellowGreen           extends NamedColor("yellowgreen")*/
   // scalastyle:on
 }

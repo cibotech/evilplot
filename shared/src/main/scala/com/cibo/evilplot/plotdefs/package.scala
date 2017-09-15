@@ -1,11 +1,12 @@
 package com.cibo.evilplot
 
-import com.cibo.evilplot.colors.HSL
-import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.colors.{Color, HSL}
+import com.cibo.evilplot.numeric.{Bounds, GridData, Point}
 
 package object plotdefs {
   sealed trait PlotDef
-  case class ScatterPlotDef(data: Seq[Point], color: HSL) extends PlotDef
+  case class ScatterPlotDef(data: Seq[Point], color: Color) extends PlotDef
+  case class ContourPlotDef(data: GridData, numContours: Int) extends PlotDef
 
   sealed trait ScaleOption
   case object FixedScales extends ScaleOption
@@ -26,7 +27,7 @@ package object plotdefs {
                          yGridSpacing: Option[Double] = None,
                          gridColor: HSL = HSL(0, 0, 0),
                          withinMetrics: Option[Seq[Double]] = None,
-                         backgroundColor: HSL = HSL(0, 0, 92),
-                         barColor: HSL = HSL(0, 0, 35))
+                         backgroundColor: Color = HSL(0, 0, 92),
+                         barColor: Color = HSL(0, 0, 35))
 
 }

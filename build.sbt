@@ -15,8 +15,6 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
   version := Settings.version,
   scalaVersion := Settings.versions.scala,
   libraryDependencies ++= Settings.sharedDependencies.value,
-  resolvers += Resolver.sonatypeRepo("releases"),
-  addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
   publishTo in ThisBuild := {
   val repo = ""
   if (isSnapshot.value) {
@@ -51,8 +49,9 @@ lazy val js: Project = (project in file("js"))
   jsDependencies += RuntimeDOM,
   jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value),
   skip in packageJSDependencies := false,
+  scalaJSUseMainModuleInitializer := true,
   scalaJSUseMainModuleInitializer in Test := false
-).enablePlugins(ScalaJSPlugin, WorkbenchPlugin)
+).enablePlugins(WorkbenchPlugin)
 .dependsOn(sharedJS)
 
 // js projects (just one in this case)
