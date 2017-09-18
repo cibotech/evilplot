@@ -3,7 +3,6 @@
  */
 
 package com.cibo.evilplot
-import com.cibo.evilplot.SerializationUtils.withCaseClassConstructorName
 // turn off the warning about too many types defined in a file
 // scalastyle:off
 package object colors {
@@ -27,153 +26,154 @@ package object colors {
   case object Clear extends Color {
     val repr: String = "rgba(0,0,0,0)"
   }
-  sealed abstract class NamedColor(val repr: String) extends Color
-  case object AliceBlue             extends NamedColor("aliceblue")
-  case object AntiqueWhite          extends NamedColor("antiquewhite")
-  case object Aqua                  extends NamedColor("aqua")
-  case object Aquamarine            extends NamedColor("aquamarine")
-  case object Azure                 extends NamedColor("azure")
-  case object Beige                 extends NamedColor("beige")
-  case object Bisque                extends NamedColor("bisque")
-  case object Black                 extends NamedColor("black")
-  case object BlanchedAlmond        extends NamedColor("blanchedalmond")
-  case object Blue                  extends NamedColor("blue")
-  case object BlueViolet            extends NamedColor("blueviolet")
-  case object Brown                 extends NamedColor("brown")
-  case object Burlywood             extends NamedColor("burlywood")
-  case object CadetBlue             extends NamedColor("cadetblue")
-  case object Chartreuse            extends NamedColor("chartreuse")
-  case object Chocolate             extends NamedColor("chocolate")
-  case object Coral                 extends NamedColor("coral")
-  case object CornflowerBlue        extends NamedColor("cornflowerblue")
-  case object Cornsilk              extends NamedColor("cornsilk")
-  case object Crimson               extends NamedColor("crimson")
-  case object Cyan                  extends NamedColor("cyan")
-  case object DarkBlue              extends NamedColor("darkblue")
-  case object DarkCyan              extends NamedColor("darkcyan")
-  case object DarkGoldenrod         extends NamedColor("darkgoldenrod")
-  case object DarkGray              extends NamedColor("darkgray")
-  case object DarkGreen             extends NamedColor("darkgreen")
-  case object DarkGrey              extends NamedColor("darkgrey")
-  case object DarkKhaki             extends NamedColor("darkkhaki")
-  case object DarkMagenta           extends NamedColor("darkmagenta")
-  case object DarkOliveGreen        extends NamedColor("darkolivegreen")
-  case object DarkOrange            extends NamedColor("darkorange")
-  case object DarkOrchid            extends NamedColor("darkorchid")
-  case object DarkRed               extends NamedColor("darkred")
-  case object DarkSalmon            extends NamedColor("darksalmon")
-  case object DarkSeagreen          extends NamedColor("darkseagreen")
-  case object DarkSlateBlue         extends NamedColor("darkslateblue")
-  case object DarkSlateGray         extends NamedColor("darkslategray")
-  case object DarkSlateGrey         extends NamedColor("darkslategrey")
-  case object DarkTurquoise         extends NamedColor("darkturquoise")
-  case object DarkViolet            extends NamedColor("darkviolet")
-  case object DeepPink              extends NamedColor("deeppink")
-  case object DeepskyBlue           extends NamedColor("deepskyblue")
-  case object DimGray               extends NamedColor("dimgray")
-  case object DimGrey               extends NamedColor("dimgrey")
-  case object DodgerBlue            extends NamedColor("dodgerblue")
-  case object Firebrick             extends NamedColor("firebrick")
-  case object FloralWhite           extends NamedColor("floralwhite")
-  case object ForestGreen           extends NamedColor("forestgreen")
-  case object Fuchsia               extends NamedColor("fuchsia")
-  case object Gainsboro             extends NamedColor("gainsboro")
-  case object Ghostwhite            extends NamedColor("ghostwhite")
-  case object Gold                  extends NamedColor("gold")
-  case object Goldenrod             extends NamedColor("goldenrod")
-  case object Gray                  extends NamedColor("gray")
-  case object Green                 extends NamedColor("green")
-  case object GreenYellow           extends NamedColor("greenyellow")
-  case object Grey                  extends NamedColor("grey")
-  case object Honeydew              extends NamedColor("honeydew")
-  case object HotPink               extends NamedColor("hotpink")
-  case object IndianRed             extends NamedColor("indianred")
-  case object Indigo                extends NamedColor("indigo")
-  case object Ivory                 extends NamedColor("ivory")
-  case object Khaki                 extends NamedColor("khaki")
-  case object Lavender              extends NamedColor("lavender")
-  case object LavenderBlush         extends NamedColor("lavenderblush")
-  case object LawnGreen             extends NamedColor("lawngreen")
-  case object LemonChiffon          extends NamedColor("lemonchiffon")
-  case object LightBlue             extends NamedColor("lightblue")
-  case object LightCoral            extends NamedColor("lightcoral")
-  case object Lightyan              extends NamedColor("lightcyan")
-  case object LightGoldenrodYellow  extends NamedColor("lightgoldenrodyellow")
-  case object LightGray             extends NamedColor("lightgray")
-  case object LightGreen            extends NamedColor("lightgreen")
-  case object LightGrey             extends NamedColor("lightgrey")
-  case object LightPink             extends NamedColor("lightpink")
-  case object LightSalmon           extends NamedColor("lightsalmon")
-  case object LightSeaGreen         extends NamedColor("lightseagreen")
-  case object LightSkyBlue          extends NamedColor("lightskyblue")
-  case object LightSlateGray        extends NamedColor("lightslategray")
-  case object LightSlateGrey        extends NamedColor("lightslategrey")
-  case object LightSteelblue        extends NamedColor("lightsteelblue")
-  case object LightYellow           extends NamedColor("lightyellow")
-  case object Lime                  extends NamedColor("lime")
-  case object LimeGreen             extends NamedColor("limegreen")
-  case object Linen                 extends NamedColor("linen")
-  case object Magenta               extends NamedColor("magenta")
-  case object Maroon                extends NamedColor("maroon")
-  case object MediumAquamarine      extends NamedColor("mediumaquamarine")
-  case object MediumBlue            extends NamedColor("mediumblue")
-  case object MediumOrchid          extends NamedColor("mediumorchid")
-  case object MediumPurple          extends NamedColor("mediumpurple")
-  case object MediumSeagreen        extends NamedColor("mediumseagreen")
-  case object MediumSlateBlue       extends NamedColor("mediumslateblue")
-  case object MediumSpringGreen     extends NamedColor("mediumspringgreen")
-  case object MediumTurquoise       extends NamedColor("mediumturquoise")
-  case object MediumVioletRed       extends NamedColor("mediumvioletred")
-  case object MidnightBlue          extends NamedColor("midnightblue")
-  case object MintCream             extends NamedColor("mintcream")
-  case object MistyRose             extends NamedColor("mistyrose")
-  case object Moccasin              extends NamedColor("moccasin")
-  case object NavajoWhite           extends NamedColor("navajowhite")
-  case object Navy                  extends NamedColor("navy")
-  case object Oldlace               extends NamedColor("oldlace")
-  case object Olive                 extends NamedColor("olive")
-  case object Olivedrab             extends NamedColor("olivedrab")
-  case object Orange                extends NamedColor("orange")
-  case object OrangeRed             extends NamedColor("orangered")
-  case object Orchid                extends NamedColor("orchid")
-  case object PaleGoldenrod         extends NamedColor("palegoldenrod")
-  case object PaleGreen             extends NamedColor("palegreen")
-  case object PaleTurquoise         extends NamedColor("paleturquoise")
-  case object PaleVioletRed         extends NamedColor("palevioletred")
-  case object Papayawhip            extends NamedColor("papayawhip")
-  case object PeachPuff             extends NamedColor("peachpuff")
-  case object Peru                  extends NamedColor("peru")
-  case object Pink                  extends NamedColor("pink")
-  case object Plum                  extends NamedColor("plum")
-  case object PowderBlue            extends NamedColor("powderblue")
-  case object Purple                extends NamedColor("purple")
-  case object Red                   extends NamedColor("red")
-  case object RosyBrown             extends NamedColor("rosybrown")
-  case object RoyalBlue             extends NamedColor("royalblue")
-  case object SaddleBrown           extends NamedColor("saddlebrown")
-  case object Salmon                extends NamedColor("salmon")
-  case object SandyBrown            extends NamedColor("sandybrown")
-  case object Seagreen              extends NamedColor("seagreen")
-  case object Seashell              extends NamedColor("seashell")
-  case object Sienna                extends NamedColor("sienna")
-  case object Silver                extends NamedColor("silver")
-  case object SkyBlue               extends NamedColor("skyblue")
-  case object SlateBlue             extends NamedColor("slateblue")
-  case object SlateGray             extends NamedColor("slategray")
-  case object SlateGrey             extends NamedColor("slategrey")
-  case object Snow                  extends NamedColor("snow")
-  case object SpringGreen           extends NamedColor("springgreen")
-  case object SteelBlue             extends NamedColor("steelblue")
-  case object Tan                   extends NamedColor("tan")
-  case object Teal                  extends NamedColor("teal")
-  case object Thistle               extends NamedColor("thistle")
-  case object Tomato                extends NamedColor("tomato")
-  case object Turquoise             extends NamedColor("turquoise")
-  case object Violet                extends NamedColor("violet")
-  case object Wheat                 extends NamedColor("wheat")
-  case object White                 extends NamedColor("white")
-  case object WhiteSmoke            extends NamedColor("whitesmoke")
-  case object Yellow                extends NamedColor("yellow")
-  case object YellowGreen           extends NamedColor("yellowgreen")
+
+  trait NamedColor extends Color
+  case object AliceBlue             extends NamedColor { val repr = "aliceblue" }
+  case object AntiqueWhite          extends NamedColor { val repr = "antiquewhite" }
+  case object Aqua                  extends NamedColor { val repr = "aqua" }
+  case object Aquamarine            extends NamedColor { val repr = "aquamarine" }
+  case object Azure                 extends NamedColor { val repr = "azure" }
+  case object Beige                 extends NamedColor { val repr = "beige" }
+  case object Bisque                extends NamedColor { val repr = "bisque" }
+  case object Black                 extends NamedColor { val repr = "black" }
+  case object BlanchedAlmond        extends NamedColor { val repr = "blanchedalmond" }
+  case object Blue                  extends NamedColor { val repr = "blue" }
+  case object BlueViolet            extends NamedColor { val repr = "blueviolet" }
+  case object Brown                 extends NamedColor { val repr = "brown" }
+  case object Burlywood             extends NamedColor { val repr = "burlywood" }
+  case object CadetBlue             extends NamedColor { val repr = "cadetblue" }
+  case object Chartreuse            extends NamedColor { val repr = "chartreuse" }
+  case object Chocolate             extends NamedColor { val repr = "chocolate" }
+  case object Coral                 extends NamedColor { val repr = "coral" }
+  case object CornflowerBlue        extends NamedColor { val repr = "cornflowerblue" }
+  case object Cornsilk              extends NamedColor { val repr = "cornsilk" }
+  case object Crimson               extends NamedColor { val repr = "crimson" }
+  case object Cyan                  extends NamedColor { val repr = "cyan" }
+  case object DarkBlue              extends NamedColor { val repr = "darkblue" }
+  case object DarkCyan              extends NamedColor { val repr = "darkcyan" }
+  case object DarkGoldenrod         extends NamedColor { val repr = "darkgoldenrod" }
+  case object DarkGray              extends NamedColor { val repr = "darkgray" }
+  case object DarkGreen             extends NamedColor { val repr = "darkgreen" }
+  case object DarkGrey              extends NamedColor { val repr = "darkgrey" }
+  case object DarkKhaki             extends NamedColor { val repr = "darkkhaki" }
+  case object DarkMagenta           extends NamedColor { val repr = "darkmagenta" }
+  case object DarkOliveGreen        extends NamedColor { val repr = "darkolivegreen" }
+  case object DarkOrange            extends NamedColor { val repr = "darkorange" }
+  case object DarkOrchid            extends NamedColor { val repr = "darkorchid" }
+  case object DarkRed               extends NamedColor { val repr = "darkred" }
+  case object DarkSalmon            extends NamedColor { val repr = "darksalmon" }
+  case object DarkSeagreen          extends NamedColor { val repr = "darkseagreen" }
+  case object DarkSlateBlue         extends NamedColor { val repr = "darkslateblue" }
+  case object DarkSlateGray         extends NamedColor { val repr = "darkslategray" }
+  case object DarkSlateGrey         extends NamedColor { val repr = "darkslategrey" }
+  case object DarkTurquoise         extends NamedColor { val repr = "darkturquoise" }
+  case object DarkViolet            extends NamedColor { val repr = "darkviolet" }
+  case object DeepPink              extends NamedColor { val repr = "deeppink" }
+  case object DeepskyBlue           extends NamedColor { val repr = "deepskyblue" }
+  case object DimGray               extends NamedColor { val repr = "dimgray" }
+  case object DimGrey               extends NamedColor { val repr = "dimgrey" }
+  case object DodgerBlue            extends NamedColor { val repr = "dodgerblue" }
+  case object Firebrick             extends NamedColor { val repr = "firebrick" }
+  case object FloralWhite           extends NamedColor { val repr = "floralwhite" }
+  case object ForestGreen           extends NamedColor { val repr = "forestgreen" }
+  case object Fuchsia               extends NamedColor { val repr = "fuchsia" }
+  case object Gainsboro             extends NamedColor { val repr = "gainsboro" }
+  case object Ghostwhite            extends NamedColor { val repr = "ghostwhite" }
+  case object Gold                  extends NamedColor { val repr = "gold" }
+  case object Goldenrod             extends NamedColor { val repr = "goldenrod" }
+  case object Gray                  extends NamedColor { val repr = "gray" }
+  case object Green                 extends NamedColor { val repr = "green" }
+  case object GreenYellow           extends NamedColor { val repr = "greenyellow" }
+  case object Grey                  extends NamedColor { val repr = "grey" }
+  case object Honeydew              extends NamedColor { val repr = "honeydew" }
+  case object HotPink               extends NamedColor { val repr = "hotpink" }
+  case object IndianRed             extends NamedColor { val repr = "indianred" }
+  case object Indigo                extends NamedColor { val repr = "indigo" }
+  case object Ivory                 extends NamedColor { val repr = "ivory" }
+  case object Khaki                 extends NamedColor { val repr = "khaki" }
+  case object Lavender              extends NamedColor { val repr = "lavender" }
+  case object LavenderBlush         extends NamedColor { val repr = "lavenderblush" }
+  case object LawnGreen             extends NamedColor { val repr = "lawngreen" }
+  case object LemonChiffon          extends NamedColor { val repr = "lemonchiffon" }
+  case object LightBlue             extends NamedColor { val repr = "lightblue" }
+  case object LightCoral            extends NamedColor { val repr = "lightcoral" }
+  case object Lightyan              extends NamedColor { val repr = "lightcyan" }
+  case object LightGoldenrodYellow  extends NamedColor { val repr = "lightgoldenrodyellow" }
+  case object LightGray             extends NamedColor { val repr = "lightgray" }
+  case object LightGreen            extends NamedColor { val repr = "lightgreen" }
+  case object LightGrey             extends NamedColor { val repr = "lightgrey" }
+  case object LightPink             extends NamedColor { val repr = "lightpink" }
+  case object LightSalmon           extends NamedColor { val repr = "lightsalmon" }
+  case object LightSeaGreen         extends NamedColor { val repr = "lightseagreen" }
+  case object LightSkyBlue          extends NamedColor { val repr = "lightskyblue" }
+  case object LightSlateGray        extends NamedColor { val repr = "lightslategray" }
+  case object LightSlateGrey        extends NamedColor { val repr = "lightslategrey" }
+  case object LightSteelblue        extends NamedColor { val repr = "lightsteelblue" }
+  case object LightYellow           extends NamedColor { val repr = "lightyellow" }
+  case object Lime                  extends NamedColor { val repr = "lime" }
+  case object LimeGreen             extends NamedColor { val repr = "limegreen" }
+  case object Linen                 extends NamedColor { val repr = "linen" }
+  case object Magenta               extends NamedColor { val repr = "magenta" }
+  case object Maroon                extends NamedColor { val repr = "maroon" }
+  case object MediumAquamarine      extends NamedColor { val repr = "mediumaquamarine" }
+  case object MediumBlue            extends NamedColor { val repr = "mediumblue" }
+  case object MediumOrchid          extends NamedColor { val repr = "mediumorchid" }
+  case object MediumPurple          extends NamedColor { val repr = "mediumpurple" }
+  case object MediumSeagreen        extends NamedColor { val repr = "mediumseagreen" }
+  case object MediumSlateBlue       extends NamedColor { val repr = "mediumslateblue" }
+  case object MediumSpringGreen     extends NamedColor { val repr = "mediumspringgreen" }
+  case object MediumTurquoise       extends NamedColor { val repr = "mediumturquoise" }
+  case object MediumVioletRed       extends NamedColor { val repr = "mediumvioletred" }
+  case object MidnightBlue          extends NamedColor { val repr = "midnightblue" }
+  case object MintCream             extends NamedColor { val repr = "mintcream" }
+  case object MistyRose             extends NamedColor { val repr = "mistyrose" }
+  case object Moccasin              extends NamedColor { val repr = "moccasin" }
+  case object NavajoWhite           extends NamedColor { val repr = "navajowhite" }
+  case object Navy                  extends NamedColor { val repr = "navy" }
+  case object Oldlace               extends NamedColor { val repr = "oldlace" }
+  case object Olive                 extends NamedColor { val repr = "olive" }
+  case object Olivedrab             extends NamedColor { val repr = "olivedrab" }
+  case object Orange                extends NamedColor { val repr = "orange" }
+  case object OrangeRed             extends NamedColor { val repr = "orangered" }
+  case object Orchid                extends NamedColor { val repr = "orchid" }
+  case object PaleGoldenrod         extends NamedColor { val repr = "palegoldenrod" }
+  case object PaleGreen             extends NamedColor { val repr = "palegreen" }
+  case object PaleTurquoise         extends NamedColor { val repr = "paleturquoise" }
+  case object PaleVioletRed         extends NamedColor { val repr = "palevioletred" }
+  case object Papayawhip            extends NamedColor { val repr = "papayawhip" }
+  case object PeachPuff             extends NamedColor { val repr = "peachpuff" }
+  case object Peru                  extends NamedColor { val repr = "peru" }
+  case object Pink                  extends NamedColor { val repr = "pink" }
+  case object Plum                  extends NamedColor { val repr = "plum" }
+  case object PowderBlue            extends NamedColor { val repr = "powderblue" }
+  case object Purple                extends NamedColor { val repr = "purple" }
+  case object Red                   extends NamedColor { val repr = "red" }
+  case object RosyBrown             extends NamedColor { val repr = "rosybrown" }
+  case object RoyalBlue             extends NamedColor { val repr = "royalblue" }
+  case object SaddleBrown           extends NamedColor { val repr = "saddlebrown" }
+  case object Salmon                extends NamedColor { val repr = "salmon" }
+  case object SandyBrown            extends NamedColor { val repr = "sandybrown" }
+  case object Seagreen              extends NamedColor { val repr = "seagreen" }
+  case object Seashell              extends NamedColor { val repr = "seashell" }
+  case object Sienna                extends NamedColor { val repr = "sienna" }
+  case object Silver                extends NamedColor { val repr = "silver" }
+  case object SkyBlue               extends NamedColor { val repr = "skyblue" }
+  case object SlateBlue             extends NamedColor { val repr = "slateblue" }
+  case object SlateGray             extends NamedColor { val repr = "slategray" }
+  case object SlateGrey             extends NamedColor { val repr = "slategrey" }
+  case object Snow                  extends NamedColor { val repr = "snow" }
+  case object SpringGreen           extends NamedColor { val repr = "springgreen" }
+  case object SteelBlue             extends NamedColor { val repr = "steelblue" }
+  case object Tan                   extends NamedColor { val repr = "tan" }
+  case object Teal                  extends NamedColor { val repr = "teal" }
+  case object Thistle               extends NamedColor { val repr = "thistle" }
+  case object Tomato                extends NamedColor { val repr = "tomato" }
+  case object Turquoise             extends NamedColor { val repr = "turquoise" }
+  case object Violet                extends NamedColor { val repr = "violet" }
+  case object Wheat                 extends NamedColor { val repr = "wheat" }
+  case object White                 extends NamedColor { val repr = "white" }
+  case object WhiteSmoke            extends NamedColor { val repr = "whitesmoke" }
+  case object Yellow                extends NamedColor { val repr = "yellow" }
+  case object YellowGreen           extends NamedColor { val repr = "yellowgreen" }
   // scalastyle:on
 }

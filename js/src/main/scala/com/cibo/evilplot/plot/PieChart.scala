@@ -4,6 +4,7 @@ import com.cibo.evilplot.Text
 import com.cibo.evilplot.colors.Colors.ColorSeq
 import com.cibo.evilplot.colors.{Black, Clear}
 import com.cibo.evilplot.geometry.{Align, Disc, Drawable, Extent, Rect, UnsafeRotate, Wedge, distributeH, flowH, _}
+import com.cibo.evilplot.plotdefs.PlotOptions
 import org.scalajs.dom.CanvasRenderingContext2D
 
 class PieChart(override val extent: Extent, labels: Option[Seq[String]] = None, data: Seq[Double], options: PlotOptions,

@@ -10,26 +10,6 @@ import com.cibo.evilplot.colors.{Color, HSL, White}
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.Bounds
 
-case class PlotOptions(title: Option[String] = None,
-                       xAxisBounds: Option[Bounds] = None,
-                       yAxisBounds: Option[Bounds] = None,
-                       drawXAxis: Boolean = true,
-                       drawYAxis: Boolean = true,
-                       numXTicks: Option[Int] = None,
-                       numYTicks: Option[Int] = None,
-                       xAxisLabel: Option[String] = None,
-                       yAxisLabel: Option[String] = None,
-                       topLabel: Option[String] = None,
-                       rightLabel: Option[String] = None,
-                       xGridSpacing: Option[Double] = None,
-                       yGridSpacing: Option[Double] = None,
-                       gridColor: Color = White,
-                       withinMetrics: Option[Seq[Double]] = None,
-                       backgroundColor: Color = HSL(0, 0, 92),
-                       barColor: Color = HSL(0, 0, 35))
-
-
-
 class Legend[T](colorBar: ColorBar, categories: Seq[T],
                 pointSize: Double, backgroundRectangle: Option[Color] = None)
                (implicit cmp: Ordering[T]) extends WrapDrawable {

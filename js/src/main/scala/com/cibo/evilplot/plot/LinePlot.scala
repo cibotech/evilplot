@@ -7,6 +7,7 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, Extent, Group, Path, WrapDrawable}
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.StrokeStyle
+import com.cibo.evilplot.plotdefs.PlotOptions
 
 
 case class OneLinePlotData(points: Seq[Point], color: Color) {

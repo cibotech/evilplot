@@ -4,6 +4,7 @@ import com.cibo.evilplot.colors.Black
 import com.cibo.evilplot.colors.Colors.{ColorBar, ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Translate}
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plotdefs.PlotOptions
 
 case class ScatterPlotData(data: Seq[Point], zData: Option[Seq[Double]], pointSize: Double = 2.25,
                            colorBar: ColorBar = SingletonColorBar(Black)) extends PlotData {

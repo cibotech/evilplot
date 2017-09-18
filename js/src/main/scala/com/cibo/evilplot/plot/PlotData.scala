@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.plotdefs.PlotOptions
 
 /** A class extending `PlotData` contains all data and plot-type specific options needed to create a plot of that type.
   *

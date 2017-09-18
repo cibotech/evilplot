@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, Extent, Grid, WrapDrawable}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.Facets.{FixedScales, FreeScales}
+import com.cibo.evilplot.plotdefs.{FixedScales, FreeScales, PlotOptions, ScaleOption}
 
 /** Facets creates a 2-dimensional grid of plots extracted from a generic data object.
   * The caller supplies sequences of "row" accessors and "col" accessors that when composed transform the generic data
@@ -10,19 +10,11 @@ import com.cibo.evilplot.plot.Facets.{FixedScales, FreeScales}
   */
 // TODO: could rename row and column accessor seqs to first and second, and give an option for the dimension along
 // which to lay things out
-object Facets {
-  sealed trait ScaleOption
-  case object FixedScales extends ScaleOption
-  case object FreeScales extends ScaleOption
-  // TODO: implement these
-/*  case object FixedX extends ScaleOption
-  case object FixedY extends ScaleOption*/
-}
 
 class Facets[T, U, V <: PlotData](extent: Extent, dataObject: T, columns: Seq[(T => U)],
                                   rows: Seq[(U => V)], columnLabels: Option[Seq[String]] = None,
                                   rowLabels: Option[Seq[String]] = None,
-                                  axisScales: Facets.ScaleOption = Facets.FixedScales,
+                                  axisScales: ScaleOption = FixedScales,
                                   baseOptions: PlotOptions = PlotOptions()) extends WrapDrawable {
   private val numCols = columns.length
   private val numRows = rows.length

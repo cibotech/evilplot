@@ -4,6 +4,7 @@ import com.cibo.evilplot.StrokeStyle
 import com.cibo.evilplot.colors.Colors.{ColorSeq, ScaledColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Path}
 import com.cibo.evilplot.numeric._
+import com.cibo.evilplot.plotdefs.PlotOptions
 
 case class ContourData(gridData: GridData, numContours: Int) extends PlotData {
   override def xBounds: Option[Bounds] = Some(gridData.xBounds)

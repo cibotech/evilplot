@@ -15,6 +15,7 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
   version := Settings.version,
   scalaVersion := Settings.versions.scala,
   libraryDependencies ++= Settings.sharedDependencies.value,
+  scalacOptions := Settings.scalacOptions,
   publishTo in ThisBuild := {
   val repo = ""
   if (isSnapshot.value) {

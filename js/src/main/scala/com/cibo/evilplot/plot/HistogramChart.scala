@@ -8,6 +8,7 @@ import com.cibo.evilplot.colors.{Color, Red}
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Histogram}
 import com.cibo.evilplot.plot.ContinuousChartDistributable.MetricLines
+import com.cibo.evilplot.plotdefs.PlotOptions
 
 case class HistogramData(data: Seq[Double], numBins: Int, annotation: Seq[String] = Nil, bounds: Option[Bounds] = None)
   extends PlotData {

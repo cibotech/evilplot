@@ -1,21 +1,15 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Black, Blue, Color, White}
-import com.cibo.evilplot.geometry.{Above, Align, BorderFillRect, Disc, Drawable, EmptyDrawable, Extent, FlipY, Line, WrapDrawable}
+import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlot}
-import com.cibo.evilplot.plot.BoxPlotData.{AllPoints, BoxPlotPoints, NoPoints, OutliersOnly}
+import com.cibo.evilplot.plotdefs._
 import com.cibo.evilplot.{StrokeStyle, Style}
 
 
 // TODO: ggplot2 provides a `geom_jitter` which makes the outliers a bit easier to read off the plot.
 // TODO: Continuous x option?
 
-object BoxPlotData {
-  sealed trait BoxPlotPoints
-  case object AllPoints extends BoxPlotPoints
-  case object OutliersOnly extends BoxPlotPoints
-  case object NoPoints extends BoxPlotPoints
-}
 
 case class BoxPlotData[T](labels: Seq[T], distributions: Seq[Seq[Double]], drawPoints: BoxPlotPoints = AllPoints,
                           rectWidth: Option[Double] = None, rectSpacing: Option[Double] = None, rectColor: Color = Blue,

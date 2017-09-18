@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Rect, WrapDrawable}
 import com.cibo.evilplot.plot.Chart.ChartRendertimeSpaceException
+import com.cibo.evilplot.plotdefs.PlotOptions
 object Chart {
   case class ChartRendertimeSpaceException(msg: String = "") extends Throwable(msg)
 }

@@ -15,13 +15,13 @@ object Settings {
   val version = s"0.1.$buildVersion"
 
   /** Options for the scala compiler */
-  // val scalacOptions = Seq(
-  //   "-Xlint",
-  //   "-unchecked",
-  //   "-deprecation",
-  //   "-feature"
-  // )
-  val scalacOptions = Seq()
+  val scalacOptions = Seq(
+    // "-Xlint",
+    // "-unchecked",
+    // "-deprecation",
+    // "-feature",
+    // "-J-Xss1024m"
+  )
 
   /** Declare global dependency versions here to avoid mismatches in multi part dependencies */
   object versions { //scalastyle:ignore
