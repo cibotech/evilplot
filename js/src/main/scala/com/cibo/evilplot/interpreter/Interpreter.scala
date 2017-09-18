@@ -1,3 +1,6 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
 package com.cibo.evilplot.interpreter
 import com.cibo.evilplot.colors.Colors.SingletonColorBar
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
@@ -6,7 +9,6 @@ import com.cibo.evilplot.plotdefs.{ContourPlotDef, PlotDef, ScatterPlotDef}
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
-import com.cibo.evilplot.SerializationUtils._
 object PlotDefinitionInterpreter {
   val size = Extent(600, 600)
   def apply(definition: Json): Option[Drawable] = {

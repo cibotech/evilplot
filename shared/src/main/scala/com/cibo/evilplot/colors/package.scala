@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
+
 package com.cibo.evilplot
 import com.cibo.evilplot.SerializationUtils.withCaseClassConstructorName
 // turn off the warning about too many types defined in a file

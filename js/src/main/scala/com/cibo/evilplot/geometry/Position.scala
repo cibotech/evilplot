@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
+
 package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.{CanvasOp, Text}

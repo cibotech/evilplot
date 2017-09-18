@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
+
 package com.cibo.evilplot.geometry
 
 case class AffineTransform(scaleX: Double = 1,

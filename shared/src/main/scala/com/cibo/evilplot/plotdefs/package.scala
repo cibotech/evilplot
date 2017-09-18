@@ -1,8 +1,11 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
+
 package com.cibo.evilplot
 
 import com.cibo.evilplot.colors.HSL
 import com.cibo.evilplot.numeric.{Bounds, GridData, Point}
-import com.cibo.evilplot.SerializationUtils.withCaseClassConstructorName
 
 package object plotdefs {
   sealed trait PlotDef

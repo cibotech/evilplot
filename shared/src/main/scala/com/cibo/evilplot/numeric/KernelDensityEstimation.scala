@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
+
 package com.cibo.evilplot.numeric
 
 // The geom_density_2d function in ggplot uses MASS:2dkde to interpolate a grid.
