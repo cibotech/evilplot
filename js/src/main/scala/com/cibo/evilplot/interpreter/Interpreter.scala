@@ -9,6 +9,7 @@ import com.cibo.evilplot.plotdefs._
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
+import com.cibo.evilplot.SerializationUtils._
 
 object PlotDefinitionInterpreter {
   def apply(definition: String): Either[Error, Drawable] = {
@@ -30,7 +31,7 @@ object PlotDefinitionInterpreter {
   def getPlotData(plotDef: PlotDef): PlotData = plotDef match {
     case _: FacetsDef =>
       throw new UnsupportedOperationException ("currently arbitrary nesting of FacetsDef is not supported.")
-    case ScatterPlotDef(_, data, color, _) => ScatterPlotData(data, None, colorBar = SingletonColorBar(color))
+    case ScatterPlotDef(_, data, z, colorBar, _) => ScatterPlotData(data, z, colorBar = colorBar)
     case ContourPlotDef(_, data, nContours, _) => ContourData(data, nContours)
     case HistogramPlotDef(_, data, nBins, _) => HistogramData(data, nBins)
     case BarChartDef(_, data, labels, width, spacing, _) => BarChartData(data, labels, width, spacing)

@@ -4,6 +4,7 @@
 
 package com.cibo.evilplot.plotdefs
 
+import com.cibo.evilplot.colors.Colors.{ColorBar, SingletonColorBar}
 import com.cibo.evilplot.colors.{Color, HSL, HTMLNamedColors}
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric.{Bounds, GridData, Point}
@@ -14,7 +15,7 @@ sealed trait PlotDef {
 }
 case class FacetsDef(extent: Extent, numRows: Int, numCols: Int, defs: Seq[PlotDef], columnLabels: Option[Seq[String]],
                      rowLabels: Option[Seq[String]], axisScales: ScaleOption, options: PlotOptions) extends PlotDef
-case class ScatterPlotDef(extent: Extent, data: Seq[Point], color: HSL,
+case class ScatterPlotDef(extent: Extent, data: Seq[Point], zData: Option[Seq[Double]] = None, colorBar: ColorBar = SingletonColorBar(HTMLNamedColors.black),
                           options: PlotOptions = PlotOptions()) extends PlotDef
 case class ContourPlotDef(extent: Extent, data: GridData, numContours: Int,
                           options: PlotOptions = PlotOptions()) extends PlotDef
