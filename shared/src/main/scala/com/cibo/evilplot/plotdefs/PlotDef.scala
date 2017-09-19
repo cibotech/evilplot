@@ -36,15 +36,10 @@ final case class ContourPlotDef(gridData: GridData, numContours: Int,
 
 // TODO We should not be binning the raw data here only to serialize the raw data and send that down. What if the
 // TODO raw data is huge? Then we waste bandwidth sending it and waste time binning twice. Send the binned data.
-final case class HistogramChartDef(data: Seq[Double], numBins: Int, annotation: Seq[String] = Nil,
+final case class HistogramChartDef(data: Histogram, annotation: Seq[String] = Nil,
                                    bounds: Option[Bounds] = None, extent: Option[Extent] = None,
                                    options: PlotOptions = PlotOptions()) extends PlotDef {
   override def xBounds: Option[Bounds] = Some(Bounds(data.min, data.max))
-  val hist = new Histogram(data, numBins, bounds = bounds)
-  def histogramBounds(binBounds: Bounds): Bounds = {
-    val hist = new Histogram(data, numBins, bounds = Some(binBounds))
-    Bounds(hist.bins.min, hist.bins.max)
-  }
 }
 
 final case class BarChartDef(counts: Seq[Double], labels: Seq[String], barWidth: Option[Double] = None,
