@@ -31,7 +31,7 @@ object Settings {
     val scalaTest = "3.0.1"
     val scalactic = "3.0.1"
     val scopt = "3.5.0"
-    val circe = "0.8.0"
+    val circe = "0.7.0"
   }
 
   /**
