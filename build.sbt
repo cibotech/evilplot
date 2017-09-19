@@ -27,12 +27,6 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
   )
 
 
-/*lazy val evilplot =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Full)
-    .settings(sharedSettings)
-*/
-
 lazy val sharedJVM: Project = shared.jvm
 lazy val sharedJS: Project = shared.js
 
@@ -70,6 +64,3 @@ lazy val jvm: Project = (project in file("jvm"))
   )
 .aggregate(jss.map(projectToRef): _*)
 .dependsOn(sharedJVM)
-
-
-

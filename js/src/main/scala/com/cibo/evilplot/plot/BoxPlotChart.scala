@@ -1,40 +1,27 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.HTMLNamedColors.{black, white, blue}
 import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.colors.HTMLNamedColors.{blue, white}
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlot}
 import com.cibo.evilplot.plotdefs._
 import com.cibo.evilplot.{StrokeStyle, Style}
 
-
 // TODO: ggplot2 provides a `geom_jitter` which makes the outliers a bit easier to read off the plot.
 // TODO: Continuous x option?
 
-
-case class BoxPlotData[T](labels: Seq[T], distributions: Seq[Seq[Double]], drawPoints: BoxPlotPoints = AllPoints,
-                          rectWidth: Option[Double] = None, rectSpacing: Option[Double] = None, rectColor: Color = blue,
-                          pointColor: Color = black, pointSize: Double = 2.0) extends PlotData {
-  require(labels.length == distributions.length)
-  val numBoxes: Int = labels.length
-  override def yBounds: Option[Bounds] = {
-    val pointsFromAllDistributions: Seq[Double] = distributions.flatten
-    Some(Bounds(pointsFromAllDistributions.min, pointsFromAllDistributions.max))
-  }
-
-  override def createPlot(extent: Extent, options: PlotOptions): Chart = new BoxPlotChart(extent, this, options)
-}
-
-class BoxPlotChart[T](val chartSize: Extent, data: BoxPlotData[T], val options: PlotOptions)
-  extends DiscreteX[T] {
+class BoxPlotChart(val chartSize: Extent, data: BoxPlotDef, val options: PlotOptions)
+  extends DiscreteX {
   val defaultYAxisBounds: Bounds = data.yBounds.get // guaranteed to be defined.
-  val labels: Seq[T] = data.labels
+  val labels: Seq[String] = data.labels
   protected val (widthGetter, spacingGetter) = DiscreteChartDistributable
     .widthAndSpacingFunctions(data.numBoxes, data.rectWidth, data.rectSpacing)
 
   // TODO bring this out too.
   private def createDiscs(pointsData: Seq[Double], vScale: Double): Drawable = {
-    val points = for {point <- pointsData} yield Disc(data.pointSize, 0, (point - yAxisDescriptor.axisBounds.min) * vScale)
+    val points = for {
+      point <- pointsData
+    } yield Disc(data.pointSize, 0, (point - yAxisDescriptor.axisBounds.min) * vScale)
     FlipY(points.group) transY ((yAxisDescriptor.axisBounds.max - pointsData.max) * vScale - data.pointSize)
   }
   /*    val topLabel = Utils.maybeDrawableLater(options.topLabel, (text: String) => Label(text))

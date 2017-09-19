@@ -7,17 +7,8 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.Style
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, FlipY, Rect, Scale}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plotdefs.PlotOptions
+import com.cibo.evilplot.plotdefs.{BarChartDef, PlotOptions}
 
-case class BarChartData(counts: Seq[Double], labels: Seq[String], barWidth: Option[Double] = None,
-                        barSpacing: Option[Double] = None) extends PlotData {
-  val length: Int = counts.length
-  require(length == labels.length, "must be same number of data points as labels")
-  override def yBounds: Option[Bounds] = Some(Bounds(if (counts.min > 0) 0 else counts.min, counts.max))
-  override def createPlot(extent: Extent, options: PlotOptions): Chart = {
-    new BarChart(extent, this, options)
-  }
-}
 /**
   * A categorical bar chart. Each bar corresponds to a different category in the x-variable and is labeled by an
   * entry in label.
@@ -25,8 +16,10 @@ case class BarChartData(counts: Seq[Double], labels: Seq[String], barWidth: Opti
   * @param data Data object containing counts and labels of each bar.
   * @param options Plot options for the chart.
   */
-class BarChart(val chartSize: Extent, data: BarChartData, val options: PlotOptions)
-  extends DiscreteX[String] {
+// TODO: The widthGetter / spacingGetter logic is certainly way too complicated, especially since DrawableLater
+// is gone.
+class BarChart(val chartSize: Extent, data: BarChartDef, val options: PlotOptions)
+  extends DiscreteX {
   private val numBars = data.length
   val labels: Seq[String] = data.labels
   val defaultYAxisBounds: Bounds = data.yBounds.get // safe because always defined on a BarChartData

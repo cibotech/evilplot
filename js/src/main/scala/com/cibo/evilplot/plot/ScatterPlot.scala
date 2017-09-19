@@ -6,15 +6,6 @@ import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Transl
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plotdefs.PlotOptions
 
-case class ScatterPlotData(data: Seq[Point], zData: Option[Seq[Double]], pointSize: Double = 2.25,
-                           colorBar: ColorBar = SingletonColorBar(black)) extends PlotData {
-  override def xBounds: Option[Bounds] = Some(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x))
-  override def yBounds: Option[Bounds] = Some(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y))
-  override def createPlot(extent: Extent, options: PlotOptions): Chart = {
-    new ScatterPlot(extent, data, zData, options, pointSize = pointSize, colorBar = colorBar)
-  }
-}
-
 class ScatterPlot(val chartSize: Extent, data: Seq[Point], zData: Option[Seq[Double]], val options: PlotOptions,
                            val pointSize: Double = 3.0, colorBar: ColorBar = SingletonColorBar(black)) extends Chart with ContinuousAxes {
   val defaultXAxisBounds: Bounds = Bounds(data.minBy(_.x).x, data.maxBy(_.x).x)

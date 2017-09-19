@@ -5,8 +5,8 @@ import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.DiscreteChartDistributable._
 
 // trying to accomplish this writing as little code as possible...
-trait DiscreteX[T] extends ContinuousAxes {
-  val labels: Seq[T]
+trait DiscreteX extends ContinuousAxes {
+  val labels: Seq[String]
   protected val widthGetter: (Extent => Double)
   protected val spacingGetter: (Extent => Double)
   override lazy val defaultXAxisBounds = Bounds(0, 1) // silly, shouldn't be used.

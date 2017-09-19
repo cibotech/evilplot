@@ -1,8 +1,12 @@
+/*
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, Extent, Grid, WrapDrawable}
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plotdefs.{FixedScales, FreeScales, PlotOptions, ScaleOption}
+
+// Temporarily disabled.
+
 
 /** Facets creates a 2-dimensional grid of plots extracted from a generic data object.
   * The caller supplies sequences of "row" accessors and "col" accessors that when composed transform the generic data
@@ -82,3 +86,4 @@ class Facets[T, U, V <: PlotData](extent: Extent, dataObject: T, columns: Seq[(T
   }
   override def drawable: Drawable = _drawable
 }
+*/

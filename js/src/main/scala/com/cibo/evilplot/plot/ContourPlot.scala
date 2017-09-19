@@ -4,16 +4,9 @@ import com.cibo.evilplot.StrokeStyle
 import com.cibo.evilplot.colors.Colors.{ColorSeq, ScaledColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Path}
 import com.cibo.evilplot.numeric._
-import com.cibo.evilplot.plotdefs.PlotOptions
+import com.cibo.evilplot.plotdefs.{ContourPlotDef, PlotOptions}
 
-case class ContourData(gridData: GridData, numContours: Int) extends PlotData {
-  override def xBounds: Option[Bounds] = Some(gridData.xBounds)
-  override def yBounds: Option[Bounds] = Some(gridData.yBounds)
-  def zBounds: Bounds = gridData.zBounds
-  override def createPlot(extent: Extent, options: PlotOptions): Chart = new ContourPlot(extent, this, options)
-}
-
-class ContourPlot(val chartSize: Extent, data: ContourData, val options: PlotOptions)
+class ContourPlot(val chartSize: Extent, data: ContourPlotDef, val options: PlotOptions)
   extends Chart with ContinuousAxes {
   println("I have been called.")
   private val grid = data.gridData
