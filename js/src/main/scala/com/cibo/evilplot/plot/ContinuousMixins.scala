@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.{Color, White}
+import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 import com.cibo.evilplot.plot.ContinuousChartDistributable._
@@ -9,7 +9,7 @@ import com.cibo.evilplot.plot.ContinuousChartDistributable._
 // (but this repetition eliminates overall repetition in codebase by a lot, so still a good step)
 
 object ContinuousUtilities {
-  def maybeGridLines(area: Extent, spacing: Option[Double], desc: AxisDescriptor, color: Color = White)
+  def maybeGridLines(area: Extent, spacing: Option[Double], desc: AxisDescriptor, color: Color = HTMLNamedColors.white)
                      (glConstructor: (Extent, AxisDescriptor, Double, Color) => GridLines): Drawable =
     spacing match {
       case Some(_spacing) => glConstructor(area, desc, _spacing, color)

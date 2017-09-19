@@ -1,8 +1,8 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.{StrokeStyle, Text, Utils}
-import com.cibo.evilplot.colors.{Color, White}
+import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Above, Align, Drawable, EmptyDrawable, Extent, Line, WrapDrawable}
+import com.cibo.evilplot.{StrokeStyle, Text, Utils}
 
 object DiscreteChartDistributable {
   // Returns getters for width and spacing that take extent of the chart in which the drawables are to be distributed
@@ -51,7 +51,7 @@ object DiscreteChartDistributable {
   // For now for discrete data charts just align a vertical gridline with *every* drawable. Later can add an option.
   // This is a purely aesthetic thing anyway.
   case class VerticalGridLines(chartAreaSize: Extent, numLines: Int, widthGetter: (Extent => Double),
-                               spacingGetter: (Extent => Double), color: Color = White) extends WrapDrawable {
+                               spacingGetter: (Extent => Double), color: Color = HTMLNamedColors.white) extends WrapDrawable {
     private val spacing: Double = spacingGetter(chartAreaSize)
     private val width: Double = widthGetter(chartAreaSize)
     private val lineSpacing: Double = width + spacing

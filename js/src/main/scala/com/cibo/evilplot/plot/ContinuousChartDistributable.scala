@@ -1,7 +1,8 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.{Text, Utils}
-import com.cibo.evilplot.colors.{Color, White}
+import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.colors.HTMLNamedColors.white
 import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Line, WrapDrawable}
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 
@@ -62,7 +63,7 @@ object ContinuousChartDistributable {
   }
 
   case class VerticalGridLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor, lineSpacing: Double,
-                                        color: Color = White) extends GridLines {
+                                        color: Color = white) extends GridLines {
     protected val distributableDimension: Double = chartAreaSize.width
     // should this requirement be a thing?
     require(nLines != 0)
@@ -77,7 +78,7 @@ object ContinuousChartDistributable {
   }
 
   case class HorizontalGridLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor,
-                                 lineSpacing: Double, color: Color = White) extends GridLines {
+                                 lineSpacing: Double, color: Color = white) extends GridLines {
       protected val distributableDimension: Double = chartAreaSize.height
       require(nLines != 0) // ditto for this one
       private val lines = for {

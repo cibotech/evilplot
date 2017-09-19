@@ -4,7 +4,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.{Style, Utils}
-import com.cibo.evilplot.colors.{Color, Red}
+import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Histogram}
 import com.cibo.evilplot.plot.ContinuousChartDistributable.MetricLines
@@ -34,7 +34,7 @@ class HistogramChart(override val chartSize: Extent, histData: HistogramData, va
     val translatedAnnotation = Translate(annotation.position._1 * extent.width,
       annotation.position._2 * extent.height)(annotation)
     val metricLines = Utils.maybeDrawable(options.withinMetrics,
-      (metrics: Seq[Double]) => MetricLines(extent, xAxisDescriptor, metrics, Red))
+      (metrics: Seq[Double]) => MetricLines(extent, xAxisDescriptor, metrics, HTMLNamedColors.red))
     val bars = Bars(extent, defaultXAxisBounds, Some(xAxisDescriptor.axisBounds),
       yAxisDescriptor.axisBounds, data, options.barColor)
     bars behind metricLines behind translatedAnnotation

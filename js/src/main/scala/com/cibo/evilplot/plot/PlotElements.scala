@@ -5,10 +5,9 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Text
+import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.Colors.{ColorBar, ScaledColorBar, SingletonColorBar}
-import com.cibo.evilplot.colors.{Color, HSL, White}
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.Bounds
 
 class Legend[T](colorBar: ColorBar, categories: Seq[T],
                 pointSize: Double, backgroundRectangle: Option[Color] = None)

@@ -8,6 +8,7 @@ addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "0.8.0")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.19")
 dependencyOverrides += "org.scala-js" % "sbt-scalajs" % "0.6.19"
 
+
 // Tooling around scala-js: see https://github.com/lihaoyi/workbench
 addSbtPlugin("com.lihaoyi" % "workbench" % "0.3.0")
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.2.2")

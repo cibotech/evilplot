@@ -4,7 +4,7 @@
 
 package com.cibo.evilplot.plotdefs
 
-import com.cibo.evilplot.colors.{Color, HSL}
+import com.cibo.evilplot.colors.{Color, HSL, HTMLNamedColors}
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric.{Bounds, GridData, Point}
 
@@ -24,8 +24,8 @@ case class HistogramPlotDef(extent: Extent, data: Seq[Double], numBins: Int,
 // boxplot takes a Seq[T], not readily serializable using auto derivation. just calling it a string for now.
 case class BoxPlotDef(extent: Extent, labels: Seq[String], distributions: Seq[Seq[Double]],
                       drawPoints: BoxPlotPoints = AllPoints, rectWidth: Option[Double] = None,
-                      rectSpacing: Option[Double] = None, rectColor: HSL = HSL(235, 100, 50),
-                      pointColor: HSL = HSL(0, 0, 0), pointSize: Double = 2.0,
+                      rectSpacing: Option[Double] = None, rectColor: Color = HSL(235, 100, 50),
+                      pointColor: Color = HSL(0, 0, 0), pointSize: Double = 2.0,
                       options: PlotOptions = PlotOptions()) extends PlotDef
 
 // this should use OneLinePlotData, but we need to get colors working, doesn't make sense to destroy things over there
@@ -73,7 +73,7 @@ case class PlotOptions(title: Option[String] = None,
                        rightLabel: Option[String] = None,
                        xGridSpacing: Option[Double] = None,
                        yGridSpacing: Option[Double] = None,
-                       gridColor: Color = HSL(0, 0, 0),
+                       gridColor: Color = HTMLNamedColors.white,
                        withinMetrics: Option[Seq[Double]] = None,
                        backgroundColor: HSL = HSL(0, 0, 92),
                        barColor: HSL = HSL(0, 0, 35))

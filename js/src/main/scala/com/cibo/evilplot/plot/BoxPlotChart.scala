@@ -1,6 +1,7 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.{Black, Blue, Color, White}
+import com.cibo.evilplot.colors.HTMLNamedColors.{black, white, blue}
+import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlot}
 import com.cibo.evilplot.plotdefs._
@@ -12,8 +13,8 @@ import com.cibo.evilplot.{StrokeStyle, Style}
 
 
 case class BoxPlotData[T](labels: Seq[T], distributions: Seq[Seq[Double]], drawPoints: BoxPlotPoints = AllPoints,
-                          rectWidth: Option[Double] = None, rectSpacing: Option[Double] = None, rectColor: Color = Blue,
-                          pointColor: Color = Black, pointSize: Double = 2.0) extends PlotData {
+                          rectWidth: Option[Double] = None, rectSpacing: Option[Double] = None, rectColor: Color = blue,
+                          pointColor: Color = black, pointSize: Double = 2.0) extends PlotData {
   require(labels.length == distributions.length)
   val numBoxes: Int = labels.length
   override def yBounds: Option[Bounds] = {
@@ -56,13 +57,13 @@ class BoxPlotChart[T](val chartSize: Extent, data: BoxPlotData[T], val options: 
   }
 }
 
-private class Box(yBounds: Bounds, rectWidth: Double, vScale: Double, data: BoxPlot, strokeColor: Color = Blue)
+private class Box(yBounds: Bounds, rectWidth: Double, vScale: Double, data: BoxPlot, strokeColor: Color = blue)
   extends WrapDrawable {
   private val _drawable = {
     val rectangles = {
       val lowerRectangleHeight: Double = (data.middleQuantile - data.lowerQuantile) * vScale
       val upperRectangleHeight: Double = (data.upperQuantile - data.middleQuantile) * vScale
-      StrokeStyle(strokeColor)(Style(White)
+      StrokeStyle(strokeColor)(Style(white)
       (BorderFillRect(rectWidth, lowerRectangleHeight) below BorderFillRect(rectWidth, upperRectangleHeight)))
     }
     val upperWhisker = Line((data.upperWhisker - data.upperQuantile) * vScale, 2) rotated 90

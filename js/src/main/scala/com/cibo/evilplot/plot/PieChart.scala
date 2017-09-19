@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Text
 import com.cibo.evilplot.colors.Colors.ColorSeq
-import com.cibo.evilplot.colors.{Black, Clear}
+import com.cibo.evilplot.colors.{Clear, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Align, Disc, Drawable, Extent, Rect, UnsafeRotate, Wedge, distributeH, flowH, _}
 import com.cibo.evilplot.plotdefs.PlotOptions
 import org.scalajs.dom.CanvasRenderingContext2D
@@ -33,7 +33,7 @@ class PieChart(override val extent: Extent, labels: Option[Seq[String]] = None, 
         val label =
           UnsafeRotate(rotate) {
             val text = {
-              val baseText = Text(frac.toString) filled Black
+              val baseText = Text(frac.toString) filled HTMLNamedColors.black
               // TODO: same as left aligned txt?
               if (rotate > 90 && rotate < 270)
                 baseText transX (-baseText.extent.width - labelPad)
