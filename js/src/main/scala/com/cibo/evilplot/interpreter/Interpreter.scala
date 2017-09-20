@@ -3,7 +3,6 @@
  */
 package com.cibo.evilplot.interpreter
 import com.cibo.evilplot.geometry.{Drawable, Extent}
-import com.cibo.evilplot.numeric.BoxPlot
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plotdefs._
 import io.circe._

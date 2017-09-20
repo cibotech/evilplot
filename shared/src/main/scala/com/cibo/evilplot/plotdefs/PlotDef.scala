@@ -7,7 +7,7 @@ package com.cibo.evilplot.plotdefs
 import com.cibo.evilplot.colors.Colors.{ColorBar, SingletonColorBar}
 import com.cibo.evilplot.colors.{Color, HSL, HTMLNamedColors}
 import com.cibo.evilplot.geometry.Extent
-import com.cibo.evilplot.numeric.{Bounds, GridData, Histogram, Point}
+import com.cibo.evilplot.numeric._
 
 // A plot definition is a descriptor containing all of the data and settings required for the renderer to construct
 // a renderable plot object.
@@ -51,18 +51,17 @@ final case class BarChartDef(counts: Seq[Double], labels: Seq[String], barWidth:
 }
 
 // TODO: Same as histogram, should send box plot summaries, not whole distributions.
-final case class BoxPlotDef(labels: Seq[String], distributions: Seq[Seq[Double]],
-                            drawPoints: BoxPlotPoints = AllPoints, rectWidth: Option[Double] = None,
+// later comment:  reports often plot all the points in the distribution, so there should be
+// an option to send. however, by default it shouldn't?
+final case class BoxPlotDef(labels: Seq[String], summaries: Seq[BoxPlotSummaryStatistics],
+                            drawPoints: BoxPlotPoints = OutliersOnly, rectWidth: Option[Double] = None,
                             rectSpacing: Option[Double] = None, rectColor: Color = HTMLNamedColors.blue,
                             pointColor: Color = HTMLNamedColors.black,
                             pointSize: Double = 2.0, extent: Option[Extent] = None,
                             options: PlotOptions = PlotOptions()) extends PlotDef {
-  require(labels.length == distributions.length)
+  require(labels.length == summaries.length)
   val numBoxes: Int = labels.length
-  override def yBounds: Option[Bounds] = {
-    val pointsFromAllDistributions: Seq[Double] = distributions.flatten
-    Some(Bounds(pointsFromAllDistributions.min, pointsFromAllDistributions.max))
-  }
+  override def yBounds: Option[Bounds] = Some(Bounds(summaries.map(_.min).min, summaries.map(_.max).max))
 }
 
 final case class LinePlotDef(lines: Seq[OneLinePlotData], extent: Option[Extent] = None,
@@ -129,23 +128,4 @@ sealed trait BoxPlotPoints
 case object AllPoints extends BoxPlotPoints
 case object OutliersOnly extends BoxPlotPoints
 case object NoPoints extends BoxPlotPoints
-
-// TODO: Split generic parts of the configuration out.
-case class PlotOptions(title: Option[String] = None,
-                       xAxisBounds: Option[Bounds] = None,
-                       yAxisBounds: Option[Bounds] = None,
-                       drawXAxis: Boolean = true,
-                       drawYAxis: Boolean = true,
-                       numXTicks: Option[Int] = None,
-                       numYTicks: Option[Int] = None,
-                       xAxisLabel: Option[String] = None,
-                       yAxisLabel: Option[String] = None,
-                       topLabel: Option[String] = None,
-                       rightLabel: Option[String] = None,
-                       xGridSpacing: Option[Double] = None,
-                       yGridSpacing: Option[Double] = None,
-                       gridColor: Color = HTMLNamedColors.white,
-                       withinMetrics: Option[Seq[Double]] = None,
-                       backgroundColor: HSL = HSL(0, 0, 92),
-                       barColor: HSL = HSL(0, 0, 35))
 

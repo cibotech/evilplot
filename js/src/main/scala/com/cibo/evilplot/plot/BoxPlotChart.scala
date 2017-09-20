@@ -3,7 +3,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.{blue, white}
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{Bounds, BoxPlot}
+import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
 import com.cibo.evilplot.plotdefs._
 import com.cibo.evilplot.{StrokeStyle, Style}
 
@@ -31,20 +31,20 @@ class BoxPlotChart(val chartSize: Extent, data: BoxPlotDef, val options: PlotOpt
     val _rectSpacing = spacingGetter(extent)
     val vScale = extent.height / yAxisDescriptor.axisBounds.range
     val boxes = for {
-      distribution <- data.distributions
-      boxPlot = new BoxPlot(distribution)
-      box = new Box(yAxisDescriptor.axisBounds, _rectWidth, vScale, boxPlot)
+      summary <- data.summaries
+      box = new Box(yAxisDescriptor.axisBounds, _rectWidth, vScale, summary)
       discs = data.drawPoints match {
-        case AllPoints => createDiscs(distribution, vScale)
-        case OutliersOnly => createDiscs(boxPlot.outliers, vScale)
-        case NoPoints => EmptyDrawable()
+        case OutliersOnly if summary.outliers.nonEmpty => createDiscs(summary.outliers, vScale)
+        case AllPoints if summary.allPoints.nonEmpty => createDiscs(summary.allPoints, vScale)
+        case _ => EmptyDrawable()
       }
     } yield Align.center(box, discs).group
     boxes.seqDistributeH(_rectSpacing) padLeft _rectSpacing / 2.0
   }
 }
 
-private class Box(yBounds: Bounds, rectWidth: Double, vScale: Double, data: BoxPlot, strokeColor: Color = blue)
+private class Box(yBounds: Bounds, rectWidth: Double, vScale: Double, data: BoxPlotSummaryStatistics,
+                  strokeColor: Color = blue)
   extends WrapDrawable {
   private val _drawable = {
     val rectangles = {
