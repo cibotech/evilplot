@@ -6,6 +6,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.DOMInitializer
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plotdefs.PlotOptions
 import org.scalatest._
 
 import scala.util.Random

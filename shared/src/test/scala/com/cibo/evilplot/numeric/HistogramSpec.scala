@@ -23,7 +23,7 @@ class HistogramSpec extends FunSpec {
         // Add an offset to make sure that the histogram doesn't assume min = 0.0.
         .map(_ + offset)
       val numBins = 4
-      val hist = new Histogram(data, numBins)
+      val hist = Histogram(data, numBins)
       hist.min shouldEqual data.reduce[Double](math.min)
       hist.max shouldEqual data.reduce[Double](math.max)
       hist.binWidth shouldEqual (hist.max - hist.min) / numBins
