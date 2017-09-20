@@ -36,6 +36,7 @@ trait PlotDefinitionInterpreter {
         new BoxPlotChart(getSize(boxPlot), boxPlot, boxPlot.options)
       case linePlot: LinePlotDef =>
         new LinePlot(getSize(linePlot), linePlot, linePlot.options)
+      case _ => throw new UnsupportedOperationException("unsupported for now.")
     }
   }
 

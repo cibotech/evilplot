@@ -4,7 +4,9 @@
 
 package com.cibo.evilplot.numeric
 
-case class Histogram(bins: Seq[Long], numBins: Int, binWidth: Double, min: Double, max: Double)
+// The underlying raw data does not get serialized. This is problematic: deserializing a Histogram
+// will always give you an empty Seq.
+case class Histogram(bins: Seq[Long], numBins: Int, binWidth: Double, min: Double, max: Double, rawData: Seq[Double])
 
 object Histogram {
   def apply(data: Seq[Double], numBins: Int, bounds: Option[Bounds] = None): Histogram = {
@@ -26,7 +28,7 @@ object Histogram {
       _bins(bin) = _bins(bin) + 1
     }
 
-    Histogram(_bins.toSeq, numBins, binWidth, min, max)
+    Histogram(_bins.toSeq, numBins, binWidth, min, max, data)
   }
 }
 
