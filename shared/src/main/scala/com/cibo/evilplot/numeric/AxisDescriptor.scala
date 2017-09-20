@@ -50,7 +50,6 @@ case class AxisDescriptor(bounds: Bounds, numTicksRequested: Int, drawBounds: Op
   // Actual number of ticks generated.
   val numTicks: Int = ((tickMax - tickMin) / spacing).toInt + 1
   val axisBounds: Bounds = Bounds(tickMin, tickMax)
-  println(axisBounds)
 }
 
 

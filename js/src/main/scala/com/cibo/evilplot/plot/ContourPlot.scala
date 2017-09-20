@@ -8,7 +8,6 @@ import com.cibo.evilplot.plotdefs.{ContourPlotDef, PlotOptions}
 
 class ContourPlot(val chartSize: Extent, data: ContourPlotDef, val options: PlotOptions)
   extends Chart with ContinuousAxes {
-  println("I have been called.")
   private val grid = data.gridData
   private val numContours = data.numContours
   val defaultXAxisBounds: Bounds = data.xBounds.get

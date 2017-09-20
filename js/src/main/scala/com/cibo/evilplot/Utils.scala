@@ -78,7 +78,6 @@ object Text {
   val defaultSize = 10
 
   private lazy val offscreenBuffer: dom.CanvasRenderingContext2D = {
-    println("Executing the dirty hack.")
     Utils.getCanvasFromElementId("measureBuffer")
   }
   private lazy val replaceSize = """\d+px""".r

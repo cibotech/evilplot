@@ -12,8 +12,8 @@ import com.cibo.evilplot.{Style, Utils}
 
 class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef, val options: PlotOptions)
   extends Chart with ContinuousAxes {
-  private val data = histData.hist.bins.map(_.toDouble)
-  val defaultXAxisBounds = Bounds(histData.hist.min, histData.hist.max)
+  private val data = histData.data.bins.map(_.toDouble)
+  val defaultXAxisBounds = Bounds(histData.data.min, histData.data.max)
   val defaultYAxisBounds = Bounds(0.0, data.max)
 
   def plottedData(extent: Extent): Drawable = {
