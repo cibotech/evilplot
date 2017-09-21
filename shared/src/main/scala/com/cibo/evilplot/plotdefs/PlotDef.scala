@@ -17,6 +17,18 @@ sealed trait PlotDef {
   val options: PlotOptions = PlotOptions()
   def xBounds: Option[Bounds] = None
   def yBounds: Option[Bounds] = None
+
+  // Lots of unfortunate boilerplate here. From https://groups.google.com/forum/#!topic/scala-internals/O1yrB1xetUA ,
+  // seems like this is moderately unavoidable
+  def withOptions(opts: PlotOptions): PlotDef = this match {
+    case sp: ScatterPlotDef => sp.copy(options = opts)
+    case cp: ContourPlotDef => cp.copy(options = opts)
+    case bc: BarChartDef => bc.copy(options = opts)
+    case bp: BoxPlotDef => bp.copy(options = opts)
+    case lp: LinePlotDef => lp.copy(options = opts)
+    case h: HistogramChartDef => h.copy(options = opts)
+    case fd: FacetsDef => fd.copy(options = opts) // This change wouldn't actually be registered, would it?
+  }
 }
 
 final case class ScatterPlotDef(
@@ -126,11 +138,22 @@ object FacetsDef {
                   axisScales: ScaleOption = FixedScales,
                   extent: Option[Extent] = None,
                   baseOptions: PlotOptions = PlotOptions()): FacetsDef = {
-    val numRows = rows.length
-    val numCols = columns.length
-    val plotDefs: Seq[PlotDef] = Seq.empty
-    new FacetsDef(numRows, numCols, plotDefs, columnLabels, rowLabels, axisScales, extent, baseOptions)
+    val nRows = rows.length
+    val nCols = columns.length
+    val naivePlotDefs: Seq[PlotDef] = for (row <- rows; col <- columns) yield row(col(dataObject))
+
+    // Build the function required to take the "naive" plot definitions to what goes in the finished plot.
+    val transformPlotDefs = axisScales match {
+        case FixedScales => fixBounds(xAxis)_ compose fixBounds(yAxis) compose bottomXLabels(nRows, nCols) compose
+          leftYLabels(nRows, nCols)
+        case FixedX => fixBounds(xAxis)_ compose bottomXLabels(nRows, nCols)
+        case FixedY => fixBounds(yAxis)_ compose leftYLabels(nRows, nCols)
+        case FreeScales => identity[Seq[PlotDef]]_
+      }
+
+    FacetsDef(nRows, nCols, transformPlotDefs(naivePlotDefs), columnLabels, rowLabels, axisScales, extent, baseOptions)
   }
+
 }
 
 // This should probably go in another file?
@@ -178,4 +201,6 @@ case object NoPoints extends BoxPlotPoints
 
 sealed trait ScaleOption
 case object FixedScales extends ScaleOption
+case object FixedX extends ScaleOption
+case object FixedY extends ScaleOption
 case object FreeScales extends ScaleOption

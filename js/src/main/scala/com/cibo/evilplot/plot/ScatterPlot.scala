@@ -1,20 +1,21 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.HTMLNamedColors.black
-import com.cibo.evilplot.colors.Colors.{ColorBar, ScaledColorBar, SingletonColorBar}
+import com.cibo.evilplot.colors.Colors.{ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Translate}
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plotdefs.PlotOptions
+import com.cibo.evilplot.plotdefs.{PlotOptions, ScatterPlotDef}
 
-class ScatterPlot(val chartSize: Extent, data: Seq[Point], zData: Option[Seq[Double]], val options: PlotOptions,
-                           val pointSize: Double = 3.0, colorBar: ColorBar = SingletonColorBar(black)) extends Chart with ContinuousAxes {
+class ScatterPlot(val chartSize: Extent, definition: ScatterPlotDef, val options: PlotOptions)
+  extends Chart with ContinuousAxes {
+  private val data = definition.data
   val defaultXAxisBounds: Bounds = Bounds(data.minBy(_.x).x, data.maxBy(_.x).x)
   val defaultYAxisBounds: Bounds = Bounds(data.minBy(_.y).y, data.maxBy(_.y).y)
 
   // Will return an EmptyDrawable if point is out-of-bounds.
   private[plot] def scatterPoint(x: Double, y: Double)(scaleX: Double, scaleY: Double): Drawable = {
     if (xAxisDescriptor.axisBounds.isInBounds(x) && yAxisDescriptor.axisBounds.isInBounds(y))
-      Disc(pointSize, (x - xAxisDescriptor.axisBounds.min) * scaleX, (yAxisDescriptor.axisBounds.max - y) * scaleY)
+      Disc(definition.pointSize,
+        (x - xAxisDescriptor.axisBounds.min) * scaleX, (yAxisDescriptor.axisBounds.max - y) * scaleY)
     else EmptyDrawable()
   }
 
@@ -22,11 +23,11 @@ class ScatterPlot(val chartSize: Extent, data: Seq[Point], zData: Option[Seq[Dou
     val scaleX: Double = extent.width / xAxisDescriptor.axisBounds.range
     val scaleY: Double = extent.height / yAxisDescriptor.axisBounds.range
 
-    val points = (zData, colorBar) match {
+    val points = (definition.zData, definition.colorBar) match {
       case (Some(_zData), _colorBar: ScaledColorBar) =>
         require(_zData.length == data.length, "color and point data must have same length")
         (data zip _zData).map { case (Point(x, y), z) =>
-          Translate(-pointSize)(scatterPoint(x, y)(scaleX, scaleY) filled _colorBar.getColor(z))
+          Translate(-definition.pointSize)(scatterPoint(x, y)(scaleX, scaleY) filled _colorBar.getColor(z))
         }
       case (_, SingletonColorBar(color)) =>
         data.map { case Point(x, y) => scatterPoint(x, y)(scaleX, scaleY) filled color }

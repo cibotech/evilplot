@@ -6,7 +6,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.DOMInitializer
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plotdefs.PlotOptions
+import com.cibo.evilplot.plotdefs.{PlotOptions, ScatterPlotDef}
 import org.scalatest._
 
 import scala.util.Random
@@ -21,7 +21,8 @@ class ScatterPlotSpec extends FunSpec with Matchers {
     Point(bounds.max * gen.nextDouble(), bounds.max * gen.nextDouble()))
   val options =
     PlotOptions(xAxisBounds = Some(bounds), yAxisBounds = Some(bounds))
-  val plot = new ScatterPlot(extent, data, None, options)
+  val pd = ScatterPlotDef(data, options = options)
+  val plot = new ScatterPlot(extent, pd, options)
   val (scaleX, scaleY) =
     (extent.width / bounds.range, extent.height / bounds.range)
 
@@ -66,9 +67,9 @@ class ScatterPlotSpec extends FunSpec with Matchers {
           val p = plot.scatterPoint(x, y)(scaleX, scaleY)
           p should not be an[EmptyDrawable]
           p.extent.width shouldBe ((x - plot.xAxisDescriptor.axisBounds.min) / plot.xAxisDescriptor.axisBounds.range) *
-            plot.extent.width + 2 * plot.pointSize +- .2
+            plot.extent.width + 2 * pd.pointSize +- .2
           p.extent.height shouldBe ((plot.yAxisDescriptor.axisBounds.max - y) / plot.yAxisDescriptor.axisBounds.range) *
-            plot.extent.height + 2 * plot.pointSize +- .2
+            plot.extent.height + 2 * pd.pointSize +- .2
       }
     }
   }

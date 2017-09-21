@@ -16,16 +16,11 @@ trait PlotDefinitionInterpreter {
     decode[PlotDef](definition).right.map { right: PlotDef => eval(right, extent) }
   }
 
-  // Interesting how all of these plot classes, through no effort of my own, have
-  // exactly the same signature (except Scatter).
-  // Given that, it actually seems like we need to pair definition classes to constructors, given
-  // the same arguments.
-  private def eval(plotDef: PlotDef, extent: Option[Extent]): Drawable = {
+  def eval(plotDef: PlotDef, extent: Option[Extent]): Drawable = {
     def getSize(pd: PlotDef): Extent = extent.getOrElse(pd.extent.getOrElse(defaultSize))
     plotDef match {
       case scatter: ScatterPlotDef =>
-        new ScatterPlot(getSize(scatter), scatter.data, scatter.zData,
-                        scatter.options, scatter.pointSize, scatter.colorBar)
+        new ScatterPlot(getSize(scatter), scatter, scatter.options)
       case contour: ContourPlotDef =>
         new ContourPlot(getSize(contour), contour, contour.options)
       case histogram: HistogramChartDef =>
@@ -36,7 +31,7 @@ trait PlotDefinitionInterpreter {
         new BoxPlotChart(getSize(boxPlot), boxPlot, boxPlot.options)
       case linePlot: LinePlotDef =>
         new LinePlot(getSize(linePlot), linePlot, linePlot.options)
-      case _ => throw new UnsupportedOperationException("unsupported for now.")
+      case facetsDef: FacetsDef => new Facets(getSize(facetsDef), facetsDef)
     }
   }
 
