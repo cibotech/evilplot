@@ -16,9 +16,9 @@ object Settings {
 
   /** Options for the scala compiler */
   val scalacOptions = Seq(
-    "-deprecation"
+    "-deprecation",
     // "-Xlint",
-    // "-unchecked",
+    "-unchecked"
     // "-deprecation",
     // "-feature",
     // "-J-Xss1024m"

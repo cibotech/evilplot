@@ -14,7 +14,7 @@ class Facets(extent: Extent, facetsDef: FacetsDef) extends WrapDrawable {
     private val interpreter = new PlotDefinitionInterpreter {
       protected val defaultSize: Extent = Extent(800, 400) // this is arbitrary, I need to clean the interpreter interface
     }
-    private val facets = facetsDef.defs.map(interpreter.eval(_, None))
+    private val facets = facetsDef.plotDefs.map(interpreter.eval(_, None))
     override def drawable: Drawable = new Grid(facetsDef.numRows, facetsDef.numCols,
       facets, bottomPadding = 25, rightPadding = 25)
 }

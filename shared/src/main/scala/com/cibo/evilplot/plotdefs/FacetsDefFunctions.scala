@@ -19,15 +19,24 @@ private[plotdefs] object FacetsDefFunctions {
   }
 
   /** Create new HistogramChartDefs from rebinning data over the most extreme x axis bounds. */
-  def fixHistogramXBounds(hs: Seq[HistogramChartDef]): Seq[HistogramChartDef] = {
-    val widestX = widestBounds(hs, xAxis)
-    hs.map(h => h.copy(data = Histogram(h.data.rawData, h.data.numBins, widestX),
-      options = h.options.copy(xAxisBounds = widestX)))
+  def fixHistogramXBounds(widest: Option[Bounds], hs: Seq[HistogramChartDef]): Seq[HistogramChartDef] = {
+//    val widestX = widestBounds(hs, xAxis)
+    hs.map(h => h.copy(data = Histogram(h.data.rawData, h.data.numBins, widest),
+      options = h.options.copy(xAxisBounds = widest)))
+  }
+
+  // Bad bad bad and this will certainly not work. Currently not using this.
+  def isHistogramDef(hs: Seq[PlotDef]): Boolean = {
+    hs.map(h => h match {
+      case _: HistogramChartDef => true
+      case _ => false
+    }).forall(p => p)
   }
 
   def fixBounds(axis: BoundsFunction)(pds: Seq[PlotDef]): Seq[PlotDef] = {
     val fixed = widestBounds(pds, axis)
-    pds.map((pd: PlotDef) => pd.withOptions(pd.options.copy(yAxisBounds = fixed)))
+    /*if (axis == xAxis && isHistogramDef(pds)) fixHistogramXBounds(fixed, pds)
+    else */ pds.map((pd: PlotDef) => pd.withOptions(pd.options.copy(yAxisBounds = fixed)))
   }
 
   def rowCol(indices: Iterable[Int], nCols: Int): Iterable[(Int, Int)] = indices.map(i => (i / nCols, i % nCols))

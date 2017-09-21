@@ -18,6 +18,8 @@ sealed trait PlotDef {
   def xBounds: Option[Bounds] = None
   def yBounds: Option[Bounds] = None
 
+  def withBounds: PlotDef = this // Lol.
+
   // Lots of unfortunate boilerplate here. From https://groups.google.com/forum/#!topic/scala-internals/O1yrB1xetUA ,
   // seems like this is moderately unavoidable
   def withOptions(opts: PlotOptions): PlotDef = this match {
@@ -65,6 +67,11 @@ final case class HistogramChartDef(data: Histogram,
                                      PlotOptions())
     extends PlotDef {
   override def xBounds: Option[Bounds] = Some(Bounds(data.min, data.max))
+
+  // Get a new HistogramChartDef, rebinning over `bounds`
+  def withBounds(bounds: Bounds): HistogramChartDef = this.copy(
+    data = Histogram(data.rawData, data.numBins, Some(bounds)),
+    options = options.copy(xAxisBounds = Some(bounds)))
 }
 
 final case class BarChartDef(counts: Seq[Double],
@@ -118,18 +125,22 @@ final case class LinePlotDef(lines: Seq[OneLinePlotData],
     Some(Bounds(yMin, yMax))
   }
 }
+
+/** Directly instantiate a `FacetsDef` from the primary constructor to get the literal plot configuration specified
+  * in the `plotDefs` argument. */
 final case class FacetsDef(numRows: Int,
                            numCols: Int,
-                           defs: Seq[PlotDef],
+                           plotDefs: Seq[PlotDef],
                            columnLabels: Option[Seq[String]],
                            rowLabels: Option[Seq[String]],
-                           axisScales: ScaleOption,
                            override val extent: Option[Extent],
                            override val options: PlotOptions)
     extends PlotDef
 
+/** `apply` methods defined here can "fix" axes and change which facets the labels appear on. */
 object FacetsDef {
-  import FacetsDefFunctions._
+  /** Supply a generic data object and accessor functions to index into that object corresponding to the columns/rows
+    * of the resulting faceted plot. */
   def apply[T, U](dataObject: T,
                   columns: Seq[T => U],
                   rows: Seq[U => PlotDef],
@@ -141,18 +152,27 @@ object FacetsDef {
     val nRows = rows.length
     val nCols = columns.length
     val naivePlotDefs: Seq[PlotDef] = for (row <- rows; col <- columns) yield row(col(dataObject))
+    this.apply(nRows, nCols, naivePlotDefs, columnLabels, rowLabels, axisScales, extent, baseOptions)
+  }
 
+  /** "Straightforward": Supply a list of PlotDefs and base options, then adjust based on the configuration options
+    * set. */
+  def apply(nRows: Int, nCols: Int, plotDefs: Seq[PlotDef], columnLabels: Option[Seq[String]],
+            rowLabels: Option[Seq[String]], axisScales: ScaleOption, extent: Option[Extent],
+            baseOptions: PlotOptions): FacetsDef = {
+    import FacetsDefFunctions._
     // Build the function required to take the "naive" plot definitions to what goes in the finished plot.
     val transformPlotDefs = axisScales match {
-        case FixedScales => fixBounds(xAxis)_ compose fixBounds(yAxis) compose bottomXLabels(nRows, nCols) compose
-          leftYLabels(nRows, nCols)
-        case FixedX => fixBounds(xAxis)_ compose bottomXLabels(nRows, nCols)
-        case FixedY => fixBounds(yAxis)_ compose leftYLabels(nRows, nCols)
-        case FreeScales => identity[Seq[PlotDef]]_
-      }
+      case FixedScales => fixBounds(xAxis)_ compose fixBounds(yAxis) compose bottomXLabels(nRows, nCols) compose
+        leftYLabels(nRows, nCols)
+      case FixedX => fixBounds(xAxis)_ compose bottomXLabels(nRows, nCols)
+      case FixedY => fixBounds(yAxis)_ compose leftYLabels(nRows, nCols)
+      case FreeScales => identity[Seq[PlotDef]]_
+    }
 
-    FacetsDef(nRows, nCols, transformPlotDefs(naivePlotDefs), columnLabels, rowLabels, axisScales, extent, baseOptions)
+   FacetsDef(nRows, nCols, transformPlotDefs(plotDefs), columnLabels, rowLabels, extent, baseOptions)
   }
+
 
 }
 
