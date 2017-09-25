@@ -205,41 +205,13 @@ final case class OneLinePlotData(points: Seq[Point], color: Color) {
   }
 }
 
-/* Faceting related, temporarily disabled.
-  case class FacetsDef(extent: Extent, numRows: Int, numCols: Int, defs: Seq[PlotDef], columnLabels: Option[Seq[String]],
-                       rowLabels: Option[Seq[String]], axisScales: ScaleOption, options: PlotOptions) extends PlotDef
-
-  object FacetsDef {
-    def apply[T, U, V <: PlotDef](extent: Extent,
-                                  dataObject: T,
-                                  columns: Seq[(T => U)],
-                                  rows: Seq[(U => V)],
-                                  columnLabels: Option[Seq[String]] = None,
-                                  rowLabels: Option[Seq[String]] = None,
-                                  axisScales: ScaleOption = FixedScales,
-                                  baseOptions: PlotOptions = PlotOptions()): FacetsDef = {
-      val defs = for (row <- rows; col <- columns) yield row(col(dataObject))
-      FacetsDef(extent, rows.length, columns.length, defs, columnLabels, rowLabels, axisScales, baseOptions)
-    }
-  }
-  sealed trait ScaleOption
-  case object FixedScales extends ScaleOption
-  case object FreeScales extends ScaleOption*/
-
 sealed trait BoxPlotPoints
-
 case object AllPoints extends BoxPlotPoints
-
 case object OutliersOnly extends BoxPlotPoints
-
 case object NoPoints extends BoxPlotPoints
 
 sealed trait ScaleOption
-
 case object FixedScales extends ScaleOption
-
 case object FixedX extends ScaleOption
-
 case object FixedY extends ScaleOption
-
 case object FreeScales extends ScaleOption
