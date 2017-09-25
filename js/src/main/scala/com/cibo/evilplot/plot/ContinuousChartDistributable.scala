@@ -24,7 +24,7 @@ object ContinuousChartDistributable {
 
   case class XAxis(distributableDimension: Double, axisDescriptor: AxisDescriptor,
                    label: Option[String] = None, drawTicks: Boolean = true) extends ContinuousChartDistributableBase {
-      lazy val text = Utils.maybeDrawable(label, (msg: String) => Text(msg, 22))
+      lazy val text = Utils.maybeDrawable(label)(msg => Text(msg, 22))
       private val _ticks = for {
         numTick <- 0 until axisDescriptor.numTicks
         coordToDraw = axisDescriptor.axisBounds.min + numTick * axisDescriptor.spacing
@@ -39,7 +39,7 @@ object ContinuousChartDistributable {
 
   case class YAxis(distributableDimension: Double, axisDescriptor: AxisDescriptor,
                    label: Option[String] = None, drawTicks: Boolean = true) extends ContinuousChartDistributableBase {
-      private lazy val text = Utils.maybeDrawable(label, (msg: String) => Text(msg, 20) rotated 270)
+      private lazy val text = Utils.maybeDrawable(label)(msg => Text(msg, 20) rotated 270)
       private val _ticks = for {
         numTick <- (axisDescriptor.numTicks - 1) to 0 by -1
         coordToDraw = axisDescriptor.tickMin + numTick * axisDescriptor.spacing

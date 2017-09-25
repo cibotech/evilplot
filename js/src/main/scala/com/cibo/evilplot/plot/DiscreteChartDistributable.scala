@@ -31,7 +31,7 @@ object DiscreteChartDistributable {
   case class XAxis[T](chartAreaSize: Extent, tickNames: Seq[T],
                       widthGetter: (Extent => Double), spacingGetter: (Extent => Double), label: Option[String] = None,
                       rotateText: Double = 0, drawAxis: Boolean = true) extends WrapDrawable {
-    lazy val xAxisLabel = Utils.maybeDrawable(label, (msg: String) => Text(msg, 20))
+    lazy val xAxisLabel = Utils.maybeDrawable(label)(msg => Text(msg, 20))
     val spacing: Double = spacingGetter(chartAreaSize)
     val width: Double = widthGetter(chartAreaSize)
     val tickSpacing: Double = width + spacing

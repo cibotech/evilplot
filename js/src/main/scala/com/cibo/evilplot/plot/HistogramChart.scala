@@ -20,8 +20,8 @@ class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef
     val annotation = ChartAnnotation(histData.annotation, (.8, .3))
     val translatedAnnotation = Translate(annotation.position._1 * extent.width,
       annotation.position._2 * extent.height)(annotation)
-    val metricLines = Utils.maybeDrawable(options.withinMetrics,
-      (metrics: Seq[Double]) => MetricLines(extent, xAxisDescriptor, metrics, HTMLNamedColors.red))
+    val metricLines = Utils.maybeDrawable(options.withinMetrics)(metrics =>
+      MetricLines(extent, xAxisDescriptor, metrics, HTMLNamedColors.red))
     val bars = Bars(extent, defaultXAxisBounds, Some(xAxisDescriptor.axisBounds),
       yAxisDescriptor.axisBounds, data, options.barColor)
     bars behind metricLines behind translatedAnnotation

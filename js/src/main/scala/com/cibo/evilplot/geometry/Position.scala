@@ -179,7 +179,6 @@ case class Debug(r: Drawable) extends Drawable {
   }
 }
 
-// Group throws an exception leading to a perplexing error if the items arg is empty.
 case class Group(items: Drawable*) extends Drawable {
   lazy val extent: Extent = Extent(
     items.map(_.extent.width).max,

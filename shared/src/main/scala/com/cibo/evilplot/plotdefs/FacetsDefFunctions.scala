@@ -19,24 +19,21 @@ private[plotdefs] object FacetsDefFunctions {
   }
 
   /** Create new HistogramChartDefs from rebinning data over the most extreme x axis bounds. */
-  def fixHistogramXBounds(widest: Option[Bounds], hs: Seq[HistogramChartDef]): Seq[HistogramChartDef] = {
-//    val widestX = widestBounds(hs, xAxis)
-    hs.map(h => h.copy(data = Histogram(h.data.rawData, h.data.numBins, widest),
-      options = h.options.copy(xAxisBounds = widest)))
+  def fixHistogramXBounds(widest: Option[Bounds], h: HistogramChartDef): HistogramChartDef = {
+    h.copy(data = Histogram(h.data.rawData, h.data.numBins, widest), options = h.options.copy(xAxisBounds = widest))
   }
 
-  // Bad bad bad and this will certainly not work. Currently not using this.
-  def isHistogramDef(hs: Seq[PlotDef]): Boolean = {
-    hs.map(h => h match {
-      case _: HistogramChartDef => true
-      case _ => false
-    }).forall(p => p)
+  def fixXBounds(pds: Seq[PlotDef]): Seq[PlotDef] = {
+    val fixed = widestBounds(pds, xAxis)
+    pds.map {
+      case hd: HistogramChartDef => fixHistogramXBounds(fixed, hd)
+      case pd: PlotDef => pd.withOptions(pd.options.copy(xAxisBounds = fixed))
+    }
   }
 
-  def fixBounds(axis: BoundsFunction)(pds: Seq[PlotDef]): Seq[PlotDef] = {
-    val fixed = widestBounds(pds, axis)
-    /*if (axis == xAxis && isHistogramDef(pds)) fixHistogramXBounds(fixed, pds)
-    else */ pds.map((pd: PlotDef) => pd.withOptions(pd.options.copy(yAxisBounds = fixed)))
+  def fixYBounds(pds: Seq[PlotDef]): Seq[PlotDef] = {
+    val fixed = widestBounds(pds, yAxis)
+    pds.map(pd => pd.withOptions(pd.options.copy(yAxisBounds = fixed)))
   }
 
   def rowCol(indices: Iterable[Int], nCols: Int): Iterable[(Int, Int)] = indices.map(i => (i / nCols, i % nCols))
@@ -46,15 +43,42 @@ private[plotdefs] object FacetsDefFunctions {
   val yAxisOn: ConfigFunction = { case (pd, _) => pd.withOptions(pd.options.copy(drawYAxis = true)) }
   val yAxisOff: ConfigFunction = { case (pd, _) => pd.withOptions(pd.options.copy(drawYAxis = false)) }
 
-  def bottomXLabels(nRows: Int, nCols: Int)(pds: Seq[PlotDef]): Seq[PlotDef] = {
+
+  def bottomXAxes(nRows: Int, nCols: Int)(pds: Seq[PlotDef]): Seq[PlotDef] = {
     val defsWithRowsCols = pds.zip(rowCol(pds.indices, nCols))
     val inBottom: ((PlotDef, (Int, Int))) => Boolean = { case (_, rc) => rc._1 == nRows - 1 }
     defsWithRowsCols.map(pdrc => if (inBottom(pdrc)) xAxisOn(pdrc) else xAxisOff(pdrc))
   }
 
-  def leftYLabels(nRows: Int, nCols: Int)(pds: Seq[PlotDef]): Seq[PlotDef] = {
+  def leftYAxes(nRows: Int, nCols: Int)(pds: Seq[PlotDef]): Seq[PlotDef] = {
     val defsWithRowsCols = pds.zip(rowCol(pds.indices, nCols))
     val atLeft: ((PlotDef, (Int, Int))) => Boolean = { case (_, rc) => rc._2 == 0 }
     defsWithRowsCols.map(pdrc => if (atLeft(pdrc)) yAxisOn(pdrc) else yAxisOff(pdrc))
+  }
+
+  private def addColLabels(labels: Seq[String])(pdrc: (PlotDef, (Int, Int))): PlotDef = {
+    val (pd, (row, col)) = pdrc
+    if (row == 0 && labels.indices.contains(col))
+      pd.withOptions(pd.options.copy(topLabel = Some(labels(col))))
+    else pd
+  }
+
+  private def addRowLabels(nCols: Int)(labels: Seq[String])(pdrc: (PlotDef, (Int, Int))): PlotDef = {
+    val (pd, (row, col)) = pdrc
+    if (col == nCols - 1 && labels.indices.contains(row))
+      pd.withOptions(pd.options.copy(rightLabel = Some(labels(row))))
+    else pd
+  }
+
+  def addLabels(nRows: Int, nCols: Int, rowLabels: Option[Seq[String]], colLabels: Option[Seq[String]])
+               (pds: Seq[PlotDef]): Seq[PlotDef] = {
+    lazy val defsWithRowsCols: Seq[(PlotDef, (Int, Int))] = pds.zip(rowCol(pds.indices, nCols))
+    (rowLabels, colLabels) match {
+      case (None, None) => pds
+      case (Some(rs), Some(cs)) => defsWithRowsCols.map(addRowLabels(nCols)(rs))
+        .zip(rowCol(pds.indices, nCols)).map(addColLabels(cs))
+      case (_, Some(cs)) => defsWithRowsCols.map(addColLabels(cs))
+      case (Some(rs), _) => defsWithRowsCols.map(addRowLabels(nCols)(rs))
+    }
   }
 }

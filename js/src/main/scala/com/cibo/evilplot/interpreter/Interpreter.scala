@@ -10,14 +10,16 @@ import io.circe.generic.auto._
 import io.circe.parser._
 
 /** If an extent is supplied to the PlotDefinitionInterpreter, the serialized plot extent is overridden. */
-trait PlotDefinitionInterpreter {
-  protected val defaultSize: Extent
-  def apply(definition: String, extent: Option[Extent]= None): Either[Error, Drawable] = {
+object PlotDefinitionInterpreter {
+//  protected val defaultSize: Extent
+  val defaultSize = Extent(800, 400) // completely arbitrary, can change later.
+  def apply(definition: String, extent: Option[Extent] = None): Either[Error, Drawable] = {
     decode[PlotDef](definition).right.map { right: PlotDef => eval(right, extent) }
   }
 
   def eval(plotDef: PlotDef, extent: Option[Extent]): Drawable = {
     def getSize(pd: PlotDef): Extent = extent.getOrElse(pd.extent.getOrElse(defaultSize))
+    println(plotDef.options)
     plotDef match {
       case scatter: ScatterPlotDef =>
         new ScatterPlot(getSize(scatter), scatter, scatter.options)

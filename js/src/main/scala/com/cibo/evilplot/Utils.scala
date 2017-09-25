@@ -20,10 +20,10 @@ object Utils {
       .getContext("2d")
       .asInstanceOf[dom.CanvasRenderingContext2D]
   }
-  def maybeDrawable[T](value: Option[T], maker: T => Drawable, default: Drawable = EmptyDrawable()): Drawable = {
+  def maybeDrawable[T](value: Option[T])(maker: T => Drawable): Drawable = {
     value match {
       case Some(t) => maker(t)
-      case None => default
+      case None => EmptyDrawable()
     }
   }
 

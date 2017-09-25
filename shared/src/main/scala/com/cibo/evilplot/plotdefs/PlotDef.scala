@@ -15,7 +15,9 @@ import com.cibo.evilplot.numeric._
 sealed trait PlotDef {
   val extent: Option[Extent] = None // if not supplied, can be passed to the renderer later.
   val options: PlotOptions = PlotOptions()
+
   def xBounds: Option[Bounds] = None
+
   def yBounds: Option[Bounds] = None
 
   def withBounds: PlotDef = this // Lol.
@@ -34,28 +36,31 @@ sealed trait PlotDef {
 }
 
 final case class ScatterPlotDef(
-    data: Seq[Point],
-    zData: Option[Seq[Double]] = None,
-    pointSize: Double = 2.25,
-    colorBar: ColorBar = SingletonColorBar(HTMLNamedColors.black),
-    override val extent: Option[Extent] = None,
-    override val options: PlotOptions = PlotOptions())
-    extends PlotDef {
+                                 data: Seq[Point],
+                                 zData: Option[Seq[Double]] = None,
+                                 pointSize: Double = 2.25,
+                                 colorBar: ColorBar = SingletonColorBar(HTMLNamedColors.black),
+                                 override val extent: Option[Extent] = None,
+                                 override val options: PlotOptions = PlotOptions())
+  extends PlotDef {
   override def xBounds: Option[Bounds] =
     Some(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x))
+
   override def yBounds: Option[Bounds] =
     Some(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y))
 }
 
 final case class ContourPlotDef(
-    gridData: GridData,
-    numContours: Int,
-    colorBar: ColorBar = SingletonColorBar(HTMLNamedColors.blue),
-    override val extent: Option[Extent] = None,
-    override val options: PlotOptions = PlotOptions())
-    extends PlotDef {
+                                 gridData: GridData,
+                                 numContours: Int,
+                                 colorBar: ColorBar = SingletonColorBar(HTMLNamedColors.blue),
+                                 override val extent: Option[Extent] = None,
+                                 override val options: PlotOptions = PlotOptions())
+  extends PlotDef {
   override def xBounds: Option[Bounds] = Some(gridData.xBounds)
+
   override def yBounds: Option[Bounds] = Some(gridData.yBounds)
+
   def zBounds: Bounds = gridData.zBounds
 }
 
@@ -64,9 +69,11 @@ final case class HistogramChartDef(data: Histogram,
                                    bounds: Option[Bounds] = None,
                                    override val extent: Option[Extent] = None,
                                    override val options: PlotOptions =
-                                     PlotOptions())
-    extends PlotDef {
+                                   PlotOptions())
+  extends PlotDef {
   override def xBounds: Option[Bounds] = Some(Bounds(data.min, data.max))
+
+  override def yBounds: Option[Bounds] = Some(Bounds(data.bins.min.toDouble, data.bins.max.toDouble))
 
   // Get a new HistogramChartDef, rebinning over `bounds`
   def withBounds(bounds: Bounds): HistogramChartDef = this.copy(
@@ -80,10 +87,11 @@ final case class BarChartDef(counts: Seq[Double],
                              barSpacing: Option[Double] = None,
                              override val extent: Option[Extent] = None,
                              override val options: PlotOptions = PlotOptions())
-    extends PlotDef {
+  extends PlotDef {
   val length: Int = counts.length
   require(counts.length == labels.length,
-          "must be same number of data points as labels")
+    "must be same number of data points as labels")
+
   override def yBounds: Option[Bounds] =
     Some(Bounds(if (counts.min > 0) 0 else counts.min, counts.max))
 }
@@ -100,9 +108,10 @@ final case class BoxPlotDef(labels: Seq[String],
                             pointSize: Double = 2.0,
                             override val extent: Option[Extent] = None,
                             override val options: PlotOptions = PlotOptions())
-    extends PlotDef {
+  extends PlotDef {
   require(labels.length == summaries.length)
   val numBoxes: Int = labels.length
+
   override def yBounds: Option[Bounds] =
     Some(Bounds(summaries.map(_.min).min, summaries.map(_.max).max))
 }
@@ -110,7 +119,7 @@ final case class BoxPlotDef(labels: Seq[String],
 final case class LinePlotDef(lines: Seq[OneLinePlotData],
                              override val extent: Option[Extent] = None,
                              override val options: PlotOptions = PlotOptions())
-    extends PlotDef {
+  extends PlotDef {
   override def xBounds: Option[Bounds] = {
     val bounds = lines.map(_.xBounds)
     val xMin = bounds.map(_.min).min
@@ -135,7 +144,7 @@ final case class FacetsDef(numRows: Int,
                            rowLabels: Option[Seq[String]],
                            override val extent: Option[Extent],
                            override val options: PlotOptions)
-    extends PlotDef
+  extends PlotDef
 
 /** `apply` methods defined here can "fix" axes and change which facets the labels appear on. */
 object FacetsDef {
@@ -151,7 +160,8 @@ object FacetsDef {
                   baseOptions: PlotOptions = PlotOptions()): FacetsDef = {
     val nRows = rows.length
     val nCols = columns.length
-    val naivePlotDefs: Seq[PlotDef] = for (row <- rows; col <- columns) yield row(col(dataObject))
+    val naivePlotDefs: Seq[PlotDef] = for {row <- rows; col <- columns}
+      yield row(col(dataObject)).withOptions(baseOptions)
     this.apply(nRows, nCols, naivePlotDefs, columnLabels, rowLabels, axisScales, extent, baseOptions)
   }
 
@@ -162,15 +172,17 @@ object FacetsDef {
             baseOptions: PlotOptions): FacetsDef = {
     import FacetsDefFunctions._
     // Build the function required to take the "naive" plot definitions to what goes in the finished plot.
-    val transformPlotDefs = axisScales match {
-      case FixedScales => fixBounds(xAxis)_ compose fixBounds(yAxis) compose bottomXLabels(nRows, nCols) compose
-        leftYLabels(nRows, nCols)
-      case FixedX => fixBounds(xAxis)_ compose bottomXLabels(nRows, nCols)
-      case FixedY => fixBounds(yAxis)_ compose leftYLabels(nRows, nCols)
-      case FreeScales => identity[Seq[PlotDef]]_
+    val withAxesOptions = axisScales match {
+      case FixedScales => fixYBounds _ compose fixXBounds compose bottomXAxes(nRows, nCols) compose
+        leftYAxes(nRows, nCols)
+      case FixedX => fixXBounds _ compose bottomXAxes(nRows, nCols)
+      case FixedY => fixYBounds _ compose leftYAxes(nRows, nCols)
+      case FreeScales => identity[Seq[PlotDef]] _
     }
 
-   FacetsDef(nRows, nCols, transformPlotDefs(plotDefs), columnLabels, rowLabels, extent, baseOptions)
+    val finalPlotDefs = addLabels(nRows, nCols, rowLabels, columnLabels)_ compose withAxesOptions
+
+    FacetsDef(nRows, nCols, finalPlotDefs(plotDefs), columnLabels, rowLabels, extent, baseOptions)
   }
 
 
@@ -215,12 +227,19 @@ final case class OneLinePlotData(points: Seq[Point], color: Color) {
   case object FreeScales extends ScaleOption*/
 
 sealed trait BoxPlotPoints
+
 case object AllPoints extends BoxPlotPoints
+
 case object OutliersOnly extends BoxPlotPoints
+
 case object NoPoints extends BoxPlotPoints
 
 sealed trait ScaleOption
+
 case object FixedScales extends ScaleOption
+
 case object FixedX extends ScaleOption
+
 case object FixedY extends ScaleOption
+
 case object FreeScales extends ScaleOption

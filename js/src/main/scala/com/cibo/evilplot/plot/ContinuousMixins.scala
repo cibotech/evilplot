@@ -1,7 +1,8 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
+import com.cibo.evilplot.{Text, Utils}
+import com.cibo.evilplot.colors.{Color, HSL, HTMLNamedColors}
+import com.cibo.evilplot.geometry.{Align, Drawable, EmptyDrawable, Extent, Rect}
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 import com.cibo.evilplot.plot.ContinuousChartDistributable._
 
@@ -36,6 +37,11 @@ trait ContinuousAxes extends Chart {
     val yWidth = YAxis(1, yAxisDescriptor, label = options.yAxisLabel, options.drawYAxis).extent.width
     chartSize - (w = yWidth, h = xHeight)
   }
+  override protected lazy val topLabel: Drawable = Utils.maybeDrawable(options.topLabel)(text =>
+    Align.centerSeq(Align.middle(Rect(chartAreaSize.width, 20) filled HSL(0, 0, 85), Text(text))).group)
+
+  override protected lazy val rightLabel: Drawable = Utils.maybeDrawable(options.rightLabel)(text =>
+    Align.centerSeq(Align.middle(Rect(chartAreaSize.height, 20) filled HSL(0, 0, 85), Text(text))).group) rotated 90
 
   override lazy val xAxis: Drawable = XAxis(chartAreaSize.width, xAxisDescriptor, options.xAxisLabel, options.drawXAxis)
   override lazy val yAxis: Drawable = YAxis(chartAreaSize.height, yAxisDescriptor, options.yAxisLabel, options.drawYAxis)
