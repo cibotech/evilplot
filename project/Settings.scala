@@ -26,7 +26,7 @@ object Settings {
 
   /** Declare global dependency versions here to avoid mismatches in multi part dependencies */
   object versions { //scalastyle:ignore
-    val scala = "2.11.11"
+    val scala = "2.12.3"
     val scalaDom = "0.9.3"
     val scalaTest = "3.0.1"
     val scalactic = "3.0.1"
@@ -44,7 +44,8 @@ object Settings {
     "io.circe" %%% "circe-parser" % versions.circe,
     "io.circe" %%% "circe-generic-extras" % versions.circe,
     "org.scalactic" %%% "scalactic" % versions.scalactic,
-    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test"
+    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test",
+    compilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
   ))
 
   /** Dependencies only used by the JVM project */
