@@ -2,24 +2,22 @@
  * Copyright 2017 CiBO Technologies
  */
 package com.cibo.evilplot.interpreter
+import com.cibo.evilplot.JSONUtils
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plotdefs._
-import io.circe._
 import io.circe.generic.auto._
-import io.circe.parser._
 
 /** If an extent is supplied to the PlotDefinitionInterpreter, the serialized plot extent is overridden. */
 object PlotDefinitionInterpreter {
-//  protected val defaultSize: Extent
   val defaultSize = Extent(800, 400) // completely arbitrary, can change later.
-  def apply(definition: String, extent: Option[Extent] = None): Either[Error, Drawable] = {
-    decode[PlotDef](definition).right.map { right: PlotDef => eval(right, extent) }
+  def apply(definition: String, extent: Option[Extent] = None): Drawable = {
+    val plotDef = JSONUtils.decodeStr[PlotDef](definition)
+    eval(plotDef, extent)
   }
 
   def eval(plotDef: PlotDef, extent: Option[Extent]): Drawable = {
     def getSize(pd: PlotDef): Extent = extent.getOrElse(pd.extent.getOrElse(defaultSize))
-    println(plotDef.options)
     plotDef match {
       case scatter: ScatterPlotDef =>
         new ScatterPlot(getSize(scatter), scatter, scatter.options)

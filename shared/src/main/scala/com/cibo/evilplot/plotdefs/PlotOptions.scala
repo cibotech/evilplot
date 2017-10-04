@@ -3,7 +3,7 @@
  */
 package com.cibo.evilplot.plotdefs
 
-import com.cibo.evilplot.colors.{Color, HSL, HTMLNamedColors}
+import com.cibo.evilplot.colors.{Color, DefaultColors, HTMLNamedColors}
 import com.cibo.evilplot.numeric.Bounds
 
 // TODO: Split generic parts of the configuration out.
@@ -22,6 +22,6 @@ case class PlotOptions(title: Option[String] = None,
                        yGridSpacing: Option[Double] = None,
                        gridColor: Color = HTMLNamedColors.white,
                        withinMetrics: Option[Seq[Double]] = None,
-                       backgroundColor: HSL = HSL(0, 0, 92),
-                       barColor: HSL = HSL(0, 0, 35))
+                       backgroundColor: Color = DefaultColors.backgroundColor,
+                       barColor: Color = DefaultColors.barColor)
 

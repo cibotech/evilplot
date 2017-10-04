@@ -1,5 +1,4 @@
 package com.cibo.evilplot
-import com.cibo.evilplot.SerializationUtils.withCaseClassConstructorName
 package object numeric {
   type Grid = Vector[Vector[Double]]
 

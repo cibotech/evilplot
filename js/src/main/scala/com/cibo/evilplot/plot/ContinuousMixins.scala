@@ -1,10 +1,10 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.{Text, Utils}
-import com.cibo.evilplot.colors.{Color, HSL, HTMLNamedColors}
+import com.cibo.evilplot.colors.{Color, DefaultColors, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Align, Drawable, EmptyDrawable, Extent, Rect}
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 import com.cibo.evilplot.plot.ContinuousChartDistributable._
+import com.cibo.evilplot.{Text, Utils}
 
 // TODO: there's a ton of repetition in between these traits, could definitely eliminate w/ some more thought
 // (but this repetition eliminates overall repetition in codebase by a lot, so still a good step)
@@ -38,10 +38,11 @@ trait ContinuousAxes extends Chart {
     chartSize - (w = yWidth, h = xHeight)
   }
   override protected lazy val topLabel: Drawable = Utils.maybeDrawable(options.topLabel)(text =>
-    Align.centerSeq(Align.middle(Rect(chartAreaSize.width, 20) filled HSL(0, 0, 85), Text(text))).group)
+    Align.centerSeq(Align.middle(Rect(chartAreaSize.width, 20) filled DefaultColors.titleBarColor, Text(text))).group)
 
   override protected lazy val rightLabel: Drawable = Utils.maybeDrawable(options.rightLabel)(text =>
-    Align.centerSeq(Align.middle(Rect(chartAreaSize.height, 20) filled HSL(0, 0, 85), Text(text))).group) rotated 90
+    Align.centerSeq(Align.middle(Rect(chartAreaSize.height, 20) filled DefaultColors.titleBarColor,
+      Text(text))).group) rotated 90
 
   override lazy val xAxis: Drawable = XAxis(chartAreaSize.width, xAxisDescriptor, options.xAxisLabel, options.drawXAxis)
   override lazy val yAxis: Drawable = YAxis(chartAreaSize.height, yAxisDescriptor, options.yAxisLabel, options.drawYAxis)

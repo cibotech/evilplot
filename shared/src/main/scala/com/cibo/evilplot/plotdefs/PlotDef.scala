@@ -20,8 +20,6 @@ sealed trait PlotDef {
 
   def yBounds: Option[Bounds] = None
 
-  def withBounds: PlotDef = this // Lol.
-
   // Lots of unfortunate boilerplate here. From https://groups.google.com/forum/#!topic/scala-internals/O1yrB1xetUA ,
   // seems like this is moderately unavoidable
   def withOptions(opts: PlotOptions): PlotDef = this match {
@@ -31,7 +29,7 @@ sealed trait PlotDef {
     case bp: BoxPlotDef => bp.copy(options = opts)
     case lp: LinePlotDef => lp.copy(options = opts)
     case h: HistogramChartDef => h.copy(options = opts)
-    case fd: FacetsDef => fd.copy(options = opts) // This change wouldn't actually be registered, would it?
+    case fd: FacetsDef => fd.copy(options = opts)
   }
 }
 
@@ -188,7 +186,6 @@ object FacetsDef {
 
 }
 
-// This should probably go in another file?
 final case class OneLinePlotData(points: Seq[Point], color: Color) {
   def xBounds: Bounds = {
     val xS = points.map(_.x)

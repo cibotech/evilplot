@@ -28,7 +28,7 @@ class ScatterPlotSpec extends FunSpec with Matchers {
 
   describe("ScatterPlot") {
 
-    ignore(
+    it(
       "should construct a chart area that is large enough for any point in the axis range to be plotted") {
       val extrema: Seq[Drawable] = Seq(
         plot.scatterPoint(plot.xAxisDescriptor.minValue,
@@ -45,7 +45,7 @@ class ScatterPlotSpec extends FunSpec with Matchers {
         p should not be an[EmptyDrawable]
       }
     }
-    ignore(
+    it(
       "should yield an empty drawable when given a point outside the axis bounds") {
       val points: Seq[Drawable] = Seq(
         plot.scatterPoint(plot.xAxisDescriptor.maxValue + 1,
@@ -61,7 +61,7 @@ class ScatterPlotSpec extends FunSpec with Matchers {
     }
 
     // Each point has a bounding box that extends from the lowest point in the chart area to just beyond its boundary.
-    ignore("should properly place the points in the chart area") {
+    it("should properly place the points in the chart area") {
       data.foreach {
         case Point(x, y) =>
           val p = plot.scatterPoint(x, y)(scaleX, scaleY)
