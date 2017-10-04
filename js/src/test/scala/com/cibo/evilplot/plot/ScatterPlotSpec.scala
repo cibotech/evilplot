@@ -22,7 +22,7 @@ class ScatterPlotSpec extends FunSpec with Matchers {
   val options =
     PlotOptions(xAxisBounds = Some(bounds), yAxisBounds = Some(bounds))
   val pd = ScatterPlotDef(data, options = options)
-  val plot = new ScatterPlot(extent, pd, options)
+  val plot = new ScatterPlot(extent, pd)
   val (scaleX, scaleY) =
     (extent.width / bounds.range, extent.height / bounds.range)
 

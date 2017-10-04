@@ -10,8 +10,9 @@ import com.cibo.evilplot.{StrokeStyle, Style}
 // TODO: ggplot2 provides a `geom_jitter` which makes the outliers a bit easier to read off the plot.
 // TODO: Continuous x option?
 
-class BoxPlotChart(val chartSize: Extent, data: BoxPlotDef, val options: PlotOptions)
+class BoxPlotChart(val chartSize: Extent, data: BoxPlotDef)
   extends DiscreteX {
+  val options: PlotOptions = data.options
   val defaultYAxisBounds: Bounds = data.yBounds.get // guaranteed to be defined.
   val labels: Seq[String] = data.labels
   protected val (widthGetter, spacingGetter) = DiscreteChartDistributable

@@ -14,12 +14,12 @@ import com.cibo.evilplot.plotdefs.{BarChartDef, PlotOptions}
   * entry in label.
   * @param chartSize The size of the bounding box which the chart will occupy.
   * @param data Data object containing counts and labels of each bar.
-  * @param options Plot options for the chart.
   */
 // TODO: The widthGetter / spacingGetter logic is certainly way too complicated, especially since DrawableLater
 // is gone.
-class BarChart(val chartSize: Extent, data: BarChartDef, val options: PlotOptions)
+class BarChart(val chartSize: Extent, data: BarChartDef)
   extends DiscreteX {
+  val options: PlotOptions = data.options
   private val numBars = data.length
   val labels: Seq[String] = data.labels
   val defaultYAxisBounds: Bounds = data.yBounds.get // safe because always defined on a BarChartData

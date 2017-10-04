@@ -20,17 +20,17 @@ object PlotDefinitionInterpreter {
     def getSize(pd: PlotDef): Extent = extent.getOrElse(pd.extent.getOrElse(defaultSize))
     plotDef match {
       case scatter: ScatterPlotDef =>
-        new ScatterPlot(getSize(scatter), scatter, scatter.options)
+        new ScatterPlot(getSize(scatter), scatter)
       case contour: ContourPlotDef =>
-        new ContourPlot(getSize(contour), contour, contour.options)
+        new ContourPlot(getSize(contour), contour)
       case histogram: HistogramChartDef =>
-        new HistogramChart(getSize(histogram), histogram, histogram.options)
+        new HistogramChart(getSize(histogram), histogram)
       case barChart: BarChartDef =>
-        new BarChart(getSize(barChart), barChart, barChart.options)
+        new BarChart(getSize(barChart), barChart)
       case boxPlot: BoxPlotDef =>
-        new BoxPlotChart(getSize(boxPlot), boxPlot, boxPlot.options)
+        new BoxPlotChart(getSize(boxPlot), boxPlot)
       case linePlot: LinePlotDef =>
-        new LinePlot(getSize(linePlot), linePlot, linePlot.options)
+        new LinePlot(getSize(linePlot), linePlot)
       case facetsDef: FacetsDef => new Facets(getSize(facetsDef), facetsDef)
     }
   }

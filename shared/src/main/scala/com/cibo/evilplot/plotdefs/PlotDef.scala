@@ -31,6 +31,8 @@ sealed trait PlotDef {
     case h: HistogramChartDef => h.copy(options = opts)
     case fd: FacetsDef => fd.copy(options = opts)
   }
+
+  def fixXBounds(newXBounds: Option[Bounds]): PlotDef = withOptions(this.options.copy(xAxisBounds = newXBounds))
 }
 
 final case class ScatterPlotDef(
@@ -73,10 +75,10 @@ final case class HistogramChartDef(data: Histogram,
 
   override def yBounds: Option[Bounds] = Some(Bounds(data.bins.min.toDouble, data.bins.max.toDouble))
 
-  // Get a new HistogramChartDef, rebinning over `bounds`
-  def withBounds(bounds: Bounds): HistogramChartDef = this.copy(
-    data = Histogram(data.rawData, data.numBins, Some(bounds)),
-    options = options.copy(xAxisBounds = Some(bounds)))
+  override def fixXBounds(newXBounds: Option[Bounds]): PlotDef = {
+    this.copy(data = Histogram(data.rawData, data.numBins, newXBounds),
+      options = options.copy(xAxisBounds = newXBounds))
+  }
 }
 
 final case class BarChartDef(counts: Seq[Double],

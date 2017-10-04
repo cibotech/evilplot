@@ -3,7 +3,7 @@
  */
 package com.cibo.evilplot.plotdefs
 
-import com.cibo.evilplot.numeric.{Bounds, Histogram}
+import com.cibo.evilplot.numeric.Bounds
 
 private[plotdefs] object FacetsDefFunctions {
   type BoundsFunction = PlotDef => Option[Bounds]
@@ -18,17 +18,9 @@ private[plotdefs] object FacetsDefFunctions {
     if (allBounds.isEmpty) None else Some(Bounds(allBounds.minBy(_.min).min, allBounds.maxBy(_.max).max))
   }
 
-  /** Create new HistogramChartDefs from rebinning data over the most extreme x axis bounds. */
-  def fixHistogramXBounds(widest: Option[Bounds], h: HistogramChartDef): HistogramChartDef = {
-    h.copy(data = Histogram(h.data.rawData, h.data.numBins, widest), options = h.options.copy(xAxisBounds = widest))
-  }
-
   def fixXBounds(pds: Seq[PlotDef]): Seq[PlotDef] = {
     val fixed = widestBounds(pds, xAxis)
-    pds.map {
-      case hd: HistogramChartDef => fixHistogramXBounds(fixed, hd)
-      case pd: PlotDef => pd.withOptions(pd.options.copy(xAxisBounds = fixed))
-    }
+    pds.map(_.fixXBounds(fixed))
   }
 
   def fixYBounds(pds: Seq[PlotDef]): Seq[PlotDef] = {

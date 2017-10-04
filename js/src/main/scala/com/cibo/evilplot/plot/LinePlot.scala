@@ -22,7 +22,8 @@ case class Lines(chartAreaSize: Extent, lpd: LinePlotDef,
 }
 
 // Draw a line plot consisting of a set of lines. Each Seq in `data` is a separate line. The colors Seq
-class LinePlot(val chartSize: Extent, lines: LinePlotDef, val options: PlotOptions) extends Chart with ContinuousAxes {
+class LinePlot(val chartSize: Extent, lines: LinePlotDef) extends Chart with ContinuousAxes {
+    val options: PlotOptions = lines.options
     // these gets are safe given the objects they come from.
     val defaultXAxisBounds: Bounds = lines.xBounds.get
     val defaultYAxisBounds: Bounds = lines.yBounds.get

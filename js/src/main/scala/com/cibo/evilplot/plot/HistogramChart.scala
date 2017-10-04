@@ -10,8 +10,9 @@ import com.cibo.evilplot.plot.ContinuousChartDistributable.MetricLines
 import com.cibo.evilplot.plotdefs.{HistogramChartDef, PlotOptions}
 import com.cibo.evilplot.{Style, Utils}
 
-class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef, val options: PlotOptions)
+class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef)
   extends Chart with ContinuousAxes {
+  val options: PlotOptions = histData.options
   private val data = histData.data.bins.map(_.toDouble)
   val defaultXAxisBounds = Bounds(histData.data.min, histData.data.max)
   val defaultYAxisBounds = Bounds(0.0, data.max)
