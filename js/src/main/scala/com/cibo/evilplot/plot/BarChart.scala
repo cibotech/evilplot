@@ -23,7 +23,6 @@ class BarChart(val chartSize: Extent, data: BarChartDef)
   private val numBars = data.length
   val labels: Seq[String] = data.labels
   val defaultYAxisBounds: Bounds = data.yBounds.get // safe because always defined on a BarChartData
-  override lazy val xGridLines = EmptyDrawable()
 
   // Create functions to get width and spacing, depending on what is specified by caller.
   protected val (widthGetter, spacingGetter) = DiscreteChartDistributable

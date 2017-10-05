@@ -1,9 +1,10 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.{Text, Utils}
-import com.cibo.evilplot.colors.{DefaultColors, HSL}
+import com.cibo.evilplot.colors.{DefaultColors, HSL, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Align, Drawable, Extent, Rect}
 import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.plot.ContinuousChartDistributable.YAxis
 import com.cibo.evilplot.plot.DiscreteChartDistributable._
 
 // trying to accomplish this writing as little code as possible...
@@ -18,11 +19,17 @@ trait DiscreteX extends ContinuousAxes {
   override protected lazy val rightLabel: Drawable = Utils.maybeDrawable(options.rightLabel)(text =>
     Align.centerSeq(Align.middle(Rect(chartAreaSize.height, 20) filled DefaultColors.titleBarColor,
       Text(text))).group) rotated 90
+  override protected lazy val chartAreaSize: Extent  = {
+    val xHeight = XAxis(Extent(chartSize.width, 1), labels, widthGetter, spacingGetter, label = options.xAxisLabel,
+      rotateText = 90, options.drawXAxis).extent.height
+    val yWidth = YAxis(1, yAxisDescriptor, label = options.yAxisLabel, options.drawYAxis).extent.width
+    chartSize - (w = yWidth, h = xHeight)
+  }
 
   // TODO: right now rotate text is set to 90 for possibility of long labels, should be incorporating our knowledge
   // of label length and axis creation should be robust to the possibility of ridiculous axis labels
+  override lazy val xGridLines: Drawable = VerticalGridLines(chartAreaSize, labels.length, widthGetter, spacingGetter)
   override lazy val xAxis = XAxis(chartAreaSize, labels, widthGetter, spacingGetter, options.xAxisLabel,
     rotateText = 90, drawAxis = options.drawXAxis)
-  override lazy val xGridLines: Drawable = VerticalGridLines(chartAreaSize, labels.length, widthGetter, spacingGetter)
 }
 

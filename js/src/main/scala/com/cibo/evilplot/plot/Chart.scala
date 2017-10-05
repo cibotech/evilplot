@@ -17,14 +17,10 @@ trait Chart extends WrapDrawable {
   protected lazy val xAxis: Drawable = EmptyDrawable()
   protected lazy val yAxis: Drawable = EmptyDrawable()
   protected lazy val chartAreaSize: Extent = chartSize
-
   // A class extending chart must define how to create its plotted data as a drawable.
   protected def plottedData(extent: Extent): Drawable
   protected def background: Drawable = Rect(chartAreaSize) filled options.backgroundColor
-  // name has an underscore for compatibility, change this.
   def chartArea: Drawable = {
-//    println("Constructing the chart area with size", chartAreaSize)
-//    println("My background has size", background.extent)
     background behind plottedData(chartAreaSize)
   }
   protected def ensureSpace(r: => Drawable)(msg: String = "not enough space to render plot"): Drawable = {

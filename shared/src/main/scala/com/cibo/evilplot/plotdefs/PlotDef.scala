@@ -161,7 +161,7 @@ object FacetsDef {
     val nRows = rows.length
     val nCols = columns.length
     val naivePlotDefs: Seq[PlotDef] = for {row <- rows; col <- columns}
-      yield row(col(dataObject)).withOptions(baseOptions)
+      yield row(col(dataObject)).withOptions(baseOptions.copy(xAxisLabel = None, yAxisLabel = None))
     this.apply(nRows, nCols, naivePlotDefs, columnLabels, rowLabels, axisScales, extent, baseOptions)
   }
 

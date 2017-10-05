@@ -61,7 +61,6 @@ object DiscreteChartDistributable {
       line = StrokeStyle(color)(Line(chartAreaSize.height, 2)) rotated 90
       padLeft = (firstTickOffset + numLine * lineSpacing) - line.extent.width / 2.0
     } yield line padLeft padLeft
-
     override def drawable: Drawable = _lines.group
   }
 
