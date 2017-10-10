@@ -26,7 +26,7 @@ object Settings {
 
   /** Declare global dependency versions here to avoid mismatches in multi part dependencies */
   object versions { //scalastyle:ignore
-    val scala = "2.12.3"
+    val scala = "2.11.11"
     val scalaDom = "0.9.3"
     val scalaTest = "3.0.1"
     val scalactic = "3.0.1"
