@@ -4,14 +4,14 @@ import org.scalatest.{FunSpec, Matchers}
 
 import scala.util.Random
 
-class BoxPlotSpec extends FunSpec with Matchers {
+class BoxPlotSummaryStatisticsSpec extends FunSpec with Matchers {
   val tol = 1e-8
   val data = List(-2541.335733882479, 1577.0315624249806, -808.0673232141799, 680.9128930911302,
     -2445.2589645401004, -7.260674159999326, -1762.1261882364997, -776.52236318016, -3198.781083548529,
     517.4382306836906, -1982.1566564704299, -1700.7419477605)
-  describe("BoxPlot") {
+  describe("BoxPlotSummaryStatistics") {
     it("should correctly calculate quartiles using linear interpolation between values") {
-      val boxPlot = new BoxPlot(data)
+      val boxPlot = BoxPlotSummaryStatistics(data)
       // NumPy on this list: [ np.percentile(data, x) for x in xrange(25, 100, 25) ] ==
       val (first, second, third) = (-2097.9322334878475, -1254.4046354873399, 123.91405205092315)
       // low tolerance because above data is only to hundredths place
@@ -21,7 +21,7 @@ class BoxPlotSpec extends FunSpec with Matchers {
     }
 
     it("should give the maximum when asked for the 1.0 quantile") {
-      val boxPlot = new BoxPlot(data, quantiles = (0.0, 0.5, 1.0))
+      val boxPlot = BoxPlotSummaryStatistics(data, quantiles = (0.0, 0.5, 1.0))
       boxPlot.upperQuantile shouldEqual data.max +- tol
     }
 
@@ -29,7 +29,7 @@ class BoxPlotSpec extends FunSpec with Matchers {
       val medianData: Seq[Double] = Seq.fill(50)(Random.nextDouble())
       val sorted = medianData.sorted
       val median = (sorted(24) + sorted(25))/ 2.0
-      val boxPlot = new BoxPlot(medianData)
+      val boxPlot = BoxPlotSummaryStatistics(medianData)
       boxPlot.middleQuantile shouldEqual median +- tol
     }
 
@@ -37,7 +37,7 @@ class BoxPlotSpec extends FunSpec with Matchers {
       val medianData: Seq[Double] = Seq.fill(49)(Random.nextDouble())
       val sorted = medianData.sorted
       val median = sorted(24)
-      val boxPlot = new BoxPlot(medianData)
+      val boxPlot = BoxPlotSummaryStatistics(medianData)
       boxPlot.middleQuantile shouldEqual median +- tol
     }
 
@@ -53,7 +53,7 @@ class BoxPlotSpec extends FunSpec with Matchers {
       95.817, 95.824, 95.759, 95.623, 95.432, 95.214, 95.002, 94.819, 94.675, 94.573,
       94.514, 94.507, 94.562, 94.682, 94.858, 95.067, 95.278, 95.463, 95.598, 95.664)
       val outliers = Seq(91.015, 98.032)
-      val boxPlot = new BoxPlot(temperatureData)
+      val boxPlot = BoxPlotSummaryStatistics(temperatureData)
       boxPlot.outliers.length shouldEqual outliers.length
       (boxPlot.outliers zip outliers).foreach { case (computed, actual) => computed shouldEqual actual +- tol }
     }

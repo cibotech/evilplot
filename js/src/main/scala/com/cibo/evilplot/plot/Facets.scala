@@ -1,92 +1,44 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Extent, Grid, WrapDrawable}
-import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.Facets.{FixedScales, FreeScales}
+import com.cibo.evilplot.Text
+import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Grid, WrapDrawable}
+import com.cibo.evilplot.interpreter.PlotDefinitionInterpreter
+import com.cibo.evilplot.plotdefs._
 
 /** Facets creates a 2-dimensional grid of plots extracted from a generic data object.
-  * The caller supplies sequences of "row" accessors and "col" accessors that when composed transform the generic data
   * object into a subtype of PlotData.
   */
-// TODO: could rename row and column accessor seqs to first and second, and give an option for the dimension along
-// which to lay things out
+
 object Facets {
-  sealed trait ScaleOption
-  case object FixedScales extends ScaleOption
-  case object FreeScales extends ScaleOption
-  // TODO: implement these
-/*  case object FixedX extends ScaleOption
-  case object FixedY extends ScaleOption*/
+  type AxisType = (FacetsDef => Option[String], Double)
+  val xAxis: AxisType = (fd => fd.options.xAxisLabel, 0)
+  val yAxis: AxisType = (fd => fd.options.yAxisLabel, 270)
+
+  def axisLabel(fd: FacetsDef, axis: AxisType): Drawable = axis._1(fd) match {
+    case Some(label) => Text(label, 20) padAll 10 rotated axis._2
+    case None => EmptyDrawable()
+  }
 }
 
-class Facets[T, U, V <: PlotData](extent: Extent, dataObject: T, columns: Seq[(T => U)],
-                                  rows: Seq[(U => V)], columnLabels: Option[Seq[String]] = None,
-                                  rowLabels: Option[Seq[String]] = None,
-                                  axisScales: Facets.ScaleOption = Facets.FixedScales,
-                                  baseOptions: PlotOptions = PlotOptions()) extends WrapDrawable {
-  private val numCols = columns.length
-  private val numRows = rows.length
+class Facets(extent: Extent, facetsDef: FacetsDef) extends WrapDrawable {
+  import Facets._
+  private val (numRows, numCols) = (facetsDef.numRows, facetsDef.numCols)
+  private val interpreter = PlotDefinitionInterpreter
+  private val bottomPadding = 30
+  private val rightPadding = 30
+  private val xLabel: Drawable = axisLabel(facetsDef, xAxis)
+  private val yLabel: Drawable = axisLabel(facetsDef, yAxis)
 
-  // TODO: these may need to be refactored. there is additional complexity in fixing scales for a histogram.
-  private def getExtrema(allBounds: Seq[Bounds]) = {
-    if (allBounds.nonEmpty) Some(Bounds(allBounds.minBy(_.min).min, allBounds.maxBy(_.max).max)) else None
-  }
+  private val subPlotSize = Extent(
+    (extent.width - yLabel.extent.width - (numCols - 1) * rightPadding) / numCols,
+    (extent.height - xLabel.extent.height - (numRows - 1) * bottomPadding) / numRows)
+  private val facets = facetsDef.plotDefs.map(interpreter.eval(_, Some(subPlotSize)))
 
-  private def extremaAndTicks(subset: Seq[V]): (Option[Bounds], Option[Bounds]) = {
-    val xExtrema: Option[Bounds] = getExtrema(subset.flatMap(_.xBounds))
-    val yExtrema: Option[Bounds] = xExtrema match {
-      case Some(xBounds) => getExtrema((for (plotData <- subset) yield {
-        plotData match {
-          case histData: HistogramData => Some(histData.histogramBounds(xBounds))
-          case otherData: PlotData => otherData.yBounds
-        }
-      }).flatten)
-      case None => getExtrema(subset.flatMap(_.yBounds))
-    }
-    (xExtrema, yExtrema)
-  }
-
-  private def recalculateFacet(facet: PlotData, xBounds: Option[Bounds]): PlotData = {
-    facet match {
-      case f: HistogramData => f.copy(bounds = xBounds)
-      case _ => facet
-    }
-  }
-
-  private def buildPlotDataAndOptions(allFacetData: Seq[V]): Seq[(PlotData, PlotOptions)] = {
-    lazy val (xExtrema, yExtrema) = extremaAndTicks(allFacetData)
-
-    def inTopRow(row: Int): Boolean = row == 0; def inBottomRow(row: Int): Boolean = row == numRows - 1
-    def inLeftColumn(col: Int): Boolean = col == 0; def inRightColumn(col: Int): Boolean = col == numCols - 1
-
-    for {(_facet, index) <- allFacetData.zipWithIndex
-         row = index / numCols
-         col = index % numCols
-         (facet, xAxisBounds, yAxisBounds, drawXAxis, drawYAxis) = axisScales match {
-           case FixedScales =>
-             (recalculateFacet(_facet, xExtrema), xExtrema, yExtrema, inBottomRow(row), inLeftColumn(col))
-           case FreeScales => (_facet, None, None, true, true)
-         }
-         rightLabel = rowLabels match { case Some(labels) if inRightColumn(col) => Some(labels(row)); case _ => None }
-         topLabel = columnLabels match { case Some(labels) if inTopRow(row) => Some(labels(col)); case _ => None }
-
-    } yield (facet, baseOptions.copy(xAxisBounds = xAxisBounds, yAxisBounds = yAxisBounds, drawXAxis = drawXAxis,
-      drawYAxis = drawYAxis, topLabel = topLabel, rightLabel = rightLabel))
-  }
-  val allFacetData: Seq[V] = for {
-    row <- rows
-    col <- columns
-  } yield row(col(dataObject))
-
-  private val _drawable = {
-    // no longer needed,
-//    def createChart(facetData: PlotData, options: PlotOptions)(_extent: Extent): Drawable =
-//      facetData.createPlot(_extent, options)
-    val facets = for ((facetData, options) <- buildPlotDataAndOptions(allFacetData))
-      // but this is not how we should be specifying the extent
-      yield facetData.createPlot(Extent(extent.width / numCols, extent.height / numRows), options)
-    new Grid(numRows, numCols, facets, bottomPadding = 25, rightPadding = 25) // purely drawable
-//    new GridLayout(extent, numRows, numCols, facets, bottomPadding = 10, rightPadding = )
-  }
-  override def drawable: Drawable = _drawable
+  override def drawable: Drawable = Align.center(
+    Align.middle(
+      yLabel,
+      new Grid(facetsDef.numRows, facetsDef.numCols, facets, bottomPadding = bottomPadding, rightPadding = rightPadding)
+    ).reduce(Beside),
+    xLabel transX yLabel.extent.width
+  ).reduce(Above)
 }

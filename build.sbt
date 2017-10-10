@@ -15,6 +15,7 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
   version := Settings.version,
   scalaVersion := Settings.versions.scala,
   libraryDependencies ++= Settings.sharedDependencies.value,
+  scalacOptions := Settings.scalacOptions,
   publishTo in ThisBuild := {
   val repo = ""
   if (isSnapshot.value) {
@@ -25,12 +26,6 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
   }
   )
 
-
-/*lazy val evilplot =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Full)
-    .settings(sharedSettings)
-*/
 
 lazy val sharedJVM: Project = shared.jvm
 lazy val sharedJS: Project = shared.js
@@ -49,8 +44,9 @@ lazy val js: Project = (project in file("js"))
   jsDependencies += RuntimeDOM,
   jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value),
   skip in packageJSDependencies := false,
+  scalaJSUseMainModuleInitializer := true,
   scalaJSUseMainModuleInitializer in Test := false
-).enablePlugins(ScalaJSPlugin, WorkbenchPlugin)
+).enablePlugins(WorkbenchPlugin)
 .dependsOn(sharedJS)
 
 // js projects (just one in this case)
@@ -68,6 +64,3 @@ lazy val jvm: Project = (project in file("jvm"))
   )
 .aggregate(jss.map(projectToRef): _*)
 .dependsOn(sharedJVM)
-
-
-

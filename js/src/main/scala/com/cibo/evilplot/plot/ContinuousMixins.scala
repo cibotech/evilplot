@@ -1,15 +1,16 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.{Color, White}
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
+import com.cibo.evilplot.colors.{Color, DefaultColors, HTMLNamedColors}
+import com.cibo.evilplot.geometry.{Align, Drawable, EmptyDrawable, Extent, Rect}
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 import com.cibo.evilplot.plot.ContinuousChartDistributable._
+import com.cibo.evilplot.{Text, Utils}
 
 // TODO: there's a ton of repetition in between these traits, could definitely eliminate w/ some more thought
 // (but this repetition eliminates overall repetition in codebase by a lot, so still a good step)
 
 object ContinuousUtilities {
-  def maybeGridLines(area: Extent, spacing: Option[Double], desc: AxisDescriptor, color: Color = White)
+  def maybeGridLines(area: Extent, spacing: Option[Double], desc: AxisDescriptor, color: Color = HTMLNamedColors.white)
                      (glConstructor: (Extent, AxisDescriptor, Double, Color) => GridLines): Drawable =
     spacing match {
       case Some(_spacing) => glConstructor(area, desc, _spacing, color)
@@ -36,6 +37,12 @@ trait ContinuousAxes extends Chart {
     val yWidth = YAxis(1, yAxisDescriptor, label = options.yAxisLabel, options.drawYAxis).extent.width
     chartSize - (w = yWidth, h = xHeight)
   }
+  override protected lazy val topLabel: Drawable = Utils.maybeDrawable(options.topLabel)(text =>
+    Align.centerSeq(Align.middle(Rect(chartAreaSize.width, 20) filled DefaultColors.titleBarColor, Text(text))).group)
+
+  override protected lazy val rightLabel: Drawable = Utils.maybeDrawable(options.rightLabel)(text =>
+    Align.centerSeq(Align.middle(Rect(chartAreaSize.height, 20) filled DefaultColors.titleBarColor,
+      Text(text))).group) rotated 90
 
   override lazy val xAxis: Drawable = XAxis(chartAreaSize.width, xAxisDescriptor, options.xAxisLabel, options.drawXAxis)
   override lazy val yAxis: Drawable = YAxis(chartAreaSize.height, yAxisDescriptor, options.yAxisLabel, options.drawYAxis)

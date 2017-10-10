@@ -1,9 +1,12 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
+
 package com.cibo.evilplot.colors
 
-trait Color {
+sealed trait Color {
   val repr: String
 }
-
 case class HSL(hue: Int, saturation: Int, lightness: Int) extends Color {
   require(hue        >= 0 && hue        <  360, s"hue must be within [0, 360) {was $hue}")
   require(saturation >= 0 && saturation <= 100, s"saturation must be within [0, 100] {was $saturation}")
@@ -23,7 +26,6 @@ case object Clear extends Color {
 }
 
 object Colors {
-
   // TODO: this needs work
   def stream: Seq[HSL] = {
     val hueSpan = 7
@@ -64,7 +66,7 @@ object Colors {
     }
   }
 
-  trait ColorBar
+  sealed trait ColorBar
   // Use when one color is wanted but a ColorBar is needed.
   case class SingletonColorBar(color: Color) extends ColorBar
 

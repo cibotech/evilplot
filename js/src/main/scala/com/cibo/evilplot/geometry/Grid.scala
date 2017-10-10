@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
+
 package com.cibo.evilplot.geometry
 
 class Grid(numRows: Int, numCols: Int, rs: Seq[Drawable], val bottomPadding: Double = 0, val rightPadding: Double = 0)

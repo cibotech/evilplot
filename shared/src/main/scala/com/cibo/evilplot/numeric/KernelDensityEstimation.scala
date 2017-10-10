@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
+
 package com.cibo.evilplot.numeric
 
 // The geom_density_2d function in ggplot uses MASS:2dkde to interpolate a grid.
@@ -28,10 +32,8 @@ object KernelDensityEstimation {
     val yMatrix = kernelMatrix(data.map(_.y).toArray, _yBounds, numYs, bandwidthY)
     val estimate = matrixMatrixTransposeMult(yMatrix, xMatrix).map(_.map(_ / numXs * bandwidthX * bandwidthY))
     val zBounds = Bounds(estimate.map(_.min).min, estimate.map(_.max).max)
-    println(estimate.length, estimate.head.length)
     assert(estimate.length == numXs && estimate.head.length == numYs,
     "density estimate dimensions do not match expectation")
-    println(s"Finished KDE and zBounds are (${zBounds.min}, ${zBounds.max})")
     GridData(estimate.map(_.toVector).toVector, _xBounds, _yBounds, zBounds,
       _xBounds.range / numXs, _yBounds.range / numYs)
   }

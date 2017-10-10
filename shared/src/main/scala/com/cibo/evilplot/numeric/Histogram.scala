@@ -4,30 +4,31 @@
 
 package com.cibo.evilplot.numeric
 
-class Histogram(data: Seq[Double], numBins: Int, bounds: Option[Bounds] = None) {
-  private val _bins: Array[Long] = Array.fill(numBins){0}
+// The underlying raw data does not get serialized. This is problematic: deserializing a Histogram
+// will always give you an empty Seq.
+case class Histogram(bins: Seq[Long], numBins: Int, binWidth: Double, min: Double, max: Double, rawData: Seq[Double])
 
-  /** Histogram bins: a sequence of counts */
-  // Expose an immutable Seq, not the mutable Array. We don't want the caller to be able to change values.
-  lazy val bins: Seq[Long] = _bins.toSeq
+object Histogram {
+  def apply(data: Seq[Double], numBins: Int, bounds: Option[Bounds] = None): Histogram = {
+    val _bins: Array[Long] = Array.fill(numBins) { 0 }
 
-  private val sorted = data.sorted
+    val sorted = data.sorted
 
-  val (min, max) = bounds match {
-    case Some(Bounds(_min, _max)) => (_min, _max)
-    case None => (sorted.head, sorted.last)
+    val (min, max) = bounds match {
+      case Some(Bounds(_min, _max)) => (_min, _max)
+      case None => (sorted.head, sorted.last)
+    }
+
+    /** width of histogram bin */
+    val binWidth: Double = (max - min) / numBins
+
+    // Assign each datum to a bin. Make sure that points at the end don't go out of bounds due to numeric imprecision.
+    for (value <- sorted) {
+      val bin: Int = math.min(math.round(math.floor((value - min) / binWidth)).toInt, numBins - 1)
+      _bins(bin) = _bins(bin) + 1
+    }
+
+    Histogram(_bins.toSeq, numBins, binWidth, min, max, data)
   }
-
-  /** width of histogram bin */
-  val binWidth: Double = (max - min) / numBins
-
-  // Assign each datum to a bin. Make sure that points at the end don't go out of bounds due to numeric imprecision.
-  for (value <- sorted) {
-    val bin: Int = math.min(math.round(math.floor((value - min) / binWidth)).toInt, numBins - 1)
-    _bins(bin) = _bins(bin) + 1
-  }
-
-  override def toString: String =
-    f"Histogram with bin boundaries: $min%.3f $max%.3f, number of bins $numBins%d and binWidth $binWidth%.1f"
 }
 

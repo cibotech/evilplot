@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
+
 package com.cibo.evilplot.numeric
 
 // Implements Lorensen and Cline's Marching Squares algorithm.

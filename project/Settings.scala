@@ -15,13 +15,14 @@ object Settings {
   val version = s"0.1.$buildVersion"
 
   /** Options for the scala compiler */
-  // val scalacOptions = Seq(
-  //   "-Xlint",
-  //   "-unchecked",
-  //   "-deprecation",
-  //   "-feature"
-  // )
-  val scalacOptions = Seq()
+  val scalacOptions = Seq(
+    "-deprecation",
+    // "-Xlint",
+    "-unchecked"
+    // "-deprecation",
+    // "-feature",
+    // "-J-Xss1024m"
+  )
 
   /** Declare global dependency versions here to avoid mismatches in multi part dependencies */
   object versions { //scalastyle:ignore
@@ -30,7 +31,7 @@ object Settings {
     val scalaTest = "3.0.1"
     val scalactic = "3.0.1"
     val scopt = "3.5.0"
-    val circe = "0.8.0"
+    val circe = "0.7.0"
   }
 
   /**
@@ -41,8 +42,10 @@ object Settings {
     "io.circe" %%% "circe-core" % versions.circe,
     "io.circe" %%% "circe-generic" % versions.circe,
     "io.circe" %%% "circe-parser" % versions.circe,
+    "io.circe" %%% "circe-generic-extras" % versions.circe,
     "org.scalactic" %%% "scalactic" % versions.scalactic,
-    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test"
+    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test",
+    compilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
   ))
 
   /** Dependencies only used by the JVM project */

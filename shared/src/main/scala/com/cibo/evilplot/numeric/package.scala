@@ -1,6 +1,4 @@
 package com.cibo.evilplot
-
-
 package object numeric {
   type Grid = Vector[Vector[Double]]
 

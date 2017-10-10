@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017 CiBO Technologies
+ */
+
 package com.cibo.evilplot
 
 import com.cibo.evilplot.colors.Color
@@ -16,10 +20,10 @@ object Utils {
       .getContext("2d")
       .asInstanceOf[dom.CanvasRenderingContext2D]
   }
-  def maybeDrawable[T](value: Option[T], maker: T => Drawable, default: Drawable = EmptyDrawable()): Drawable = {
+  def maybeDrawable[T](value: Option[T])(maker: T => Drawable): Drawable = {
     value match {
       case Some(t) => maker(t)
-      case None => default
+      case None => EmptyDrawable()
     }
   }
 
@@ -74,7 +78,6 @@ object Text {
   val defaultSize = 10
 
   private lazy val offscreenBuffer: dom.CanvasRenderingContext2D = {
-    println("Executing the dirty hack.")
     Utils.getCanvasFromElementId("measureBuffer")
   }
   private lazy val replaceSize = """\d+px""".r

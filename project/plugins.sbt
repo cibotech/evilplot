@@ -12,5 +12,9 @@ dependencyOverrides += "org.scala-js" % "sbt-scalajs" % "0.6.19"
 addSbtPlugin("com.lihaoyi" % "workbench" % "0.3.0")
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.2.2")
 
+// Used to show project dependencies, e.g. `sbt dependencyTree`.
+// See https://github.com/jrudolph/sbt-dependency-graph .
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
+
 // see http://www.scalatest.org/install
 resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
