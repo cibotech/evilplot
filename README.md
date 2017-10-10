@@ -16,7 +16,7 @@ $ sbt
 3. go to `localhost:12345/index.html` in your browser
 
 Running unit tests:
-Running unit tests requires PhantomJS and they must be run from `sbt`, not from within IntelliJ.
+Requires PhantomJS, and unit tests must be run from `sbt`, not from within IntelliJ.
 
 sbt note:
 Per the [ScalaTest installation instructions](http://www.scalatest.org/install), add this line to ~/.sbt/0.13/global.sbt:
