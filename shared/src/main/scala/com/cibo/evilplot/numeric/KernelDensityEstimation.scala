@@ -6,8 +6,6 @@ package com.cibo.evilplot.numeric
 
 // The geom_density_2d function in ggplot uses MASS:2dkde to interpolate a grid.
 // We'll need to do 2D interpolation to generate  reports.
-// We should be doing computations like this server side using either a cibo stats lib or something like Breeze,
-// however this is a simple stand-in implementation.
 object KernelDensityEstimation {
 
   /**
@@ -26,16 +24,16 @@ object KernelDensityEstimation {
     val _yBounds = yBounds.getOrElse(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y))
     val (numXs, numYs) = numPoints
     val (xs, ys) = (data.map(_.x).toArray, data.map(_.y).toArray)
-    val (bandwidthX, bandwidthY) = (bandwidthEstimate(xs) / 4, bandwidthEstimate(ys) / 4)
+    val (bandwidthX, bandwidthY) = (bandwidthEstimate(xs) / 4.0, bandwidthEstimate(ys) / 4.0)
+    val (spacingX, spacingY) = (_xBounds.range / (numXs - 1), _yBounds.range / (numYs - 1))
 
-    val xMatrix = kernelMatrix(data.map(_.x).toArray, _xBounds, numXs, bandwidthX)
-    val yMatrix = kernelMatrix(data.map(_.y).toArray, _yBounds, numYs, bandwidthY)
-    val estimate = matrixMatrixTransposeMult(yMatrix, xMatrix).map(_.map(_ / numXs * bandwidthX * bandwidthY))
+    val xMatrix = kernelMatrix(data.map(_.x).toArray, _xBounds, numXs, spacingX, bandwidthX)
+    val yMatrix = kernelMatrix(data.map(_.y).toArray, _yBounds, numYs, spacingY, bandwidthY)
+    val estimate = matrixMatrixTransposeMult(xMatrix, yMatrix).map(_.map(_ / (data.length * bandwidthX * bandwidthY)))
     val zBounds = Bounds(estimate.map(_.min).min, estimate.map(_.max).max)
     assert(estimate.length == numXs && estimate.head.length == numYs,
     "density estimate dimensions do not match expectation")
-    GridData(estimate.map(_.toVector).toVector, _xBounds, _yBounds, zBounds,
-      _xBounds.range / numXs, _yBounds.range / numYs)
+    GridData(estimate.map(_.toVector).toVector, _xBounds, _yBounds, zBounds, spacingX, spacingY)
   }
 
   def matrixMatrixTransposeMult(a: Array[Array[Double]], b: Array[Array[Double]]): Array[Array[Double]] = {
@@ -48,23 +46,23 @@ object KernelDensityEstimation {
     result
   }
 
-  private def kernelMatrix(vals: Array[Double], bounds: Bounds, nGridPoints: Int,
+  private def kernelMatrix(vals: Array[Double], bounds: Bounds, nGridPoints: Int, spacing: Double,
                            bandwidth: Double): Array[Array[Double]] = {
-    val gridPoints = Array.tabulate(nGridPoints)(bounds.min + _ * bounds.range / nGridPoints)
+    val gridPoints = Array.tabulate(nGridPoints)(bounds.min + _ * spacing)
     outerProduct(gridPoints, vals, (a: Double, b: Double) => probabilityDensityInNormal((a - b) / bandwidth))
   }
 
-  private def outerProduct(a: Array[Double], b: Array[Double],
-                           f: (Double, Double) => Double = _ * _): Array[Array[Double]] = {
+  private[numeric] def outerProduct(a: Array[Double], b: Array[Double],
+                                   f: (Double, Double) => Double = _ * _): Array[Array[Double]] = {
     Array.tabulate(a.length, b.length) { (row, col) => f(a(row), b(col)) }
   }
 
   // lots of magic numbers, not sure on the theory behind this "rule of thumb" for bandwidth estimation.
   
-  private def bandwidthEstimate(vec: Seq[Double]) = {
-    val interQuartileRange = quantile(vec, Seq(0.25, 0.75))
-         // someone who knows more about math might know what to call this val
-    val approxThreeQuartersOfIQR = interQuartileRange.foldRight(0.0)(_ - _) / 1.34
-    4 * 1.06 * math.min(standardDeviation(vec), approxThreeQuartersOfIQR) * math.pow(vec.length, -1.0 / 5.0)
+  
+  private[numeric] def bandwidthEstimate(vec: Seq[Double]) = {
+    val iqr = quantile(vec, Seq(0.25, 0.75)).reduceLeft((first, third) => third - first)
+    val h = iqr / 1.34
+    4 * 1.06 * math.min(standardDeviation(vec), h) * math.pow(vec.length, -1.0 / 5.0)
   }
 }

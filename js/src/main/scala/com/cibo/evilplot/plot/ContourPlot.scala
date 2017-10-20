@@ -1,7 +1,8 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.StrokeStyle
-import com.cibo.evilplot.colors.Colors.{ColorSeq, ScaledColorBar}
+import com.cibo.evilplot.colors.Colors
+import com.cibo.evilplot.colors.Colors.{ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Path}
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plotdefs.{ContourPlotDef, PlotOptions}
@@ -23,15 +24,18 @@ class ContourPlot(val chartSize: Extent, data: ContourPlotDef)
   }
 
   def plottedData(extent: Extent): Drawable = {
-    val colors = ColorSeq.getGradientSeq(numContours)
-    val colorBar = ScaledColorBar(colors, grid.zBounds.min, grid.zBounds.max)
+    val colorBar: Colors.ColorBar = data.colorBar
     val binWidth = data.zBounds.range / numContours
     val levels = Seq.tabulate[Double](numContours - 1)(bin => grid.zBounds.min + (bin + 1) * binWidth)
     val contours = for { z <- levels
                          contourSegments = MarchingSquares.getContoursAt(z, grid)
                          if contourSegments.nonEmpty
-    } yield contourSegments.map { seg => StrokeStyle(colorBar.getColor(z))(
-      Path(toPixelCoords(seg, xAxisDescriptor.axisBounds, yAxisDescriptor.axisBounds, extent), 2)) }
+    } yield contourSegments.map {
+      seg => StrokeStyle { colorBar match {
+        case SingletonColorBar(color) => color
+        case colors: ScaledColorBar => colors.getColor(z)
+      }
+      }(Path(toPixelCoords(seg, xAxisDescriptor.axisBounds, yAxisDescriptor.axisBounds, extent), 2)) }
 
     contours.flatten.group
   }

@@ -7,8 +7,9 @@ package com.cibo.evilplot.numeric
 // Implements Lorensen and Cline's Marching Squares algorithm.
 // Some algorithm invariants are protected by assertions now to ease debugging. Move these to tests.
 object MarchingSquares {
-//  type Grid = Vector[Vector[Double]]
+
   case class GridCell(row: Int, col: Int, value: Double)
+
   type CellEdge = (GridCell, GridCell)
 
   // Represents a 2 x 2 block of cells in the original grid.
@@ -24,12 +25,12 @@ object MarchingSquares {
     lazy val bottom: CellEdge = (bottomLeft, bottomRight)
     lazy val averageValue: Double = (upLeft.value + upRight.value + bottomRight.value + bottomLeft.value) / 4.0
 
-    // A block description is a 4 bit tag, from msb to lsb clockwise starting at upper left.
-    // The bit represents whether a cell is "positive" or "negative" (if its z value is >= or < than the target z
-    // we're trying to contour).
-    // tags 5 and 10 are considered ambiguous; we adopt the heuristic that if that average block value is < target
-    // and the tag is 5 or 10, it gets switched to the other.
-    def blockDescription(target: Double): Int = {
+    /** A block description is a 4 bit tag, from msb to lsb clockwise starting at upper left.
+     * The bit represents whether a cell is "positive" or "negative" (if its z value is >= or < than the target z
+     * we're trying to contour).
+     * tags 5 and 10 are considered ambiguous; we adopt the heuristic that if that average block value is < target
+     * and the tag is 5 or 10, it gets switched to the other. */
+    private[numeric] def blockDescription(target: Double): Int = {
       val ulIndexPart = if (upLeft.value >= target) 8 else 0 // i.e. 1 << 3
       val urIndexPart = if (upRight.value >= target) 4 else 0
       val brIndexPart = if (bottomRight.value >= target) 2 else 0
@@ -46,15 +47,16 @@ object MarchingSquares {
 
     def indicesToCartesian(indices: Point): Point = indices match {
       case Point(row, col) =>
-        Point(gridData.xSpacing * col + gridData.xBounds.min, gridData.ySpacing * row + gridData.yBounds.min)
+        Point(gridData.xSpacing * row + gridData.xBounds.min, gridData.ySpacing * col + gridData.yBounds.min)
     }
 
     // p and q form a "bipolar" edge, i.e. one point is "positive," one is "negative"
     def interpolate(e: CellEdge): Point = {
       val (p, q) = e
       assert(p.value >= target && q.value < target || p.value < target && q.value >= target,
-      "interpolate called on edge not satisfying bipolar property")
+        "interpolate called on edge not satisfying bipolar property")
       val alpha = (target - p.value) / (q.value - p.value)
+
       def component(_p: Int, _q: Int): Double = (1 - alpha) * _p + alpha * _q
 
       Point(component(p.row, q.row), component(p.col, q.col))
@@ -88,11 +90,13 @@ object MarchingSquares {
       }
     }
 
-      // we're blocking in 2 x 2 segments, hence the .init
-      val contours = (for {cellRow <- grid.indices.init
-            cellCol <- grid.head.indices.init
-            block = new GridBlock(grid, cellRow, cellCol)
-      } yield contourSegments(block)).flatten
-    contours
-    }
+    // We're blocking in 2 x 2 segments, hence the .init
+    val contours = for {
+      cellRow <- grid.indices.init
+      cellCol <- grid.head.indices.init
+      block = new GridBlock(grid, cellRow, cellCol)
+    } yield contourSegments(block)
+
+    contours.flatten
+  }
 }

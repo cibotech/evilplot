@@ -180,12 +180,15 @@ case class Debug(r: Drawable) extends Drawable {
 }
 
 case class Group(items: Drawable*) extends Drawable {
-  lazy val extent: Extent = Extent(
-    items.map(_.extent.width).max,
-    items.map(_.extent.height).max
-  )
+  lazy val extent: Extent = {
+    if (items.toSeq.isEmpty) {
+      Extent(0, 0)
+    } else {
+      Extent(items.map(_.extent.width).max, items.map(_.extent.height).max)
+    }
+  }
 
-  def draw(canvas: CanvasRenderingContext2D): Unit = items.foreach(_.draw(canvas))
+  def draw(canvas: CanvasRenderingContext2D): Unit = if (items.toSeq.isEmpty) () else items.foreach(_.draw(canvas))
 }
 
 case class Above(top: Drawable, bottom: Drawable) extends Drawable {
