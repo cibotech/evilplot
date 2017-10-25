@@ -44,7 +44,7 @@ lazy val js: Project = (project in file("js"))
   jsDependencies += RuntimeDOM,
   jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value),
   skip in packageJSDependencies := false,
-  scalaJSUseMainModuleInitializer := true,
+  scalaJSUseMainModuleInitializer := false,
   scalaJSUseMainModuleInitializer in Test := false
 ).enablePlugins(WorkbenchPlugin)
 .dependsOn(sharedJS)
