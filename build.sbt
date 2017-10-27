@@ -44,7 +44,7 @@ lazy val js: Project = (project in file("js"))
   jsDependencies += RuntimeDOM,
   jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value),
   skip in packageJSDependencies := false,
-  scalaJSUseMainModuleInitializer := true,
+  scalaJSUseMainModuleInitializer := false,
   scalaJSUseMainModuleInitializer in Test := false
 ).enablePlugins(WorkbenchPlugin)
 .dependsOn(sharedJS)
@@ -60,7 +60,8 @@ lazy val jvm: Project = (project in file("jvm"))
   version := Settings.version,
   scalaVersion := Settings.versions.scala,
   scalacOptions ++= Settings.scalacOptions,
-  libraryDependencies ++= Settings.jvmDependencies.value
+  libraryDependencies ++= Settings.jvmDependencies.value,
+  resources in Compile += fullOptJS.in(js).in(Compile).value.data
   )
 .aggregate(jss.map(projectToRef): _*)
 .dependsOn(sharedJVM)

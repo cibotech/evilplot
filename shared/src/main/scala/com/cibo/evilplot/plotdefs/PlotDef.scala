@@ -5,7 +5,7 @@
 package com.cibo.evilplot.plotdefs
 
 import com.cibo.evilplot.colors.Colors.{ColorBar, SingletonColorBar}
-import com.cibo.evilplot.colors.{Color, HSL, HTMLNamedColors}
+import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric._
 
@@ -33,6 +33,14 @@ sealed trait PlotDef {
   }
 
   def fixXBounds(newXBounds: Option[Bounds]): PlotDef = withOptions(this.options.copy(xAxisBounds = newXBounds))
+}
+
+object PlotDef {
+  import io.circe.generic.auto._
+  import io.circe.generic.semiauto._
+  import io.circe.{Encoder, Decoder}
+  implicit val plotDefEncoder: Encoder[PlotDef] = deriveEncoder[PlotDef]
+  implicit val plotDefDecoder: Decoder[PlotDef] = deriveDecoder[PlotDef]
 }
 
 final case class ScatterPlotDef(
