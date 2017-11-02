@@ -11,7 +11,7 @@ object Settings {
   val organization = "com.cibo"
 
   /** The version of your application */
-  lazy val buildVersion = sys.env.getOrElse("TRAVIS_BUILD_NUMBER", (System.currentTimeMillis / 1000).toString)
+  lazy val buildVersion: String = sys.env.getOrElse("TRAVIS_BUILD_NUMBER", (System.currentTimeMillis / 1000).toString)
   val version = s"0.1.$buildVersion"
 
   /** Options for the scala compiler */
@@ -26,7 +26,7 @@ object Settings {
 
   /** Declare global dependency versions here to avoid mismatches in multi part dependencies */
   object versions { //scalastyle:ignore
-    val scala = "2.11.11"
+    val crossScalaVersions = Seq("2.11.11", "2.12.4")
     val scalaDom = "0.9.3"
     val scalaTest = "3.0.1"
     val scalactic = "3.0.1"
