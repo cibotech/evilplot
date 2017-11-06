@@ -28,6 +28,8 @@ object Utils {
   }
 
   def createNumericLabel(num: Double, numFrac: Int): String = {
+    require(numFrac >= 0 && numFrac <= 20, "JavaScript does not support formatting fewer than 0" +
+      s"or more than 20 decimal places, but you attempted to format with $numFrac")
     val fmtString = "%%.%df".format(numFrac)
     fmtString.format(num)
   }

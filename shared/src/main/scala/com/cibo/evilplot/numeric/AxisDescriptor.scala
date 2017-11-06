@@ -3,8 +3,17 @@
  */
 package com.cibo.evilplot.numeric
 
+import org.scalactic.Tolerance
+
 
 object AxisDescriptor {
+  // Source for this value: my float.h header.
+  private[numeric] val machineEpsilonIEEE754Double: Double = 2.220446e-16
+  // Equal within tolerance test, tolerance is IEEE754 Double precision machine epsilon.
+  private[numeric] def arePracticallyEqual(x: Double, y: Double): Boolean = {
+    val diff = math.abs(x - y)
+    diff < machineEpsilonIEEE754Double
+  }
   /** Find a "nice" number approximately equal to x. Round the number if round == 1, take ceiling if round == 0. */
   private[numeric] def nicenum(x: Double, round: Boolean): Double = {
     val expv = math.floor(math.log10(x))
@@ -25,6 +34,7 @@ object AxisDescriptor {
 
     nf * math.pow(10, expv)
   }
+
 }
 
 case class AxisDescriptor(bounds: Bounds, numTicksRequested: Int, drawBounds: Option[Bounds] = None) {
@@ -40,16 +50,29 @@ case class AxisDescriptor(bounds: Bounds, numTicksRequested: Int, drawBounds: Op
   val (maxValue, minValue) = (bounds.max, bounds.min)
   require(maxValue >= minValue || (bounds.max.isNaN && bounds.min.isNaN))
   private val range = AxisDescriptor.nicenum(maxValue - minValue, round = false)
-  // Heckbert uses (numTicks - 1) in order to have that much spacing between numTicks ticks. Crank that up.
-  val spacing: Double = AxisDescriptor.nicenum(range / (numTicksRequested + 1), round = true)
+  private[numeric] def calcSpacing(aRange: Double) =
+    AxisDescriptor.nicenum(aRange / (numTicksRequested + 1), round = true)
 
-  val tickMin: Double = math.floor(minValue / spacing) * spacing
-  val tickMax: Double = math.ceil(maxValue / spacing) * spacing
+  private val spacingGuess: Double = AxisDescriptor.nicenum(range / (numTicksRequested + 1), round = true)
+  val (tickMin, tickMax, spacing) = {
+    if (!AxisDescriptor.arePracticallyEqual(minValue, maxValue) && !(minValue.isNaN && maxValue.isNaN)) {
+      (math.floor(minValue / spacingGuess) * spacingGuess,
+        math.ceil(maxValue / spacingGuess) * spacingGuess,
+        spacingGuess)
+    } else
+      (minValue - 0.5, minValue + 0.5, calcSpacing(1.0))
+  }
 
-  val numFrac: Int = math.max(-math.floor(math.log10(spacing)), 0).toInt
   // Actual number of ticks generated.
   val numTicks: Int = ((tickMax - tickMin) / spacing).toInt + 1
   val axisBounds: Bounds = Bounds(tickMin, tickMax)
+
+  // Avoid bad number formatting resulting from NaNs.
+  val numFrac: Int = {
+    if (!(tickMin.isNaN && tickMax.isNaN))
+      math.max(-math.floor(math.log10(spacing)), 0).toInt
+    else 0
+  }
 }
 
 

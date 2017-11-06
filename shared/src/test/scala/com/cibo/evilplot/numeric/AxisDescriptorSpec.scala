@@ -38,6 +38,19 @@ class AxisDescriptorSpec extends FunSpec {
       ticks.numFrac shouldEqual 2
     }
 
+    it("does not fail when the min and max are the same within machine precision") {
+      val ticks = AxisDescriptor(Bounds(0.5, 0.5), 10)
+      ticks.tickMin shouldBe 0.0 +- AxisDescriptor.machineEpsilonIEEE754Double
+      ticks.tickMax shouldBe 1.0 +- AxisDescriptor.machineEpsilonIEEE754Double
+      println(ticks.numFrac)
+    }
+
+    it("does not fail when the axisBounds evaluate to Bounds(NaN, NaN)") {
+      val ticks = AxisDescriptor(Bounds(Double.NaN, Double.NaN), 10)
+      ticks.tickMin.isNaN shouldBe true
+      ticks.tickMax.isNaN shouldBe true
+      ticks.numFrac shouldBe 0
+    }
   }
 
 }
