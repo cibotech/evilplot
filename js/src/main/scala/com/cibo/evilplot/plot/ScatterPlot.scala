@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Colors.{ScaledColorBar, SingletonColorBar}
-import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Translate}
+import com.cibo.evilplot.geometry.{Debug, Disc, Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plotdefs.{PlotOptions, ScatterPlotDef}
 
@@ -28,7 +28,7 @@ class ScatterPlot(val chartSize: Extent, definition: ScatterPlotDef)
       case (Some(_zData), _colorBar: ScaledColorBar) =>
         require(_zData.length == data.length, "color and point data must have same length")
         (data zip _zData).map { case (Point(x, y), z) =>
-          Translate(-definition.pointSize)(scatterPoint(x, y)(scaleX, scaleY) filled _colorBar.getColor(z))
+          scatterPoint(x, y)(scaleX, scaleY) filled _colorBar.getColor(z)
         }
       case (_, SingletonColorBar(color)) =>
         data.map { case Point(x, y) => scatterPoint(x, y)(scaleX, scaleY) filled color }

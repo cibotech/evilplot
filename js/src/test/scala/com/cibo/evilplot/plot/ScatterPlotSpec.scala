@@ -24,7 +24,7 @@ class ScatterPlotSpec extends FunSpec with Matchers {
   val pd = ScatterPlotDef(data, options = options)
   val plot = new ScatterPlot(extent, pd)
   val (scaleX, scaleY) =
-    (extent.width / bounds.range, extent.height / bounds.range)
+    (extent.width / plot.xAxisDescriptor.axisBounds.range, extent.height / plot.yAxisDescriptor.axisBounds.range)
 
   describe("ScatterPlot") {
 
@@ -66,10 +66,8 @@ class ScatterPlotSpec extends FunSpec with Matchers {
         case Point(x, y) =>
           val p = plot.scatterPoint(x, y)(scaleX, scaleY)
           p should not be an[EmptyDrawable]
-          p.extent.width shouldBe ((x - plot.xAxisDescriptor.axisBounds.min) / plot.xAxisDescriptor.axisBounds.range) *
-            plot.extent.width + 2 * pd.pointSize +- .2
-          p.extent.height shouldBe ((plot.yAxisDescriptor.axisBounds.max - y) / plot.yAxisDescriptor.axisBounds.range) *
-            plot.extent.height + 2 * pd.pointSize +- .2
+          p.extent.width shouldBe ((x - plot.xAxisDescriptor.axisBounds.min) * scaleX + pd.pointSize) +- .2
+          p.extent.height shouldBe ((plot.yAxisDescriptor.axisBounds.max - y) * scaleY + pd.pointSize) +-   .2
       }
     }
   }

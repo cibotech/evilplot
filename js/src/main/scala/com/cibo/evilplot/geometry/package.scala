@@ -12,6 +12,7 @@ package object geometry {
     def below(other: Drawable): Above = Above(other, r)
     def beside(other: Drawable): Beside = Beside(r, other)
     def behind(other: Drawable): Group = Group(r, other)
+    def inFrontOf(other: Drawable): Group = Group(other, r)
 
     def labeled(msg: String): Labeled = Labeled(msg, r)
     def labeled(msgSize: (String, Double)): Labeled = Labeled(msgSize._1, r, msgSize._2)
@@ -28,6 +29,7 @@ package object geometry {
 
     def colored(color: Color): StrokeStyle = StrokeStyle(fill = color)(r)
     def filled(color: Color): Style = Style(fill = color)(r)
+    def weighted(weight: Double): StrokeWeight = StrokeWeight(weight = weight)(r)
 
     def transX(nudge: Double): Translate = Translate(x = nudge)(r)
     def transY(nudge: Double): Translate = Translate(y = nudge)(r)

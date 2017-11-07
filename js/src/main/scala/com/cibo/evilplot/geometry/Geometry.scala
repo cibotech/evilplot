@@ -74,14 +74,15 @@ case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
   lazy val xS: Seq[Double] = points.map(_.x)
   lazy val yS: Seq[Double] = points.map(_.y)
   lazy val extent = Extent(xS.max - xS.min, yS.max - yS.min)
+  private val correction = strokeWidth / 2.0
 
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
       canvas.beginPath()
-      canvas.moveTo(points.head.x, points.head.y)
+      canvas.moveTo(points.head.x - correction, points.head.y + correction)
       canvas.lineWidth = strokeWidth
       points.tail.foreach(point => {
-        canvas.lineTo(point.x, point.y)
+        canvas.lineTo(point.x - correction, point.y + correction)
       })
       canvas.stroke()
       // Uncomment this line in order to draw the bounding box for debugging
@@ -104,7 +105,7 @@ case class BorderRect(width: Double, height: Double) extends Drawable {
 }
 
 case class BorderFillRect(width: Double, height: Double) extends WrapDrawable {
-  override def drawable: Drawable = BorderRect(width, height) behind Rect(width, height)
+  override def drawable: Drawable = BorderRect(width, height) inFrontOf Rect(width, height)
 }
 
 object Rect {
@@ -114,12 +115,12 @@ object Rect {
 
 case class Disc(radius: Double, x: Double = 0, y: Double = 0) extends Drawable {
   require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
-  lazy val extent = Extent(x + radius * 2, y + radius * 2)
+  lazy val extent = Extent(x + radius, y + radius)
 
   def draw(canvas: CanvasRenderingContext2D): Unit =
     CanvasOp(canvas) { c =>
       c.beginPath()
-      c.arc(x + radius, y + radius, radius, 0, 2 * Math.PI)
+      c.arc(x, y, radius, 0, 2 * Math.PI)
       c.closePath()
       c.fill()
     }

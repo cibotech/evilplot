@@ -11,7 +11,9 @@ object Chart {
 trait Chart extends WrapDrawable {
   val options: PlotOptions
   val chartSize: Extent
-  override lazy val extent: Extent = chartSize
+  private val paddingHack: Double = 10 // still needs a small one due to text
+  override lazy val extent: Extent = Extent(chartSize.width + rightLabel.extent.width + paddingHack,
+    chartSize.height + topLabel.extent.height + paddingHack)
 //  protected def chartBackground: Drawable = Rect(chartAreaSize) filled options.backgroundColor
 
   protected lazy val xAxis: Drawable = EmptyDrawable()
@@ -30,9 +32,9 @@ trait Chart extends WrapDrawable {
 
   protected lazy val rightLabel: Drawable = EmptyDrawable()
   protected lazy val topLabel: Drawable = EmptyDrawable()
-
   override def drawable: Drawable = ensureSpace {
-    yAxis beside (xAxis below (chartArea beside rightLabel) below topLabel transY -topLabel.extent.height)
+    (yAxis beside (xAxis below (chartArea beside rightLabel) below topLabel transY -topLabel.extent.height)) transY
+      (topLabel.extent.height + paddingHack / 2)
   } ("not enough space to render plot")
 }
 

@@ -14,7 +14,13 @@ case class BoxPlotSummaryStatistics(min: Double,
                                     middleQuantile: Double,
                                     upperQuantile: Double,
                                     outliers: Seq[Double],
-                                    allPoints: Seq[Double])
+                                    allPoints: Seq[Double]) {
+  override def toString: String = {
+    s"""lowerWhisker $lowerWhisker lowerQuantile $lowerQuantile middleQuantile
+       |$middleQuantile upperQuantile $upperQuantile upperWhisker $upperWhisker
+     """.stripMargin
+  }
+}
 
 /* This linearly interpolates to compute quantiles (which is the default behavior in NumPy and R)
  * see https://docs.scipy.org/doc/numpy-dev/reference/generated/numpy.percentile.html under `interpolation='linear'`

@@ -57,6 +57,14 @@ case class StrokeStyle(fill: Color)(r: Drawable) extends Drawable {
     }
 }
 
+case class StrokeWeight(weight: Double)(r: Drawable) extends Drawable {
+  val extent: Extent = r.extent
+  def draw(canvas: dom.CanvasRenderingContext2D): Unit = CanvasOp(canvas) { c =>
+    c.lineWidth = weight
+    r.draw(c)
+  }
+}
+
 
 case class Text(msgAny: Any, size: Double = Text.defaultSize) extends Drawable {
   require(size >= 0.5, s"Cannot use $size, canvas will not draw text initially sized < 0.5px even when scaling")

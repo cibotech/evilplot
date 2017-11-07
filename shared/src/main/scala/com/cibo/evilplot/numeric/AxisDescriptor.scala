@@ -3,9 +3,6 @@
  */
 package com.cibo.evilplot.numeric
 
-import org.scalactic.Tolerance
-
-
 object AxisDescriptor {
   // Source for this value: my float.h header.
   private[numeric] val machineEpsilonIEEE754Double: Double = 2.220446e-16

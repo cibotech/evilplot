@@ -23,10 +23,9 @@ class BoxPlotChart(val chartSize: Extent, data: BoxPlotDef)
     val points = for {
       point <- pointsData
     } yield Disc(data.pointSize, 0, (point - yAxisDescriptor.axisBounds.min) * vScale)
-    FlipY(points.group) transY ((yAxisDescriptor.axisBounds.max - pointsData.max) * vScale - data.pointSize)
+    FlipY(points.group) transY ((yAxisDescriptor.axisBounds.max - pointsData.max) * vScale - data.pointSize) transX
+      data.pointSize
   }
-  /*    val topLabel = Utils.maybeDrawableLater(options.topLabel, (text: String) => Label(text))
-      val rightLabel = Utils.maybeDrawableLater(options.rightLabel, (text: String) => Label(text, rotate = 90))*/
   def plottedData(extent: Extent): Drawable = {
     val _rectWidth = widthGetter(extent)
     val _rectSpacing = spacingGetter(extent)
