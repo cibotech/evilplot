@@ -38,12 +38,15 @@ case class HSLA(hue: Int, saturation: Int, lightness: Int, transparency: Double)
 
   private def floorCeiling(value: Int)(floor: Int, ceiling: Int) = value.min(ceiling).max(floor)
 
-  def triadic: (HSLA, HSLA) = (this.copy(hue = boundHue(this.hue - 120)), this.copy(hue = boundHue(this.hue + 120)))
+  def triadic: (HSLA, HSLA) = (
+    this.copy(hue = boundHue(this.hue - 120)),
+    this.copy(hue = boundHue(this.hue + 120))
+  )
 
-  def analogous: (HSLA, HSLA) = (this.copy(hue = boundHue(this.hue - 14)), this.copy(hue = boundHue(this.hue + 14)))
-
-  def incremental(increment: Int): (HSLA, HSLA) =
-    (this.copy(hue = boundHue(this.hue - increment)), this.copy(hue = boundHue(this.hue + increment)))
+  def analogous(offsetDegrees: Int = 14): (HSLA, HSLA) = (
+    this.copy(hue = boundHue(this.hue - offsetDegrees)),
+    this.copy(hue = boundHue(this.hue + offsetDegrees))
+  )
 
   def darken(percent: Int): HSLA = {
     val newLightness = floorCeiling(lightness - percent)(0, 100)
@@ -133,8 +136,8 @@ object Colors {
     }
 
     def analogGrow(node: HSLA, depth: Int): Seq[Color] = {
-      val left = node.analogous._1
-      val right = node.analogous._2
+      val left = node.analogous()._1
+      val right = node.analogous()._2
       if (depth > 0) node +: (triadGrow(left, depth - 1) ++ triadGrow(right, depth - 1))
       else Seq()
     }

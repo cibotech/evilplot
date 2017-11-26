@@ -2,19 +2,22 @@ package com.cibo.evilplot.colors
 
 private[colors] object ColorUtils{
 
+  //https://en.wikipedia.org/wiki/Hue
+  //https://en.wikipedia.org/wiki/HSL_and_HSV
+
   private def calculateHueFromRGB(max: Double, min: Double, red: Double, green: Double, blue: Double): Double = {
     if (max == min) {
       0.0
     } else {
-      val delta = max - min
+      val chroma = max - min
 
-      val h = max match {
-        case rd if rd == red   => ((green - blue) / delta) + (if (green < blue) 6 else 0)
-        case gr if gr == green => (blue - red) / delta + 2
-        case bl if bl == blue  => (red - green) / delta + 4
+      val hue = max match {
+        case redHue   if redHue == red     => (green - blue) / chroma + (if (green < blue) 6 else 0)
+        case greenHue if greenHue == green => (blue - red) / chroma + 2
+        case blueHue  if blueHue == blue   => (red - green) / chroma + 4
       }
 
-      h / 6
+      hue / 6
     }
   }
 
@@ -22,10 +25,10 @@ private[colors] object ColorUtils{
     if (max == min) {
       0.0
     } else {
-      val delta = max - min
+      val chroma = max - min
+      val lightness = (max + min) / 2
 
-      if ((max + min) / 2 > 0.5) delta / (2 - max - min)
-      else delta / (max + min)
+      chroma / (1 - Math.abs(2 * lightness - 1))
     }
   }
 
@@ -42,14 +45,14 @@ private[colors] object ColorUtils{
     val max = Seq(red, green, blue).max
     val min = Seq(red, green, blue).min
 
-    val h = calculateHueFromRGB(max, min, red, green, blue)
-    val s = calculateSaturationFromMagnitude(max, min)
-    val l = (max + min) / 2
+    val hueFraction = calculateHueFromRGB(max, min, red, green, blue)
+    val saturationFraction = calculateSaturationFromMagnitude(max, min)
+    val lightnessFraction = (max + min) / 2
 
     HSLA(
-      hue = Math.round(h * 360).toInt,
-      saturation = Math.round(s * 100).toInt,
-      lightness = Math.round(l * 100).toInt,
+      hue = Math.round(hueFraction * 360).toInt,
+      saturation = Math.round(saturationFraction * 100).toInt,
+      lightness = Math.round(lightnessFraction * 100).toInt,
       transparency = a
     )
   }
