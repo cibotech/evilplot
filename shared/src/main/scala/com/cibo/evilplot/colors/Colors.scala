@@ -7,27 +7,63 @@ package com.cibo.evilplot.colors
 sealed trait Color {
   val repr: String
 }
-case class HSL(hue: Int, saturation: Int, lightness: Int) extends Color {
+
+case object Clear extends Color{
+  override val repr = "hsla(0, 0, 0, 0)"
+}
+
+object RGBA {
+  def apply(r: Int, g: Int, b: Int, a: Double): HSLA = ColorUtils.rgbaToHsla(r, g, b, a)
+}
+
+object RGB {
+  def apply(r: Int, g: Int, b: Int): HSLA = ColorUtils.rgbaToHsla(r, g, b, 1.0)
+}
+
+object HSL {
+  def apply(hue: Int, saturation: Int, lightness: Int): HSLA = HSLA(hue, saturation, lightness, 1.0)
+}
+
+object HEX {
+  def apply(string: String): HSLA = ColorUtils.hexToHsla(string)
+}
+
+case class HSLA(hue: Int, saturation: Int, lightness: Int, opacity: Double) extends Color {
   require(hue        >= 0 && hue        <  360, s"hue must be within [0, 360) {was $hue}")
   require(saturation >= 0 && saturation <= 100, s"saturation must be within [0, 100] {was $saturation}")
   require(lightness  >= 0 && lightness  <= 100, s"lightness must be within [0, 100] {was $lightness}")
+  require(opacity  >= 0 && opacity  <= 1.0, s"transparency must be within [0, 1.0] {was $opacity}")
 
   private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue > 360) hue - 360 else hue
-  def triadic: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 120)), this.copy(hue = boundHue(this.hue + 120)))
-  def analogous: (HSL, HSL) = (this.copy(hue = boundHue(this.hue - 14)), this.copy(hue = boundHue(this.hue + 14)))
-  def incremental(increment: Int): (HSL, HSL) =
-    (this.copy(hue = boundHue(this.hue - increment)), this.copy(hue = boundHue(this.hue + increment)))
 
-  val repr = s"hsl($hue, $saturation%, $lightness%)"
-}
+  private def floorCeiling(value: Int)(floor: Int, ceiling: Int) = value.min(ceiling).max(floor)
 
-case object Clear extends Color {
-  val repr: String = "rgba(0,0,0,0)"
+  def triadic: (HSLA, HSLA) = (
+    this.copy(hue = boundHue(this.hue - 120)),
+    this.copy(hue = boundHue(this.hue + 120))
+  )
+
+  def analogous(offsetDegrees: Int = 14): (HSLA, HSLA) = (
+    this.copy(hue = boundHue(this.hue - offsetDegrees)),
+    this.copy(hue = boundHue(this.hue + offsetDegrees))
+  )
+
+  def darken(percent: Int): HSLA = {
+    val newLightness = floorCeiling(lightness - percent)(0, 100)
+    this.copy(lightness = newLightness)
+  }
+
+  def lighten(percent: Int): HSLA = {
+    val newLightness = floorCeiling(lightness + percent)(0, 100)
+    this.copy(lightness = newLightness)
+  }
+
+  val repr = s"hsla($hue, $saturation%, $lightness%, $opacity)"
 }
 
 object Colors {
   // TODO: this needs work
-  def stream: Seq[HSL] = {
+  def stream: Seq[Color] = {
     val hueSpan = 7
     Stream.from(0).map{ i =>
       // if hueSpan = 8, for instance:
@@ -95,18 +131,18 @@ object Colors {
       colors
     }
 
-    def getAnalogousSeq(seed: HSL = HSL(207, 90, 54), depth: Int): Seq[HSL] = {
+    def getAnalogousSeq(seed: HSLA = HSL(207, 90, 54), depth: Int): Seq[Color] = {
       analogGrow(seed, depth)
     }
 
-    def analogGrow(node: HSL, depth: Int): Seq[HSL] = {
-      val left = node.analogous._1
-      val right = node.analogous._2
+    def analogGrow(node: HSLA, depth: Int): Seq[Color] = {
+      val left = node.analogous()._1
+      val right = node.analogous()._2
       if (depth > 0) node +: (triadGrow(left, depth - 1) ++ triadGrow(right, depth - 1))
       else Seq()
     }
 
-    def triadGrow(node: HSL, depth: Int): Seq[HSL] = {
+    def triadGrow(node: HSLA, depth: Int): Seq[Color] = {
       val left = node.triadic._1
       val right = node.triadic._2
       if (depth > 0) node +: (analogGrow(left, depth - 1) ++ analogGrow(right, depth - 1))
