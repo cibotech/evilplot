@@ -28,11 +28,11 @@ object HEX {
   def apply(string: String): HSLA = ColorUtils.hexToHsla(string)
 }
 
-case class HSLA(hue: Int, saturation: Int, lightness: Int, transparency: Double) extends Color {
+case class HSLA(hue: Int, saturation: Int, lightness: Int, opacity: Double) extends Color {
   require(hue        >= 0 && hue        <  360, s"hue must be within [0, 360) {was $hue}")
   require(saturation >= 0 && saturation <= 100, s"saturation must be within [0, 100] {was $saturation}")
   require(lightness  >= 0 && lightness  <= 100, s"lightness must be within [0, 100] {was $lightness}")
-  require(transparency  >= 0 && transparency  <= 1.0, s"transparency must be within [0, 1.0] {was $transparency}")
+  require(opacity  >= 0 && opacity  <= 1.0, s"transparency must be within [0, 1.0] {was $opacity}")
 
   private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue > 360) hue - 360 else hue
 
@@ -58,7 +58,7 @@ case class HSLA(hue: Int, saturation: Int, lightness: Int, transparency: Double)
     this.copy(lightness = newLightness)
   }
 
-  val repr = s"hsla($hue, $saturation%, $lightness%, $transparency)"
+  val repr = s"hsla($hue, $saturation%, $lightness%, $opacity)"
 }
 
 object Colors {

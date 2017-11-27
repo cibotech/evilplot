@@ -53,7 +53,7 @@ private[colors] object ColorUtils{
       hue = Math.round(hueFraction * 360).toInt,
       saturation = Math.round(saturationFraction * 100).toInt,
       lightness = Math.round(lightnessFraction * 100).toInt,
-      transparency = a
+      opacity = a
     )
   }
 
