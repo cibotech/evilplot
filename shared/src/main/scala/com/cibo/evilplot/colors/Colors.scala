@@ -9,7 +9,7 @@ sealed trait Color {
 }
 
 case object Clear extends Color{
-  override val repr = "hsla(0, 0, 0, 0)"
+  override val repr = "hsla(0, 0%, 0%, 0)"
 }
 
 object RGBA {
