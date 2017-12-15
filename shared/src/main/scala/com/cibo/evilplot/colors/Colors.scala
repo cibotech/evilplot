@@ -4,6 +4,8 @@
 
 package com.cibo.evilplot.colors
 
+import io.circe.{Decoder, Encoder}
+
 sealed trait Color {
   val repr: String
 }

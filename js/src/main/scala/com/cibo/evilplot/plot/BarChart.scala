@@ -5,7 +5,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Style
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, FlipY, Rect, Scale}
+import com.cibo.evilplot.geometry.{Drawable, Extent, FlipY, Rect, Scale}
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plotdefs.{BarChartDef, PlotOptions}
 
@@ -22,7 +22,10 @@ class BarChart(val chartSize: Extent, data: BarChartDef)
   val options: PlotOptions = data.options
   private val numBars = data.length
   val labels: Seq[String] = data.labels
-  val defaultYAxisBounds: Bounds = data.yBounds.get // safe because always defined on a BarChartData
+  val defaultYAxisBounds: Bounds = { // 0 must be present on a bar chart.
+    val bounds = data.yBounds.get
+    if (bounds.max < 0) bounds.copy(max = 0) else bounds
+  }
 
   // Create functions to get width and spacing, depending on what is specified by caller.
   protected val (widthGetter, spacingGetter) = DiscreteChartDistributable

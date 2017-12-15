@@ -4,6 +4,8 @@
 
 package com.cibo.evilplot.geometry
 
+import com.cibo.evilplot.numeric.Point
+
 case class AffineTransform(scaleX: Double = 1,
     shearX: Double = 0,
     shearY: Double = 0,
@@ -45,6 +47,8 @@ case class AffineTransform(scaleX: Double = 1,
     val ty = x * shearY + y * scaleY + shiftY
     (tx, ty)
   }
+
+  def apply(p: Point): Point = Point.tupled(this.apply(p.x, p.y))
 }
 
 object AffineTransform {

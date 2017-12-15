@@ -14,7 +14,7 @@ object ContinuousUtilities {
                      (glConstructor: (Extent, AxisDescriptor, Double, Color) => GridLines): Drawable =
     spacing match {
       case Some(_spacing) => glConstructor(area, desc, _spacing, color)
-      case None => EmptyDrawable()
+      case None => glConstructor(area, desc, desc.spacing, color)
     }
 }
 

@@ -249,7 +249,7 @@ object Align {
 
 case class Labeled(msg: String, r: Drawable, textSize: Double = Text.defaultSize) extends Drawable {
 
-  private val composite = Align.center(r, Text(msg, textSize) padTop 5).reduce(Above)
+  private val composite = Align.center(r, Text(msg, textSize) padTop 5).group
 
   lazy val extent: Extent = composite.extent
   def draw(canvas: CanvasRenderingContext2D): Unit = composite.draw(canvas)

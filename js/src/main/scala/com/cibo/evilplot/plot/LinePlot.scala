@@ -13,7 +13,7 @@ case class Lines(chartAreaSize: Extent, lpd: LinePlotDef,
                  xAxisDrawBounds: Bounds, yAxisDrawBounds: Bounds) extends WrapDrawable {
   private val xScale = chartAreaSize.width / xAxisDrawBounds.range
   private val yScale = chartAreaSize.height / yAxisDrawBounds.range
-  private val pathSeq: Seq[Drawable] = lpd.lines.map { case OneLinePlotData(points: Seq[Point], color: Color) =>
+  private val pathSeq: Seq[Drawable] = lpd.lines.map { case OneLinePlotData(points: Seq[Point], color: Color, _) =>
     val scaledPoints =
       points.map(pt => Point((pt.x - xAxisDrawBounds.min) * xScale, (yAxisDrawBounds.max - pt.y) * yScale))
     StrokeStyle(color)(Path(scaledPoints, 2.0))

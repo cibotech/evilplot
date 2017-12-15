@@ -29,6 +29,7 @@ sealed trait PlotDef {
     case bp: BoxPlotDef => bp.copy(options = opts)
     case lp: LinePlotDef => lp.copy(options = opts)
     case h: HistogramChartDef => h.copy(options = opts)
+    case xypd: XYPosteriorPlotDef => xypd.copy(options = opts)
     case fd: FacetsDef => fd.copy(options = opts)
   }
 
@@ -143,6 +144,36 @@ final case class LinePlotDef(lines: Seq[OneLinePlotData],
   }
 }
 
+// Temporarily special casing this for  reports.
+final case class XYPosteriorPlotDef(gridData: GridData,
+                                    numContours: Int,
+                                    priors: Seq[Seq[Point]],
+                                    best: Option[Point],
+                                    colorBar: ColorBar = SingletonColorBar(HTMLNamedColors.blue),
+                                    override val extent: Option[Extent] = None,
+                                    override val options: PlotOptions = PlotOptions()
+                                 ) extends PlotDef {
+  override def xBounds: Option[Bounds] = Some(gridData.xBounds)
+  override def yBounds: Option[Bounds] = Some(gridData.yBounds)
+  def zBounds: Bounds = gridData.zBounds
+}
+
+object XYPosteriorPlotDef {
+  def apply(data: Seq[Point],
+            numContours: Int,
+            priors: Seq[Seq[Point]],
+            best: Option[Point],
+            colorBar: ColorBar,
+            extent: Option[Extent],
+            options: PlotOptions): XYPosteriorPlotDef = {
+    val flattened: Seq[Point] = priors.flatten
+    val xBounds: Option[Bounds] = Bounds.widest(Seq(Bounds.getBy(data)(_.x), Bounds.getBy(flattened)(_.x)))
+    val yBounds: Option[Bounds] = Bounds.widest(Seq(Bounds.getBy(data)(_.y), Bounds.getBy(flattened)(_.y)))
+    val kde = KernelDensityEstimation.densityEstimate2D(data, (100, 100), xBounds = xBounds, yBounds = yBounds)
+    XYPosteriorPlotDef(kde, numContours, priors, best, colorBar, extent, options)
+  }
+}
+
 /** Directly instantiate a `FacetsDef` from the primary constructor to get the literal plot configuration specified
   * in the `plotDefs` argument. */
 final case class FacetsDef(numRows: Int,
@@ -196,7 +227,7 @@ object FacetsDef {
 
 }
 
-final case class OneLinePlotData(points: Seq[Point], color: Color) {
+final case class OneLinePlotData(points: Seq[Point], color: Color, name: Option[String] = None) {
   def xBounds: Bounds = {
     val xS = points.map(_.x)
     val xMin = xS.min

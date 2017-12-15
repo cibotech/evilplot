@@ -65,8 +65,6 @@ object ContinuousChartDistributable {
   case class VerticalGridLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor, lineSpacing: Double,
                                         color: Color = white) extends GridLines {
     protected val distributableDimension: Double = chartAreaSize.width
-    // should this requirement be a thing?
-    require(nLines != 0)
     private val lines = for {
       nLine <- 0 until nLines
       line = Line(chartAreaSize.height, 1) rotated 90 colored color
@@ -80,7 +78,6 @@ object ContinuousChartDistributable {
   case class HorizontalGridLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor,
                                  lineSpacing: Double, color: Color = white) extends GridLines {
       protected val distributableDimension: Double = chartAreaSize.height
-      require(nLines != 0) // ditto for this one
       private val lines = for {
         nLines <- (nLines - 1) to 0 by -1
         line = Line(chartAreaSize.width, 1) colored color

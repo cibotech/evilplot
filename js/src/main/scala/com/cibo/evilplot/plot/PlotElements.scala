@@ -4,13 +4,23 @@
 
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.Text
+import com.cibo.evilplot.{Text, Utils}
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.Colors.{ColorBar, ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry._
 
+class GradientLegend(gradientBar: ScaledColorBar, height: Double = 150) extends WrapDrawable {
+  def drawable: Drawable = {
+    val paletteHeight = height / gradientBar.nColors
+    Text(Utils.createNumericLabel(gradientBar.zMax, 2)) above
+      Align.middle(gradientBar.colorSeq.reverseMap(color => Rect(10, paletteHeight) filled color): _*).reduce(Above) above
+      Text(Utils.createNumericLabel(gradientBar.zMin, 2))
+  }
+}
+
 class Legend[T](colorBar: ColorBar, categories: Seq[T],
-                pointSize: Double, backgroundRectangle: Option[Color] = None)
+                shape: Drawable, colorWith: Color => Drawable => Drawable,
+                backgroundRectangle: Option[Color] = None)
                (implicit cmp: Ordering[T]) extends WrapDrawable {
 
   private val categoriesColors = categories.sorted.zipWithIndex.map { case (category, index) =>
@@ -23,14 +33,10 @@ class Legend[T](colorBar: ColorBar, categories: Seq[T],
   }
 
   private lazy val points = categoriesColors.map { case (label, color) =>
-    val point = Disc(pointSize) filled color
-    Align.middle(backgroundRectangle match {
-      case Some(bc) => Align.centerSeq(Align.middle(Rect(4 * pointSize, 4 * pointSize) filled bc, point)).group
-      case None => point
-    }, Text(label.toString)).reduce(Beside)
+    val point = colorWith(color)(shape)
+    Align.middle(point, Text(label.toString) padLeft 4 padBottom point.extent.height / 2).reduce(Beside)
   }
-//  val test = Text(543534)
-  override def drawable: Drawable = points.seqDistributeV(pointSize)
+  def drawable: Drawable = points.seqDistributeV(shape.extent.height + 10)
 }
 
 // TODO: fix the padding fudge factors
