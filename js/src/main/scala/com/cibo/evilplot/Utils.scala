@@ -10,7 +10,7 @@ import org.scalajs.dom
 import org.scalajs.dom.CanvasRenderingContext2D
 
 object Utils {
-  val canvas: String = "CANVAS"
+  val canvas: String = "canvas"
   val measureBuffer: String = "measureBuffer"
 
   def getCanvasFromElementId(id: String): CanvasRenderingContext2D = {

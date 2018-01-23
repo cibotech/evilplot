@@ -3,7 +3,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.{Text, Utils}
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.white
-import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Line, WrapDrawable}
+import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Line, Pad, WrapDrawable}
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 
 // TODO: ChartDistributable is not really a useful abstraction. Most of the code is the same.
@@ -89,14 +89,25 @@ object ContinuousChartDistributable {
   }
 
   // TODO: Labeling these vertical lines in a way that doesn't mess up their positioning!
-  case class MetricLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor,
-                         linesToDraw: Seq[Double], color: Color)
+  case class VLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor,
+                    linesToDraw: Seq[(Double, Color)])
     extends ContinuousChartDistributableBase {
-    val distributableDimension = chartAreaSize.width
-      val lines = for {
-        line <- linesToDraw
+    val distributableDimension: Double = chartAreaSize.width
+      val lines: Seq[Drawable] = for {
+        (line, color) <- linesToDraw
         padLeft = (line - bounds.min) * pixelsPerUnit
       } yield Line(chartAreaSize.height, 2) colored color rotated 90 padLeft padLeft
-      override def drawable: Drawable = lines.group
+      def drawable: Drawable = lines.group
+  }
+
+  case class HLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor,
+                    linesToDraw: Seq[(Double, Color)]) extends ContinuousChartDistributableBase {
+    val distributableDimension: Double = chartAreaSize.height
+    val lines: Seq[Drawable] = for {
+      (line, color) <- linesToDraw
+      padTop = (bounds.max - line) * pixelsPerUnit
+    } yield Line(chartAreaSize.width, 2) colored color padTop padTop
+
+    def drawable: Drawable = lines.group
   }
 }

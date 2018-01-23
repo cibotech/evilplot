@@ -51,7 +51,9 @@ object PlotDefinitionInterpreter {
             Line(5, 2), StrokeStyle.apply)
           Align.middle(plot, legend) reduce Beside
         } else plot
-      case facetsDef: FacetsDef => new Facets(getSize(facetsDef), facetsDef)
+      case facetsDef: FacetsDef =>
+        val y = new Facets(getSize(facetsDef), facetsDef)
+        y
     }
   }
 

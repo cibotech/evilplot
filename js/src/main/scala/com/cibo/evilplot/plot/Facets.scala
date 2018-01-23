@@ -32,13 +32,16 @@ class Facets(extent: Extent, facetsDef: FacetsDef) extends WrapDrawable {
   private val subPlotSize = Extent(
     (extent.width - yLabel.extent.width - (numCols - 1) * rightPadding) / numCols,
     (extent.height - xLabel.extent.height - (numRows - 1) * bottomPadding) / numRows)
+
   private val facets = facetsDef.plotDefs.map(interpreter.eval(_, Some(subPlotSize)))
 
-  override def drawable: Drawable = Align.center(
-    Align.middle(
-      yLabel,
-      new Grid(facetsDef.numRows, facetsDef.numCols, facets, bottomPadding = bottomPadding, rightPadding = rightPadding)
-    ).reduce(Beside),
-    xLabel transX yLabel.extent.width
-  ).reduce(Above)
+  override def drawable: Drawable = {
+    Align.center(
+      Align.middle(
+        yLabel,
+        new Grid(facetsDef.numRows, facetsDef.numCols, facets, bottomPadding = bottomPadding, rightPadding = rightPadding)
+      ).reduce(Beside),
+      xLabel transX yLabel.extent.width
+    ).reduce(Above)
+  }
 }

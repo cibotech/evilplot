@@ -240,6 +240,8 @@ object Align {
 
   def rightSeq(items: Seq[Drawable]): Seq[Drawable] = right(items: _*)
 
+  def middleSeq(items: Seq[Drawable]): Seq[Drawable] = middle(items: _*)
+
   def middle(items: Drawable*): Seq[Drawable] = {
     lazy val groupHeight = items.maxBy(_.extent.height).extent.height
 

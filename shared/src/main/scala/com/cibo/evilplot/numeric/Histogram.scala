@@ -4,19 +4,28 @@
 
 package com.cibo.evilplot.numeric
 
+import io.circe.{Decoder, Encoder}
+
 // The underlying raw data does not get serialized. This is problematic: deserializing a Histogram
 // will always give you an empty Seq.
-case class Histogram(bins: Seq[Long], numBins: Int, binWidth: Double, min: Double, max: Double, rawData: Seq[Double])
+final case class Histogram (bins: Seq[Long],
+                           numBins: Int,
+                           binWidth: Double,
+                           min: Double,
+                           max: Double,
+                           rawData: Seq[Double])
 
 object Histogram {
-  def apply(data: Seq[Double], numBins: Int, bounds: Option[Bounds] = None): Histogram = {
+  def apply(data: Seq[Double],
+            numBins: Int,
+            bounds: Option[Bounds] = None): Histogram = {
     val _bins: Array[Long] = Array.fill(numBins) { 0 }
 
     val sorted = data.sorted
 
     val (min, max) = bounds match {
       case Some(Bounds(_min, _max)) => (_min, _max)
-      case None => (sorted.head, sorted.last)
+      case None                     => (sorted.head, sorted.last)
     }
 
     /** width of histogram bin */
@@ -24,11 +33,20 @@ object Histogram {
 
     // Assign each datum to a bin. Make sure that points at the end don't go out of bounds due to numeric imprecision.
     for (value <- sorted) {
-      val bin: Int = math.min(math.round(math.floor((value - min) / binWidth)).toInt, numBins - 1)
+      val bin: Int = math.min(
+        math.round(math.floor((value - min) / binWidth)).toInt,
+        numBins - 1)
       _bins(bin) = _bins(bin) + 1
     }
 
     Histogram(_bins.toSeq, numBins, binWidth, min, max, data)
   }
-}
 
+  implicit val encoder: Encoder[Histogram] = Encoder.forProduct6(
+    "bins", "numBins", "binWidth", "min", "max", "rawData")(
+    (h: Histogram) => (h.bins, h.numBins, h.binWidth, h.min, h.max, Seq.empty[Double])
+  )
+
+  implicit val decoder: Decoder[Histogram] = Decoder.forProduct6(
+    "bins", "numBins", "binWidth", "min", "max", "rawData")(Histogram.apply)
+}

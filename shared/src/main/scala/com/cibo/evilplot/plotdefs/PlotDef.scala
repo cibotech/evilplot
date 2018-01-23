@@ -44,11 +44,20 @@ object PlotDef {
   implicit val plotDefDecoder: Decoder[PlotDef] = deriveDecoder[PlotDef]
 }
 
+final case class Trendline(slope: Double, intercept: Double) {
+  // There are mathematical holes here.
+  def solveForX(y: Double): Double = {
+    (y - intercept) / slope
+  }
+  def valueAt(x: Double): Double = slope * x + intercept
+}
+
 final case class ScatterPlotDef(
                                  data: Seq[Point],
                                  zData: Option[Seq[Double]] = None,
                                  pointSize: Double = 2.25,
                                  colorBar: ColorBar = SingletonColorBar(HTMLNamedColors.black),
+                                 trendLine: Option[Trendline] = None,
                                  override val extent: Option[Extent] = None,
                                  override val options: PlotOptions = PlotOptions())
   extends PlotDef {

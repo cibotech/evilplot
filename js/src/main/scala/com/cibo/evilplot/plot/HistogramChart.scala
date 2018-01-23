@@ -5,8 +5,8 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.ContinuousChartDistributable.MetricLines
+import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
+import com.cibo.evilplot.plot.ContinuousChartDistributable.{HLines, VLines}
 import com.cibo.evilplot.plotdefs.{HistogramChartDef, PlotOptions}
 import com.cibo.evilplot.{Style, Utils}
 
@@ -18,14 +18,21 @@ class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef
   val defaultYAxisBounds = Bounds(0.0, data.max)
 
   def plottedData(extent: Extent): Drawable = {
-    val annotation = ChartAnnotation(histData.annotation, (.8, .3))
-    val translatedAnnotation = Translate(annotation.position._1 * extent.width,
-      annotation.position._2 * extent.height)(annotation)
-    val metricLines = Utils.maybeDrawable(options.withinMetrics)(metrics =>
-      MetricLines(extent, xAxisDescriptor, metrics, HTMLNamedColors.red))
+    val annotation = ChartAnnotation(histData.annotation, (0.0, 0.0))
+    val metricLines = Utils.maybeDrawable(options.vLines)(metrics =>
+      VLines(extent, xAxisDescriptor, metrics))
+    val hLines = options.hLines.map(lines =>
+      HLines(extent, yAxisDescriptor, lines)).getOrElse(EmptyDrawable())
     val bars = Bars(extent, defaultXAxisBounds, Some(xAxisDescriptor.axisBounds),
       yAxisDescriptor.axisBounds, data, options.barColor)
-    bars behind metricLines behind translatedAnnotation
+    Group(
+      Align.middleSeq(
+        Align.right(
+          bars behind metricLines behind hLines,
+          annotation
+        )
+      ): _*
+    )
   }
 }
 
@@ -46,12 +53,13 @@ case class Bars(chartAreaSize: Extent,
     val (dataMin, dataMax) = (dataXBounds.min, dataXBounds.max)
     val binWidth = (dataMax - dataMin) / numBins
     drawXBounds match {
-      case Some(Bounds(drawMin, drawMax)) =>
+        // the guard should protect against unscrupulous infinities
+      case Some(Bounds(drawMin, drawMax)) if !AxisDescriptor.arePracticallyEqual(binWidth, 0) =>
         // TODO: Incorporate these facts: math.ceil on negative => toward 0, math.floor is opposite.
         val addOrRemoveBarsOnLeft = (dataMin - drawMin) / binWidth
         val addOrRemoveBarsOnRight = (drawMax - dataMax) / binWidth
         trimOrExtendHeights(addOrRemoveBarsOnLeft, addOrRemoveBarsOnRight, binWidth)
-      case None => heights
+      case _ => heights
     }
   }
   def drawable: Drawable = {

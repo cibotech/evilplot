@@ -5,8 +5,9 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Style
-import com.cibo.evilplot.geometry.{Drawable, Extent, FlipY, Rect, Scale}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, FlipY, Rect, Scale}
 import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.plot.ContinuousChartDistributable.HLines
 import com.cibo.evilplot.plotdefs.{BarChartDef, PlotOptions}
 
 /**
@@ -38,6 +39,10 @@ class BarChart(val chartSize: Extent, data: BarChartDef)
       val bars = data.counts.map { yValue => Style(options.barColor) {
           Scale(y = vScale)(FlipY(yAxisDescriptor.axisBounds.max)(Rect(_barWidth, yValue))) }
       }
-      bars.seqDistributeH(_barSpacing) padLeft _barSpacing / 2.0
+      val allBars = bars.seqDistributeH(_barSpacing) padLeft _barSpacing / 2.0
+      val hLines = options.hLines.map { lines => HLines(extent, yAxisDescriptor,
+        lines) }.getOrElse(EmptyDrawable())
+
+      allBars behind hLines
     }
 }

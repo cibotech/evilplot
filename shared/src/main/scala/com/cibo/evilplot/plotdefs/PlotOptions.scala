@@ -22,7 +22,8 @@ case class PlotOptions(title: Option[String] = None,
                        xGridSpacing: Option[Double] = None,
                        yGridSpacing: Option[Double] = None,
                        gridColor: Color = HTMLNamedColors.white,
-                       withinMetrics: Option[Seq[Double]] = None,
+                       vLines: Option[Seq[(Double, Color)]] = None,
+                       hLines: Option[Seq[(Double, Color)]] = None,
                        backgroundColor: Color = DefaultColors.backgroundColor,
                        barColor: Color = DefaultColors.barColor)
 

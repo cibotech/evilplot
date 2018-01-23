@@ -7,7 +7,7 @@ object AxisDescriptor {
   // Source for this value: my float.h header.
   private[numeric] val machineEpsilonIEEE754Double: Double = 2.220446e-16
   // Equal within tolerance test, tolerance is IEEE754 Double precision machine epsilon.
-  private[numeric] def arePracticallyEqual(x: Double, y: Double): Boolean = {
+  def arePracticallyEqual(x: Double, y: Double): Boolean = {
     val diff = math.abs(x - y)
     diff < machineEpsilonIEEE754Double
   }
@@ -56,8 +56,9 @@ case class AxisDescriptor(bounds: Bounds, numTicksRequested: Int, drawBounds: Op
       (math.floor(minValue / spacingGuess) * spacingGuess,
         math.ceil(maxValue / spacingGuess) * spacingGuess,
         spacingGuess)
-    } else
+    } else {
       (minValue - 0.5, minValue + 0.5, calcSpacing(1.0))
+    }
   }
 
   // Actual number of ticks generated.
