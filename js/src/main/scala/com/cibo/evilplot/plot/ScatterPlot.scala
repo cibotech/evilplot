@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Colors.{ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, Point}
 import com.cibo.evilplot.plotdefs.{PlotOptions, ScatterPlotDef, Trendline}
 
 class ScatterPlot(val chartSize: Extent, definition: ScatterPlotDef)
@@ -18,6 +18,27 @@ class ScatterPlot(val chartSize: Extent, definition: ScatterPlotDef)
       Disc(definition.pointSize,
         (x - xAxisDescriptor.axisBounds.min) * scaleX, (yAxisDescriptor.axisBounds.max - y) * scaleY)
     else EmptyDrawable()
+  }
+
+  private[plot] def trendLine(trendline: Trendline,
+                xBounds: Bounds,
+                yBounds: Bounds): Option[Seq[Point]] = {
+
+    def inPlotBounds(p: Point): Boolean = xBounds.isInBounds(p.x) && yBounds.isInBounds(p.y)
+    // from two points, return one in the plot window or None if neither is visible.
+    def theOneInBounds(a: Point, b: Point): Option[Point] =
+      if (inPlotBounds(a)) Some(a) else if (inPlotBounds(b)) Some(b) else None
+
+    val p1 = Point(trendline.solveForX(yBounds.min), yBounds.min)
+    val p2 = Point(xBounds.min, trendline.valueAt(xBounds.min))
+
+    val endPoints = theOneInBounds(p1, p2).flatMap { minPoint =>
+      val p3 = Point(trendline.solveForX(yBounds.max), yBounds.max)
+      val p4 = Point(xBounds.max, trendline.valueAt(xBounds.max))
+      theOneInBounds(p3, p4).map(maxPoint => Seq(minPoint, maxPoint))
+    }
+
+    endPoints
   }
 
   def plottedData(extent: Extent): Drawable = {
@@ -39,27 +60,11 @@ class ScatterPlot(val chartSize: Extent, definition: ScatterPlotDef)
       case (_, _) => throw new IllegalArgumentException
     }
 
+    val line = definition.trendLine.fold(EmptyDrawable(): Drawable) { tl =>
+      val endpoints = trendLine(tl, xAxisDescriptor.axisBounds, yAxisDescriptor.axisBounds)
+      endpoints.fold(EmptyDrawable(): Drawable)(ep => Path(ep.map(p => transform(p)), 2))
+    }
 
-    val trendLine: Drawable = definition.trendLine.map { tl =>
-        val minXtoPlot = {
-          val xAtMinY = tl.solveForX(yAxisDescriptor.axisBounds.min)
-          if (xAtMinY < xAxisDescriptor.axisBounds.min) xAxisDescriptor.axisBounds.min
-          else xAtMinY
-        }
-
-        val maxXToPlot = {
-          val xAtMaxY = tl.solveForX(yAxisDescriptor.axisBounds.max)
-          if (xAtMaxY > xAxisDescriptor.axisBounds.max) xAxisDescriptor.axisBounds.max
-          else xAtMaxY
-        }
-
-//        println(minXtoPlot, maxXToPlot)
-        Path(Seq(
-        Point.tupled(transform(minXtoPlot, tl.valueAt(minXtoPlot))),
-        Point.tupled(transform(maxXToPlot, tl.valueAt(maxXToPlot)))
-      ), 2)
-    }.getOrElse(EmptyDrawable())
-
-    points.group behind trendLine
+    points.group behind line
   }
 }

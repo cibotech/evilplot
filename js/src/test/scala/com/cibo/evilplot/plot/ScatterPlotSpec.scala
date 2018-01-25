@@ -6,7 +6,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.DOMInitializer
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plotdefs.{PlotOptions, ScatterPlotDef}
+import com.cibo.evilplot.plotdefs.{PlotOptions, ScatterPlotDef, Trendline}
 import org.scalatest._
 
 import scala.util.Random
@@ -70,6 +70,30 @@ class ScatterPlotSpec extends FunSpec with Matchers {
           p.extent.height shouldBe ((plot.yAxisDescriptor.axisBounds.max - y) * scaleY + pd.pointSize) +-   .2
       }
     }
-  }
 
+  }
+  describe("Trend lines") {
+    val tolerance = math.ulp(1.0)
+    val points = Seq(Point(98, -0.005), Point(112, 0.020))
+    val scatter = new ScatterPlot(extent, ScatterPlotDef(points))
+    import scatter._
+    def getEndpoints(line: Trendline): Option[Seq[Point]] = trendLine(line, xAxisDescriptor.axisBounds,
+      yAxisDescriptor.axisBounds)
+    it ("should use the x bounds when the x values at extreme ys are outside the plot") {
+      val line = Trendline(-0.00015, 0.025)
+      val endpoints = getEndpoints(line)
+      endpoints shouldBe defined
+      val Seq(first, last) = endpoints.get
+
+      first.x shouldBe xAxisDescriptor.axisBounds.min +- tolerance
+      last.x shouldBe xAxisDescriptor.axisBounds.max +- tolerance
+    }
+
+    it ("doesn't draw anything when the line is not in bounds") {
+      val line = Trendline(100, 0.03)
+      val endpoints = trendLine(line, xAxisDescriptor.axisBounds, yAxisDescriptor.axisBounds)
+      endpoints should not be defined
+    }
+
+  }
 }

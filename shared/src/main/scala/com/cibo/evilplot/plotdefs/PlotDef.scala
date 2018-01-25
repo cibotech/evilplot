@@ -61,11 +61,16 @@ final case class ScatterPlotDef(
                                  override val extent: Option[Extent] = None,
                                  override val options: PlotOptions = PlotOptions())
   extends PlotDef {
-  override def xBounds: Option[Bounds] =
-    Some(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x))
+  private val dataXBounds: Option[Bounds] = Bounds.getBy(data)(_.x)
+  private val dataYBounds: Option[Bounds] = Bounds.getBy(data)(_.y)
+  private val endpointYBounds: Option[Bounds] = Bounds.getBy(trendLine.toSeq.flatMap { tl =>
+    val xMin = dataXBounds.get.min
+    val xMax = dataXBounds.get.max
+    Seq(Point(xMin, tl.valueAt(xMin)), Point(xMax, tl.valueAt(xMax)))
+  })(_.y)
 
-  override def yBounds: Option[Bounds] =
-    Some(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y))
+  override def xBounds: Option[Bounds] = dataXBounds
+  override def yBounds: Option[Bounds] = Bounds.widest(Seq(dataYBounds, endpointYBounds))
 }
 
 final case class ContourPlotDef(
@@ -215,8 +220,13 @@ object FacetsDef {
 
   /** "Straightforward": Supply a list of PlotDefs and base options, then adjust based on the configuration options
     * set. */
-  def apply(nRows: Int, nCols: Int, plotDefs: Seq[PlotDef], columnLabels: Option[Seq[String]],
-            rowLabels: Option[Seq[String]], axisScales: ScaleOption, extent: Option[Extent],
+  def apply(nRows: Int,
+            nCols: Int,
+            plotDefs: Seq[PlotDef],
+            columnLabels: Option[Seq[String]],
+            rowLabels: Option[Seq[String]],
+            axisScales: ScaleOption,
+            extent: Option[Extent],
             baseOptions: PlotOptions): FacetsDef = {
     import FacetsDefFunctions._
     // Build the function required to take the "naive" plot definitions to what goes in the finished plot.
