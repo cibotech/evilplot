@@ -21,9 +21,9 @@ class GradientLegend(gradientBar: ScaledColorBar, height: Double = 150) extends 
 class Legend[T](colorBar: ColorBar, categories: Seq[T],
                 shape: Drawable, colorWith: Color => Drawable => Drawable,
                 backgroundRectangle: Option[Color] = None)
-               (implicit cmp: Ordering[T]) extends WrapDrawable {
+                extends WrapDrawable {
 
-  private val categoriesColors = categories.sorted.zipWithIndex.map { case (category, index) =>
+  private val categoriesColors = categories.zipWithIndex.map { case (category, index) =>
     colorBar match {
       case SingletonColorBar(color) => (category, color)
       case _colorBar@ScaledColorBar(colors, _, _) =>
