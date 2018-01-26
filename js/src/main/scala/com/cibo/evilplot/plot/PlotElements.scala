@@ -23,7 +23,7 @@ class Legend[T](colorBar: ColorBar, categories: Seq[T],
                 backgroundRectangle: Option[Color] = None)
                (implicit cmp: Ordering[T]) extends WrapDrawable {
 
-  private val categoriesColors = categories.sorted.zipWithIndex.map { case (category, index) =>
+  private val categoriesColors = categories.zipWithIndex.map { case (category, index) =>
     colorBar match {
       case SingletonColorBar(color) => (category, color)
       case _colorBar@ScaledColorBar(colors, _, _) =>
