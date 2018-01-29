@@ -3,8 +3,8 @@
  */
 package com.cibo.evilplot.interpreter
 import com.cibo.evilplot.colors.Colors.ScaledColorBar
-import com.cibo.evilplot.{JSONUtils, StrokeStyle, Style}
-import com.cibo.evilplot.geometry.{Align, Beside, Disc, Drawable, Extent, Line}
+import com.cibo.evilplot.JSONUtils
+import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plotdefs._
 import io.circe.generic.auto._

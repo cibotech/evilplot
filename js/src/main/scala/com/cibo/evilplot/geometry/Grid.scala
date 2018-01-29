@@ -4,7 +4,7 @@
 
 package com.cibo.evilplot.geometry
 
-case class Grid(numRows: Int, numCols: Int, rs: Seq[Drawable], val bottomPadding: Double = 0, val rightPadding: Double = 0) {
+case class Grid(numRows: Int, numCols: Int, rs: Seq[Drawable], bottomPadding: Double = 0, rightPadding: Double = 0) {
   // I don't think this is true.
 //  require(rs.length == numRows * numCols, s"must supply a list of ${numRows * numCols} elements")
 

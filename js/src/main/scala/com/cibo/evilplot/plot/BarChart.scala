@@ -4,8 +4,7 @@
  */
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.Style
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, FlipY, Rect, Scale}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, FlipY, Rect, Scale, Style}
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.ContinuousChartDistributable.HLines
 import com.cibo.evilplot.plotdefs.{BarChartDef, PlotOptions}

@@ -4,9 +4,8 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, Extent, Group, Path}
+import com.cibo.evilplot.geometry.{Drawable, Extent, Group, Path, StrokeStyle}
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.StrokeStyle
 import com.cibo.evilplot.plotdefs.{LinePlotDef, OneLinePlotData, PlotOptions}
 
 case class Lines(

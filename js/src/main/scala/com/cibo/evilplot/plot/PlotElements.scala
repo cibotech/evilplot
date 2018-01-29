@@ -4,7 +4,7 @@
 
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.{Text, Utils}
+import com.cibo.evilplot.Utils
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.Colors.{ColorBar, ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry._

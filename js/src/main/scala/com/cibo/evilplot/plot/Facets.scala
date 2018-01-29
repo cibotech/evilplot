@@ -1,7 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.Text
-import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Grid}
+import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Grid, Text}
 import com.cibo.evilplot.interpreter.PlotDefinitionInterpreter
 import com.cibo.evilplot.plotdefs._
 

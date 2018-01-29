@@ -1,13 +1,12 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.StrokeStyle
 import com.cibo.evilplot.colors.Colors
 import com.cibo.evilplot.colors.Colors.{ScaledColorBar, SingletonColorBar}
-import com.cibo.evilplot.geometry.{Drawable, Extent, Path}
+import com.cibo.evilplot.geometry.{Drawable, Extent, Path, StrokeStyle}
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plotdefs.{ContourPlotDef, PlotOptions}
 
-case class ContourPlot(val chartSize: Extent, data: ContourPlotDef) extends Chart with ContinuousAxes {
+case class ContourPlot(chartSize: Extent, data: ContourPlotDef) extends Chart with ContinuousAxes {
   val options: PlotOptions = data.options
   private val grid = data.gridData
   private val numContours = data.numContours

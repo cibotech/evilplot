@@ -1,8 +1,8 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.{Text, Utils}
-import com.cibo.evilplot.colors.{DefaultColors, HSL, HTMLNamedColors}
-import com.cibo.evilplot.geometry.{Align, Drawable, Extent, Rect}
+import com.cibo.evilplot.Utils
+import com.cibo.evilplot.colors.DefaultColors
+import com.cibo.evilplot.geometry.{Align, Drawable, Extent, Rect, Text}
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.ContinuousChartDistributable.YAxis
 import com.cibo.evilplot.plot.DiscreteChartDistributable._

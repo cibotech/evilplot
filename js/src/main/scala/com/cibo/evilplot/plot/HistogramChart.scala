@@ -3,12 +3,12 @@
  */
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
+import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 import com.cibo.evilplot.plot.ContinuousChartDistributable.{HLines, VLines}
 import com.cibo.evilplot.plotdefs.{HistogramChartDef, PlotOptions}
-import com.cibo.evilplot.{Style, Utils}
+import com.cibo.evilplot.Utils
 
 case class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef) extends Chart with ContinuousAxes {
   val options: PlotOptions = histData.options

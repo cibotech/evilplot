@@ -1,9 +1,9 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.{Text, Utils}
+import com.cibo.evilplot.Utils
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.white
-import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Line}
+import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Line, Text}
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 
 // TODO: ChartDistributable is not really a useful abstraction. Most of the code is the same.

@@ -1,6 +1,5 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.Text
 import com.cibo.evilplot.colors.Colors.ColorSeq
 import com.cibo.evilplot.colors.{Clear, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Align, Disc, Drawable, Extent, Rect, UnsafeRotate, Wedge, distributeH, flowH, _}

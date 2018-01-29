@@ -4,14 +4,14 @@
 
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.{StrokeStyle, Utils}
+import com.cibo.evilplot.Utils
 import com.cibo.evilplot.colors.{Colors, HEX, HTMLNamedColors}
 import com.cibo.evilplot.colors.Colors.{ScaledColorBar, SingletonColorBar}
-import com.cibo.evilplot.geometry.{AffineTransform, Disc, Drawable, Extent, Path}
+import com.cibo.evilplot.geometry.{AffineTransform, Disc, Drawable, Extent, Path, StrokeStyle}
 import com.cibo.evilplot.numeric.{Bounds, MarchingSquares, Point, Segment}
 import com.cibo.evilplot.plotdefs.XYPosteriorPlotDef
 
-case class PosteriorPlot(val chartSize: Extent, data: XYPosteriorPlotDef) extends Chart with ContinuousAxes {
+case class PosteriorPlot(chartSize: Extent, data: XYPosteriorPlotDef) extends Chart with ContinuousAxes {
   val options = data.options
   private val numContours = data.numContours
   private val grid = data.gridData

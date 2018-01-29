@@ -1,8 +1,8 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
-import com.cibo.evilplot.geometry.{Above, Align, Drawable, EmptyDrawable, Extent, Line}
-import com.cibo.evilplot.{StrokeStyle, Text, Utils}
+import com.cibo.evilplot.geometry.{Above, Align, Drawable, EmptyDrawable, Extent, Line, StrokeStyle, Text}
+import com.cibo.evilplot.Utils
 
 object DiscreteChartDistributable {
   // Returns getters for width and spacing that take extent of the chart in which the drawables are to be distributed
