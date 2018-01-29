@@ -11,9 +11,7 @@ import com.cibo.evilplot.geometry.{AffineTransform, Disc, Drawable, Extent, Path
 import com.cibo.evilplot.numeric.{Bounds, MarchingSquares, Point, Segment}
 import com.cibo.evilplot.plotdefs.XYPosteriorPlotDef
 
-class PosteriorPlot(val chartSize: Extent, data: XYPosteriorPlotDef)
-    extends Chart
-    with ContinuousAxes {
+case class PosteriorPlot(val chartSize: Extent, data: XYPosteriorPlotDef) extends Chart with ContinuousAxes {
   val options = data.options
   private val numContours = data.numContours
   private val grid = data.gridData

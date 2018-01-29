@@ -13,8 +13,8 @@ object ContinuousUtilities {
   def maybeGridLines(area: Extent, spacing: Option[Double], desc: AxisDescriptor, color: Color = HTMLNamedColors.white)
                      (glConstructor: (Extent, AxisDescriptor, Double, Color) => GridLines): Drawable =
     spacing match {
-      case Some(_spacing) => glConstructor(area, desc, _spacing, color)
-      case None => glConstructor(area, desc, desc.spacing, color)
+      case Some(_spacing) => glConstructor(area, desc, _spacing, color).drawable
+      case None => glConstructor(area, desc, desc.spacing, color).drawable
     }
 }
 
@@ -33,8 +33,8 @@ trait ContinuousAxes extends Chart {
   // approach we could avoid this?
   // We could also take steps to reduce the amount of recomputation of these axes, if this proves to be too expensive.
   override protected lazy val chartAreaSize: Extent  = {
-    val xHeight = XAxis(1, xAxisDescriptor, label = options.xAxisLabel, options.drawXAxis).extent.height
-    val yWidth = YAxis(1, yAxisDescriptor, label = options.yAxisLabel, options.drawYAxis).extent.width
+    val xHeight = XAxis(1, xAxisDescriptor, label = options.xAxisLabel, options.drawXAxis).drawable.extent.height
+    val yWidth = YAxis(1, yAxisDescriptor, label = options.yAxisLabel, options.drawYAxis).drawable.extent.width
     chartSize - (w = yWidth, h = xHeight)
   }
   override protected lazy val topLabel: Drawable = Utils.maybeDrawable(options.topLabel)(text =>
@@ -44,8 +44,8 @@ trait ContinuousAxes extends Chart {
     Align.centerSeq(Align.middle(Rect(chartAreaSize.height, 20) filled DefaultColors.titleBarColor,
       Text(text))).group) rotated 90
 
-  override lazy val xAxis: Drawable = XAxis(chartAreaSize.width, xAxisDescriptor, options.xAxisLabel, options.drawXAxis)
-  override lazy val yAxis: Drawable = YAxis(chartAreaSize.height, yAxisDescriptor, options.yAxisLabel, options.drawYAxis)
+  override lazy val xAxis: Drawable = XAxis(chartAreaSize.width, xAxisDescriptor, options.xAxisLabel, options.drawXAxis).drawable
+  override lazy val yAxis: Drawable = YAxis(chartAreaSize.height, yAxisDescriptor, options.yAxisLabel, options.drawYAxis).drawable
   protected def xGridLines: Drawable = maybeGridLines(chartAreaSize, options.xGridSpacing,
     xAxisDescriptor, options.gridColor)(VerticalGridLines)
   protected def yGridLines: Drawable =

@@ -10,8 +10,7 @@ import com.cibo.evilplot.{StrokeStyle, Style}
 // TODO: ggplot2 provides a `geom_jitter` which makes the outliers a bit easier to read off the plot.
 // TODO: Continuous x option?
 
-class BoxPlotChart(val chartSize: Extent, data: BoxPlotDef)
-  extends DiscreteX {
+case class BoxPlotChart(val chartSize: Extent, data: BoxPlotDef) extends DiscreteX {
   val options: PlotOptions = data.options
   val defaultYAxisBounds: Bounds = data.yBounds.get // guaranteed to be defined.
   val labels: Seq[String] = data.labels
@@ -32,7 +31,7 @@ class BoxPlotChart(val chartSize: Extent, data: BoxPlotDef)
     val vScale = extent.height / yAxisDescriptor.axisBounds.range
     val boxes = for {
       summary <- data.summaries
-      box = new Box(yAxisDescriptor.axisBounds, _rectWidth, vScale, summary)
+      box = Box(yAxisDescriptor.axisBounds, _rectWidth, vScale, summary).drawable
       discs = data.drawPoints match {
         case OutliersOnly if summary.outliers.nonEmpty => createDiscs(summary.outliers, vScale)
         case AllPoints if summary.allPoints.nonEmpty => createDiscs(summary.allPoints, vScale)
@@ -43,20 +42,24 @@ class BoxPlotChart(val chartSize: Extent, data: BoxPlotDef)
   }
 }
 
-private class Box(yBounds: Bounds, rectWidth: Double, vScale: Double, data: BoxPlotSummaryStatistics,
-                  strokeColor: Color = blue)
-  extends WrapDrawable {
+private case class Box(
+  yBounds: Bounds,
+  rectWidth: Double,
+  vScale: Double,
+  data: BoxPlotSummaryStatistics,
+  strokeColor: Color = blue
+) {
   private val _drawable = {
     val rectangles = {
       val lowerRectangleHeight: Double = (data.middleQuantile - data.lowerQuantile) * vScale
       val upperRectangleHeight: Double = (data.upperQuantile - data.middleQuantile) * vScale
       StrokeStyle(strokeColor)(Style(white)
-      (BorderFillRect(rectWidth, lowerRectangleHeight) below BorderFillRect(rectWidth, upperRectangleHeight)))
+      (Rect.borderFill(rectWidth, lowerRectangleHeight) below Rect.borderFill(rectWidth, upperRectangleHeight)))
     }
     val upperWhisker = Line((data.upperWhisker - data.upperQuantile) * vScale, 2) rotated 90
     val lowerWhisker = Line((data.lowerQuantile - data.lowerWhisker) * vScale, 2) rotated 90
     val nudgeBoxY = (yBounds.max - data.upperWhisker) * vScale
     StrokeStyle(strokeColor)(Align.center(upperWhisker, rectangles, lowerWhisker).reduce(Above)) transY nudgeBoxY
   }
-  override val drawable: Drawable = _drawable
+  val drawable: Drawable = _drawable
 }

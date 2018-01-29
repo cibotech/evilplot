@@ -33,16 +33,6 @@ trait Drawable {
   def draw(canvas: CanvasRenderingContext2D): Unit
 }
 
-/**
-  * WrapDrawable allows easy construction of Drawables. Extent and draw methods are automatically computed
-  * from a composed `drawable` method.
-  */
-trait WrapDrawable extends Drawable {
-  def drawable: Drawable
-  def extent: Extent = drawable.extent
-  override def draw(canvas: CanvasRenderingContext2D): Unit = drawable.draw(canvas)
-}
-
 case class EmptyDrawable(override val extent: Extent = Extent(0, 0)) extends Drawable {
   override def draw(canvas: CanvasRenderingContext2D): Unit = {}
 }
@@ -60,13 +50,6 @@ case class Line(length: Double, strokeWidth: Double) extends Drawable {
       canvas.closePath()
       canvas.stroke()
     }
-}
-
-case class Points(points: Seq[Point], pointSize: Double) extends WrapDrawable {
-  private val pts = (for { Point(x, y) <- points } yield Disc(pointSize, x, y)).group
-
-  override def drawable: Drawable = pts
-
 }
 
 case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
@@ -104,13 +87,10 @@ case class BorderRect(width: Double, height: Double) extends Drawable {
   lazy val extent: Extent = Extent(width, height)
 }
 
-case class BorderFillRect(width: Double, height: Double) extends WrapDrawable {
-  override def drawable: Drawable = BorderRect(width, height) inFrontOf Rect(width, height)
-}
-
 object Rect {
   def apply(side: Double): Rect = Rect(side, side)
   def apply(size: Extent): Rect = Rect(size.width, size.height)
+  def borderFill(width: Double, height: Double): Drawable = BorderRect(width, height) inFrontOf Rect(width, height)
 }
 
 case class Disc(radius: Double, x: Double = 0, y: Double = 0) extends Drawable {

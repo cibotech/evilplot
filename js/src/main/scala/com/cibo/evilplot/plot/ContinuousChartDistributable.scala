@@ -3,13 +3,13 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.{Text, Utils}
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.white
-import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Line, Pad, WrapDrawable}
+import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Line}
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 
 // TODO: ChartDistributable is not really a useful abstraction. Most of the code is the same.
 object ContinuousChartDistributable {
   /* Base trait for axes and grid lines. */
-  trait ContinuousChartDistributableBase extends WrapDrawable {
+  trait ContinuousChartDistributableBase {
     private[plot] val axisDescriptor: AxisDescriptor
     protected val distributableDimension: Double
     protected val tickThick = 1
@@ -29,12 +29,12 @@ object ContinuousChartDistributable {
         numTick <- 0 until axisDescriptor.numTicks
         coordToDraw = axisDescriptor.axisBounds.min + numTick * axisDescriptor.spacing
         label = Utils.createNumericLabel(coordToDraw, axisDescriptor.numFrac)
-        tick = new VerticalTick(tickLength, tickThick, Some(label))
+        tick = VerticalTick(tickLength, tickThick, Some(label)).drawable
 
         padLeft = getLinePosition(coordToDraw, distributableDimension) - tick.extent.width / 2.0
       } yield tick padLeft padLeft
       lazy val _drawable = Align.center(_ticks.group, text).reduce(Above)
-      override def drawable: Drawable = if (drawTicks) _drawable padTop 2 else EmptyDrawable()
+      def drawable: Drawable = if (drawTicks) _drawable padTop 2 else EmptyDrawable()
   }
 
   case class YAxis(distributableDimension: Double, axisDescriptor: AxisDescriptor,
@@ -44,13 +44,13 @@ object ContinuousChartDistributable {
         numTick <- (axisDescriptor.numTicks - 1) to 0 by -1
         coordToDraw = axisDescriptor.tickMin + numTick * axisDescriptor.spacing
         label = Utils.createNumericLabel(coordToDraw, axisDescriptor.numFrac)
-        tick = new HorizontalTick(tickLength, tickThick, Some(label))
+        tick = HorizontalTick(tickLength, tickThick, Some(label)).drawable
 
         padTop = distributableDimension - getLinePosition(coordToDraw, distributableDimension) - tick.extent.height / 2.0
       } yield tick padTop padTop
 
       private lazy val _drawable = Align.middle(text padRight 10, Align.rightSeq(_ticks).group).reduce(Beside)
-      override def drawable: Drawable = if (drawTicks) _drawable padRight 2 else EmptyDrawable()
+      def drawable: Drawable = if (drawTicks) _drawable padRight 2 else EmptyDrawable()
   }
 
 
@@ -58,12 +58,16 @@ object ContinuousChartDistributable {
     val lineSpacing: Double
     private[plot] val nLines: Int = math.ceil(bounds.range / lineSpacing).toInt
     protected val chartAreaSize: Extent // size of area in which to draw the grid lines.
-
     protected val minGridLineCoord: Double = axisDescriptor.tickMin
+    def drawable: Drawable
   }
 
-  case class VerticalGridLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor, lineSpacing: Double,
-                                        color: Color = white) extends GridLines {
+  case class VerticalGridLines(
+    chartAreaSize: Extent,
+    axisDescriptor: AxisDescriptor,
+    lineSpacing: Double,
+    color: Color = white
+  ) extends GridLines {
     protected val distributableDimension: Double = chartAreaSize.width
     private val lines = for {
       nLine <- 0 until nLines
@@ -72,7 +76,7 @@ object ContinuousChartDistributable {
       padding = getLinePosition(minGridLineCoord + nLine * lineSpacing, chartAreaSize.height) - lineWidthCorrection
     } yield { line padLeft padding }
 
-    override def drawable: Drawable = lines.group
+    def drawable: Drawable = lines.group
   }
 
   case class HorizontalGridLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor,
@@ -85,7 +89,7 @@ object ContinuousChartDistributable {
         padding = chartAreaSize.height - getLinePosition(minGridLineCoord + nLines * lineSpacing, chartAreaSize.width) -
           lineCorrection
       } yield line padTop padding
-      override def drawable: Drawable = lines.group
+      def drawable: Drawable = lines.group
   }
 
   // TODO: Labeling these vertical lines in a way that doesn't mess up their positioning!
@@ -100,8 +104,11 @@ object ContinuousChartDistributable {
       def drawable: Drawable = lines.group
   }
 
-  case class HLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor,
-                    linesToDraw: Seq[(Double, Color)]) extends ContinuousChartDistributableBase {
+  case class HLines(
+    chartAreaSize: Extent,
+    axisDescriptor: AxisDescriptor,
+    linesToDraw: Seq[(Double, Color)]
+  ) extends ContinuousChartDistributableBase {
     val distributableDimension: Double = chartAreaSize.height
     val lines: Seq[Drawable] = for {
       (line, color) <- linesToDraw

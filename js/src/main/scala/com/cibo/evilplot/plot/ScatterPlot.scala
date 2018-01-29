@@ -5,8 +5,7 @@ import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, Point}
 import com.cibo.evilplot.plotdefs.{PlotOptions, ScatterPlotDef, Trendline}
 
-class ScatterPlot(val chartSize: Extent, definition: ScatterPlotDef)
-  extends Chart with ContinuousAxes {
+case class ScatterPlot(val chartSize: Extent, definition: ScatterPlotDef) extends Chart with ContinuousAxes {
   val options: PlotOptions = definition.options
   private val data = definition.data
   val defaultXAxisBounds: Bounds = Bounds(data.minBy(_.x).x, data.maxBy(_.x).x)

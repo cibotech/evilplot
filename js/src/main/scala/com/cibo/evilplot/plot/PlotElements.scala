@@ -9,7 +9,7 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.Colors.{ColorBar, ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry._
 
-class GradientLegend(gradientBar: ScaledColorBar, height: Double = 150) extends WrapDrawable {
+case class GradientLegend(gradientBar: ScaledColorBar, height: Double = 150) {
   def drawable: Drawable = {
     val paletteHeight = height / gradientBar.nColors
     Text(Utils.createNumericLabel(gradientBar.zMax, 2)) above
@@ -18,10 +18,12 @@ class GradientLegend(gradientBar: ScaledColorBar, height: Double = 150) extends 
   }
 }
 
-class Legend[T](colorBar: ColorBar, categories: Seq[T],
-                shape: Drawable, colorWith: Color => Drawable => Drawable,
-                backgroundRectangle: Option[Color] = None)
-                extends WrapDrawable {
+case class Legend[T](
+  colorBar: ColorBar, categories: Seq[T],
+  shape: Drawable,
+  colorWith: Color => Drawable => Drawable,
+  backgroundRectangle: Option[Color] = None
+) {
 
   private val categoriesColors = categories.zipWithIndex.map { case (category, index) =>
     colorBar match {
@@ -40,21 +42,19 @@ class Legend[T](colorBar: ColorBar, categories: Seq[T],
 }
 
 // TODO: fix the padding fudge factors
-class HorizontalTick(length: Double, thickness: Double, label: Option[String] = None)
-  extends WrapDrawable {
+case class HorizontalTick(length: Double, thickness: Double, label: Option[String] = None) {
   private val line = Line(length, thickness)
 
-  override def drawable: Drawable = label match {
+  def drawable: Drawable = label match {
     case Some(_label) => Align.middle(Text(_label).padRight(2).padBottom(2), line).reduce(Beside)
     case None => line
   }
 }
 
-class VerticalTick(length: Double, thickness: Double, label: Option[String] = None, rotateText: Double = 0)
-  extends WrapDrawable {
+case class VerticalTick(length: Double, thickness: Double, label: Option[String] = None, rotateText: Double = 0) {
   private val line = Line(length, thickness).rotated(90)
 
-  override def drawable: Drawable = label match {
+  def drawable: Drawable = label match {
     case Some(_label) => Align.center(line, (Text(_label) rotated rotateText).padTop(2)).reduce(Above)
     case None => line
   }

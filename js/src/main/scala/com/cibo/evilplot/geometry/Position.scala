@@ -7,9 +7,6 @@ package com.cibo.evilplot.geometry
 import com.cibo.evilplot.{CanvasOp, Text}
 import org.scalajs.dom._
 
-
-
-
 case class Translate(x: Double = 0, y: Double = 0)(r: Drawable) extends Drawable {
   // TODO: is this correct with negative translations?
   lazy val extent: Extent = Extent(

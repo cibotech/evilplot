@@ -21,39 +21,38 @@ object PlotDefinitionInterpreter {
     def getSize(pd: PlotDef): Extent = extent.getOrElse(pd.extent.getOrElse(defaultSize))
     plotDef match {
       case scatter: ScatterPlotDef => {
-        val plot = new ScatterPlot(getSize(scatter), scatter)
+        val plot = ScatterPlot(getSize(scatter), scatter).drawable
         if (scatter.options.makeLegend && scatter.zData.isDefined) {
-          plot beside new Legend[Double](scatter.colorBar, scatter.zData.get.distinct, Disc(2, 0, 0), Style.apply)
+          plot beside Legend[Double](scatter.colorBar, scatter.zData.get.distinct, Disc(2, 0, 0), Style.apply).drawable
         } else plot
       }
       case contour: ContourPlotDef =>
-        val plot = new ContourPlot(getSize(contour), contour)
+        val plot = ContourPlot(getSize(contour), contour).drawable
         if (contour.options.makeLegend) contour.colorBar match {
-          case scb: ScaledColorBar => plot beside new GradientLegend(scb)
+          case scb: ScaledColorBar => plot beside GradientLegend(scb).drawable
           case _ => plot
         } else plot
       case xyPosterior: XYPosteriorPlotDef =>
-        val plot = new PosteriorPlot(getSize(xyPosterior), xyPosterior)
+        val plot = PosteriorPlot(getSize(xyPosterior), xyPosterior).drawable
         if (xyPosterior.options.makeLegend && xyPosterior.colorBar.isInstanceOf[ScaledColorBar])
-          plot beside new GradientLegend(xyPosterior.colorBar.asInstanceOf[ScaledColorBar])
+          plot beside GradientLegend(xyPosterior.colorBar.asInstanceOf[ScaledColorBar]).drawable
         else plot
-      case histogram: HistogramChartDef =>
-        new HistogramChart(getSize(histogram), histogram)
-      case barChart: BarChartDef =>
-        new BarChart(getSize(barChart), barChart)
-      case boxPlot: BoxPlotDef =>
-        new BoxPlotChart(getSize(boxPlot), boxPlot)
+      case histogram: HistogramChartDef => HistogramChart(getSize(histogram), histogram).drawable
+      case barChart: BarChartDef => BarChart(getSize(barChart), barChart).drawable
+      case boxPlot: BoxPlotDef => BoxPlotChart(getSize(boxPlot), boxPlot).drawable
       case linePlot: LinePlotDef =>
-        val plot = new LinePlot(getSize(linePlot), linePlot)
+        val plot = LinePlot(getSize(linePlot), linePlot).drawable
         if (linePlot.options.makeLegend) {
           val categories = linePlot.lines.flatMap(lpd => if (lpd.name.isDefined) Some(lpd.color, lpd.name.get) else None)
-          val legend = new Legend(ScaledColorBar(categories.map(_._1), 0, categories.length - 1), categories.map(_._2),
-            Line(5, 2), StrokeStyle.apply)
+          val legend = Legend(
+            ScaledColorBar(categories.map(_._1), 0, categories.length - 1),
+            categories.map(_._2),
+            Line(5, 2),
+            StrokeStyle.apply
+          ).drawable
           Align.middle(plot, legend) reduce Beside
         } else plot
-      case facetsDef: FacetsDef =>
-        val y = new Facets(getSize(facetsDef), facetsDef)
-        y
+      case facetsDef: FacetsDef => Facets(getSize(facetsDef), facetsDef).drawable
     }
   }
 

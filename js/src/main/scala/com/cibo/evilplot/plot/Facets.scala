@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Text
-import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Grid, WrapDrawable}
+import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Grid}
 import com.cibo.evilplot.interpreter.PlotDefinitionInterpreter
 import com.cibo.evilplot.plotdefs._
 
@@ -20,7 +20,7 @@ object Facets {
   }
 }
 
-class Facets(extent: Extent, facetsDef: FacetsDef) extends WrapDrawable {
+case class Facets(extent: Extent, facetsDef: FacetsDef) {
   import Facets._
   private val (numRows, numCols) = (facetsDef.numRows, facetsDef.numCols)
   private val interpreter = PlotDefinitionInterpreter
@@ -35,11 +35,11 @@ class Facets(extent: Extent, facetsDef: FacetsDef) extends WrapDrawable {
 
   private val facets = facetsDef.plotDefs.map(interpreter.eval(_, Some(subPlotSize)))
 
-  override def drawable: Drawable = {
+  def drawable: Drawable = {
     Align.center(
       Align.middle(
         yLabel,
-        new Grid(facetsDef.numRows, facetsDef.numCols, facets, bottomPadding = bottomPadding, rightPadding = rightPadding)
+        Grid(facetsDef.numRows, facetsDef.numCols, facets, bottomPadding = bottomPadding, rightPadding = rightPadding).drawable
       ).reduce(Beside),
       xLabel transX yLabel.extent.width
     ).reduce(Above)

@@ -18,8 +18,7 @@ import com.cibo.evilplot.plotdefs.{BarChartDef, PlotOptions}
   */
 // TODO: The widthGetter / spacingGetter logic is certainly way too complicated, especially since DrawableLater
 // is gone.
-class BarChart(val chartSize: Extent, data: BarChartDef)
-  extends DiscreteX {
+case class BarChart(chartSize: Extent, data: BarChartDef) extends DiscreteX {
   val options: PlotOptions = data.options
   private val numBars = data.length
   val labels: Seq[String] = data.labels
@@ -40,8 +39,9 @@ class BarChart(val chartSize: Extent, data: BarChartDef)
           Scale(y = vScale)(FlipY(yAxisDescriptor.axisBounds.max)(Rect(_barWidth, yValue))) }
       }
       val allBars = bars.seqDistributeH(_barSpacing) padLeft _barSpacing / 2.0
-      val hLines = options.hLines.map { lines => HLines(extent, yAxisDescriptor,
-        lines) }.getOrElse(EmptyDrawable())
+      val hLines = options.hLines.map { lines =>
+        HLines(extent, yAxisDescriptor, lines).drawable
+      }.getOrElse(EmptyDrawable())
 
       allBars behind hLines
     }

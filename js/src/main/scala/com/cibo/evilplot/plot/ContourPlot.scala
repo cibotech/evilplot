@@ -7,8 +7,7 @@ import com.cibo.evilplot.geometry.{Drawable, Extent, Path}
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plotdefs.{ContourPlotDef, PlotOptions}
 
-class ContourPlot(val chartSize: Extent, data: ContourPlotDef)
-  extends Chart with ContinuousAxes {
+case class ContourPlot(val chartSize: Extent, data: ContourPlotDef) extends Chart with ContinuousAxes {
   val options: PlotOptions = data.options
   private val grid = data.gridData
   private val numContours = data.numContours

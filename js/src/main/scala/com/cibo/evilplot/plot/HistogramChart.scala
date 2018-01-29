@@ -10,21 +10,22 @@ import com.cibo.evilplot.plot.ContinuousChartDistributable.{HLines, VLines}
 import com.cibo.evilplot.plotdefs.{HistogramChartDef, PlotOptions}
 import com.cibo.evilplot.{Style, Utils}
 
-class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef)
-  extends Chart with ContinuousAxes {
+case class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef) extends Chart with ContinuousAxes {
   val options: PlotOptions = histData.options
   private val data = histData.data.bins.map(_.toDouble)
   val defaultXAxisBounds = Bounds(histData.data.min, histData.data.max)
   val defaultYAxisBounds = Bounds(0.0, data.max)
 
   def plottedData(extent: Extent): Drawable = {
-    val annotation = ChartAnnotation(histData.annotation, (0.0, 0.0))
-    val metricLines = Utils.maybeDrawable(options.vLines)(metrics =>
-      VLines(extent, xAxisDescriptor, metrics))
-    val hLines = options.hLines.map(lines =>
-      HLines(extent, yAxisDescriptor, lines)).getOrElse(EmptyDrawable())
+    val annotation = ChartAnnotation(histData.annotation, (0.0, 0.0)).drawable
+    val metricLines = Utils.maybeDrawable(options.vLines) { metrics =>
+      VLines(extent, xAxisDescriptor, metrics).drawable
+    }
+    val hLines = options.hLines.map { lines =>
+      HLines(extent, yAxisDescriptor, lines).drawable
+    }.getOrElse(EmptyDrawable())
     val bars = Bars(extent, defaultXAxisBounds, Some(xAxisDescriptor.axisBounds),
-      yAxisDescriptor.axisBounds, data, options.barColor)
+      yAxisDescriptor.axisBounds, data, options.barColor).drawable
     Group(
       Align.middleSeq(
         Align.right(
@@ -36,10 +37,14 @@ class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef
   }
 }
 
-case class Bars(chartAreaSize: Extent,
-                dataXBounds: Bounds,
-                drawXBounds: Option[Bounds], drawYBounds: Bounds,
-                heights: Seq[Double], color: Color) extends WrapDrawable {
+case class Bars(
+  chartAreaSize: Extent,
+  dataXBounds: Bounds,
+  drawXBounds: Option[Bounds],
+  drawYBounds: Bounds,
+  heights: Seq[Double],
+  color: Color
+) {
   val numBins: Int = heights.length
 
   lazy val heightsToDraw: Seq[Double] = {

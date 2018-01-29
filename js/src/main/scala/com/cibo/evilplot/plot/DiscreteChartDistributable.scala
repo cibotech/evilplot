@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
-import com.cibo.evilplot.geometry.{Above, Align, Drawable, EmptyDrawable, Extent, Line, WrapDrawable}
+import com.cibo.evilplot.geometry.{Above, Align, Drawable, EmptyDrawable, Extent, Line}
 import com.cibo.evilplot.{StrokeStyle, Text, Utils}
 
 object DiscreteChartDistributable {
@@ -28,9 +28,14 @@ object DiscreteChartDistributable {
     }
   }
 
-  case class XAxis[T](chartAreaSize: Extent, tickNames: Seq[T],
-                      widthGetter: (Extent => Double), spacingGetter: (Extent => Double), label: Option[String] = None,
-                      rotateText: Double = 0, drawAxis: Boolean = true) extends WrapDrawable {
+  case class XAxis[T](
+    chartAreaSize: Extent, tickNames: Seq[T],
+    widthGetter: (Extent => Double),
+    spacingGetter: (Extent => Double),
+    label: Option[String] = None,
+    rotateText: Double = 0,
+    drawAxis: Boolean = true
+  ) {
     lazy val xAxisLabel = Utils.maybeDrawable(label)(msg => Text(msg, 20))
     val spacing: Double = spacingGetter(chartAreaSize)
     val width: Double = widthGetter(chartAreaSize)
@@ -38,11 +43,11 @@ object DiscreteChartDistributable {
     val firstTickOffset: Double = tickSpacing / 2.0
     val _ticks = for {
       (name, numTick) <- tickNames.zipWithIndex
-      tick = new VerticalTick(5, 1, Some(name.toString), rotateText)
+      tick = new VerticalTick(5, 1, Some(name.toString), rotateText).drawable
       padLeft = (firstTickOffset + numTick * tickSpacing) - tick.extent.width / 2.0
     } yield tick padLeft padLeft
 
-    override def drawable: Drawable = {
+    def drawable: Drawable = {
       if (drawAxis) Align.center(_ticks.group, xAxisLabel).reduce(Above)
       else EmptyDrawable()
     }
@@ -50,8 +55,13 @@ object DiscreteChartDistributable {
 
   // For now for discrete data charts just align a vertical gridline with *every* drawable. Later can add an option.
   // This is a purely aesthetic thing anyway.
-  case class VerticalGridLines(chartAreaSize: Extent, numLines: Int, widthGetter: (Extent => Double),
-                               spacingGetter: (Extent => Double), color: Color = HTMLNamedColors.white) extends WrapDrawable {
+  case class VerticalGridLines(
+    chartAreaSize: Extent,
+    numLines: Int,
+    widthGetter: (Extent => Double),
+    spacingGetter: (Extent => Double),
+    color: Color = HTMLNamedColors.white
+  ) {
     private val spacing: Double = spacingGetter(chartAreaSize)
     private val width: Double = widthGetter(chartAreaSize)
     private val lineSpacing: Double = width + spacing
@@ -61,7 +71,7 @@ object DiscreteChartDistributable {
       line = StrokeStyle(color)(Line(chartAreaSize.height, 2)) rotated 90
       padLeft = (firstTickOffset + numLine * lineSpacing) - line.extent.width / 2.0
     } yield line padLeft padLeft
-    override def drawable: Drawable = _lines.group
+    def drawable: Drawable = _lines.group
   }
 
 }
