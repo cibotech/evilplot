@@ -6,8 +6,13 @@ import com.cibo.evilplot.geometry.{Align, Disc, Drawable, Extent, Rect, UnsafeRo
 import com.cibo.evilplot.plotdefs.PlotOptions
 import org.scalajs.dom.CanvasRenderingContext2D
 
-class PieChart(override val extent: Extent, labels: Option[Seq[String]] = None, data: Seq[Double], options: PlotOptions,
-               scale: Double = 100.0) extends Drawable {
+case class PieChart(
+  extent: Extent,
+  labels: Option[Seq[String]] = None,
+  data: Seq[Double],
+  options: PlotOptions,
+  scale: Double = 100.0
+) {
 
   // generate labels as percent values, if labels not passed in
   private val labs = if (labels.isDefined) {
@@ -59,7 +64,6 @@ class PieChart(override val extent: Extent, labels: Option[Seq[String]] = None, 
     pieWedges padAll 15 above legend padAll 10
   }
 
-  override def draw(canvas: CanvasRenderingContext2D): Unit =
-    (_drawable titled(options.title.getOrElse(""), 20)).draw(canvas)
+  def drawable: Drawable = _drawable titled(options.title.getOrElse(""), 20)
 
 }

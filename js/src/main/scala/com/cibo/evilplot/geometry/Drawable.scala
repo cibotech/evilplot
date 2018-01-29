@@ -14,7 +14,7 @@ import org.scalajs.dom.CanvasRenderingContext2D
   * All Drawable objects define a draw method that draws to a 2D canvas, and a bounding box (Extent).
   * The bounding box must not change.
   */
-trait Drawable {
+sealed trait Drawable {
   def extent: Extent
   def draw(canvas: CanvasRenderingContext2D): Unit
 }
