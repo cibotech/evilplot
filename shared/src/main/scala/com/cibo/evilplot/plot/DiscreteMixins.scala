@@ -1,8 +1,7 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.Utils
 import com.cibo.evilplot.colors.DefaultColors
-import com.cibo.evilplot.geometry.{Align, Drawable, Extent, Rect, Text}
+import com.cibo.evilplot.geometry.{Align, Drawable, EmptyDrawable, Extent, Rect, Text}
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.ContinuousChartDistributable.YAxis
 import com.cibo.evilplot.plot.DiscreteChartDistributable._
@@ -13,12 +12,14 @@ trait DiscreteX extends ContinuousAxes {
   protected val widthGetter: (Extent => Double)
   protected val spacingGetter: (Extent => Double)
   override lazy val defaultXAxisBounds = Bounds(0, 1) // silly, shouldn't be used.
-  override protected lazy val topLabel: Drawable = Utils.maybeDrawable(options.topLabel)(text =>
-    Align.centerSeq(Align.middle(Rect(chartAreaSize.width, 20) filled DefaultColors.titleBarColor, Text(text))).group)
+  override protected lazy val topLabel: Drawable = options.topLabel.map { text =>
+    Align.centerSeq(Align.middle(Rect(chartAreaSize.width, 20) filled DefaultColors.titleBarColor, Text(text))).group
+  }.getOrElse(EmptyDrawable())
 
-  override protected lazy val rightLabel: Drawable = Utils.maybeDrawable(options.rightLabel)(text =>
+  override protected lazy val rightLabel: Drawable = options.rightLabel.map { text =>
     Align.centerSeq(Align.middle(Rect(chartAreaSize.height, 20) filled DefaultColors.titleBarColor,
-      Text(text))).group) rotated 90
+      Text(text))).group rotated 90
+  }.getOrElse(EmptyDrawable())
   override protected lazy val chartAreaSize: Extent  = {
     val xHeight = XAxis(Extent(chartSize.width, 1), labels, widthGetter, spacingGetter, label = options.xAxisLabel,
       rotateText = 90, options.drawXAxis).drawable.extent.height

@@ -4,7 +4,7 @@
 
 package com.cibo.evilplot.colors
 
-import com.cibo.evilplot.colors.Colors.{ColorSeq, ScaledColorBar}
+import com.cibo.evilplot.colors.Colors.ColorSeq
 import org.scalatest.Matchers._
 import org.scalatest._
 

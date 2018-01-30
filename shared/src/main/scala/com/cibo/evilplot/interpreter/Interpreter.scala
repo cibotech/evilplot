@@ -7,7 +7,6 @@ import com.cibo.evilplot.colors.ScaledColorBar
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plotdefs._
-import io.circe.generic.auto._
 
 /** If an extent is supplied to the PlotDefinitionInterpreter, the serialized plot extent is overridden. */
 object PlotDefinitionInterpreter {

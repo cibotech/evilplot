@@ -8,7 +8,6 @@ import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 import com.cibo.evilplot.plot.ContinuousChartDistributable.{HLines, VLines}
 import com.cibo.evilplot.plotdefs.{HistogramChartDef, PlotOptions}
-import com.cibo.evilplot.Utils
 
 case class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef) extends Chart with ContinuousAxes {
   val options: PlotOptions = histData.options
@@ -18,9 +17,9 @@ case class HistogramChart(override val chartSize: Extent, histData: HistogramCha
 
   def plottedData(extent: Extent): Drawable = {
     val annotation = ChartAnnotation(histData.annotation, (0.0, 0.0)).drawable
-    val metricLines = Utils.maybeDrawable(options.vLines) { metrics =>
+    val metricLines = options.vLines.map { metrics =>
       VLines(extent, xAxisDescriptor, metrics).drawable
-    }
+    }.getOrElse(EmptyDrawable())
     val hLines = options.hLines.map { lines =>
       HLines(extent, yAxisDescriptor, lines).drawable
     }.getOrElse(EmptyDrawable())

@@ -2,7 +2,6 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Above, Align, Drawable, EmptyDrawable, Extent, Line, StrokeStyle, Text}
-import com.cibo.evilplot.Utils
 
 object DiscreteChartDistributable {
   // Returns getters for width and spacing that take extent of the chart in which the drawables are to be distributed
@@ -36,7 +35,7 @@ object DiscreteChartDistributable {
     rotateText: Double = 0,
     drawAxis: Boolean = true
   ) {
-    lazy val xAxisLabel = Utils.maybeDrawable(label)(msg => Text(msg, 20))
+    lazy val xAxisLabel = label.map(msg => Text(msg, 20)).getOrElse(EmptyDrawable())
     val spacing: Double = spacingGetter(chartAreaSize)
     val width: Double = widthGetter(chartAreaSize)
     val tickSpacing: Double = width + spacing

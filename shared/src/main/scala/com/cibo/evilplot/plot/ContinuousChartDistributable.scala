@@ -1,6 +1,5 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.Utils
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.white
 import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Line, Text}
@@ -24,11 +23,11 @@ object ContinuousChartDistributable {
 
   case class XAxis(distributableDimension: Double, axisDescriptor: AxisDescriptor,
                    label: Option[String] = None, drawTicks: Boolean = true) extends ContinuousChartDistributableBase {
-      lazy val text = Utils.maybeDrawable(label)(msg => Text(msg, 22))
+      lazy val text = label.map(msg => Text(msg, 22)).getOrElse(EmptyDrawable())
       private val _ticks = for {
         numTick <- 0 until axisDescriptor.numTicks
         coordToDraw = axisDescriptor.axisBounds.min + numTick * axisDescriptor.spacing
-        label = Utils.createNumericLabel(coordToDraw, axisDescriptor.numFrac)
+        label = Chart.createNumericLabel(coordToDraw, axisDescriptor.numFrac)
         tick = VerticalTick(tickLength, tickThick, Some(label)).drawable
 
         padLeft = getLinePosition(coordToDraw, distributableDimension) - tick.extent.width / 2.0
@@ -39,11 +38,11 @@ object ContinuousChartDistributable {
 
   case class YAxis(distributableDimension: Double, axisDescriptor: AxisDescriptor,
                    label: Option[String] = None, drawTicks: Boolean = true) extends ContinuousChartDistributableBase {
-      private lazy val text = Utils.maybeDrawable(label)(msg => Text(msg, 20) rotated 270)
+      private lazy val text = label.map(msg => Text(msg, 20) rotated 270).getOrElse(EmptyDrawable())
       private val _ticks = for {
         numTick <- (axisDescriptor.numTicks - 1) to 0 by -1
         coordToDraw = axisDescriptor.tickMin + numTick * axisDescriptor.spacing
-        label = Utils.createNumericLabel(coordToDraw, axisDescriptor.numFrac)
+        label = Chart.createNumericLabel(coordToDraw, axisDescriptor.numFrac)
         tick = HorizontalTick(tickLength, tickThick, Some(label)).drawable
 
         padTop = distributableDimension - getLinePosition(coordToDraw, distributableDimension) - tick.extent.height / 2.0

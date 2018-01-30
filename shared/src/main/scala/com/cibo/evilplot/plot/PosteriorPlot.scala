@@ -4,9 +4,8 @@
 
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.Utils
 import com.cibo.evilplot.colors._
-import com.cibo.evilplot.geometry.{AffineTransform, Disc, Drawable, Extent, Path, StrokeStyle}
+import com.cibo.evilplot.geometry.{AffineTransform, Disc, Drawable, EmptyDrawable, Extent, Path, StrokeStyle}
 import com.cibo.evilplot.numeric.{Bounds, MarchingSquares, Point, Segment}
 import com.cibo.evilplot.plotdefs.XYPosteriorPlotDef
 
@@ -43,7 +42,7 @@ case class PosteriorPlot(chartSize: Extent, data: XYPosteriorPlotDef) extends Ch
         }).flatten.group
     }
     val priors = makePaths(data.priors, affine)
-    val best = Utils.maybeDrawable(data.best)(b => Disc(3, affine(b)) filled HTMLNamedColors.red)
+    val best = data.best.map(b => Disc(3, affine(b)) filled HTMLNamedColors.red).getOrElse(EmptyDrawable())
     priors.group behind contours behind best
   }
 

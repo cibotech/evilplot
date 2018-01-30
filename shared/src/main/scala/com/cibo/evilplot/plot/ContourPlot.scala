@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.{Colors, ScaledColorBar, SingletonColorBar}
+import com.cibo.evilplot.colors.{ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Path, StrokeStyle}
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plotdefs.{ContourPlotDef, PlotOptions}

@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, Point}
+import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plotdefs.{PlotOptions, ScatterPlotDef, Trendline}
 
 case class ScatterPlot(val chartSize: Extent, definition: ScatterPlotDef) extends Chart with ContinuousAxes {

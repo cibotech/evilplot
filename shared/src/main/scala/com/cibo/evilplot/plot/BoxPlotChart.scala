@@ -2,7 +2,6 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.{blue, white}
-import com.cibo.evilplot.geometry
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
 import com.cibo.evilplot.plotdefs._
