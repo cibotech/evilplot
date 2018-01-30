@@ -1,18 +1,6 @@
 enablePlugins(ScalaJSPlugin)
 
-// adapted from https://github.com/ochrons/scalajs-spa-tutorial
-
-lazy val root: Project = project.in(file("."))
-  .aggregate(evilplotJS, evilplotJVM)
-  .settings(
-    publishArtifact := false,
-    publish := {},
-    publishLocal := {},
-    crossScalaVersions := Settings.versions.crossScalaVersions
-  )
-
 lazy val commonSettings: Seq[Setting[_]] = Seq(
-  name := s"${Settings.name}",
   organization := Settings.organization,
   version := Settings.version,
   crossScalaVersions := Settings.versions.crossScalaVersions,
@@ -20,10 +8,21 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   scalacOptions ++= Settings.scalacOptions
 )
 
-lazy val evilplot = crossProject.in(file("."))
+lazy val root = project.in(file("."))
+  .aggregate(evilplotJS, evilplotJVM, assetJS, assetJVM)
   .settings(
+    publishArtifact := false,
+    publish := {},
+    publishLocal := {},
+    crossScalaVersions := Settings.versions.crossScalaVersions
+  )
+
+lazy val evilplotAsset = crossProject.in(file("asset"))
+  .dependsOn(evilplot)
+  .aggregate(evilplot)
+  .settings(
+    name := "evilplot-asset",
     commonSettings,
-    libraryDependencies ++= Settings.sharedDependencies.value,
     publishTo in ThisBuild := {
       val repo = ""
       if (isSnapshot.value) {
@@ -33,6 +32,36 @@ lazy val evilplot = crossProject.in(file("."))
       }
     }
   )
+  .jvmSettings(
+    resourceGenerators.in(Compile) += Def.task {
+      val asset = fullOptJS.in(evilplotJS).in(Compile).value.data
+      val dest = resourceDirectory.in(Compile).value / asset.getName
+      IO.copy(Seq(asset -> dest)).toSeq
+    }
+  )
+
+lazy val assetJS = evilplotAsset.js
+lazy val assetJVM = evilplotAsset.jvm
+
+// "Core" project so we can package the JS with the jar in the "evilplot" project.
+lazy val evilplot = crossProject.in(file("."))
+  .settings(
+    commonSettings,
+    name := "evilplot",
+    publishTo in ThisBuild := {
+      val repo = ""
+      if (isSnapshot.value) {
+        Some("snapshots" at repo + "libs-snapshot-local")
+      } else {
+        Some("releases" at repo + "libs-release-local")
+      }
+    },
+    libraryDependencies ++= Settings.sharedDependencies.value,
+    publishArtifact := false,
+    publish := {},
+    publishLocal := {},
+    crossScalaVersions := Settings.versions.crossScalaVersions
+  )
   .jsSettings(
     libraryDependencies ++= Settings.scalajsDependencies.value,
     libraryDependencies ++= Settings.sharedDependencies.value,
@@ -41,12 +70,14 @@ lazy val evilplot = crossProject.in(file("."))
     jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value),
     skip in packageJSDependencies := false,
     scalaJSUseMainModuleInitializer := false,
-    scalaJSUseMainModuleInitializer in Test := false
+    scalaJSUseMainModuleInitializer in Test := false,
+    artifactPath := baseDirectory.value
   )
-  .enablePlugins(WorkbenchPlugin)
   .jvmSettings(
     libraryDependencies ++= Settings.jvmDependencies.value
   )
+  .enablePlugins(WorkbenchPlugin)
 
-lazy val evilplotJS = evilplot.js
-lazy val evilplotJVM = evilplot.jvm
+lazy val evilplotJS: Project = evilplot.js
+lazy val evilplotJVM: Project = evilplot.jvm
+

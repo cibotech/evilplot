@@ -1,4 +1,5 @@
 target/
+asset/
 *.iml
 .cache
 .classpath
