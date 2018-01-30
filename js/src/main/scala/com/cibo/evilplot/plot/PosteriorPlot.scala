@@ -5,8 +5,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.Utils
-import com.cibo.evilplot.colors.{Colors, HEX, HTMLNamedColors}
-import com.cibo.evilplot.colors.Colors.{ScaledColorBar, SingletonColorBar}
+import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{AffineTransform, Disc, Drawable, Extent, Path, StrokeStyle}
 import com.cibo.evilplot.numeric.{Bounds, MarchingSquares, Point, Segment}
 import com.cibo.evilplot.plotdefs.XYPosteriorPlotDef
@@ -25,7 +24,7 @@ case class PosteriorPlot(chartSize: Extent, data: XYPosteriorPlotDef) extends Ch
         .compose(AffineTransform(scaleY = -1).translate(dx = 0, dy = yBounds.max)
           .scale(y = extent.height / yBounds.range))
 
-    val colorBar: Colors.ColorBar = data.colorBar
+    val colorBar = data.colorBar
     val binWidth = data.zBounds.range / numContours
     val levels = Seq.tabulate[Double](numContours - 1)(bin =>
       grid.zBounds.min + (bin + 1) * binWidth)
@@ -36,12 +35,11 @@ case class PosteriorPlot(chartSize: Extent, data: XYPosteriorPlotDef) extends Ch
         if contourSegments.nonEmpty
       } yield
         contourSegments.map { seg: Segment =>
-          StrokeStyle {
-            colorBar match {
-              case SingletonColorBar(color) => color
-              case colors: ScaledColorBar   => colors.getColor(z)
-            }
-          }(Path(Seq(affine(seg.a), affine(seg.b)), 2))
+          val color = colorBar match {
+            case SingletonColorBar(c)   => c
+            case colors: ScaledColorBar => colors.getColor(z)
+          }
+          StrokeStyle(Path(Seq(affine(seg.a), affine(seg.b)), 2), color)
         }).flatten.group
     }
     val priors = makePaths(data.priors, affine)

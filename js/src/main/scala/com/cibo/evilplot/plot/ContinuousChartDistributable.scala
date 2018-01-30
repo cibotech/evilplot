@@ -33,7 +33,7 @@ object ContinuousChartDistributable {
 
         padLeft = getLinePosition(coordToDraw, distributableDimension) - tick.extent.width / 2.0
       } yield tick padLeft padLeft
-      lazy val _drawable = Align.center(_ticks.group, text).reduce(Above)
+      lazy val _drawable = Align.center(_ticks.group, text).reduce(Above.apply)
       def drawable: Drawable = if (drawTicks) _drawable padTop 2 else EmptyDrawable()
   }
 
@@ -49,7 +49,7 @@ object ContinuousChartDistributable {
         padTop = distributableDimension - getLinePosition(coordToDraw, distributableDimension) - tick.extent.height / 2.0
       } yield tick padTop padTop
 
-      private lazy val _drawable = Align.middle(text padRight 10, Align.rightSeq(_ticks).group).reduce(Beside)
+      private lazy val _drawable = Align.middle(text padRight 10, Align.rightSeq(_ticks).group).reduce(Beside.apply)
       def drawable: Drawable = if (drawTicks) _drawable padRight 2 else EmptyDrawable()
   }
 

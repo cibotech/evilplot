@@ -32,7 +32,7 @@ case class HistogramChart(override val chartSize: Extent, histData: HistogramCha
           bars behind metricLines behind hLines,
           annotation
         )
-      ): _*
+      )
     )
   }
 }
@@ -73,7 +73,7 @@ case class Bars(
     val barWidth = chartAreaSize.width / heightsToDraw.length
     val vScale: Double = chartAreaSize.height / drawYBounds.range
     heightsToDraw.map { h =>
-      Style(color)(Scale(y = vScale)(FlipY(drawYBounds.max)(Rect(barWidth, h))))
+      Style(Scale(flipY(Rect(barWidth, h), drawYBounds.max), y = vScale), color)
       //                if (h != 0) Rect(barWidth, h * vScale) filled color
       //                else Style(GreenYellow)(StrokeStyle(Black)(BorderFillRect(barWidth, extent.height)))
     }.seqDistributeH(barSpacing)

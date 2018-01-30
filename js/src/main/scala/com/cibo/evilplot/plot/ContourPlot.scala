@@ -1,7 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.Colors
-import com.cibo.evilplot.colors.Colors.{ScaledColorBar, SingletonColorBar}
+import com.cibo.evilplot.colors.{Colors, ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Path, StrokeStyle}
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plotdefs.{ContourPlotDef, PlotOptions}
@@ -22,22 +21,20 @@ case class ContourPlot(chartSize: Extent, data: ContourPlotDef) extends Chart wi
   }
 
   def plottedData(extent: Extent): Drawable = {
-    val colorBar: Colors.ColorBar = data.colorBar
+    val colorBar = data.colorBar
     val binWidth = data.zBounds.range / numContours
     val levels = Seq.tabulate[Double](numContours - 1)(bin => grid.zBounds.min + (bin + 1) * binWidth)
-    val contours = for { z <- levels
-                         contourSegments = MarchingSquares.getContoursAt(z, grid)
-                         if contourSegments.nonEmpty
-    } yield contourSegments.map {
-      seg => StrokeStyle { colorBar match {
-        case SingletonColorBar(color) => color
+    val contours = for {z <- levels
+                        contourSegments = MarchingSquares.getContoursAt(z, grid)
+                        if contourSegments.nonEmpty
+    } yield contourSegments.map { seg =>
+      val color = colorBar match {
+        case SingletonColorBar(c)   => c
         case colors: ScaledColorBar => colors.getColor(z)
       }
-      }(Path(toPixelCoords(seg, xAxisDescriptor.axisBounds, yAxisDescriptor.axisBounds, extent), 2)) }
-
+      StrokeStyle(Path(toPixelCoords(seg, xAxisDescriptor.axisBounds, yAxisDescriptor.axisBounds, extent), 2), color)
+    }
     contours.flatten.group
   }
-
-
 }
 

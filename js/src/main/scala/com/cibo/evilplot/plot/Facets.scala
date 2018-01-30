@@ -39,8 +39,8 @@ case class Facets(extent: Extent, facetsDef: FacetsDef) {
       Align.middle(
         yLabel,
         Grid(facetsDef.numRows, facetsDef.numCols, facets, bottomPadding = bottomPadding, rightPadding = rightPadding).drawable
-      ).reduce(Beside),
+      ).reduce(Beside.apply),
       xLabel transX yLabel.extent.width
-    ).reduce(Above)
+    ).reduce(Above.apply)
   }
 }

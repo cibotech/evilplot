@@ -2,8 +2,8 @@
  * Copyright 2017 CiBO Technologies
  */
 package com.cibo.evilplot.interpreter
-import com.cibo.evilplot.colors.Colors.ScaledColorBar
 import com.cibo.evilplot.JSONUtils
+import com.cibo.evilplot.colors.ScaledColorBar
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plotdefs._
@@ -20,12 +20,11 @@ object PlotDefinitionInterpreter {
   def eval(plotDef: PlotDef, extent: Option[Extent]): Drawable = {
     def getSize(pd: PlotDef): Extent = extent.getOrElse(pd.extent.getOrElse(defaultSize))
     plotDef match {
-      case scatter: ScatterPlotDef => {
+      case scatter: ScatterPlotDef =>
         val plot = ScatterPlot(getSize(scatter), scatter).drawable
         if (scatter.options.makeLegend && scatter.zData.isDefined) {
           plot beside Legend[Double](scatter.colorBar, scatter.zData.get.distinct, Disc(2, 0, 0), Style.apply).drawable
         } else plot
-      }
       case contour: ContourPlotDef =>
         val plot = ContourPlot(getSize(contour), contour).drawable
         if (contour.options.makeLegend) contour.colorBar match {
@@ -50,7 +49,7 @@ object PlotDefinitionInterpreter {
             Line(5, 2),
             StrokeStyle.apply
           ).drawable
-          Align.middle(plot, legend) reduce Beside
+          Align.middle(plot, legend) reduce Beside.apply
         } else plot
       case facetsDef: FacetsDef => Facets(getSize(facetsDef), facetsDef).drawable
     }

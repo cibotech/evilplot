@@ -19,9 +19,9 @@ case class Lines(
   private val pathSeq: Seq[Drawable] = lpd.lines.map { case OneLinePlotData(points: Seq[Point], color: Color, _) =>
     val scaledPoints =
       points.map(pt => Point((pt.x - xAxisDrawBounds.min) * xScale, (yAxisDrawBounds.max - pt.y) * yScale))
-    StrokeStyle(color)(Path(scaledPoints, 2.0))
+    StrokeStyle(Path(scaledPoints, 2.0), color)
   }
-  def drawable: Drawable = Group(pathSeq: _*)
+  def drawable: Drawable = Group(pathSeq)
 }
 
 // Draw a line plot consisting of a set of lines. Each Seq in `data` is a separate line. The colors Seq

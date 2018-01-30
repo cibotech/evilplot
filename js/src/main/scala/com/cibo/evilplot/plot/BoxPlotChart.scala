@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.{blue, white}
+import com.cibo.evilplot.geometry
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
 import com.cibo.evilplot.plotdefs._
@@ -21,7 +22,7 @@ case class BoxPlotChart(chartSize: Extent, data: BoxPlotDef) extends DiscreteX {
     val points = for {
       point <- pointsData
     } yield Disc(data.pointSize, 0, (point - yAxisDescriptor.axisBounds.min) * vScale)
-    FlipY(points.group) transY ((yAxisDescriptor.axisBounds.max - pointsData.max) * vScale - data.pointSize) transX
+    flipY(points.group) transY ((yAxisDescriptor.axisBounds.max - pointsData.max) * vScale - data.pointSize) transX
       data.pointSize
   }
   def plottedData(extent: Extent): Drawable = {
@@ -52,13 +53,18 @@ private case class Box(
     val rectangles = {
       val lowerRectangleHeight: Double = (data.middleQuantile - data.lowerQuantile) * vScale
       val upperRectangleHeight: Double = (data.upperQuantile - data.middleQuantile) * vScale
-      StrokeStyle(strokeColor)(Style(white)
-      (Rect.borderFill(rectWidth, lowerRectangleHeight) below Rect.borderFill(rectWidth, upperRectangleHeight)))
+      StrokeStyle(
+        Style(
+          BorderRect.filled(rectWidth, lowerRectangleHeight) below BorderRect.filled(rectWidth, upperRectangleHeight),
+          white
+        ),
+        strokeColor
+      )
     }
     val upperWhisker = Line((data.upperWhisker - data.upperQuantile) * vScale, 2) rotated 90
     val lowerWhisker = Line((data.lowerQuantile - data.lowerWhisker) * vScale, 2) rotated 90
     val nudgeBoxY = (yBounds.max - data.upperWhisker) * vScale
-    StrokeStyle(strokeColor)(Align.center(upperWhisker, rectangles, lowerWhisker).reduce(Above)) transY nudgeBoxY
+    StrokeStyle(Align.center(upperWhisker, rectangles, lowerWhisker).reduce(Above.apply), strokeColor) transY nudgeBoxY
   }
   val drawable: Drawable = _drawable
 }

@@ -4,8 +4,7 @@
 
 package com.cibo.evilplot.plotdefs
 
-import com.cibo.evilplot.colors.Colors.{ColorBar, SingletonColorBar}
-import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
+import com.cibo.evilplot.colors.{Color, ColorBar, HTMLNamedColors, SingletonColorBar}
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric._
 

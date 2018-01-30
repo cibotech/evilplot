@@ -1,11 +1,17 @@
 package com.cibo.evilplot
 
+import io.circe.{Decoder, Encoder}
+
 package object numeric {
   type Grid = Vector[Vector[Double]]
 
-  case class Point(x: Double, y: Double) {
-    def -(that: Point): Point =
-      Point(x - that.x, y - that.y) //scalastyle:ignore
+  final case class Point(x: Double, y: Double) {
+    def -(that: Point): Point = Point(x - that.x, y - that.y)
+  }
+  object Point {
+    implicit val encoder: Encoder[Point] = io.circe.generic.semiauto.deriveEncoder[Point]
+    implicit val decoder: Decoder[Point] = io.circe.generic.semiauto.deriveDecoder[Point]
+    def tupled(t: (Double, Double)): Point = Point(t._1, t._2)
   }
 
   case class Point3(x: Double, y: Double, z: Double)

@@ -48,7 +48,7 @@ object DiscreteChartDistributable {
     } yield tick padLeft padLeft
 
     def drawable: Drawable = {
-      if (drawAxis) Align.center(_ticks.group, xAxisLabel).reduce(Above)
+      if (drawAxis) Align.center(_ticks.group, xAxisLabel).reduce(Above.apply)
       else EmptyDrawable()
     }
   }
@@ -68,7 +68,7 @@ object DiscreteChartDistributable {
     private val firstTickOffset: Double = lineSpacing / 2.0
     private val _lines = for {
       numLine <- 0 until numLines
-      line = StrokeStyle(color)(Line(chartAreaSize.height, 2)) rotated 90
+      line = StrokeStyle(Line(chartAreaSize.height, 2), color) rotated 90
       padLeft = (firstTickOffset + numLine * lineSpacing) - line.extent.width / 2.0
     } yield line padLeft padLeft
     def drawable: Drawable = _lines.group

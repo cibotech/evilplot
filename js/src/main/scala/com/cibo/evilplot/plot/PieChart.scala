@@ -33,22 +33,20 @@ case class PieChart(
       val wedges: Seq[Group] = data.zip(cumulativeRotate).map { case (frac, cumRot) =>
 
         val rotate = 360 * cumRot
-        val wedge = UnsafeRotate(rotate)(Wedge(360 * frac, scale))
-        val label =
-          UnsafeRotate(rotate) {
-            val text = {
-              val baseText = Text(frac.toString) filled HTMLNamedColors.black
-              // TODO: same as left aligned txt?
-              if (rotate > 90 && rotate < 270)
-                baseText transX (-baseText.extent.width - labelPad)
-              else
-                baseText
-            }
-            val spacer = Disc(scale) filled Clear padRight labelPad
-
-            distributeH(Align.middle(spacer, UnsafeRotate(-rotate)(text)))
+        val wedge = UnsafeRotate(Wedge(360 * frac, scale), rotate)
+        val inner = {
+          val text = {
+            val baseText = Text(frac.toString) filled HTMLNamedColors.black
+            // TODO: same as left aligned txt?
+            if (rotate > 90 && rotate < 270)
+              baseText transX (-baseText.extent.width - labelPad)
+            else
+              baseText
           }
-
+          val spacer = Disc(scale) filled Clear padRight labelPad
+          distributeH(Align.middle(spacer, UnsafeRotate(text, -rotate)))
+        }
+        val label = UnsafeRotate(inner, rotate)
         wedge behind label
       }
 

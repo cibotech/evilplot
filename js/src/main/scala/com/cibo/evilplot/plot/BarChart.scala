@@ -4,7 +4,7 @@
  */
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, FlipY, Rect, Scale, Style}
+import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.ContinuousChartDistributable.HLines
 import com.cibo.evilplot.plotdefs.{BarChartDef, PlotOptions}
@@ -34,8 +34,9 @@ case class BarChart(chartSize: Extent, data: BarChartDef) extends DiscreteX {
       val _barWidth: Double = widthGetter(extent)
       val _barSpacing: Double = spacingGetter(extent)
       val vScale: Double = extent.height / yAxisDescriptor.axisBounds.range
-      val bars = data.counts.map { yValue => Style(options.barColor) {
-          Scale(y = vScale)(FlipY(yAxisDescriptor.axisBounds.max)(Rect(_barWidth, yValue))) }
+      val bars = data.counts.map { yValue =>
+        val b = Scale(flipY(Rect(_barWidth, yValue), yAxisDescriptor.axisBounds.max), y = vScale)
+        Style(b, options.barColor)
       }
       val allBars = bars.seqDistributeH(_barSpacing) padLeft _barSpacing / 2.0
       val hLines = options.hLines.map { lines =>

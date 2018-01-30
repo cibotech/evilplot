@@ -1,13 +1,15 @@
-import sbt.Keys.ivyScala
-import sbt.Project.projectToRef
+enablePlugins(ScalaJSPlugin)
 
 // adapted from https://github.com/ochrons/scalajs-spa-tutorial
 
-lazy val root = (project in file("."))
-  .aggregate(sharedJS, sharedJVM, js, jvm)
+lazy val root: Project = project.in(file("."))
+  .aggregate(evilplotJS, evilplotJVM)
   .settings(
     publishArtifact := false,
-    crossScalaVersions := Settings.versions.crossScalaVersions)
+    publish := {},
+    publishLocal := {},
+    crossScalaVersions := Settings.versions.crossScalaVersions
+  )
 
 lazy val commonSettings: Seq[Setting[_]] = Seq(
   name := s"${Settings.name}",
@@ -15,15 +17,12 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   version := Settings.version,
   crossScalaVersions := Settings.versions.crossScalaVersions,
   scalaVersion := crossScalaVersions.value.head,
-  scalacOptions ++= Settings.scalacOptions,
-  ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+  scalacOptions ++= Settings.scalacOptions
 )
 
-// a special crossProject for configuring a JS/JVM/shared structure
-lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
-  .settings(commonSettings)
+lazy val evilplot = crossProject.in(file("."))
   .settings(
-    name := s"${Settings.name}_shared",
+    commonSettings,
     libraryDependencies ++= Settings.sharedDependencies.value,
     publishTo in ThisBuild := {
       val repo = ""
@@ -34,35 +33,20 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
       }
     }
   )
-
-lazy val sharedJVM: Project = shared.jvm
-lazy val sharedJS: Project = shared.js
-
-// instantiate the JS project for SBT with some additional settings
-lazy val js: Project = (project in file("js"))
-  .settings(commonSettings: _*)
-  .settings(
+  .jsSettings(
     libraryDependencies ++= Settings.scalajsDependencies.value,
     libraryDependencies ++= Settings.sharedDependencies.value,
     jsDependencies ++= Settings.jsDependencies.value,
-    jsDependencies += RuntimeDOM,
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
     jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value),
     skip in packageJSDependencies := false,
     scalaJSUseMainModuleInitializer := false,
     scalaJSUseMainModuleInitializer in Test := false
-  ).enablePlugins(WorkbenchPlugin)
-  .dependsOn(sharedJS)
-
-
-// js projects (just one in this case)
-lazy val jss = Seq(js)
-
-// instantiate the JVM project for SBT with some additional settings
-lazy val jvm: Project = (project in file("jvm"))
-  .settings(commonSettings: _*)
-  .settings(
-  libraryDependencies ++= Settings.jvmDependencies.value,
-  resources in Compile += fullOptJS.in(js).in(Compile).value.data
   )
-.aggregate(jss.map(projectToRef): _*)
-.dependsOn(sharedJVM)
+  .enablePlugins(WorkbenchPlugin)
+  .jvmSettings(
+    libraryDependencies ++= Settings.jvmDependencies.value
+  )
+
+lazy val evilplotJS = evilplot.js
+lazy val evilplotJVM = evilplot.jvm

@@ -8,6 +8,6 @@ import com.cibo.evilplot.geometry._
 // TODO: More options for placement / not necessarily centered
 case class ChartAnnotation(text: Seq[String], position: (Double, Double), fontSize: Double = 12) {
   def drawable: Drawable = if (text.nonEmpty) {
-    Align.centerSeq(text.map(Text(_, fontSize))).reduce(Above)
+    Align.centerSeq(text.map(Text(_, fontSize))).reduce(Above.apply)
   } else EmptyDrawable()
 }
