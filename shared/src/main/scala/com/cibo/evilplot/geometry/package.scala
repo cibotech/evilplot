@@ -81,10 +81,12 @@ package object geometry {
     }
   }
 
-  def flipY(r: Drawable, height: Double): Drawable = FlipY(r, height)
-  def flipY(r: Drawable): Drawable = flipY(r, r.extent.height)
+  def flipY(r: Drawable, height: Double): Drawable =
+    Resize(Translate(Scale(r, 1, -1), y = height), r.extent.copy(height = height))
+  def flipY(r: Drawable): Drawable = Translate(Scale(r, 1, -1), y = r.extent.height)
 
-  def flipX(r: Drawable, width: Double): Drawable = FlipX(r, width)
+  def flipX(r: Drawable, width: Double): Drawable =
+    Resize(Translate(Scale(r, -1, 1), x = width), r.extent.copy(width = width))
 
   def pad(item: Drawable, left: Double = 0, right: Double = 0, top: Double = 0, bottom: Double = 0): Drawable =
     Pad(item, left, right, top, bottom)

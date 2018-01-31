@@ -237,16 +237,6 @@ object Resize {
   implicit val decoder: Decoder[Resize] = deriveDecoder[Resize]
 }
 
-final case class FlipY(r: Drawable, height: Double) extends Drawable {
-  lazy val extent: Extent = r.extent.copy(height = height)
-  def draw(context: RenderContext): Unit = Translate(Scale(r, 1, -1), y = height).draw(context)
-}
-
-final case class FlipX(r: Drawable, width: Double) extends Drawable {
-  lazy val extent: Extent = r.extent.copy(width = width)
-  def draw(context: RenderContext): Unit = Translate(Scale(r, -1, 1), x = width).draw(context)
-}
-
 //TODO: this doesn't need to be a drawable.
 final case class Above(top: Drawable, bottom: Drawable) extends Drawable {
   lazy val extent: Extent = Extent(
