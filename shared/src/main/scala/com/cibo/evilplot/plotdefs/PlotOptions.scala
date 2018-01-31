@@ -5,6 +5,8 @@ package com.cibo.evilplot.plotdefs
 
 import com.cibo.evilplot.colors.{Color, DefaultColors, HTMLNamedColors}
 import com.cibo.evilplot.numeric.Bounds
+import io.circe.{Encoder, Decoder}
+import io.circe.generic.semiauto._
 
 // TODO: Split generic parts of the configuration out.
 case class PlotOptions(title: Option[String] = None,
@@ -26,4 +28,9 @@ case class PlotOptions(title: Option[String] = None,
                        hLines: Option[Seq[(Double, Color)]] = None,
                        backgroundColor: Color = DefaultColors.backgroundColor,
                        barColor: Color = DefaultColors.barColor)
+
+object PlotOptions {
+  implicit val encoder: Encoder[PlotOptions] = deriveEncoder[PlotOptions]
+  implicit val decoder: Decoder[PlotOptions] = deriveDecoder[PlotOptions]
+}
 

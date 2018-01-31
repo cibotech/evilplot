@@ -32,8 +32,8 @@ case class BoxPlotChart(chartSize: Extent, data: BoxPlotDef) extends DiscreteX {
       summary <- data.summaries
       box = Box(yAxisDescriptor.axisBounds, _rectWidth, vScale, summary).drawable
       discs = data.drawPoints match {
-        case OutliersOnly if summary.outliers.nonEmpty => createDiscs(summary.outliers, vScale)
-        case AllPoints if summary.allPoints.nonEmpty => createDiscs(summary.allPoints, vScale)
+        case OutliersOnly() if summary.outliers.nonEmpty => createDiscs(summary.outliers, vScale)
+        case AllPoints() if summary.allPoints.nonEmpty => createDiscs(summary.allPoints, vScale)
         case _ => EmptyDrawable()
       }
     } yield Align.center(box, discs).group

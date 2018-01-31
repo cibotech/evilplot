@@ -42,7 +42,7 @@ case class PieChart(
             else
               baseText
           }
-          val spacer = Disc(scale) filled Clear padRight labelPad
+          val spacer = Disc(scale) filled Clear() padRight labelPad
           distributeH(Align.middle(spacer, UnsafeRotate(text, -rotate)))
         }
         val label = UnsafeRotate(inner, rotate)

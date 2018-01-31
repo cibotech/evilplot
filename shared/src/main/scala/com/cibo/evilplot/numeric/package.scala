@@ -1,6 +1,7 @@
 package com.cibo.evilplot
 
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto._
 
 package object numeric {
   type Grid = Vector[Vector[Double]]
@@ -16,7 +17,7 @@ package object numeric {
 
   case class Point3(x: Double, y: Double, z: Double)
 
-  case class GridData(grid: Grid,
+  final case class GridData(grid: Grid,
                       xBounds: Bounds,
                       yBounds: Bounds,
                       zBounds: Bounds,
@@ -24,6 +25,10 @@ package object numeric {
                       ySpacing: Double)
 
   object GridData {
+
+    implicit val encoder: Encoder[GridData] = deriveEncoder[GridData]
+    implicit val decoder: Decoder[GridData] = deriveDecoder[GridData]
+
     // make a grid data object out of a raw seq of points, assuming those points already lie in a grid.
     // the caller is presumed to know these parameters if they know that their data is already on a grid
     def apply(data: Seq[Point3],
@@ -52,7 +57,22 @@ package object numeric {
 
   case class Segment(a: Point, b: Point)
 
+  object Segment {
+    implicit val encoder: Encoder[Segment] = deriveEncoder[Segment]
+    implicit val decoder: Decoder[Segment] = deriveDecoder[Segment]
+  }
+
+  final case class Bounds(min: Double, max: Double) {
+    lazy val range: Double = max - min
+
+    def isInBounds(x: Double): Boolean = x >= min && x <= max
+  }
+
   object Bounds {
+
+    implicit val encoder: Encoder[Bounds] = deriveEncoder[Bounds]
+    implicit val decoder: Decoder[Bounds] = deriveDecoder[Bounds]
+
     private def lift[T](expr: => T): Option[T] = {
       try {
         Some(expr)
@@ -88,12 +108,6 @@ package object numeric {
             Bounds(math.min(acc.get.min, curr.min),
                    math.max(acc.get.max, curr.max)))
       }
-  }
-
-  case class Bounds(min: Double, max: Double) {
-    lazy val range: Double = max - min
-
-    def isInBounds(x: Double): Boolean = x >= min && x <= max
   }
 
   private val normalConstant = 1.0 / math.sqrt(2 * math.Pi)

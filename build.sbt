@@ -1,36 +1,36 @@
 enablePlugins(ScalaJSPlugin)
 
-lazy val commonSettings: Seq[Setting[_]] = Seq(
-  organization := Settings.organization,
-  version := Settings.version,
-  crossScalaVersions := Settings.versions.crossScalaVersions,
-  scalaVersion := crossScalaVersions.value.head,
-  scalacOptions ++= Settings.scalacOptions
-)
+crossScalaVersions in ThisBuild := Settings.versions.crossScalaVersions
+scalaVersion in ThisBuild := crossScalaVersions.value.head
+scalacOptions in ThisBuild ++= Settings.scalacOptions
 
 lazy val root = project.in(file("."))
-  .aggregate(evilplotJS, evilplotJVM, assetJS, assetJVM)
+  .aggregate(evilplotJVM, evilplotJS, assetJVM, evilplotRunner)
   .settings(
-    publishArtifact := false,
-    publish := {},
-    publishLocal := {},
-    crossScalaVersions := Settings.versions.crossScalaVersions
+    publishArtifact := false
   )
+
+lazy val commonSettings: Seq[Setting[_]] = Seq(
+  version := Settings.version,
+  organization := Settings.organization,
+  crossScalaVersions := Settings.versions.crossScalaVersions,
+  scalaVersion := crossScalaVersions.value.head,
+  scalacOptions ++= Settings.scalacOptions,
+  publishTo in ThisBuild := {
+    val repo = ""
+    if (isSnapshot.value) {
+      Some("snapshots" at repo + "libs-snapshot-local")
+    } else {
+      Some("releases" at repo + "libs-release-local")
+    }
+  }
+)
 
 lazy val evilplotAsset = crossProject.in(file("asset"))
   .dependsOn(evilplot)
-  .aggregate(evilplot)
+  .settings(commonSettings)
   .settings(
-    name := "evilplot-asset",
-    commonSettings,
-    publishTo in ThisBuild := {
-      val repo = ""
-      if (isSnapshot.value) {
-        Some("snapshots" at repo + "libs-snapshot-local")
-      } else {
-        Some("releases" at repo + "libs-release-local")
-      }
-    }
+    name := "evilplot-asset"
   )
   .jvmSettings(
     resourceGenerators.in(Compile) += Def.task {
@@ -43,24 +43,11 @@ lazy val evilplotAsset = crossProject.in(file("asset"))
 lazy val assetJS = evilplotAsset.js
 lazy val assetJVM = evilplotAsset.jvm
 
-// "Core" project so we can package the JS with the jar in the "evilplot" project.
 lazy val evilplot = crossProject.in(file("."))
+  .settings(commonSettings)
   .settings(
-    commonSettings,
     name := "evilplot",
-    publishTo in ThisBuild := {
-      val repo = ""
-      if (isSnapshot.value) {
-        Some("snapshots" at repo + "libs-snapshot-local")
-      } else {
-        Some("releases" at repo + "libs-release-local")
-      }
-    },
-    libraryDependencies ++= Settings.sharedDependencies.value,
-    publishArtifact := false,
-    publish := {},
-    publishLocal := {},
-    crossScalaVersions := Settings.versions.crossScalaVersions
+    libraryDependencies ++= Settings.sharedDependencies.value
   )
   .jsSettings(
     libraryDependencies ++= Settings.scalajsDependencies.value,
@@ -70,14 +57,22 @@ lazy val evilplot = crossProject.in(file("."))
     jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value),
     skip in packageJSDependencies := false,
     scalaJSUseMainModuleInitializer := false,
-    scalaJSUseMainModuleInitializer in Test := false,
-    artifactPath := baseDirectory.value
+    scalaJSUseMainModuleInitializer in Test := false
   )
   .jvmSettings(
     libraryDependencies ++= Settings.jvmDependencies.value
   )
-  .enablePlugins(WorkbenchPlugin)
 
-lazy val evilplotJS: Project = evilplot.js
-lazy val evilplotJVM: Project = evilplot.jvm
+lazy val evilplotJVM = evilplot.jvm
+lazy val evilplotJS = evilplot.js
+
+// For the workbench plugin
+lazy val evilplotRunner = project.in(file("runner"))
+  .aggregate(evilplotJS)
+  .settings(
+    publishArtifact := false,
+    publish := {},
+    publishLocal := {}
+  )
+  .enablePlugins(WorkbenchPlugin)
 
