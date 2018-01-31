@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.white
-import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Line, Text}
+import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 
 // TODO: ChartDistributable is not really a useful abstraction. Most of the code is the same.
@@ -32,7 +32,7 @@ object ContinuousChartDistributable {
 
         padLeft = getLinePosition(coordToDraw, distributableDimension) - tick.extent.width / 2.0
       } yield tick padLeft padLeft
-      lazy val _drawable = Align.center(_ticks.group, text).reduce(Above.apply)
+      lazy val _drawable = Align.center(_ticks.group, text).reduce(above)
       def drawable: Drawable = if (drawTicks) _drawable padTop 2 else EmptyDrawable()
   }
 
@@ -48,7 +48,7 @@ object ContinuousChartDistributable {
         padTop = distributableDimension - getLinePosition(coordToDraw, distributableDimension) - tick.extent.height / 2.0
       } yield tick padTop padTop
 
-      private lazy val _drawable = Align.middle(text padRight 10, Align.rightSeq(_ticks).group).reduce(Beside.apply)
+      private lazy val _drawable = Align.middle(text padRight 10, Align.rightSeq(_ticks).group).reduce(beside)
       def drawable: Drawable = if (drawTicks) _drawable padRight 2 else EmptyDrawable()
   }
 

@@ -49,7 +49,7 @@ object PlotDefinitionInterpreter {
             Line(5, 2),
             StrokeStyle.apply
           ).drawable
-          Align.middle(plot, legend) reduce Beside.apply
+          Align.middle(plot, legend) reduce beside
         } else plot
       case facetsDef: FacetsDef => Facets(getSize(facetsDef), facetsDef).drawable
     }

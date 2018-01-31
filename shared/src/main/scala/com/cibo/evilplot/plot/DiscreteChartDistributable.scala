@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
-import com.cibo.evilplot.geometry.{Above, Align, Drawable, EmptyDrawable, Extent, Line, StrokeStyle, Text}
+import com.cibo.evilplot.geometry._
 
 object DiscreteChartDistributable {
   // Returns getters for width and spacing that take extent of the chart in which the drawables are to be distributed
@@ -47,7 +47,7 @@ object DiscreteChartDistributable {
     } yield tick padLeft padLeft
 
     def drawable: Drawable = {
-      if (drawAxis) Align.center(_ticks.group, xAxisLabel).reduce(Above.apply)
+      if (drawAxis) Align.center(_ticks.group, xAxisLabel).reduce(above)
       else EmptyDrawable()
     }
   }

@@ -237,40 +237,6 @@ object Resize {
   implicit val decoder: Decoder[Resize] = deriveDecoder[Resize]
 }
 
-//TODO: this doesn't need to be a drawable.
-final case class Above(top: Drawable, bottom: Drawable) extends Drawable {
-  lazy val extent: Extent = Extent(
-    math.max(top.extent.width, bottom.extent.width),
-    top.extent.height + bottom.extent.height
-  )
-
-  def draw(context: RenderContext): Unit = {
-    top.draw(context)
-    Translate(bottom, y = top.extent.height).draw(context)
-  }
-}
-object Above {
-  implicit val encoder: Encoder[Above] = deriveEncoder[Above]
-  implicit val decoder: Decoder[Above] = deriveDecoder[Above]
-}
-
-//TODO: this doesn't need to be a drawable.
-final case class Beside(head: Drawable, tail: Drawable) extends Drawable {
-  lazy val extent: Extent = Extent(
-    head.extent.width + tail.extent.width,
-    math.max(head.extent.height, tail.extent.height)
-  )
-
-  def draw(context: RenderContext): Unit = {
-    head.draw(context)
-    Translate(tail, x = head.extent.width).draw(context)
-  }
-}
-object Beside {
-  implicit val encoder: Encoder[Beside] = deriveEncoder[Beside]
-  implicit val decoder: Decoder[Beside] = deriveDecoder[Beside]
-}
-
 //TODO: pull this out
 object Align {
   def bottomSeq(items: Seq[Drawable]): Seq[Drawable] = bottom(items: _*)

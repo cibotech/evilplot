@@ -63,7 +63,7 @@ private case class Box(
     val upperWhisker = Line((data.upperWhisker - data.upperQuantile) * vScale, 2) rotated 90
     val lowerWhisker = Line((data.lowerQuantile - data.lowerWhisker) * vScale, 2) rotated 90
     val nudgeBoxY = (yBounds.max - data.upperWhisker) * vScale
-    StrokeStyle(Align.center(upperWhisker, rectangles, lowerWhisker).reduce(Above.apply), strokeColor) transY nudgeBoxY
+    StrokeStyle(Align.center(upperWhisker, rectangles, lowerWhisker).reduce(above), strokeColor) transY nudgeBoxY
   }
   val drawable: Drawable = _drawable
 }

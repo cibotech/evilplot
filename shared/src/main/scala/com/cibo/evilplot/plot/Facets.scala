@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Above, Align, Beside, Drawable, EmptyDrawable, Extent, Grid, Text}
+import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.interpreter.PlotDefinitionInterpreter
 import com.cibo.evilplot.plotdefs._
 
@@ -39,8 +39,8 @@ case class Facets(extent: Extent, facetsDef: FacetsDef) {
       Align.middle(
         yLabel,
         Grid(facetsDef.numRows, facetsDef.numCols, facets, bottomPadding = bottomPadding, rightPadding = rightPadding).drawable
-      ).reduce(Beside.apply),
+      ).reduce(beside),
       xLabel transX yLabel.extent.width
-    ).reduce(Above.apply)
+    ).reduce(above)
   }
 }

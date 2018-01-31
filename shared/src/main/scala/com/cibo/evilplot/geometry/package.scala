@@ -8,9 +8,9 @@ import com.cibo.evilplot.colors.{Color, Colors, RGB}
 
 package object geometry {
   implicit class Placeable(r: Drawable) {
-    def above(other: Drawable): Above = Above(r, other)
-    def below(other: Drawable): Above = Above(other, r)
-    def beside(other: Drawable): Beside = Beside(r, other)
+    def above(other: Drawable): Drawable = geometry.above(r, other)
+    def below(other: Drawable): Drawable = geometry.above(other, r)
+    def beside(other: Drawable): Drawable = geometry.beside(r, other)
     def behind(other: Drawable): Group = Group(Seq(r, other))
     def inFrontOf(other: Drawable): Group = Group(Seq(other, r))
 
@@ -60,25 +60,41 @@ package object geometry {
     val consumed = drawables.map(_.extent.width).sum
     val inBetween = (hasWidth.width - consumed) / (drawables.length - 1)
     val padded = drawables.init.map(_ padRight inBetween) :+ drawables.last
-    padded.reduce(Beside.apply)
+    padded.reduce(beside)
   }
 
   def distributeH(drawables: Seq[Drawable], spacing: Double = 0): Drawable = {
     require(drawables.nonEmpty, "distributeH must be called with a non-empty Seq[Drawable]")
-    if (spacing == 0) drawables.reduce(Beside.apply)
+    if (spacing == 0) drawables.reduce(beside)
     else {
       val padded = drawables.init.map(_ padRight spacing) :+ drawables.last
-      padded.reduce(Beside.apply)
+      padded.reduce(beside)
     }
   }
 
   def distributeV(drawables: Seq[Drawable], spacing: Double = 0): Drawable = {
     require(drawables.nonEmpty, "distributeV must be called with a non-empty Seq[Drawable]")
-    if (spacing == 0) drawables.reduce(Above.apply)
+    if (spacing == 0) drawables.reduce(above)
     else {
       val padded = drawables.init.map(_ padBottom spacing) :+ drawables.last
-      padded.reduce(Above.apply)
+      padded.reduce(above)
     }
+  }
+
+  def above(top: Drawable, bottom: Drawable): Drawable = {
+    val newExtent = Extent(
+      math.max(top.extent.width, bottom.extent.width),
+      top.extent.height + bottom.extent.height
+    )
+    Resize(Group(Seq(top, Translate(bottom, y = top.extent.height))), newExtent)
+  }
+
+  def beside(left: Drawable, right: Drawable): Drawable = {
+    val newExtent = Extent(
+      left.extent.width + right.extent.width,
+      math.max(left.extent.height, right.extent.height)
+    )
+    Resize(Group(Seq(left, Translate(right, x = left.extent.width))), newExtent)
   }
 
   def flipY(r: Drawable, height: Double): Drawable =

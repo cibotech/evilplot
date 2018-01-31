@@ -11,7 +11,7 @@ case class GradientLegend(gradientBar: ScaledColorBar, height: Double = 150) {
   def drawable: Drawable = {
     val paletteHeight = height / gradientBar.nColors
     Text(Chart.createNumericLabel(gradientBar.zMax, 2)) above
-      Align.middle(gradientBar.colorSeq.reverseMap(color => Rect(10, paletteHeight) filled color): _*).reduce(Above.apply) above
+      Align.middle(gradientBar.colorSeq.reverseMap(color => Rect(10, paletteHeight) filled color): _*).reduce(above) above
       Text(Chart.createNumericLabel(gradientBar.zMin, 2))
   }
 }
@@ -34,7 +34,7 @@ case class Legend[T](
 
   private lazy val points = categoriesColors.map { case (label, color) =>
     val point = colorWith(shape, color)
-    Align.middle(point, Text(label.toString) padLeft 4 padBottom point.extent.height / 2).reduce(Beside.apply)
+    Align.middle(point, Text(label.toString) padLeft 4 padBottom point.extent.height / 2).reduce(beside)
   }
   def drawable: Drawable = points.seqDistributeV(shape.extent.height + 10)
 }
@@ -44,7 +44,7 @@ case class HorizontalTick(length: Double, thickness: Double, label: Option[Strin
   private val line = Line(length, thickness)
 
   def drawable: Drawable = label match {
-    case Some(_label) => Align.middle(Text(_label).padRight(2).padBottom(2), line).reduce(Beside.apply)
+    case Some(_label) => Align.middle(Text(_label).padRight(2).padBottom(2), line).reduce(beside)
     case None => line
   }
 }
@@ -53,7 +53,7 @@ case class VerticalTick(length: Double, thickness: Double, label: Option[String]
   private val line = Line(length, thickness).rotated(90)
 
   def drawable: Drawable = label match {
-    case Some(_label) => Align.center(line, (Text(_label) rotated rotateText).padTop(2)).reduce(Above.apply)
+    case Some(_label) => Align.center(line, (Text(_label) rotated rotateText).padTop(2)).reduce(above)
     case None => line
   }
 }
