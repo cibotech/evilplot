@@ -212,15 +212,6 @@ object Pad {
   def apply(x: Double, y: Double)(item: Drawable): Pad = Pad(item, x, x, y, y)
 }
 
-final case class Debug(r: Drawable) extends Drawable {
-  lazy val extent: Extent = r.extent
-  def draw(context: RenderContext): Unit = context.draw(this)
-}
-object Debug {
-  implicit val encoder: Encoder[Debug] = deriveEncoder[Debug]
-  implicit val decoder: Decoder[Debug] = deriveDecoder[Debug]
-}
-
 final case class Group(items: Seq[Drawable]) extends Drawable {
   lazy val extent: Extent = {
     if (items.isEmpty) {
@@ -235,6 +226,15 @@ final case class Group(items: Seq[Drawable]) extends Drawable {
 object Group {
   implicit val encoder: Encoder[Group] = deriveEncoder[Group]
   implicit val decoder: Decoder[Group] = deriveDecoder[Group]
+}
+
+// Change the size of the bounding box.
+final case class Resize(r: Drawable, extent: Extent) extends Drawable {
+  def draw(context: RenderContext): Unit = r.draw(context)
+}
+object Resize {
+  implicit val encoder: Encoder[Resize] = deriveEncoder[Resize]
+  implicit val decoder: Decoder[Resize] = deriveDecoder[Resize]
 }
 
 final case class FlipY(r: Drawable, height: Double) extends Drawable {
@@ -314,42 +314,6 @@ object Align {
 
     items.map(r => Translate(r, y = (groupHeight - r.extent.height) / 2.0))
   }
-}
-
-//TODO: pull this out
-final case class Fit(item: Drawable, width: Double, height: Double) extends Drawable {
-  lazy val extent = Extent(width, height)
-
-  def draw(context: RenderContext): Unit = {
-    val oldExtent = item.extent
-
-    val newAspectRatio = width / height
-    val oldAspectRatio = oldExtent.width / oldExtent.height
-
-    val widthIsLimiting = newAspectRatio < oldAspectRatio
-
-    val (scale, padFun) = if (widthIsLimiting) {
-      val scale = width / oldExtent.width
-      (
-        scale,
-        (d: Drawable) => Pad(d, top = ((height - oldExtent.height * scale) / 2) / scale)
-      )
-    } else { // height is limiting
-      val scale = height / oldExtent.height
-      (
-        scale,
-        (d:Drawable) => Pad(d, left = ((width - oldExtent.width * scale) / 2) / scale)
-      )
-    }
-
-    Scale(padFun(item), scale, scale).draw(context)
-  }
-}
-
-object Fit {
-  implicit val encoder: Encoder[Fit] = deriveEncoder[Fit]
-  implicit val decoder: Decoder[Fit] = deriveDecoder[Fit]
-  def apply(extent: Extent)(item: Drawable): Fit = Fit(item, extent.width, extent.height)
 }
 
 final case class Style(r: Drawable, fill: Color) extends Drawable {

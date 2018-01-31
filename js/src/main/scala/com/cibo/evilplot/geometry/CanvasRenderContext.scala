@@ -82,18 +82,6 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
     rotate.r.draw(this)
   }
 
-  def draw(debug: Debug): Unit = {
-    CanvasOp(canvas) {
-      val hexDigits = "0123456789ABCDEF"
-      canvas.strokeStyle = (0 until 3).map(_ => math.random * 255.0)
-        .map(v => s"${hexDigits(v.toInt >> 4)}${hexDigits(v.toInt & 15)}")
-        .mkString("#", "", "")
-
-      canvas.strokeRect(0, 0, debug.extent.width, debug.extent.height)
-    }
-    debug.r.draw(this)
-  }
-
   def draw(style: Style): Unit = CanvasOp(canvas) {
     canvas.fillStyle = style.fill.repr
     style.r.draw(this)

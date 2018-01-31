@@ -4,7 +4,7 @@
 
 package com.cibo.evilplot
 
-import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.colors.{Color, Colors, RGB}
 
 package object geometry {
   implicit class Placeable(r: Drawable) {
@@ -36,6 +36,14 @@ package object geometry {
     def transY(nudge: Double): Translate = Translate(r, y = nudge)
 
     def affine(affine: AffineTransform): Affine = Affine(r, affine)
+
+    // Draw a box around the drawable for debugging.
+    def debug(r: Drawable): Drawable = {
+      val red = (math.random * 255.0).toInt
+      val green = (math.random * 255.0).toInt
+      val blue = (math.random * 255.0).toInt
+      Group(Seq(StrokeStyle(BorderRect(r.extent.width, r.extent.height), RGB(red, green, blue)), r))
+    }
   }
 
   implicit class SeqPlaceable(drawables: Seq[Drawable]) {
@@ -77,4 +85,23 @@ package object geometry {
   def flipY(r: Drawable): Drawable = flipY(r, r.extent.height)
 
   def flipX(r: Drawable, width: Double): Drawable = FlipX(r, width)
+
+  def pad(item: Drawable, left: Double = 0, right: Double = 0, top: Double = 0, bottom: Double = 0): Drawable =
+    Pad(item, left, right, top, bottom)
+
+  def fit(item: Drawable, width: Double, height: Double): Drawable = {
+    val oldExtent = item.extent
+    val newAspectRatio = width / height
+    val oldAspectRatio = oldExtent.width / oldExtent.height
+    val widthIsLimiting = newAspectRatio < oldAspectRatio
+    val (scale, padded) = if (widthIsLimiting) {
+      val scale = width / oldExtent.width
+      (scale, pad(item, top = ((height - oldExtent.height * scale) / 2) / scale))
+    } else {
+      val scale = height / oldExtent.height
+      (scale, pad(item, left = ((width - oldExtent.width * scale) / 2) / scale))
+    }
+    Scale(padded, scale, scale)
+  }
+  def fit(item: Drawable, extent: Extent): Drawable = fit(item, extent.width, extent.height)
 }
