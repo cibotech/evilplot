@@ -17,14 +17,14 @@ package object geometry {
     def labeled(msgSize: (String, Double)): Drawable = Align.center(r, Text(msgSize._1, msgSize._2) padTop 5).group
     def labeled(msg: String): Drawable = labeled(msg -> Text.defaultSize)
 
-    def titled(msgSize: (String, Double)): Drawable = Pad(Text(msgSize._1, msgSize._2), bottom = msgSize._2 / 2.0)
+    def titled(msgSize: (String, Double)): Drawable = geometry.pad(Text(msgSize._1, msgSize._2), bottom = msgSize._2 / 2.0)
     def titled(msg: String): Drawable = titled(msg -> Text.defaultSize)
 
-    def padRight(pad: Double): Pad = Pad(r, right = pad)
-    def padLeft(pad: Double): Pad = Pad(r, left  = pad)
-    def padBottom(pad: Double): Pad = Pad(r, bottom = pad)
-    def padTop(pad: Double): Pad = Pad(r, top = pad)
-    def padAll(pad: Double): Pad = Pad(r, pad)
+    def padRight(pad: Double): Drawable = geometry.pad(r, right = pad)
+    def padLeft(pad: Double): Drawable = geometry.pad(r, left  = pad)
+    def padBottom(pad: Double): Drawable = geometry.pad(r, bottom = pad)
+    def padTop(pad: Double): Drawable = geometry.pad(r, top = pad)
+    def padAll(pad: Double): Drawable = geometry.padAll(r, pad)
 
     def rotated(degrees: Double): Rotate = Rotate(r, degrees)
 
@@ -104,8 +104,15 @@ package object geometry {
   def flipX(r: Drawable, width: Double): Drawable =
     Resize(Translate(Scale(r, -1, 1), x = width), r.extent.copy(width = width))
 
-  def pad(item: Drawable, left: Double = 0, right: Double = 0, top: Double = 0, bottom: Double = 0): Drawable =
-    Pad(item, left, right, top, bottom)
+  def pad(item: Drawable, left: Double = 0, right: Double = 0, top: Double = 0, bottom: Double = 0): Drawable = {
+    val newExtent = Extent(
+      item.extent.width + left + right,
+      item.extent.height + top + bottom
+    )
+    Resize(Translate(item, x = left, y = top), newExtent)
+  }
+
+  def padAll(item: Drawable, size: Double): Drawable = pad(item, size, size, size, size)
 
   def fit(item: Drawable, width: Double, height: Double): Drawable = {
     val oldExtent = item.extent

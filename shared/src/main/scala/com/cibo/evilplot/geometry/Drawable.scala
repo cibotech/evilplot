@@ -189,29 +189,6 @@ object UnsafeRotate {
   implicit val decoder: Decoder[UnsafeRotate] = deriveDecoder[UnsafeRotate]
 }
 
-final case class Pad(
-  item: Drawable,
-  left: Double = 0,
-  right: Double = 0,
-  top: Double = 0,
-  bottom: Double = 0
-) extends Drawable {
-  lazy val extent = Extent(
-    item.extent.width + left + right,
-    item.extent.height + top + bottom
-  )
-
-  def draw(context: RenderContext): Unit = Translate(item, x = left, y = top).draw(context)
-}
-
-object Pad {
-  implicit val encoder: Encoder[Pad] = deriveEncoder[Pad]
-  implicit val decoder: Decoder[Pad] = deriveDecoder[Pad]
-
-  def apply(surround: Double)(item: Drawable): Pad = Pad(item, surround, surround, surround, surround)
-  def apply(x: Double, y: Double)(item: Drawable): Pad = Pad(item, x, x, y, y)
-}
-
 final case class Group(items: Seq[Drawable]) extends Drawable {
   lazy val extent: Extent = {
     if (items.isEmpty) {
@@ -236,8 +213,6 @@ object Resize {
   implicit val encoder: Encoder[Resize] = deriveEncoder[Resize]
   implicit val decoder: Decoder[Resize] = deriveDecoder[Resize]
 }
-
-
 
 final case class Style(r: Drawable, fill: Color) extends Drawable {
   lazy val extent: Extent = r.extent
