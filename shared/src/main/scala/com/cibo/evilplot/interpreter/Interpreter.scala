@@ -19,6 +19,7 @@ object PlotDefinitionInterpreter {
   def eval(plotDef: PlotDef, extent: Option[Extent]): Drawable = {
     def getSize(pd: PlotDef): Extent = extent.getOrElse(pd.extent.getOrElse(defaultSize))
     plotDef match {
+      case drawable: DrawablePlotDef => drawable.drawable
       case scatter: ScatterPlotDef =>
         val plot = ScatterPlot(getSize(scatter), scatter).drawable
         if (scatter.options.makeLegend && scatter.zData.isDefined) {

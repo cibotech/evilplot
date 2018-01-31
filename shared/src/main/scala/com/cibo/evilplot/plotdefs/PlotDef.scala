@@ -5,7 +5,7 @@
 package com.cibo.evilplot.plotdefs
 
 import com.cibo.evilplot.colors.{Color, ColorBar, HTMLNamedColors, SingletonColorBar}
-import com.cibo.evilplot.geometry.Extent
+import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric._
 
 // A plot definition is a descriptor containing all of the data and settings required for the renderer to construct
@@ -22,6 +22,7 @@ sealed trait PlotDef {
   // Lots of unfortunate boilerplate here. From https://groups.google.com/forum/#!topic/scala-internals/O1yrB1xetUA ,
   // seems like this is moderately unavoidable
   def withOptions(opts: PlotOptions): PlotDef = this match {
+    case d: DrawablePlotDef => d
     case sp: ScatterPlotDef => sp.copy(options = opts)
     case cp: ContourPlotDef => cp.copy(options = opts)
     case bc: BarChartDef => bc.copy(options = opts)
@@ -50,6 +51,8 @@ final case class Trendline(slope: Double, intercept: Double) {
   }
   def valueAt(x: Double): Double = slope * x + intercept
 }
+
+final case class DrawablePlotDef(drawable: Drawable) extends PlotDef
 
 final case class ScatterPlotDef(
                                  data: Seq[Point],
