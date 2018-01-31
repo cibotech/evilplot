@@ -237,40 +237,7 @@ object Resize {
   implicit val decoder: Decoder[Resize] = deriveDecoder[Resize]
 }
 
-//TODO: pull this out
-object Align {
-  def bottomSeq(items: Seq[Drawable]): Seq[Drawable] = bottom(items: _*)
 
-  def bottom(items: Drawable*): Seq[Drawable] = {
-    lazy val groupHeight = items.maxBy(_.extent.height).extent.height
-
-    items.map(r => Translate(r, y = groupHeight - r.extent.height))
-  }
-
-  def centerSeq(items: Seq[Drawable]): Seq[Drawable] = center(items: _*)
-
-  def center(items: Drawable*): Seq[Drawable] = {
-    lazy val groupWidth = items.maxBy(_.extent.width).extent.width
-
-    items.map(r => Translate(r, x = (groupWidth - r.extent.width) / 2.0))
-  }
-
-  def right(items: Drawable*): Seq[Drawable] = {
-    lazy val groupWidth = items.maxBy(_.extent.width).extent.width
-
-    items.map(r => Translate(r, x = groupWidth - r.extent.width))
-  }
-
-  def rightSeq(items: Seq[Drawable]): Seq[Drawable] = right(items: _*)
-
-  def middleSeq(items: Seq[Drawable]): Seq[Drawable] = middle(items: _*)
-
-  def middle(items: Drawable*): Seq[Drawable] = {
-    lazy val groupHeight = items.maxBy(_.extent.height).extent.height
-
-    items.map(r => Translate(r, y = (groupHeight - r.extent.height) / 2.0))
-  }
-}
 
 final case class Style(r: Drawable, fill: Color) extends Drawable {
   lazy val extent: Extent = r.extent
