@@ -101,17 +101,18 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
 
     // Adjust the size of the font to fill the requested extent.
     // text.size assumes that the text will fill text.extent, but
-    // in reality, it will fill baseExtent.  So we need to scale the
-    // size to fill text.extent.
-    // This situation can arise if the generation of the scene graph
-    // assumed the wrong DPI.
+    // in reality, it will fill baseExtent.
+    // So we need to scale the size to fill text.extent.
     val baseExtent = TextMetrics.measure(text)
-    val scale = text.extent.height / baseExtent.height
-    val adjustedSize = text.size * scale
+    val scalex = text.extent.width / baseExtent.width
+    val scaley = text.extent.height / baseExtent.height
 
-    TextMetrics.withStyle(adjustedSize) { c =>
-      c.fillText(text.msg, 0, 0)
-    }(canvas)
+    CanvasOp(canvas) {
+      canvas.scale(scalex, scaley)
+      TextMetrics.withStyle(text.size) { c =>
+        c.fillText(text.msg, 0, 0)
+      }(canvas)
+    }
   }
 }
 
