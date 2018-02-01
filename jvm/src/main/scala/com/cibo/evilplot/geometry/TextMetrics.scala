@@ -12,7 +12,7 @@ object TextMetrics extends TextMetricsInterface {
   def measure(text: Text): Extent = {
     val fontWithSize = font.deriveFont(text.size.toFloat)
     val width = fontWithSize.getStringBounds(text.msg, frc).getWidth
-    val height = fontWithSize.getMaxCharBounds(frc).getHeight
+    val height = fontWithSize.getSize2D
     Extent(width, height)
   }
 }
