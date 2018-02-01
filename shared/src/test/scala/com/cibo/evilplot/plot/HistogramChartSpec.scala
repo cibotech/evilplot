@@ -3,14 +3,13 @@
  */
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.DOMInitializer
 import com.cibo.evilplot.colors.HTMLNamedColors
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric._
+import com.cibo.evilplot.DOMInitializer
 import org.scalatest._
 
 import scala.util.Random
-
 
 // TODO: These tests need a lot of work before they are actually useful!
 class HistogramChartSpec extends FunSpec with Matchers {
