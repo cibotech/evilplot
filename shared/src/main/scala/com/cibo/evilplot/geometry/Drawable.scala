@@ -205,7 +205,8 @@ object Group {
   implicit val decoder: Decoder[Group] = deriveDecoder[Group]
 }
 
-// Change the size of the bounding box.
+// Change the size of the bounding box without changing the contents.
+// This is used for padding below, for example.
 final case class Resize(r: Drawable, extent: Extent) extends Drawable {
   def draw(context: RenderContext): Unit = r.draw(context)
 }

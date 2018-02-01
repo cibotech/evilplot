@@ -20,7 +20,7 @@ class FacetsDefSpec extends FunSpec with Matchers {
     val pds = fs.map(f => (range zip range.map(f)).map{ case (x, y) => Point(x, y) }).map(d => ScatterPlotDef(d))
 
     it("should place X axes only on the plots in the bottom row (FixedX)") {
-      val facetsDef = FacetsDef(3, 2, pds, None, None, FixedX(), None, PlotOptions())
+      val facetsDef = FacetsDef(3, 2, pds, None, None, FixedX, None, PlotOptions())
       val bottomPlots = facetsDef.plotDefs.drop(4)
       val otherPlots = facetsDef.plotDefs.take(4)
       for (plotDef <- bottomPlots) {
@@ -32,7 +32,7 @@ class FacetsDefSpec extends FunSpec with Matchers {
     }
 
     it("should place Y axes only on the plots in the left column (FixedY)") {
-      val facetsDef = FacetsDef(3, 2, pds, None, None, FixedY(), None, PlotOptions())
+      val facetsDef = FacetsDef(3, 2, pds, None, None, FixedY, None, PlotOptions())
       val leftPlots = facetsDef.plotDefs.grouped(2).map(_.head)
       val otherPlots = facetsDef.plotDefs.grouped(2).map(_.tail.head)
       for (plotDef <- leftPlots) {

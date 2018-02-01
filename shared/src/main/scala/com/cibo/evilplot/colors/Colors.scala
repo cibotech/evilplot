@@ -11,7 +11,7 @@ sealed trait Color {
   val repr: String
 }
 
-final case class Clear() extends Color {
+case object Clear extends Color {
   val repr = "hsla(0, 0%, 0%, 0)"
 }
 

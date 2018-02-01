@@ -123,7 +123,7 @@ final case class BarChartDef(counts: Seq[Double],
 // an option to send. however, by default it shouldn't? Current behavior is serialize it all.
 final case class BoxPlotDef(labels: Seq[String],
                             summaries: Seq[BoxPlotSummaryStatistics],
-                            drawPoints: BoxPlotPoints = OutliersOnly(),
+                            drawPoints: BoxPlotPoints = OutliersOnly,
                             rectWidth: Option[Double] = None,
                             rectSpacing: Option[Double] = None,
                             rectColor: Color = HTMLNamedColors.blue,
@@ -208,7 +208,7 @@ object FacetsDef {
                   rows: Seq[U => PlotDef],
                   columnLabels: Option[Seq[String]] = None,
                   rowLabels: Option[Seq[String]] = None,
-                  axisScales: ScaleOption = FixedScales(),
+                  axisScales: ScaleOption = FixedScales,
                   extent: Option[Extent] = None,
                   baseOptions: PlotOptions = PlotOptions()): FacetsDef = {
     val nRows = rows.length
@@ -231,11 +231,11 @@ object FacetsDef {
     import FacetsDefFunctions._
     // Build the function required to take the "naive" plot definitions to what goes in the finished plot.
     val withAxesOptions = axisScales match {
-      case FixedScales() => fixYBounds _ compose fixXBounds compose bottomXAxes(nRows, nCols) compose
+      case FixedScales => fixYBounds _ compose fixXBounds compose bottomXAxes(nRows, nCols) compose
         leftYAxes(nRows, nCols)
-      case FixedX() => fixXBounds _ compose bottomXAxes(nRows, nCols)
-      case FixedY() => fixYBounds _ compose leftYAxes(nRows, nCols)
-      case FreeScales() => identity[Seq[PlotDef]] _
+      case FixedX => fixXBounds _ compose bottomXAxes(nRows, nCols)
+      case FixedY => fixYBounds _ compose leftYAxes(nRows, nCols)
+      case FreeScales => identity[Seq[PlotDef]] _
     }
 
     val finalPlotDefs = addLabels(nRows, nCols, rowLabels, columnLabels)_ compose withAxesOptions
@@ -268,9 +268,9 @@ object OneLinePlotData {
 }
 
 sealed trait BoxPlotPoints
-case class AllPoints() extends BoxPlotPoints
-case class OutliersOnly() extends BoxPlotPoints
-case class NoPoints() extends BoxPlotPoints
+case object AllPoints extends BoxPlotPoints
+case object OutliersOnly extends BoxPlotPoints
+case object NoPoints extends BoxPlotPoints
 
 object BoxPlotPoints {
   implicit val encoder: Encoder[BoxPlotPoints] = deriveEncoder[BoxPlotPoints]
@@ -278,10 +278,10 @@ object BoxPlotPoints {
 }
 
 sealed trait ScaleOption
-case class FixedScales() extends ScaleOption
-case class FixedX() extends ScaleOption
-case class FixedY() extends ScaleOption
-case class FreeScales() extends ScaleOption
+case object FixedScales extends ScaleOption
+case object FixedX extends ScaleOption
+case object FixedY extends ScaleOption
+case object FreeScales extends ScaleOption
 
 
 object ScaleOption {
