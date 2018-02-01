@@ -244,14 +244,23 @@ object StrokeWeight {
   implicit val decoder: Decoder[StrokeWeight] = deriveDecoder[StrokeWeight]
 }
 
-final case class Text(msg: String, size: Double = Text.defaultSize) extends Drawable {
+final case class Text(
+  msg: String,
+  size: Double = Text.defaultSize,
+  extentOpt: Option[Extent] = None
+) extends Drawable {
   require(size >= 0.5, s"Cannot use $size, canvas will not draw text initially sized < 0.5px even when scaling")
 
-  lazy val extent: Extent = TextMetrics.measure(this)
+  lazy val extent: Extent = extentOpt.getOrElse(TextMetrics.measure(this))
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Text {
-  implicit val encoder: Encoder[Text] = deriveEncoder[Text]
+
+  implicit val encoder: Encoder[Text] = Encoder.instance[Text] { text =>
+    // Lock down the extents when encoding.
+    deriveEncoder[Text].apply(text.copy(extentOpt = Some(text.extent)))
+  }
+
   implicit val decoder: Decoder[Text] = deriveDecoder[Text]
 
   val defaultSize: Double = 10
