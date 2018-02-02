@@ -1,4 +1,4 @@
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.white
@@ -9,12 +9,12 @@ import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
 object ContinuousChartDistributable {
   /* Base trait for axes and grid lines. */
   trait ContinuousChartDistributableBase {
-    private[plot] val axisDescriptor: AxisDescriptor
+    private[oldplot] val axisDescriptor: AxisDescriptor
     protected val distributableDimension: Double
     protected val tickThick = 1
     protected val tickLength = 5
-    private[plot] lazy val bounds: Bounds = axisDescriptor.axisBounds
-    private[plot] lazy val pixelsPerUnit: Double = distributableDimension / bounds.range
+    private[oldplot] lazy val bounds: Bounds = axisDescriptor.axisBounds
+    private[oldplot] lazy val pixelsPerUnit: Double = distributableDimension / bounds.range
 
     def getLinePosition(coord: Double, distributableDimension: Double): Double =
       (coord - bounds.min) * pixelsPerUnit
@@ -55,7 +55,7 @@ object ContinuousChartDistributable {
 
   trait GridLines extends ContinuousChartDistributableBase {
     val lineSpacing: Double
-    private[plot] val nLines: Int = math.ceil(bounds.range / lineSpacing).toInt
+    private[oldplot] val nLines: Int = math.ceil(bounds.range / lineSpacing).toInt
     protected val chartAreaSize: Extent // size of area in which to draw the grid lines.
     protected val minGridLineCoord: Double = axisDescriptor.tickMin
     def drawable: Drawable

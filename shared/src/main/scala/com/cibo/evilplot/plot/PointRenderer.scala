@@ -1,4 +1,4 @@
-package com.cibo.evilplot.plot2d
+package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Disc, Drawable}

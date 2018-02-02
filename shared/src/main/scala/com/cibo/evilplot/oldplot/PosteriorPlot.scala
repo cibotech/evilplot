@@ -2,7 +2,7 @@
  * Copyright 2017 CiBO Technologies
  */
 
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{AffineTransform, Disc, Drawable, EmptyDrawable, Extent, Path, StrokeStyle}

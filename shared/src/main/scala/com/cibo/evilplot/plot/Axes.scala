@@ -1,8 +1,8 @@
-package com.cibo.evilplot.plot2d
+package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.AxisDescriptor
-import com.cibo.evilplot.plot.Chart
+import com.cibo.evilplot.oldplot.Chart
 
 object Axes {
 
@@ -42,19 +42,19 @@ object Axes {
     }
   }
 
-  private case class XAxisLabelAnnotation[T](label: Drawable) extends PlotAnnotation[T] {
-    val position: PlotAnnotation.Position = PlotAnnotation.Bottom
-    override def size(plot: Plot2D[T]): Extent = label.extent
-    def render(plot: Plot2D[T], extent: Extent): Drawable = label.center(extent.width)
+  private case class XAxisLabelPlotComponent[T](label: Drawable) extends PlotComponent[T] {
+    val position: PlotComponent.Position = PlotComponent.Bottom
+    override def size(plot: Plot[T]): Extent = label.extent
+    def render(plot: Plot[T], extent: Extent): Drawable = label.center(extent.width)
   }
 
-  private case class YAxisLabelAnnotation[T](label: Drawable) extends PlotAnnotation[T] {
-    val position: PlotAnnotation.Position = PlotAnnotation.Left
-    override def size(plot: Plot2D[T]): Extent = label.extent
-    def render(plot: Plot2D[T], extent: Extent): Drawable = label.middle(extent.height)
+  private case class YAxisLabelPlotComponent[T](label: Drawable) extends PlotComponent[T] {
+    val position: PlotComponent.Position = PlotComponent.Left
+    override def size(plot: Plot[T]): Extent = label.extent
+    def render(plot: Plot[T], extent: Extent): Drawable = label.middle(extent.height)
   }
 
-  private abstract class AxisAnnotation[T] extends PlotAnnotation[T] with Plot2D.Transformer[T] {
+  private abstract class AxisPlotComponent[T] extends PlotComponent[T] with Plot.Transformer[T] {
     val tickCount: Int
     val tickRenderer: Option[String] => Drawable
 
@@ -67,16 +67,16 @@ object Axes {
     }
   }
 
-  private case class XAxisAnnotation[T](
+  private case class XAxisPlotComponent[T](
     tickCount: Int,
     tickRenderer: Option[String] => Drawable
-  ) extends AxisAnnotation[T] {
-    val position: PlotAnnotation.Position = PlotAnnotation.Bottom
+  ) extends AxisPlotComponent[T] {
+    val position: PlotComponent.Position = PlotComponent.Bottom
 
-    override def size(plot: Plot2D[T]): Extent =
+    override def size(plot: Plot[T]): Extent =
       ticks(AxisDescriptor(plot.xbounds, tickCount)).maxBy(_.extent.height).extent
 
-    def render(plot: Plot2D[T], extent: Extent): Drawable = {
+    def render(plot: Plot[T], extent: Extent): Drawable = {
       val descriptor = AxisDescriptor(plot.xbounds, tickCount)
       val scale = extent.width / descriptor.axisBounds.range
       ticks(descriptor).zipWithIndex.map { case (tick, i) =>
@@ -85,23 +85,23 @@ object Axes {
       }.group
     }
 
-    def apply(plot: Plot2D[T], extent: Extent): Double => Double = {
+    def apply(plot: Plot[T], extent: Extent): Double => Double = {
       val descriptor = AxisDescriptor(plot.xbounds, tickCount)
       val scale = extent.width / descriptor.axisBounds.range
       (x: Double) => (x - descriptor.axisBounds.min) * scale
     }
   }
 
-  private case class YAxisAnnotation[T](
+  private case class YAxisPlotComponent[T](
     tickCount: Int,
     tickRenderer: Option[String] => Drawable
-  ) extends AxisAnnotation[T] {
-    val position: PlotAnnotation.Position = PlotAnnotation.Left
+  ) extends AxisPlotComponent[T] {
+    val position: PlotComponent.Position = PlotComponent.Left
 
-    override def size(plot: Plot2D[T]): Extent =
+    override def size(plot: Plot[T]): Extent =
       ticks(AxisDescriptor(plot.ybounds, tickCount)).maxBy(_.extent.width).extent
 
-    def render(plot: Plot2D[T], extent: Extent): Drawable = {
+    def render(plot: Plot[T], extent: Extent): Drawable = {
       val descriptor = AxisDescriptor(plot.ybounds, tickCount)
       val scale = extent.height / descriptor.axisBounds.range
       val ts = ticks(descriptor)
@@ -112,30 +112,30 @@ object Axes {
       }.group
     }
 
-    def apply(plot: Plot2D[T], extent: Extent): Double => Double = {
+    def apply(plot: Plot[T], extent: Extent): Double => Double = {
       val descriptor = AxisDescriptor(plot.ybounds, tickCount)
       val scale = extent.height / descriptor.axisBounds.range
       (y: Double) => extent.height - (y - descriptor.axisBounds.min) * scale
     }
   }
 
-  private case class TitleAnnotation[T](d: Drawable) extends PlotAnnotation[T] {
-    val position: PlotAnnotation.Position = PlotAnnotation.Top
-    override def size(plot: Plot2D[T]): Extent = d.extent
-    def render(plot: Plot2D[T], extent: Extent): Drawable = d.center(extent.width)
+  private case class TitlePlotComponent[T](d: Drawable) extends PlotComponent[T] {
+    val position: PlotComponent.Position = PlotComponent.Top
+    override def size(plot: Plot[T]): Extent = d.extent
+    def render(plot: Plot[T], extent: Extent): Drawable = d.center(extent.width)
   }
 
   trait AxesImplicits[T] {
-    protected val plot: Plot2D[T]
+    protected val plot: Plot[T]
 
-    def title(d: Drawable): Plot2D[T] = plot :+ TitleAnnotation[T](d)
-    def title(label: String, size: Double = 22): Plot2D[T] = title(Text(label, size) padBottom 4)
+    def title(d: Drawable): Plot[T] = plot :+ TitlePlotComponent[T](d)
+    def title(label: String, size: Double = 22): Plot[T] = title(Text(label, size) padBottom 4)
 
-    def xLabel(d: Drawable): Plot2D[T] = plot :+ XAxisLabelAnnotation[T](d)
-    def xLabel(label: String, size: Double = 20): Plot2D[T] = xLabel(Text(label, size).padTop(4))
+    def xLabel(d: Drawable): Plot[T] = plot :+ XAxisLabelPlotComponent[T](d)
+    def xLabel(label: String, size: Double = 20): Plot[T] = xLabel(Text(label, size).padTop(4))
 
-    def yLabel(d: Drawable): Plot2D[T] = plot :+ YAxisLabelAnnotation[T](d)
-    def yLabel(label: String, size: Double = 20): Plot2D[T] = yLabel(Text(label, size).rotated(270).padLeft(4))
+    def yLabel(d: Drawable): Plot[T] = plot :+ YAxisLabelPlotComponent[T](d)
+    def yLabel(label: String, size: Double = 20): Plot[T] = yLabel(Text(label, size).rotated(270).padLeft(4))
 
     /** Add an X axis to the plot.
       *
@@ -145,8 +145,8 @@ object Axes {
     def xAxis(
       tickCount: Int = defaultTickCount,
       tickRenderer: Option[String] => Drawable = xAxisTickRenderer()
-    ): Plot2D[T] = {
-      val annotation = XAxisAnnotation[T](tickCount, tickRenderer)
+    ): Plot[T] = {
+      val annotation = XAxisPlotComponent[T](tickCount, tickRenderer)
       annotation +: plot.copy(xtransform = annotation)
     }
 
@@ -158,8 +158,8 @@ object Axes {
     def yAxis(
       tickCount: Int = defaultTickCount,
       tickRenderer: Option[String] => Drawable = yAxisTickRenderer()
-    ): Plot2D[T] = {
-      val annotation = YAxisAnnotation[T](tickCount, tickRenderer)
+    ): Plot[T] = {
+      val annotation = YAxisPlotComponent[T](tickCount, tickRenderer)
       annotation +: plot.copy(ytransform = annotation)
     }
   }

@@ -1,4 +1,4 @@
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.{ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry._
@@ -12,14 +12,14 @@ case class ScatterPlot(val chartSize: Extent, definition: ScatterPlotDef) extend
   val defaultYAxisBounds: Bounds = Bounds(data.minBy(_.y).y, data.maxBy(_.y).y)
 
   // Will return an EmptyDrawable if point is out-of-bounds.
-  private[plot] def scatterPoint(x: Double, y: Double)(scaleX: Double, scaleY: Double): Drawable = {
+  private[oldplot] def scatterPoint(x: Double, y: Double)(scaleX: Double, scaleY: Double): Drawable = {
     if (xAxisDescriptor.axisBounds.isInBounds(x) && yAxisDescriptor.axisBounds.isInBounds(y))
       Disc(definition.pointSize,
         (x - xAxisDescriptor.axisBounds.min) * scaleX, (yAxisDescriptor.axisBounds.max - y) * scaleY)
     else EmptyDrawable()
   }
 
-  private[plot] def trendLine(trendline: Trendline,
+  private[oldplot] def trendLine(trendline: Trendline,
                 xBounds: Bounds,
                 yBounds: Bounds): Option[Seq[Point]] = {
 

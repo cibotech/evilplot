@@ -2,7 +2,7 @@
  * Copyright 2017 CiBO Technologies
  */
 
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.{Color, ColorBar, ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry._

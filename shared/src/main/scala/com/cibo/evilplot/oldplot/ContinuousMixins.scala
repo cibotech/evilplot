@@ -1,9 +1,9 @@
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.{Color, DefaultColors, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Align, Drawable, EmptyDrawable, Extent, Rect, Text}
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
-import com.cibo.evilplot.plot.ContinuousChartDistributable._
+import com.cibo.evilplot.oldplot.ContinuousChartDistributable._
 
 // TODO: there's a ton of repetition in between these traits, could definitely eliminate w/ some more thought
 // (but this repetition eliminates overall repetition in codebase by a lot, so still a good step)

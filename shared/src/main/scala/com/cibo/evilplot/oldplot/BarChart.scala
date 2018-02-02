@@ -2,11 +2,11 @@
 /*
  * Copyright 2017 CiBO Technologies
  */
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.ContinuousChartDistributable.HLines
+import com.cibo.evilplot.oldplot.ContinuousChartDistributable.HLines
 import com.cibo.evilplot.plotdefs.{BarChartDef, PlotOptions}
 
 /**

@@ -1,10 +1,10 @@
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.DefaultColors
 import com.cibo.evilplot.geometry.{Align, Drawable, EmptyDrawable, Extent, Rect, Text}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.ContinuousChartDistributable.YAxis
-import com.cibo.evilplot.plot.DiscreteChartDistributable._
+import com.cibo.evilplot.oldplot.ContinuousChartDistributable.YAxis
+import com.cibo.evilplot.oldplot.DiscreteChartDistributable._
 
 // trying to accomplish this writing as little code as possible...
 trait DiscreteX extends ContinuousAxes {

@@ -1,7 +1,7 @@
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.plot.Chart.ChartRendertimeSpaceException
+import com.cibo.evilplot.oldplot.Chart.ChartRendertimeSpaceException
 import com.cibo.evilplot.plotdefs.PlotOptions
 
 trait Chart {

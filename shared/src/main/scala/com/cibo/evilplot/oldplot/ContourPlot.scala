@@ -1,4 +1,4 @@
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.{ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Path, StrokeStyle}

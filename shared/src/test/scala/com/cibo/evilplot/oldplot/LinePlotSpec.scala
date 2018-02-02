@@ -1,7 +1,7 @@
 /*
  * Copyright 2017 CiBO Technologies
  */
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.{HTMLNamedColors => colors}
 import com.cibo.evilplot.numeric.{Bounds, Point}
