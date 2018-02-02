@@ -1,7 +1,6 @@
 Evil Plot is about combinators for graphics.
 
 One-time setup:
-Run `npm install` in the top-level project directory
 Install PhantomJS: `brew install phantomjs`
 
 To run Evil Plot:
@@ -18,6 +17,3 @@ $ sbt
 Running unit tests:
 Requires PhantomJS, and unit tests must be run from `sbt`, not from within IntelliJ.
 
-sbt note:
-Per the [ScalaTest installation instructions](http://www.scalatest.org/install), add this line to ~/.sbt/0.13/global.sbt:
-```resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"```
