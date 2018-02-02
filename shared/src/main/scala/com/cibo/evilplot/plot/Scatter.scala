@@ -26,6 +26,6 @@ object Scatter {
   ): Plot[Seq[Point]] = {
     val xbounds = Bounds(data.minBy(_.x).x, data.maxBy(_.x).x)
     val ybounds = Bounds(data.minBy(_.y).y, data.maxBy(_.y).y)
-    Plot[Seq[Point]](data, xbounds, ybounds, renderScatter(pointRenderer)).background()
+    Plot[Seq[Point]](data, xbounds, ybounds, renderScatter(pointRenderer))
   }
 }

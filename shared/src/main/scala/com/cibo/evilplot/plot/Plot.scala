@@ -104,4 +104,40 @@ object Plot {
     def apply(plot: Plot[T], extent: Extent): Double => Double =
       (y: Double) => extent.height - (y - plot.ybounds.min) * extent.height / plot.ybounds.range
   }
+
+  // Combine the bounds for multiple plots (taking the widest).
+  private[plot] def combineBounds(bounds: Seq[Bounds]): Bounds = {
+    Bounds(bounds.minBy(_.min).min, bounds.maxBy(_.max).max)
+  }
+
+  // Force all plots to have the same size plot area.
+  private[plot] def padPlots(plots: Seq[Seq[Plot[_]]], extent: Extent): Seq[Seq[Plot[_]]] = {
+    // First we get the offsets of all subplots.  By selecting the largest
+    // offset, we can pad all plots to start at the same location.
+    val plotOffsets = plots.flatMap(_.map(_.plotOffset))
+    val xoffset = plotOffsets.maxBy(_.x).x
+    val yoffset = plotOffsets.maxBy(_.y).y
+
+    // Update the plots with their offsets.
+    val offsetPlots = plots.map { row =>
+      row.map { subplot =>
+        subplot.padTop(yoffset - subplot.plotOffset.y).padLeft(xoffset - subplot.plotOffset.x)
+      }
+    }
+
+    // Now the subplots all start at the same place, so we need to ensure they all
+    // end at the same place.  We do this by computing the maximum right and bottom
+    // fill amounts and then padding.
+    val plotAreas = offsetPlots.flatMap(_.map(_.plotExtent(extent)))
+    val minWidth = plotAreas.minBy(_.width).width
+    val minHeight = plotAreas.minBy(_.height).height
+    offsetPlots.map { row =>
+      row.map { subplot =>
+        val pe = subplot.plotExtent(extent)
+        val fillx = pe.width - minWidth
+        val filly = pe.height - minHeight
+        subplot.padRight(fillx).padBottom(filly)
+      }
+    }
+  }
 }
