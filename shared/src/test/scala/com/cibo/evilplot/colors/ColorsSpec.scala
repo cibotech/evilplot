@@ -4,7 +4,6 @@
 
 package com.cibo.evilplot.colors
 
-import com.cibo.evilplot.colors.Colors.ColorSeq
 import org.scalatest.Matchers._
 import org.scalatest._
 
@@ -13,7 +12,7 @@ class ColorsSpec extends FunSpec {
     it("should assign distinct colors to different years") {
       val z: Seq[Double] = Seq(2012, 2013, 2012, 2011)
 
-      val colorBar = ScaledColorBar(ColorSeq.getGradientSeq(3), z.min, z.max)
+      val colorBar = ScaledColorBar(Color.getGradientSeq(3), z.min, z.max)
       val colorsFromData = z.map(colorBar.getColor)
 
       colorsFromData.head should === (colorsFromData(2))

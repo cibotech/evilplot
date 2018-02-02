@@ -44,7 +44,8 @@ object PlotAnnotation {
     }
   }
 
-  implicit class PlotWithAnnotate[T](plot: Plot2D[T]) {
+  trait AnnotationImplicits[T] {
+    protected val plot: Plot2D[T]
 
     /** Add an annotation to the plot.
       * @param f A function to create the drawable to render.

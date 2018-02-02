@@ -1,7 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.Colors.ColorSeq
-import com.cibo.evilplot.colors.{Clear, HTMLNamedColors}
+import com.cibo.evilplot.colors.{Clear, Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plotdefs.PlotOptions
 
@@ -49,11 +48,11 @@ case class PieChart(
         wedge behind label
       }
 
-      wedges.zip(ColorSeq.getGradientSeq(wedges.length)).map { case (r, color) => r filled color }
+      wedges.zip(Color.getGradientSeq(wedges.length)).map { case (r, color) => r filled color }
     }.group
 
     val legend = flowH(
-      data.zip(ColorSeq.getGradientSeq(data.length)).map {
+      data.zip(Color.getGradientSeq(data.length)).map {
         case (d, c) => Rect(scale / 5.0) filled c labeled f"${d * 100}%.1f%%" },
       pieWedges.extent
     ) padTop 20

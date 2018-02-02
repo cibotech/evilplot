@@ -4,7 +4,7 @@
 
 package com.cibo.evilplot
 
-import com.cibo.evilplot.colors.{Color, Colors, RGB}
+import com.cibo.evilplot.colors.{Color, RGB}
 
 package object geometry {
   implicit class Placeable(r: Drawable) {

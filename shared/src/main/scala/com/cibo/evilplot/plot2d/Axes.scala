@@ -125,10 +125,11 @@ object Axes {
     def render(plot: Plot2D[T], extent: Extent): Drawable = d.center(extent.width)
   }
 
-  implicit class Plot2DAxes[T](plot: Plot2D[T]) {
+  trait AxesImplicits[T] {
+    protected val plot: Plot2D[T]
 
     def title(d: Drawable): Plot2D[T] = plot.copy(annotations = plot.annotations :+ TitleAnnotation[T](d))
-    def title(label: String, size: Double = 22): Plot2D[T] = title(Text(label, size))
+    def title(label: String, size: Double = 22): Plot2D[T] = title(Text(label, size) padBottom 4)
 
     def xLabel(d: Drawable): Plot2D[T] = plot.copy(annotations = plot.annotations :+ XAxisLabelAnnotation[T](d))
     def xLabel(label: String, size: Double = 20): Plot2D[T] = xLabel(Text(label, size).padTop(4))
