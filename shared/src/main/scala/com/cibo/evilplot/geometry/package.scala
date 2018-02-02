@@ -37,8 +37,13 @@ package object geometry {
 
     def affine(affine: AffineTransform): Affine = Affine(r, affine)
 
+    def center(width: Double): Drawable = Translate(r, x = (width - r.extent.width) / 2)
+    def right(width: Double): Drawable = Translate(r, x = width - r.extent.width)
+    def middle(height: Double): Drawable = Translate(r, y = (height - r.extent.height) / 2)
+    def bottom(height: Double): Drawable = Translate(r, y = height - r.extent.height)
+
     // Draw a box around the drawable for debugging.
-    def debug(r: Drawable): Drawable = {
+    def debug: Drawable = {
       val red = (math.random * 255.0).toInt
       val green = (math.random * 255.0).toInt
       val blue = (math.random * 255.0).toInt
