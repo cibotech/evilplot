@@ -1,8 +1,0 @@
-{
-  "name": "evilPlot",
-  "version": "0.0.0",
-  "private": true,
-  "devDependencies": {
-    "jsdom": "^11.1.0"
-  }
-}
