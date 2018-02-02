@@ -2,6 +2,10 @@
  * Copyright 2017 CiBO Technologies
  */
 package com.cibo.evilplot.numeric
+
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto._
+
 // TODO:  reporting draws all the points atop the box plot. For now, this definition includes all the points.
 // For general use, it doesn't make much sense to do this. (For the same reason it doesn't make sense to for the
 // histogram).
@@ -26,6 +30,10 @@ case class BoxPlotSummaryStatistics(min: Double,
  * see https://docs.scipy.org/doc/numpy-dev/reference/generated/numpy.percentile.html under `interpolation='linear'`
  */
 object BoxPlotSummaryStatistics {
+
+  implicit val encoder: Encoder[BoxPlotSummaryStatistics] = deriveEncoder[BoxPlotSummaryStatistics]
+  implicit val decoder: Decoder[BoxPlotSummaryStatistics] = deriveDecoder[BoxPlotSummaryStatistics]
+
   def apply(data: Seq[Double],
             quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
             includeAllPoints: Boolean = false): BoxPlotSummaryStatistics = {

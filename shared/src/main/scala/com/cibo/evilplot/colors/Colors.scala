@@ -5,29 +5,14 @@
 package com.cibo.evilplot.colors
 
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto._
 
 sealed trait Color {
   val repr: String
 }
 
-case object Clear extends Color{
-  override val repr = "hsla(0, 0%, 0%, 0)"
-}
-
-object RGBA {
-  def apply(r: Int, g: Int, b: Int, a: Double): HSLA = ColorUtils.rgbaToHsla(r, g, b, a)
-}
-
-object RGB {
-  def apply(r: Int, g: Int, b: Int): HSLA = ColorUtils.rgbaToHsla(r, g, b, 1.0)
-}
-
-object HSL {
-  def apply(hue: Int, saturation: Int, lightness: Int): HSLA = HSLA(hue, saturation, lightness, 1.0)
-}
-
-object HEX {
-  def apply(string: String): HSLA = ColorUtils.hexToHsla(string)
+case object Clear extends Color {
+  val repr = "hsla(0, 0%, 0%, 0)"
 }
 
 case class HSLA(hue: Int, saturation: Int, lightness: Int, opacity: Double) extends Color {
@@ -61,6 +46,52 @@ case class HSLA(hue: Int, saturation: Int, lightness: Int, opacity: Double) exte
   }
 
   val repr = s"hsla($hue, $saturation%, $lightness%, $opacity)"
+}
+
+object RGBA {
+  def apply(r: Int, g: Int, b: Int, a: Double): HSLA = ColorUtils.rgbaToHsla(r, g, b, a)
+}
+
+object RGB {
+  def apply(r: Int, g: Int, b: Int): HSLA = ColorUtils.rgbaToHsla(r, g, b, 1.0)
+}
+
+object HSL {
+  def apply(hue: Int, saturation: Int, lightness: Int): HSLA = HSLA(hue, saturation, lightness, 1.0)
+}
+
+object HEX {
+  def apply(string: String): HSLA = ColorUtils.hexToHsla(string)
+}
+
+object Color {
+  implicit val encoder: Encoder[Color] = io.circe.generic.semiauto.deriveEncoder[Color]
+  implicit val decoder: Decoder[Color] = io.circe.generic.semiauto.deriveDecoder[Color]
+}
+
+sealed trait ColorBar
+
+// Use when one color is wanted but a ColorBar is needed.
+case class SingletonColorBar(color: Color) extends ColorBar
+
+// Map a sequence of colors to a continuous variable z.
+case class ScaledColorBar(colorSeq: Seq[Color], zMin: Double, zMax: Double) extends ColorBar {
+  val nColors = colorSeq.length
+  val zWidth = (zMax - zMin) / nColors.toFloat
+  def getColor(i: Int): Color = {
+    require((i >= 0) && (i < colorSeq.length))
+    colorSeq(i)
+  }
+
+  def getColor(z: Double): Color = {
+    val colorIndex = math.min(math.round(math.floor((z - zMin) / zWidth)).toInt, nColors - 1)
+    colorSeq(colorIndex)
+  }
+}
+
+object ColorBar {
+  implicit val encoder: Encoder[ColorBar] = deriveEncoder[ColorBar]
+  implicit val decoder: Decoder[ColorBar] = deriveDecoder[ColorBar]
 }
 
 object Colors {
@@ -101,25 +132,6 @@ object Colors {
         (saturationBase + saturationLevel(epoch)).round.toInt,
         50
       )
-    }
-  }
-
-  sealed trait ColorBar
-  // Use when one color is wanted but a ColorBar is needed.
-  case class SingletonColorBar(color: Color) extends ColorBar
-
-  // Map a sequence of colors to a continuous variable z.
-  case class ScaledColorBar(colorSeq: Seq[Color], zMin: Double, zMax: Double) extends ColorBar {
-    val nColors = colorSeq.length
-    val zWidth = (zMax - zMin) / nColors.toFloat
-    def getColor(i: Int): Color = {
-      require((i >= 0) && (i < colorSeq.length))
-      colorSeq(i)
-    }
-
-    def getColor(z: Double): Color = {
-      val colorIndex = math.min(math.round(math.floor((z - zMin) / zWidth)).toInt, nColors - 1)
-      colorSeq(colorIndex)
     }
   }
 

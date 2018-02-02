@@ -5,13 +5,16 @@
 package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.numeric.Point
+import io.circe.{Decoder, Encoder}
 
-case class AffineTransform(scaleX: Double = 1,
-    shearX: Double = 0,
-    shearY: Double = 0,
-    scaleY: Double = 1,
-    shiftX: Double = 0,
-    shiftY: Double = 0) {
+final case class AffineTransform(
+  scaleX: Double = 1,
+  shearX: Double = 0,
+  shearY: Double = 0,
+  scaleY: Double = 1,
+  shiftX: Double = 0,
+  shiftY: Double = 0
+) {
 
   def scale(x: Double = 1, y: Double = 1): AffineTransform = this.compose(AffineTransform.scale(x, y))
 
@@ -52,6 +55,9 @@ case class AffineTransform(scaleX: Double = 1,
 }
 
 object AffineTransform {
+
+  implicit val encoder: Encoder[AffineTransform] = io.circe.generic.semiauto.deriveEncoder[AffineTransform]
+  implicit val decoder: Decoder[AffineTransform] = io.circe.generic.semiauto.deriveDecoder[AffineTransform]
 
   def identity: AffineTransform = AffineTransform()
 

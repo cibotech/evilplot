@@ -1,6 +1,6 @@
 package com.cibo.evilplot.colors
 
-private[colors] object ColorUtils{
+private[colors] object ColorUtils {
 
   //https://en.wikipedia.org/wiki/Hue
   //https://en.wikipedia.org/wiki/HSL_and_HSV

@@ -4,10 +4,11 @@
 
 package com.cibo.evilplot.plotdefs
 
-import com.cibo.evilplot.colors.Colors.{ColorBar, SingletonColorBar}
-import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
-import com.cibo.evilplot.geometry.Extent
+import com.cibo.evilplot.colors.{Color, ColorBar, HTMLNamedColors, SingletonColorBar}
+import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric._
+import io.circe.generic.semiauto._
+import io.circe.{Encoder, Decoder}
 
 // A plot definition is a descriptor containing all of the data and settings required for the renderer to construct
 // a renderable plot object.
@@ -23,6 +24,7 @@ sealed trait PlotDef {
   // Lots of unfortunate boilerplate here. From https://groups.google.com/forum/#!topic/scala-internals/O1yrB1xetUA ,
   // seems like this is moderately unavoidable
   def withOptions(opts: PlotOptions): PlotDef = this match {
+    case d: DrawablePlotDef => d
     case sp: ScatterPlotDef => sp.copy(options = opts)
     case cp: ContourPlotDef => cp.copy(options = opts)
     case bc: BarChartDef => bc.copy(options = opts)
@@ -36,14 +38,6 @@ sealed trait PlotDef {
   def fixXBounds(newXBounds: Option[Bounds]): PlotDef = withOptions(this.options.copy(xAxisBounds = newXBounds))
 }
 
-object PlotDef {
-  import io.circe.generic.auto._
-  import io.circe.generic.semiauto._
-  import io.circe.{Encoder, Decoder}
-  implicit val plotDefEncoder: Encoder[PlotDef] = deriveEncoder[PlotDef]
-  implicit val plotDefDecoder: Decoder[PlotDef] = deriveDecoder[PlotDef]
-}
-
 final case class Trendline(slope: Double, intercept: Double) {
   // There are mathematical holes here.
   def solveForX(y: Double): Double = {
@@ -51,6 +45,13 @@ final case class Trendline(slope: Double, intercept: Double) {
   }
   def valueAt(x: Double): Double = slope * x + intercept
 }
+
+object Trendline {
+  implicit val encoder: Encoder[Trendline] = deriveEncoder[Trendline]
+  implicit val decoder: Decoder[Trendline] = deriveDecoder[Trendline]
+}
+
+final case class DrawablePlotDef(drawable: Drawable) extends PlotDef
 
 final case class ScatterPlotDef(
                                  data: Seq[Point],
@@ -91,8 +92,7 @@ final case class HistogramChartDef(data: Histogram,
                                    annotation: Seq[String] = Nil,
                                    bounds: Option[Bounds] = None,
                                    override val extent: Option[Extent] = None,
-                                   override val options: PlotOptions =
-                                   PlotOptions())
+                                   override val options: PlotOptions = PlotOptions())
   extends PlotDef {
   override def xBounds: Option[Bounds] = Some(Bounds(data.min, data.max))
 
@@ -262,13 +262,34 @@ final case class OneLinePlotData(points: Seq[Point], color: Color, name: Option[
   }
 }
 
+object OneLinePlotData {
+  implicit val encoder: Encoder[OneLinePlotData] = deriveEncoder[OneLinePlotData]
+  implicit val decoder: Decoder[OneLinePlotData] = deriveDecoder[OneLinePlotData]
+}
+
 sealed trait BoxPlotPoints
 case object AllPoints extends BoxPlotPoints
 case object OutliersOnly extends BoxPlotPoints
 case object NoPoints extends BoxPlotPoints
+
+object BoxPlotPoints {
+  implicit val encoder: Encoder[BoxPlotPoints] = deriveEncoder[BoxPlotPoints]
+  implicit val decoder: Decoder[BoxPlotPoints] = deriveDecoder[BoxPlotPoints]
+}
 
 sealed trait ScaleOption
 case object FixedScales extends ScaleOption
 case object FixedX extends ScaleOption
 case object FixedY extends ScaleOption
 case object FreeScales extends ScaleOption
+
+
+object ScaleOption {
+  implicit val encoder: Encoder[ScaleOption] = deriveEncoder[ScaleOption]
+  implicit val decoder: Decoder[ScaleOption] = deriveDecoder[ScaleOption]
+}
+
+object PlotDef {
+  implicit val plotDefEncoder: Encoder[PlotDef] = deriveEncoder[PlotDef]
+  implicit val plotDefDecoder: Decoder[PlotDef] = deriveDecoder[PlotDef]
+}

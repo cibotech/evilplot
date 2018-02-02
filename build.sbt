@@ -1,68 +1,78 @@
-import sbt.Keys.ivyScala
-import sbt.Project.projectToRef
+enablePlugins(ScalaJSPlugin)
 
-// adapted from https://github.com/ochrons/scalajs-spa-tutorial
+crossScalaVersions in ThisBuild := Settings.versions.crossScalaVersions
+scalaVersion in ThisBuild := crossScalaVersions.value.head
+scalacOptions in ThisBuild ++= Settings.scalacOptions
 
-lazy val root = (project in file("."))
-  .aggregate(sharedJS, sharedJVM, js, jvm)
+lazy val root = project.in(file("."))
+  .aggregate(evilplotJVM, evilplotJS, assetJVM, evilplotRunner)
   .settings(
-    publishArtifact := false,
-    crossScalaVersions := Settings.versions.crossScalaVersions)
+    publishArtifact := false
+  )
 
 lazy val commonSettings: Seq[Setting[_]] = Seq(
-  name := s"${Settings.name}",
-  organization := Settings.organization,
   version := Settings.version,
+  organization := Settings.organization,
   crossScalaVersions := Settings.versions.crossScalaVersions,
   scalaVersion := crossScalaVersions.value.head,
   scalacOptions ++= Settings.scalacOptions,
-  ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+  publishTo in ThisBuild := {
+    val repo = ""
+    if (isSnapshot.value) {
+      Some("snapshots" at repo + "libs-snapshot-local")
+    } else {
+      Some("releases" at repo + "libs-release-local")
+    }
+  }
 )
 
-// a special crossProject for configuring a JS/JVM/shared structure
-lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
+lazy val evilplotAsset = crossProject.in(file("asset"))
+  .dependsOn(evilplot)
   .settings(commonSettings)
   .settings(
-    name := s"${Settings.name}_shared",
-    libraryDependencies ++= Settings.sharedDependencies.value,
-    publishTo in ThisBuild := {
-      val repo = ""
-      if (isSnapshot.value) {
-        Some("snapshots" at repo + "libs-snapshot-local")
-      } else {
-        Some("releases" at repo + "libs-release-local")
-      }
+    name := "evilplot-asset"
+  )
+  .jvmSettings(
+    resourceGenerators.in(Compile) += Def.task {
+      val asset = fullOptJS.in(evilplotJS).in(Compile).value.data
+      val dest = resourceDirectory.in(Compile).value / asset.getName
+      IO.copy(Seq(asset -> dest)).toSeq
     }
   )
 
-lazy val sharedJVM: Project = shared.jvm
-lazy val sharedJS: Project = shared.js
+lazy val assetJS = evilplotAsset.js
+lazy val assetJVM = evilplotAsset.jvm
 
-// instantiate the JS project for SBT with some additional settings
-lazy val js: Project = (project in file("js"))
-  .settings(commonSettings: _*)
+lazy val evilplot = crossProject.in(file("."))
+  .settings(commonSettings)
   .settings(
+    name := "evilplot",
+    libraryDependencies ++= Settings.sharedDependencies.value
+  )
+  .jsSettings(
     libraryDependencies ++= Settings.scalajsDependencies.value,
     libraryDependencies ++= Settings.sharedDependencies.value,
     jsDependencies ++= Settings.jsDependencies.value,
-    jsDependencies += RuntimeDOM,
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
     jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value),
     skip in packageJSDependencies := false,
     scalaJSUseMainModuleInitializer := false,
     scalaJSUseMainModuleInitializer in Test := false
-  ).enablePlugins(WorkbenchPlugin)
-  .dependsOn(sharedJS)
-
-
-// js projects (just one in this case)
-lazy val jss = Seq(js)
-
-// instantiate the JVM project for SBT with some additional settings
-lazy val jvm: Project = (project in file("jvm"))
-  .settings(commonSettings: _*)
-  .settings(
-  libraryDependencies ++= Settings.jvmDependencies.value,
-  resources in Compile += fullOptJS.in(js).in(Compile).value.data
   )
-.aggregate(jss.map(projectToRef): _*)
-.dependsOn(sharedJVM)
+  .jvmSettings(
+    libraryDependencies ++= Settings.jvmDependencies.value
+  )
+
+lazy val evilplotJVM = evilplot.jvm
+lazy val evilplotJS = evilplot.js
+
+// For the workbench plugin
+lazy val evilplotRunner = project.in(file("runner"))
+  .aggregate(evilplotJS)
+  .settings(
+    publishArtifact := false,
+    publish := {},
+    publishLocal := {}
+  )
+  .enablePlugins(WorkbenchPlugin)
+

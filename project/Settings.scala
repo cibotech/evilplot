@@ -6,8 +6,6 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
  * You normally don't have to touch the actual build definition after this.
  */
 object Settings {
-  /** The name of your application */
-  val name = "evilplot"
   val organization = "com.cibo"
 
   /** The version of your application */
