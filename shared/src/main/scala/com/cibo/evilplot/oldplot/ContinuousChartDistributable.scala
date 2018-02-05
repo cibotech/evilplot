@@ -3,13 +3,13 @@ package com.cibo.evilplot.oldplot
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.white
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
+import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, ContinuousAxisDescriptor}
 
 // TODO: ChartDistributable is not really a useful abstraction. Most of the code is the same.
 object ContinuousChartDistributable {
   /* Base trait for axes and grid lines. */
   trait ContinuousChartDistributableBase {
-    private[oldplot] val axisDescriptor: AxisDescriptor
+    private[oldplot] val axisDescriptor: ContinuousAxisDescriptor
     protected val distributableDimension: Double
     protected val tickThick = 1
     protected val tickLength = 5
@@ -21,13 +21,13 @@ object ContinuousChartDistributable {
 
   }
 
-  case class XAxis(distributableDimension: Double, axisDescriptor: AxisDescriptor,
+  case class XAxis(distributableDimension: Double, axisDescriptor: ContinuousAxisDescriptor,
                    label: Option[String] = None, drawTicks: Boolean = true) extends ContinuousChartDistributableBase {
       lazy val text = label.map(msg => Text(msg, 22)).getOrElse(EmptyDrawable())
       private val _ticks = for {
         numTick <- 0 until axisDescriptor.numTicks
         coordToDraw = axisDescriptor.axisBounds.min + numTick * axisDescriptor.spacing
-        label = Chart.createNumericLabel(coordToDraw, axisDescriptor.numFrac)
+        label = AxisDescriptor.createNumericLabel(coordToDraw, axisDescriptor.numFrac)
         tick = VerticalTick(tickLength, tickThick, Some(label)).drawable
 
         padLeft = getLinePosition(coordToDraw, distributableDimension) - tick.extent.width / 2.0
@@ -36,13 +36,13 @@ object ContinuousChartDistributable {
       def drawable: Drawable = if (drawTicks) _drawable padTop 2 else EmptyDrawable()
   }
 
-  case class YAxis(distributableDimension: Double, axisDescriptor: AxisDescriptor,
+  case class YAxis(distributableDimension: Double, axisDescriptor: ContinuousAxisDescriptor,
                    label: Option[String] = None, drawTicks: Boolean = true) extends ContinuousChartDistributableBase {
       private lazy val text = label.map(msg => Text(msg, 20) rotated 270).getOrElse(EmptyDrawable())
       private val _ticks = for {
         numTick <- (axisDescriptor.numTicks - 1) to 0 by -1
         coordToDraw = axisDescriptor.tickMin + numTick * axisDescriptor.spacing
-        label = Chart.createNumericLabel(coordToDraw, axisDescriptor.numFrac)
+        label = AxisDescriptor.createNumericLabel(coordToDraw, axisDescriptor.numFrac)
         tick = HorizontalTick(tickLength, tickThick, Some(label)).drawable
 
         padTop = distributableDimension - getLinePosition(coordToDraw, distributableDimension) - tick.extent.height / 2.0
@@ -63,7 +63,7 @@ object ContinuousChartDistributable {
 
   case class VerticalGridLines(
     chartAreaSize: Extent,
-    axisDescriptor: AxisDescriptor,
+    axisDescriptor: ContinuousAxisDescriptor,
     lineSpacing: Double,
     color: Color = white
   ) extends GridLines {
@@ -78,7 +78,7 @@ object ContinuousChartDistributable {
     def drawable: Drawable = lines.group
   }
 
-  case class HorizontalGridLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor,
+  case class HorizontalGridLines(chartAreaSize: Extent, axisDescriptor: ContinuousAxisDescriptor,
                                  lineSpacing: Double, color: Color = white) extends GridLines {
       protected val distributableDimension: Double = chartAreaSize.height
       private val lines = for {
@@ -92,7 +92,7 @@ object ContinuousChartDistributable {
   }
 
   // TODO: Labeling these vertical lines in a way that doesn't mess up their positioning!
-  case class VLines(chartAreaSize: Extent, axisDescriptor: AxisDescriptor,
+  case class VLines(chartAreaSize: Extent, axisDescriptor: ContinuousAxisDescriptor,
                     linesToDraw: Seq[(Double, Color)])
     extends ContinuousChartDistributableBase {
     val distributableDimension: Double = chartAreaSize.width
@@ -105,7 +105,7 @@ object ContinuousChartDistributable {
 
   case class HLines(
     chartAreaSize: Extent,
-    axisDescriptor: AxisDescriptor,
+    axisDescriptor: ContinuousAxisDescriptor,
     linesToDraw: Seq[(Double, Color)]
   ) extends ContinuousChartDistributableBase {
     val distributableDimension: Double = chartAreaSize.height

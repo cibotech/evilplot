@@ -6,13 +6,14 @@ package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.{Color, ColorBar, ScaledColorBar, SingletonColorBar}
 import com.cibo.evilplot.geometry._
+import com.cibo.evilplot.numeric.AxisDescriptor
 
 case class GradientLegend(gradientBar: ScaledColorBar, height: Double = 150) {
   def drawable: Drawable = {
     val paletteHeight = height / gradientBar.nColors
-    Text(Chart.createNumericLabel(gradientBar.zMax, 2)) above
+    Text(AxisDescriptor.createNumericLabel(gradientBar.zMax, 2)) above
       Align.middle(gradientBar.colorSeq.reverseMap(color => Rect(10, paletteHeight) filled color): _*).reduce(above) above
-      Text(Chart.createNumericLabel(gradientBar.zMin, 2))
+      Text(AxisDescriptor.createNumericLabel(gradientBar.zMin, 2))
   }
 }
 

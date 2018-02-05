@@ -28,9 +28,9 @@ package object geometry {
 
     def rotated(degrees: Double): Rotate = Rotate(r, degrees)
 
-    def colored(color: Color): StrokeStyle = StrokeStyle(r, fill = color)
-    def filled(color: Color): Style = Style(r, fill = color)
-    def weighted(weight: Double): StrokeWeight = StrokeWeight(r, weight = weight)
+    def colored(color: Color): Drawable = StrokeStyle(r, fill = color)
+    def filled(color: Color): Drawable = Style(r, fill = color)
+    def weighted(weight: Double): Drawable = StrokeWeight(r, weight = weight)
 
     def transX(nudge: Double): Translate = Translate(r, x = nudge)
     def transY(nudge: Double): Translate = Translate(r, y = nudge)

@@ -2,15 +2,15 @@ package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.{Color, DefaultColors, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Align, Drawable, EmptyDrawable, Extent, Rect, Text}
-import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
+import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, ContinuousAxisDescriptor}
 import com.cibo.evilplot.oldplot.ContinuousChartDistributable._
 
 // TODO: there's a ton of repetition in between these traits, could definitely eliminate w/ some more thought
 // (but this repetition eliminates overall repetition in codebase by a lot, so still a good step)
 
 object ContinuousUtilities {
-  def maybeGridLines(area: Extent, spacing: Option[Double], desc: AxisDescriptor, color: Color = HTMLNamedColors.white)
-                     (glConstructor: (Extent, AxisDescriptor, Double, Color) => GridLines): Drawable =
+  def maybeGridLines(area: Extent, spacing: Option[Double], desc: ContinuousAxisDescriptor, color: Color = HTMLNamedColors.white)
+                     (glConstructor: (Extent, ContinuousAxisDescriptor, Double, Color) => GridLines): Drawable =
     spacing match {
       case Some(_spacing) => glConstructor(area, desc, _spacing, color).drawable
       case None => glConstructor(area, desc, desc.spacing, color).drawable
@@ -23,9 +23,9 @@ trait ContinuousAxes extends Chart {
   protected val defaultXAxisBounds: Bounds
   protected val defaultYAxisBounds: Bounds
   private lazy val xAxisDrawBounds: Bounds = options.xAxisBounds.getOrElse(defaultXAxisBounds)
-  lazy val xAxisDescriptor: AxisDescriptor = AxisDescriptor(xAxisDrawBounds, options.numXTicks.getOrElse(10))
+  lazy val xAxisDescriptor: ContinuousAxisDescriptor = ContinuousAxisDescriptor(xAxisDrawBounds, options.numXTicks.getOrElse(10))
   private lazy val yAxisDrawBounds: Bounds = options.yAxisBounds.getOrElse(defaultYAxisBounds)
-  lazy val yAxisDescriptor: AxisDescriptor = AxisDescriptor(yAxisDrawBounds, options.numYTicks.getOrElse(10))
+  lazy val yAxisDescriptor: ContinuousAxisDescriptor = ContinuousAxisDescriptor(yAxisDrawBounds, options.numYTicks.getOrElse(10))
 
   // Unideal, but if we're going to be making a plot of a *specific* size, then we have to measure the height and
   // width of the axes, tear these out of the main plot area, then recreate these objects. If we change from a top-down
