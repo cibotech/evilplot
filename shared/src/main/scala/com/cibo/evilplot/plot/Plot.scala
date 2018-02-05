@@ -148,8 +148,8 @@ object Plot {
   // Force all plots to have the same size plot area.
   private[plot] def padPlots(plots: Seq[Seq[Plot[_]]], extent: Extent): Seq[Seq[Plot[_]]] = {
 
-    val extraRight = 10
-    val extraTop = 10
+    val extraRight = 20
+    val extraTop = 15
 
     // First we get the offsets of all subplots.  By selecting the largest
     // offset, we can pad all plots to start at the same location.

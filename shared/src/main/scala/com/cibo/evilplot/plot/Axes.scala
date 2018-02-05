@@ -58,6 +58,8 @@ object Axes {
     val tickCount: Int
     val tickRenderer: Option[String] => Drawable
 
+    final override val repeated: Boolean = true
+
     protected def ticks(descriptor: AxisDescriptor): Seq[Drawable] = {
       for {
         i <- 0 until descriptor.numTicks

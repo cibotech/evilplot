@@ -9,6 +9,10 @@ private[plot] abstract class PlotComponent {
   // The position of this component.
   val position: PlotComponent.Position
 
+  // Determines if this component is repeated in facets.
+  // For example, axes and backgrounds are repeated.
+  val repeated: Boolean = false
+
   // Get the minimum size of this component.
   def size[T](plot: Plot[T]): Extent = Extent(0, 0)
 
@@ -45,6 +49,7 @@ object PlotComponent {
     f: (Plot[_], Extent) => Drawable
   ) extends PlotComponent {
     val position: Position = Background
+    override val repeated: Boolean = true
     def render[T](plot: Plot[T], extent: Extent): Drawable = f(plot, extent)
   }
 
