@@ -12,20 +12,22 @@ final case class Plot[T] private[evilplot] (
     (p: Plot[T], e: Extent) => Plot.defaultComponentRenderer(p, e),
   private[plot] val xtransform: Plot.Transformer = Plot.DefaultXTransformer(),
   private[plot] val ytransform: Plot.Transformer = Plot.DefaultYTransformer(),
+  private[plot] val xfixed: Boolean = false,    // Set if x bounds are fixed.
+  private[plot] val yfixed: Boolean = false,    // Set if y bounds are fixed.
   private[plot] val components: Seq[PlotComponent] = Seq.empty // Components (ordered inside out)
 ) {
-
   private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 
   private[plot] def :+(component: PlotComponent): Plot[T] = copy(components = components :+ component)
   private[plot] def +:(component: PlotComponent): Plot[T] = copy(components = component +: components)
 
-  def xbounds(newBounds: Bounds): Plot[T] = copy(xbounds = newBounds)
+  def xbounds(newBounds: Bounds): Plot[T] = copy(xbounds = newBounds, xfixed = true)
   def xbounds(lower: Double, upper: Double): Plot[T] = xbounds(Bounds(lower, upper))
-  def ybounds(newBounds: Bounds): Plot[T] = copy(ybounds = newBounds)
+  def ybounds(newBounds: Bounds): Plot[T] = copy(ybounds = newBounds, yfixed = true)
   def ybounds(lower: Double, upper: Double): Plot[T] = ybounds(Bounds(lower, upper))
 
-  def setTransform(xt: Plot.Transformer, yt: Plot.Transformer): Plot[T] = copy(xtransform = xt, ytransform = yt)
+  def setXTransform(xt: Plot.Transformer): Plot[T] = copy(xtransform = xt, xfixed = true)
+  def setYTransform(yt: Plot.Transformer): Plot[T] = copy(ytransform = yt, yfixed = true)
 
   // Get the offset of the plot area.
   private[plot] lazy val plotOffset: Point = {

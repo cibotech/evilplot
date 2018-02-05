@@ -51,6 +51,7 @@ object Axes {
   private sealed trait AxisPlotComponent extends PlotComponent with Plot.Transformer {
     final override val repeated: Boolean = true
 
+    val discrete: Boolean
     val tickRenderer: String => Drawable
 
     def getDescriptor[T](plot: Plot[T]): AxisDescriptor
@@ -59,17 +60,37 @@ object Axes {
   }
 
   private sealed trait ContinuousAxis {
+    final val discrete: Boolean = false
     val tickCount: Int
     def bounds[T](plot: Plot[T]): Bounds
     def getDescriptor[T](plot: Plot[T]): AxisDescriptor = ContinuousAxisDescriptor(bounds(plot), tickCount)
   }
 
   private sealed trait DiscreteAxis {
+    final val discrete: Boolean = true
     val labels: Seq[String]
     def getDescriptor[T](plot: Plot[T]): AxisDescriptor = DiscreteAxisDescriptor(labels)
   }
 
-  private sealed trait XAxisPlotComponent extends AxisPlotComponent {
+  private sealed trait XTransform extends Plot.Transformer {
+    def getDescriptor[T](plot: Plot[T]): AxisDescriptor
+    def apply(plot: Plot[_], plotExtent: Extent): Double => Double = {
+      val descriptor = getDescriptor(plot)
+      val scale = plotExtent.width / descriptor.axisBounds.range
+      (x: Double) => (x - descriptor.axisBounds.min) * scale
+    }
+  }
+
+  private sealed trait YTransform extends Plot.Transformer {
+    def getDescriptor[T](plot: Plot[T]): AxisDescriptor
+    def apply(plot: Plot[_], plotExtent: Extent): Double => Double = {
+      val descriptor = getDescriptor(plot)
+      val scale = plotExtent.height / descriptor.axisBounds.range
+      (y: Double) => plotExtent.height - (y - descriptor.axisBounds.min) * scale
+    }
+  }
+
+  private sealed trait XAxisPlotComponent extends AxisPlotComponent with XTransform {
     final val position: PlotComponent.Position = PlotComponent.Bottom
     override def size[T](plot: Plot[T]): Extent = ticks(getDescriptor(plot)).maxBy(_.extent.height).extent
 
@@ -79,19 +100,14 @@ object Axes {
       val descriptor = getDescriptor(plot)
       val scale = extent.width / descriptor.axisBounds.range
       ticks(descriptor).zipWithIndex.map { case (tick, i) =>
-        val offset = i * descriptor.spacing * scale - tick.extent.width / 2.0
-        Translate(tick, x = offset)
+        val offset = if (discrete) descriptor.spacing * scale / 2 else 0
+        val x = offset + i * descriptor.spacing * scale - tick.extent.width / 2.0
+        Translate(tick, x = x)
       }.group
-    }
-
-    def apply(plot: Plot[_], plotExtent: Extent): Double => Double = {
-      val descriptor = getDescriptor(plot)
-      val scale = plotExtent.width / descriptor.axisBounds.range
-      (x: Double) => (x - descriptor.axisBounds.min) * scale
     }
   }
 
-  private sealed trait YAxisPlotComponent extends AxisPlotComponent {
+  private sealed trait YAxisPlotComponent extends AxisPlotComponent with YTransform {
     final val position: PlotComponent.Position = PlotComponent.Left
     override def size[T](plot: Plot[T]): Extent = ticks(getDescriptor(plot)).maxBy(_.extent.width).extent
 
@@ -103,15 +119,10 @@ object Axes {
       val ts = ticks(descriptor)
       val maxWidth = ts.maxBy(_.extent.width).extent.width
       ts.zipWithIndex.map { case (tick, i) =>
-        val offset = i * descriptor.spacing * scale + tick.extent.height / 2.0
-        Translate(tick, x = maxWidth - tick.extent.width, y = extent.height - offset)
+        val offset = if (discrete) descriptor.spacing * scale / 2 else 0
+        val y = extent.height - (i * descriptor.spacing * scale + offset) - tick.extent.height / 2.0
+        Translate(tick, x = maxWidth - tick.extent.width, y = y)
       }.group
-    }
-
-    def apply(plot: Plot[_], plotExtent: Extent): Double => Double = {
-      val descriptor = getDescriptor(plot)
-      val scale = plotExtent.height / descriptor.axisBounds.range
-      (y: Double) => plotExtent.height - (y - descriptor.axisBounds.min) * scale
     }
   }
 
@@ -146,7 +157,7 @@ object Axes {
       descriptor.labels.map(l => lineRenderer(l, extent))
   }
 
-  private trait XGridComponent extends GridComponent {
+  private trait XGridComponent extends GridComponent with XTransform {
     def bounds[T](plot: Plot[T]): Bounds = plot.xbounds
     def render[T](plot: Plot[T], extent: Extent): Drawable = {
       val descriptor = getDescriptor(plot)
@@ -158,7 +169,7 @@ object Axes {
     }
   }
 
-  private trait YGridComponent extends GridComponent {
+  private trait YGridComponent extends GridComponent with YTransform {
     def bounds[T](plot: Plot[T]): Bounds = plot.ybounds
     def render[T](plot: Plot[T], extent: Extent): Drawable = {
       val descriptor = getDescriptor(plot)
@@ -204,12 +215,12 @@ object Axes {
       tickRenderer: String => Drawable = xAxisTickRenderer()
     ): Plot[T] = {
       val component = ContinuousXAxisPlotComponent(tickCount, tickRenderer)
-      component +: plot.copy(xtransform = component)
+      component +: plot.setXTransform(component)
     }
 
     def xAxis(labels: Seq[String]): Plot[T] = {
       val component = DiscreteXAxisPlotComponent(labels, xAxisTickRenderer(rotateText = 90))
-      component +: plot.copy(xtransform = component)
+      component +: plot.setXTransform(component)
     }
 
     /** Add a Y axis to the plot.
@@ -221,26 +232,28 @@ object Axes {
       tickRenderer: String => Drawable = yAxisTickRenderer()
     ): Plot[T] = {
       val component = ContinuousYAxisPlotComponent(tickCount, tickRenderer)
-      component +: plot.copy(ytransform = component)
+      component +: plot.setYTransform(component)
     }
 
     def yAxis(labels: Seq[String]): Plot[T] = {
       val component = DiscreteYAxisPlotComponent(labels, yAxisTickRenderer())
-      component +: plot.copy(xtransform = component)
+      component +: plot.setYTransform(component)
     }
 
     def xGrid(
       lineCount: Int = defaultTickCount,
       lineRenderer: (String, Extent) => Drawable = xGridLineRenderer()
     ): Plot[T] = {
-      plot :+ ContinuousXGridComponent(lineCount, lineRenderer)
+      val component = ContinuousXGridComponent(lineCount, lineRenderer)
+      plot.setXTransform(component) :+ component
     }
 
     def yGrid(
       lineCount: Int = defaultTickCount,
       lineRenderer: (String, Extent) => Drawable = yGridLineRenderer()
     ): Plot[T] = {
-      plot :+ ContinuousYGridComponent(lineCount, lineRenderer)
+      val component = ContinuousYGridComponent(lineCount, lineRenderer)
+      plot.setYTransform(component) :+ component
     }
   }
 }

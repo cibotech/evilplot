@@ -15,7 +15,12 @@ object Facets {
 
   // Add padding to subplots so they are all the same size and use the same axis transformation.
   private def updatePlotsForFacet(plot: Plot[FacetData], subplotExtent: Extent): FacetData = {
-    Plot.padPlots(plot.data, subplotExtent).map(_.map(_.setTransform(plot.xtransform, plot.ytransform)))
+    Plot.padPlots(plot.data, subplotExtent).map { row =>
+      row.map { subplot =>
+        val withX = if (subplot.xfixed) subplot else subplot.setXTransform(plot.xtransform)
+        if (withX.yfixed) withX else withX.setYTransform(plot.ytransform)
+      }
+    }
   }
 
   private def facetedPlotRenderer(plot: Plot[FacetData], plotExtent: Extent): Drawable = {
@@ -69,7 +74,7 @@ object Facets {
       c.position == PlotComponent.Bottom
     }.reverse.foldLeft((startY, empty)) { case ((prevY, d), c) =>
       if (c.repeated) {
-        val s = subplots.head.zipWithIndex.map { case (subplot, i) =>
+        val s = subplots.last.zipWithIndex.map { case (subplot, i) =>
           val pextent = subplot.plotExtent(innerExtent)
           val rendered = c.render(subplot, pextent)
           val x = i * innerExtent.width + subplot.plotOffset.x + plot.plotOffset.x
@@ -202,10 +207,15 @@ object Facets {
     // Y bounds for each row.
     val rowYBounds = plots.map(row => Plot.combineBounds(row.map(_.ybounds)))
 
-    // Update bounds on subplots.
+    // Update bounds on subplots for subplots that don't already have axes.
     val updatedPlots = plots.zipWithIndex.map { case (row, y) =>
       row.zipWithIndex.map { case (subplot, x) =>
-        subplot.xbounds(columnXBounds(x)).ybounds(rowYBounds(y))
+        (subplot.xfixed, subplot.yfixed) match {
+          case (true, true)   => subplot
+          case (true, false)  => subplot.ybounds(rowYBounds(y))
+          case (false, true)  => subplot.xbounds(columnXBounds(x))
+          case (false, false) => subplot.xbounds(columnXBounds(x)).ybounds(rowYBounds(y))
+        }
       }
     }
 
