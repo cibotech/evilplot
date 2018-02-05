@@ -76,7 +76,7 @@ object Facets {
           val y = prevY - rendered.extent.height
           (y, Translate(rendered, x = x, y = y))
         }
-        (s.maxBy(_._1)._1, s.map(_._2).group)
+        (s.maxBy(_._1)._1, s.map(_._2).group behind d)
       } else {
         val pextent = plot.plotExtent(extent)
         val rendered = c.render(plot, pextent)
@@ -128,7 +128,7 @@ object Facets {
           val y = i * innerExtent.height + subplot.plotOffset.y + plot.plotOffset.y
           (y, Translate(rendered, x, y))
         }
-        (s.maxBy(_._1)._1, s.map(_._2).group)
+        (s.maxBy(_._1)._1, s.map(_._2).group behind d)
       } else {
         val pextent = plot.plotExtent(extent)
         val rendered = c.render(plot, pextent)
