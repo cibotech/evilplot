@@ -42,18 +42,6 @@ object Axes {
     }
   }
 
-  private case class XAxisLabelPlotComponent(label: Drawable) extends PlotComponent {
-    val position: PlotComponent.Position = PlotComponent.Bottom
-    override def size[T](plot: Plot[T]): Extent = label.extent
-    def render[T](plot: Plot[T], extent: Extent): Drawable = label.center(extent.width)
-  }
-
-  private case class YAxisLabelPlotComponent(label: Drawable) extends PlotComponent {
-    val position: PlotComponent.Position = PlotComponent.Left
-    override def size[T](plot: Plot[T]): Extent = label.extent
-    def render[T](plot: Plot[T], extent: Extent): Drawable = label.middle(extent.height)
-  }
-
   private abstract class AxisPlotComponent extends PlotComponent with Plot.Transformer {
     val tickCount: Int
     val tickRenderer: Option[String] => Drawable
@@ -121,23 +109,8 @@ object Axes {
     }
   }
 
-  private case class TitlePlotComponent(d: Drawable) extends PlotComponent {
-    val position: PlotComponent.Position = PlotComponent.Top
-    override def size[T](plot: Plot[T]): Extent = d.extent
-    def render[T](plot: Plot[T], extent: Extent): Drawable = d.center(extent.width)
-  }
-
   trait AxesImplicits[T] {
     protected val plot: Plot[T]
-
-    def title(d: Drawable): Plot[T] = plot :+ TitlePlotComponent(d)
-    def title(label: String, size: Double = 22): Plot[T] = title(Text(label, size) padBottom 4)
-
-    def xLabel(d: Drawable): Plot[T] = plot :+ XAxisLabelPlotComponent(d)
-    def xLabel(label: String, size: Double = 20): Plot[T] = xLabel(Text(label, size).padTop(4))
-
-    def yLabel(d: Drawable): Plot[T] = plot :+ YAxisLabelPlotComponent(d)
-    def yLabel(label: String, size: Double = 20): Plot[T] = yLabel(Text(label, size).rotated(270).padLeft(4))
 
     /** Add an X axis to the plot.
       *
