@@ -5,7 +5,7 @@ addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.22")
 dependencyOverrides += "org.scala-js" % "sbt-scalajs" % "0.6.22"
 
 // Tooling around scala-js: see https://github.com/lihaoyi/workbench
-addSbtPlugin("com.lihaoyi" % "workbench" % "0.4.0")
+addSbtPlugin("com.lihaoyi" % "workbench" % "0.3.0")
 
 // Used to show project dependencies, e.g. `sbt dependencyTree`.
 // See https://github.com/jrudolph/sbt-dependency-graph .

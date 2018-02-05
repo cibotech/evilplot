@@ -42,19 +42,19 @@ object Axes {
     }
   }
 
-  private case class XAxisLabelPlotComponent[T](label: Drawable) extends PlotComponent[T] {
+  private case class XAxisLabelPlotComponent(label: Drawable) extends PlotComponent {
     val position: PlotComponent.Position = PlotComponent.Bottom
-    override def size(plot: Plot[T]): Extent = label.extent
-    def render(plot: Plot[T], extent: Extent): Drawable = label.center(extent.width)
+    override def size[T](plot: Plot[T]): Extent = label.extent
+    def render[T](plot: Plot[T], extent: Extent): Drawable = label.center(extent.width)
   }
 
-  private case class YAxisLabelPlotComponent[T](label: Drawable) extends PlotComponent[T] {
+  private case class YAxisLabelPlotComponent(label: Drawable) extends PlotComponent {
     val position: PlotComponent.Position = PlotComponent.Left
-    override def size(plot: Plot[T]): Extent = label.extent
-    def render(plot: Plot[T], extent: Extent): Drawable = label.middle(extent.height)
+    override def size[T](plot: Plot[T]): Extent = label.extent
+    def render[T](plot: Plot[T], extent: Extent): Drawable = label.middle(extent.height)
   }
 
-  private abstract class AxisPlotComponent[T] extends PlotComponent[T] with Plot.Transformer[T] {
+  private abstract class AxisPlotComponent extends PlotComponent with Plot.Transformer {
     val tickCount: Int
     val tickRenderer: Option[String] => Drawable
 
@@ -67,16 +67,16 @@ object Axes {
     }
   }
 
-  private case class XAxisPlotComponent[T](
+  private case class XAxisPlotComponent(
     tickCount: Int,
     tickRenderer: Option[String] => Drawable
-  ) extends AxisPlotComponent[T] {
+  ) extends AxisPlotComponent {
     val position: PlotComponent.Position = PlotComponent.Bottom
 
-    override def size(plot: Plot[T]): Extent =
+    override def size[T](plot: Plot[T]): Extent =
       ticks(AxisDescriptor(plot.xbounds, tickCount)).maxBy(_.extent.height).extent
 
-    def render(plot: Plot[T], extent: Extent): Drawable = {
+    def render[T](plot: Plot[T], extent: Extent): Drawable = {
       val descriptor = AxisDescriptor(plot.xbounds, tickCount)
       val scale = extent.width / descriptor.axisBounds.range
       ticks(descriptor).zipWithIndex.map { case (tick, i) =>
@@ -85,23 +85,23 @@ object Axes {
       }.group
     }
 
-    def apply(plot: Plot[T], extent: Extent): Double => Double = {
+    def apply(plot: Plot[_], plotExtent: Extent): Double => Double = {
       val descriptor = AxisDescriptor(plot.xbounds, tickCount)
-      val scale = extent.width / descriptor.axisBounds.range
+      val scale = plotExtent.width / descriptor.axisBounds.range
       (x: Double) => (x - descriptor.axisBounds.min) * scale
     }
   }
 
-  private case class YAxisPlotComponent[T](
+  private case class YAxisPlotComponent(
     tickCount: Int,
     tickRenderer: Option[String] => Drawable
-  ) extends AxisPlotComponent[T] {
+  ) extends AxisPlotComponent {
     val position: PlotComponent.Position = PlotComponent.Left
 
-    override def size(plot: Plot[T]): Extent =
+    override def size[T](plot: Plot[T]): Extent =
       ticks(AxisDescriptor(plot.ybounds, tickCount)).maxBy(_.extent.width).extent
 
-    def render(plot: Plot[T], extent: Extent): Drawable = {
+    def render[T](plot: Plot[T], extent: Extent): Drawable = {
       val descriptor = AxisDescriptor(plot.ybounds, tickCount)
       val scale = extent.height / descriptor.axisBounds.range
       val ts = ticks(descriptor)
@@ -112,29 +112,29 @@ object Axes {
       }.group
     }
 
-    def apply(plot: Plot[T], extent: Extent): Double => Double = {
+    def apply(plot: Plot[_], plotExtent: Extent): Double => Double = {
       val descriptor = AxisDescriptor(plot.ybounds, tickCount)
-      val scale = extent.height / descriptor.axisBounds.range
-      (y: Double) => extent.height - (y - descriptor.axisBounds.min) * scale
+      val scale = plotExtent.height / descriptor.axisBounds.range
+      (y: Double) => plotExtent.height - (y - descriptor.axisBounds.min) * scale
     }
   }
 
-  private case class TitlePlotComponent[T](d: Drawable) extends PlotComponent[T] {
+  private case class TitlePlotComponent(d: Drawable) extends PlotComponent {
     val position: PlotComponent.Position = PlotComponent.Top
-    override def size(plot: Plot[T]): Extent = d.extent
-    def render(plot: Plot[T], extent: Extent): Drawable = d.center(extent.width)
+    override def size[T](plot: Plot[T]): Extent = d.extent
+    def render[T](plot: Plot[T], extent: Extent): Drawable = d.center(extent.width)
   }
 
   trait AxesImplicits[T] {
     protected val plot: Plot[T]
 
-    def title(d: Drawable): Plot[T] = plot :+ TitlePlotComponent[T](d)
+    def title(d: Drawable): Plot[T] = plot :+ TitlePlotComponent(d)
     def title(label: String, size: Double = 22): Plot[T] = title(Text(label, size) padBottom 4)
 
-    def xLabel(d: Drawable): Plot[T] = plot :+ XAxisLabelPlotComponent[T](d)
+    def xLabel(d: Drawable): Plot[T] = plot :+ XAxisLabelPlotComponent(d)
     def xLabel(label: String, size: Double = 20): Plot[T] = xLabel(Text(label, size).padTop(4))
 
-    def yLabel(d: Drawable): Plot[T] = plot :+ YAxisLabelPlotComponent[T](d)
+    def yLabel(d: Drawable): Plot[T] = plot :+ YAxisLabelPlotComponent(d)
     def yLabel(label: String, size: Double = 20): Plot[T] = yLabel(Text(label, size).rotated(270).padLeft(4))
 
     /** Add an X axis to the plot.
@@ -146,7 +146,7 @@ object Axes {
       tickCount: Int = defaultTickCount,
       tickRenderer: Option[String] => Drawable = xAxisTickRenderer()
     ): Plot[T] = {
-      val annotation = XAxisPlotComponent[T](tickCount, tickRenderer)
+      val annotation = XAxisPlotComponent(tickCount, tickRenderer)
       annotation +: plot.copy(xtransform = annotation)
     }
 
@@ -159,7 +159,7 @@ object Axes {
       tickCount: Int = defaultTickCount,
       tickRenderer: Option[String] => Drawable = yAxisTickRenderer()
     ): Plot[T] = {
-      val annotation = YAxisPlotComponent[T](tickCount, tickRenderer)
+      val annotation = YAxisPlotComponent(tickCount, tickRenderer)
       annotation +: plot.copy(ytransform = annotation)
     }
   }

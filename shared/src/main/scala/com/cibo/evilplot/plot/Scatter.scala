@@ -5,9 +5,9 @@ import com.cibo.evilplot.numeric.{Bounds, Point}
 
 object Scatter {
 
-  private def renderScatter(pointRenderer: PointRenderer)(plot: Plot[Seq[Point]], extent: Extent): Drawable = {
-    val xtransformer = plot.xtransform(plot, extent)
-    val ytransformer = plot.ytransform(plot, extent)
+  private def renderScatter(pointRenderer: PointRenderer)(plot: Plot[Seq[Point]], plotExtent: Extent): Drawable = {
+    val xtransformer = plot.xtransform(plot, plotExtent)
+    val ytransformer = plot.ytransform(plot, plotExtent)
     plot.data.filter(plot.inBounds).zipWithIndex.map { case (point, index) =>
       val x = xtransformer(point.x)
       val y = ytransformer(point.y)
