@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.colors.{Color, DefaultColors}
 import com.cibo.evilplot.geometry._
 
 final case class Bar(values: Seq[Double]) {
@@ -30,6 +30,6 @@ object BarRenderer {
     }
   }
 
-  def default(color: Color): BarRenderer = stackedRenderer(Seq(color))
+  def default(color: Color = DefaultColors.barColor): BarRenderer = stackedRenderer(Seq(color))
 
 }

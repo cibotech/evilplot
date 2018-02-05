@@ -21,7 +21,9 @@ final case class Plot[T] private[evilplot] (
   private[plot] def +:(component: PlotComponent): Plot[T] = copy(components = component +: components)
 
   def xbounds(newBounds: Bounds): Plot[T] = copy(xbounds = newBounds)
+  def xbounds(lower: Double, upper: Double): Plot[T] = xbounds(Bounds(lower, upper))
   def ybounds(newBounds: Bounds): Plot[T] = copy(ybounds = newBounds)
+  def ybounds(lower: Double, upper: Double): Plot[T] = ybounds(Bounds(lower, upper))
 
   def setTransform(xt: Plot.Transformer, yt: Plot.Transformer): Plot[T] = copy(xtransform = xt, ytransform = yt)
 

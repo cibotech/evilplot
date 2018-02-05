@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.HTMLNamedColors
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{AxisDescriptor, ContinuousAxisDescriptor, DiscreteAxisDescriptor}
+import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, ContinuousAxisDescriptor, DiscreteAxisDescriptor}
 
 object Axes {
 
@@ -60,7 +60,8 @@ object Axes {
 
   private sealed trait ContinuousAxis {
     val tickCount: Int
-    def getDescriptor[T](plot: Plot[T]): AxisDescriptor = ContinuousAxisDescriptor(plot.xbounds, tickCount)
+    def bounds[T](plot: Plot[T]): Bounds
+    def getDescriptor[T](plot: Plot[T]): AxisDescriptor = ContinuousAxisDescriptor(bounds(plot), tickCount)
   }
 
   private sealed trait DiscreteAxis {
@@ -71,6 +72,8 @@ object Axes {
   private sealed trait XAxisPlotComponent extends AxisPlotComponent {
     final val position: PlotComponent.Position = PlotComponent.Bottom
     override def size[T](plot: Plot[T]): Extent = ticks(getDescriptor(plot)).maxBy(_.extent.height).extent
+
+    def bounds[T](plot: Plot[T]): Bounds = plot.xbounds
 
     def render[T](plot: Plot[T], extent: Extent): Drawable = {
       val descriptor = getDescriptor(plot)
@@ -91,6 +94,8 @@ object Axes {
   private sealed trait YAxisPlotComponent extends AxisPlotComponent {
     final val position: PlotComponent.Position = PlotComponent.Left
     override def size[T](plot: Plot[T]): Extent = ticks(getDescriptor(plot)).maxBy(_.extent.width).extent
+
+    def bounds[T](plot: Plot[T]): Bounds = plot.ybounds
 
     def render[T](plot: Plot[T], extent: Extent): Drawable = {
       val descriptor = getDescriptor(plot)
@@ -142,6 +147,7 @@ object Axes {
   }
 
   private trait XGridComponent extends GridComponent {
+    def bounds[T](plot: Plot[T]): Bounds = plot.xbounds
     def render[T](plot: Plot[T], extent: Extent): Drawable = {
       val descriptor = getDescriptor(plot)
       val scale = extent.width / descriptor.axisBounds.range
@@ -153,6 +159,7 @@ object Axes {
   }
 
   private trait YGridComponent extends GridComponent {
+    def bounds[T](plot: Plot[T]): Bounds = plot.ybounds
     def render[T](plot: Plot[T], extent: Extent): Drawable = {
       val descriptor = getDescriptor(plot)
       val scale = extent.height / descriptor.axisBounds.range
@@ -200,6 +207,11 @@ object Axes {
       component +: plot.copy(xtransform = component)
     }
 
+    def xAxis(labels: Seq[String]): Plot[T] = {
+      val component = DiscreteXAxisPlotComponent(labels, xAxisTickRenderer(rotateText = 90))
+      component +: plot.copy(xtransform = component)
+    }
+
     /** Add a Y axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
@@ -210,6 +222,11 @@ object Axes {
     ): Plot[T] = {
       val component = ContinuousYAxisPlotComponent(tickCount, tickRenderer)
       component +: plot.copy(ytransform = component)
+    }
+
+    def yAxis(labels: Seq[String]): Plot[T] = {
+      val component = DiscreteYAxisPlotComponent(labels, yAxisTickRenderer())
+      component +: plot.copy(xtransform = component)
     }
 
     def xGrid(
