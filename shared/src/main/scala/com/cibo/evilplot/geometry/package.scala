@@ -26,7 +26,8 @@ package object geometry {
     def padTop(pad: Double): Drawable = geometry.pad(r, top = pad)
     def padAll(pad: Double): Drawable = geometry.padAll(r, pad)
 
-    def rotated(degrees: Double): Rotate = Rotate(r, degrees)
+    def rotated(degrees: Double): Drawable = Rotate(r, degrees)
+    def scaled(x: Double = 1, y: Double = 1): Drawable = Scale(r, x, y)
 
     def colored(color: Color): Drawable = StrokeStyle(r, fill = color)
     def filled(color: Color): Drawable = Style(r, fill = color)
