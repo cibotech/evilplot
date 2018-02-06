@@ -1,27 +1,38 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Extent}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
 
 object BarChart {
 
   val defaultBoundBuffer: Double = 0.1
+  val defaultSpacing: Double = 1.0
+  val defaultGroupSpacing: Double = 4.0
 
-  private def renderBarChart(barRenderer: BarRenderer)(plot: Plot[Seq[Bar]], plotExtent: Extent): Drawable = {
-    val xtransformer = plot.xtransform(plot, plotExtent)
+  private def renderBarChart(
+    barRenderer: BarRenderer,
+    spacing: Double,
+    groupSpacing: Double
+  )(plot: Plot[Seq[Bar]], plotExtent: Extent): Drawable = {
     val ytransformer = plot.ytransform(plot, plotExtent)
-    plot.data.zipWithIndex.map { case (bar, barIndex) =>
-      val x = xtransformer(barIndex)
+    val groupCount = plot.data.map(_.group).distinct.size - 1
+    val groupPadding = groupCount * groupSpacing  // Extra space needed for group separators.
+    val barCount = plot.data.size
+    val barWidth = (plotExtent.width - groupPadding - spacing * (barCount - 1)) / barCount
+    val initial: (Double, Drawable) = (0, EmptyDrawable())
+    plot.data.sortBy(_.group).zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
       val y = ytransformer(bar.height)
-      val barWidth = xtransformer(barIndex + 1) - x
       val barHeight = plotExtent.height - y
-      barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(x = x, y = y)
-    }.group
+      val x = if (bar.group == lastGroup) spacing else groupSpacing + spacing
+      (bar.group, d beside barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(y = y, x = x))
+    }._2
   }
 
   def apply(
     bars: Seq[Bar],
     barRenderer: BarRenderer = BarRenderer.default(),
+    spacing: Double = defaultSpacing,
+    groupSpacing: Double = defaultGroupSpacing,
     boundBuffer: Double = defaultBoundBuffer
   ): Plot[Seq[Bar]] = {
     val xbounds = Bounds(0, bars.size)
@@ -33,7 +44,7 @@ object BarChart {
       bars,
       xbounds,
       ybounds,
-      renderBarChart(barRenderer)
+      renderBarChart(barRenderer, spacing, groupSpacing)
     )
   }
 }
