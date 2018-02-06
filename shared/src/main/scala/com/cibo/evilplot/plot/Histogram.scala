@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.plot.renderers.{Bar, BarRenderer}
+import com.cibo.evilplot.plot.renderers.BarRenderer
 
 object Histogram {
 

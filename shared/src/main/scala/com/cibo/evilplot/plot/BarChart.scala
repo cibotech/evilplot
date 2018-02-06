@@ -2,7 +2,16 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.renderers.{Bar, BarRenderer}
+import com.cibo.evilplot.plot.renderers.BarRenderer
+
+final case class Bar(values: Seq[Double], group: Int = 0) {
+  lazy val height: Double = values.sum
+}
+
+object Bar {
+  def apply(value: Double): Bar = Bar(Seq(value))
+  def apply(value: Double, group: Int): Bar = Bar(Seq(value), group)
+}
 
 object BarChart {
 
