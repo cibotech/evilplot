@@ -1,28 +1,13 @@
 package com.cibo.evilplot.plot.components
 
-import com.cibo.evilplot.colors.HTMLNamedColors
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, ContinuousAxisDescriptor, DiscreteAxisDescriptor}
 import com.cibo.evilplot.plot.Plot
-import com.cibo.evilplot.plot.renderers.TickRenderer
+import com.cibo.evilplot.plot.renderers.{GridLineRenderer, TickRenderer}
 
 object Axes {
 
   val defaultTickCount: Int = 10
-  val defaultTickThickness: Double = 1
-  val defaultTickLength: Double = 5
-
-  def xGridLineRenderer(
-    thickness: Double = defaultTickThickness
-  )(label: String, extent: Extent): Drawable = {
-    Line(extent.height, thickness).colored(HTMLNamedColors.white).rotated(90)
-  }
-
-  def yGridLineRenderer(
-    thickness: Double = defaultTickThickness
-  )(label: String, extent: Extent): Drawable = {
-    Line(extent.width, thickness).colored(HTMLNamedColors.white)
-  }
 
   private sealed trait AxisPlotComponent extends PlotComponent with Plot.Transformer {
     final override val repeated: Boolean = true
@@ -123,14 +108,14 @@ object Axes {
   ) extends YAxisPlotComponent with DiscreteAxis
 
   private sealed trait GridComponent extends PlotComponent {
-    val lineRenderer: (String, Extent) => Drawable
+    val lineRenderer: GridLineRenderer
     def getDescriptor[T](plot: Plot[T]): AxisDescriptor
 
     final val position: Position = Position.Background
     override final val repeated: Boolean = true
 
     protected def lines[T](descriptor: AxisDescriptor, extent: Extent): Seq[Drawable] =
-      descriptor.labels.map(l => lineRenderer(l, extent))
+      descriptor.labels.map(l => lineRenderer.render(l, extent))
   }
 
   private trait XGridComponent extends GridComponent with XTransform {
@@ -161,22 +146,22 @@ object Axes {
 
   private case class ContinuousXGridComponent(
     tickCount: Int,
-    lineRenderer: (String, Extent) => Drawable
+    lineRenderer: GridLineRenderer
   ) extends XGridComponent with ContinuousAxis
 
   private case class DiscreteXGridComponent(
     labels: Seq[String],
-    lineRenderer: (String, Extent) => Drawable
+    lineRenderer: GridLineRenderer
   ) extends XGridComponent with DiscreteAxis
 
   private case class ContinuousYGridComponent(
     tickCount: Int,
-    lineRenderer: (String, Extent) => Drawable
+    lineRenderer: GridLineRenderer
   ) extends YGridComponent with ContinuousAxis
 
   private case class DiscreteYGridComponent(
     labels: Seq[String],
-    lineRenderer: (String, Extent) => Drawable
+    lineRenderer: GridLineRenderer
   ) extends YGridComponent with DiscreteAxis
 
   trait AxesImplicits[T] {
@@ -218,7 +203,7 @@ object Axes {
 
     def xGrid(
       lineCount: Int = defaultTickCount,
-      lineRenderer: (String, Extent) => Drawable = xGridLineRenderer()
+      lineRenderer: GridLineRenderer = GridLineRenderer.xGridLineRenderer()
     ): Plot[T] = {
       val component = ContinuousXGridComponent(lineCount, lineRenderer)
       plot.setXTransform(component, fixed = true) :+ component
@@ -226,7 +211,7 @@ object Axes {
 
     def yGrid(
       lineCount: Int = defaultTickCount,
-      lineRenderer: (String, Extent) => Drawable = yGridLineRenderer()
+      lineRenderer: GridLineRenderer = GridLineRenderer.yGridLineRenderer()
     ): Plot[T] = {
       val component = ContinuousYGridComponent(lineCount, lineRenderer)
       plot.setYTransform(component, fixed = true) :+ component
