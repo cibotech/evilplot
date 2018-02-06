@@ -10,7 +10,7 @@ sealed trait PlotLine extends PlotComponent {
 
 case class HorizontalPlotLine(y: Double, thickness: Double, color: Color) extends PlotLine {
   def render[T](plot: Plot[T], extent: Extent): Drawable = {
-    val offset = plot.ytransform(plot, plot.plotExtent(extent))(y)
+    val offset = plot.ytransform(plot, extent)(y)
     Line(extent.width, thickness).colored(color).translate(y = offset)
   }
 }
