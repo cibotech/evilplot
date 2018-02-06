@@ -162,7 +162,7 @@ object Facets {
         val pextent = plot.plotExtent(extent)
         c.render(plot, pextent)
       }
-    }.group
+    }.group.translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
   }
 
   private def facetedComponentRenderer(plot: Plot[FacetData], extent: Extent): (Drawable, Drawable) = {
