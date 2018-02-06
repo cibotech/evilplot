@@ -46,7 +46,7 @@ object Facets {
     extent: Extent,
     innerExtent: Extent
   ): Drawable = {
-    plot.components.filter(_.position == PlotComponent.Top).reverse.foldLeft(empty) { (d, c) =>
+    plot.topComponents.reverse.foldLeft(empty) { (d, c) =>
       if (c.repeated) {
         subplots.head.zipWithIndex.map { case (subplot, i) =>
           val pextent = subplot.plotExtent(innerExtent)
@@ -70,9 +70,7 @@ object Facets {
     innerExtent: Extent
   ): Drawable = {
     val startY = extent.height
-    plot.components.filter { c =>
-      c.position == PlotComponent.Bottom
-    }.reverse.foldLeft((startY, empty)) { case ((prevY, d), c) =>
+    plot.bottomComponents.reverse.foldLeft((startY, empty)) { case ((prevY, d), c) =>
       if (c.repeated) {
         val s = subplots.last.zipWithIndex.map { case (subplot, i) =>
           val pextent = subplot.plotExtent(innerExtent)
@@ -99,7 +97,7 @@ object Facets {
     innerExtent: Extent
   ): Drawable = {
     val leftPlots = subplots.map(_.head)
-    plot.components.filter(_.position == PlotComponent.Left).foldLeft(empty) { (d, c) =>
+    plot.leftComponents.foldLeft(empty) { (d, c) =>
       if (c.repeated) {
         leftPlots.zipWithIndex.map { case (subplot, i) =>
           val pextent = subplot.plotExtent(innerExtent)
@@ -122,9 +120,7 @@ object Facets {
   ): Drawable = {
     val rightPlots = subplots.map(_.last)
     val startX = extent.width
-    plot.components.filter { c =>
-      c.position == PlotComponent.Right
-    }.reverse.foldLeft((startX, empty)) { case ((prevX, d), c) =>
+    plot.rightComponents.reverse.foldLeft((startX, empty)) { case ((prevX, d), c) =>
       if (c.repeated) {
         val s = rightPlots.zipWithIndex.map { case (subplot, i) =>
           val pextent = subplot.plotExtent(innerExtent)
@@ -151,13 +147,13 @@ object Facets {
   ): Drawable = {
     // Overlays will be offset to the start of the plot area.
     val pextent = subplot.plotExtent(subplotExtent)
-    plot.components.filter(_.position == PlotComponent.Overlay).map { a =>
+    plot.overlayComponents.map { a =>
       a.render(subplot, pextent).translate(x = subplot.plotOffset.x, y = subplot.plotOffset.y)
     }.group
   }
 
   private def gridComponentRenderer[T](
-    position: PlotComponent.Position,
+    position: Position,
     plot: Plot[FacetData],
     subplots: FacetData,
     extent: Extent,
@@ -189,8 +185,8 @@ object Facets {
     val bottom = bottomComponentRenderer(plot, paddedPlots, extent, innerExtent)
     val left = leftComponentRenderer(plot, paddedPlots, extent, innerExtent)
     val right = rightComponentRenderer(plot, paddedPlots, extent, innerExtent)
-    val overlay = gridComponentRenderer(PlotComponent.Overlay, plot, paddedPlots, extent, innerExtent)
-    val background = gridComponentRenderer(PlotComponent.Background, plot, paddedPlots, extent, innerExtent)
+    val overlay = gridComponentRenderer(Position.Overlay, plot, paddedPlots, extent, innerExtent)
+    val background = gridComponentRenderer(Position.Background, plot, paddedPlots, extent, innerExtent)
 
     (Group(Seq(top, bottom, left, right, overlay)), background)
   }

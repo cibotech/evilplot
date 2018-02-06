@@ -29,14 +29,21 @@ final case class Plot[T] private[evilplot] (
   def setXTransform(xt: Plot.Transformer): Plot[T] = copy(xtransform = xt, xfixed = true)
   def setYTransform(yt: Plot.Transformer): Plot[T] = copy(ytransform = yt, yfixed = true)
 
+  lazy val topComponents: Seq[PlotComponent] = components.filter(_.position == Position.Top)
+  lazy val bottomComponents: Seq[PlotComponent] = components.filter(_.position == Position.Bottom)
+  lazy val leftComponents: Seq[PlotComponent] = components.filter(_.position == Position.Left)
+  lazy val rightComponents: Seq[PlotComponent] = components.filter(_.position == Position.Right)
+  lazy val backgroundComponents: Seq[PlotComponent] = components.filter(_.position == Position.Background)
+  lazy val overlayComponents: Seq[PlotComponent] = components.filter(_.position == Position.Overlay)
+
   // Get the offset of the plot area.
   private[plot] lazy val plotOffset: Point = {
 
     // y offset for sides due to the annotations at the top.
-    val yoffset = components.filter(_.position == PlotComponent.Top).map(_.size(this).height).sum
+    val yoffset = topComponents.map(_.size(this).height).sum
 
     // x offset for top/bottom due to the annotations on the left.
-    val xoffset = components.filter(_.position == PlotComponent.Left).map(_.size(this).width).sum
+    val xoffset = leftComponents.map(_.size(this).width).sum
 
     Point(xoffset, yoffset)
   }
@@ -48,12 +55,12 @@ final case class Plot[T] private[evilplot] (
     components.foldLeft(extent) { (oldExtent, annotation) =>
       val size = annotation.size(this)
       annotation.position match {
-        case PlotComponent.Top        => oldExtent.copy(height = oldExtent.height - size.height)
-        case PlotComponent.Bottom     => oldExtent.copy(height = oldExtent.height - size.height)
-        case PlotComponent.Left       => oldExtent.copy(width = oldExtent.width - size.width)
-        case PlotComponent.Right      => oldExtent.copy(width = oldExtent.width - size.width)
-        case PlotComponent.Overlay    => oldExtent
-        case PlotComponent.Background => oldExtent
+        case Position.Top        => oldExtent.copy(height = oldExtent.height - size.height)
+        case Position.Bottom     => oldExtent.copy(height = oldExtent.height - size.height)
+        case Position.Left       => oldExtent.copy(width = oldExtent.width - size.width)
+        case Position.Right      => oldExtent.copy(width = oldExtent.width - size.width)
+        case Position.Overlay    => oldExtent
+        case Position.Background => oldExtent
       }
     }
   }
@@ -86,16 +93,14 @@ object Plot {
 
   private[plot] def topComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
     val pextent = plot.plotExtent(extent)
-    plot.components.filter(_.position == PlotComponent.Top).reverse.foldLeft(empty) { (d, a) =>
+    plot.topComponents.reverse.foldLeft(empty) { (d, a) =>
       a.render(plot, pextent).translate(x = plot.plotOffset.x, y = d.extent.height) behind d
     }
   }
 
   private[plot] def bottomComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
     val pextent = plot.plotExtent(extent)
-    plot.components.filter { a =>
-      a.position == PlotComponent.Bottom
-    }.reverse.foldLeft((extent.height, empty)) { case ((y, d), a) =>
+    plot.bottomComponents.reverse.foldLeft((extent.height, empty)) { case ((y, d), a) =>
       val rendered = a.render(plot, pextent)
       val newY = y - rendered.extent.height
       (newY, rendered.translate(x = plot.plotOffset.x, y = newY) behind d)
@@ -104,16 +109,14 @@ object Plot {
 
   private[plot] def leftComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
     val pextent = plot.plotExtent(extent)
-    plot.components.filter(_.position == PlotComponent.Left).foldLeft(empty) { (d, c) =>
+    plot.leftComponents.foldLeft(empty) { (d, c) =>
       c.render(plot, pextent).translate(y = plot.plotOffset.y) beside d
     }
   }
 
   private[plot] def rightComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
     val pextent = plot.plotExtent(extent)
-    plot.components.filter { a =>
-      a.position == PlotComponent.Right
-    }.reverse.foldLeft((extent.width, empty)) { case ((x, d), a) =>
+    plot.rightComponents.foldLeft((extent.width, empty)) { case ((x, d), a) =>
       val rendered = a.render(plot, pextent)
       val newX = x - rendered.extent.width
       (newX, rendered.translate(x = newX, y = plot.plotOffset.y) behind d)
@@ -122,14 +125,14 @@ object Plot {
 
   private[plot] def overlayComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
     val pextent = plot.plotExtent(extent)
-    plot.components.filter(_.position == PlotComponent.Overlay).map { a =>
+    plot.overlayComponents.map { a =>
       a.render(plot, pextent)
     }.group
   }
 
   private[plot] def backgroundComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
     val pextent = plot.plotExtent(extent)
-    plot.components.filter(_.position == PlotComponent.Background).map { a =>
+    plot.backgroundComponents.map { a =>
       a.render(plot, pextent)
     }.group
   }

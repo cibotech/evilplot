@@ -91,7 +91,7 @@ object Axes {
   }
 
   private sealed trait XAxisPlotComponent extends AxisPlotComponent with XTransform {
-    final val position: PlotComponent.Position = PlotComponent.Bottom
+    final val position: Position = Position.Bottom
     override def size[T](plot: Plot[T]): Extent = ticks(getDescriptor(plot)).maxBy(_.extent.height).extent
 
     def bounds[T](plot: Plot[T]): Bounds = plot.xbounds
@@ -108,7 +108,7 @@ object Axes {
   }
 
   private sealed trait YAxisPlotComponent extends AxisPlotComponent with YTransform {
-    final val position: PlotComponent.Position = PlotComponent.Left
+    final val position: Position = Position.Left
     override def size[T](plot: Plot[T]): Extent = ticks(getDescriptor(plot)).maxBy(_.extent.width).extent
 
     def bounds[T](plot: Plot[T]): Bounds = plot.ybounds
@@ -150,7 +150,7 @@ object Axes {
     val lineRenderer: (String, Extent) => Drawable
     def getDescriptor[T](plot: Plot[T]): AxisDescriptor
 
-    final val position: PlotComponent.Position = PlotComponent.Background
+    final val position: Position = Position.Background
     override final val repeated: Boolean = true
 
     protected def lines[T](descriptor: AxisDescriptor, extent: Extent): Seq[Drawable] =

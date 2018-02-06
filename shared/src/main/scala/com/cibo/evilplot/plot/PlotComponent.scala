@@ -3,11 +3,22 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, DefaultColors}
 import com.cibo.evilplot.geometry._
 
-// A component that is aligned with the data of a plot.
-private[plot] abstract class PlotComponent {
+sealed trait Position
+
+object Position {
+  case object Top extends Position
+  case object Bottom extends Position
+  case object Left extends Position
+  case object Right extends Position
+  case object Overlay extends Position
+  case object Background extends Position
+}
+
+/** A component that is aligned with the data of a plot. */
+trait PlotComponent {
 
   // The position of this component.
-  val position: PlotComponent.Position
+  val position: Position
 
   // Determines if this component is repeated in facets.
   // For example, axes and backgrounds are repeated.
@@ -21,14 +32,6 @@ private[plot] abstract class PlotComponent {
 }
 
 object PlotComponent {
-  private[plot] sealed trait Position
-  private[plot] case object Top extends Position
-  private[plot] case object Bottom extends Position
-  private[plot] case object Left extends Position
-  private[plot] case object Right extends Position
-  private[plot] case object Overlay extends Position
-  private[plot] case object Background extends Position
-
   private[plot] case class OverlayPlotComponent(
     f: (Plot[_], Extent) => Drawable,
     x: Double,
@@ -36,7 +39,7 @@ object PlotComponent {
   ) extends PlotComponent {
     require(x >= 0.0 && x <= 1.0, s"x must be between 0.0 and 1.0, got $x")
     require(y >= 0.0 && y <= 1.0, s"y must be between 0.0 and 1.0, got $y")
-    val position: Position = Overlay
+    val position: Position = Position.Overlay
     def render[T](plot: Plot[T], extent: Extent): Drawable = {
       val drawable = f(plot, extent)
       val xoffset = (extent.width - drawable.extent.width) * x
@@ -48,7 +51,7 @@ object PlotComponent {
   private[plot] case class BackgroundPlotComponent(
     f: (Plot[_], Extent) => Drawable
   ) extends PlotComponent {
-    val position: Position = Background
+    val position: Position = Position.Background
     override val repeated: Boolean = true
     def render[T](plot: Plot[T], extent: Extent): Drawable = f(plot, extent)
   }
@@ -98,9 +101,9 @@ object PlotComponent {
     def background(color: Color = DefaultColors.backgroundColor): Plot[T] =
       background((_, e) => Rect(e).filled(color))
 
-    def padTop(size: Double): Plot[T] = plot :+ PadPlotComponent(Top, size)
-    def padBottom(size: Double): Plot[T] = plot :+ PadPlotComponent(Bottom, size)
-    def padLeft(size: Double): Plot[T] = plot :+ PadPlotComponent(Left, size)
-    def padRight(size: Double): Plot[T] = plot :+ PadPlotComponent(Right, size)
+    def padTop(size: Double): Plot[T] = plot :+ PadPlotComponent(Position.Top, size)
+    def padBottom(size: Double): Plot[T] = plot :+ PadPlotComponent(Position.Bottom, size)
+    def padLeft(size: Double): Plot[T] = plot :+ PadPlotComponent(Position.Left, size)
+    def padRight(size: Double): Plot[T] = plot :+ PadPlotComponent(Position.Right, size)
   }
 }

@@ -5,16 +5,16 @@ import com.cibo.evilplot.geometry.{Drawable, Extent, Text}
 object Label {
 
   private case class PlotLabel(
-    position: PlotComponent.Position,
+    position: Position,
     label: Drawable
   ) extends PlotComponent {
     override def size[T](plot: Plot[T]): Extent = label.extent
     def render[T](plot: Plot[T], extent: Extent): Drawable = position match {
-      case PlotComponent.Top    => label.center(extent.width)
-      case PlotComponent.Bottom => label.center(extent.width)
-      case PlotComponent.Left   => label.middle(extent.height)
-      case PlotComponent.Right  => label.middle(extent.height)
-      case _                    => label
+      case Position.Top    => label.center(extent.width)
+      case Position.Bottom => label.center(extent.width)
+      case Position.Left   => label.middle(extent.height)
+      case Position.Right  => label.middle(extent.height)
+      case _               => label
     }
   }
 
@@ -24,23 +24,23 @@ object Label {
     val defaultTitleSize: Double = 22
     val defaultLabelSize: Double = 20
 
-    def title(d: Drawable): Plot[T] = plot :+ PlotLabel(PlotComponent.Top, d)
+    def title(d: Drawable): Plot[T] = plot :+ PlotLabel(Position.Top, d)
     def title(label: String, size: Double = defaultTitleSize): Plot[T] =
       title(Text(label, size).padBottom(size / 2))
 
-    def leftLabel(d: Drawable): Plot[T] = plot :+ PlotLabel(PlotComponent.Left, d)
+    def leftLabel(d: Drawable): Plot[T] = plot :+ PlotLabel(Position.Left, d)
     def leftLabel(label: String, size: Double = defaultLabelSize): Plot[T] =
       leftLabel(Text(label, size).rotated(270).padRight(size / 2))
 
-    def rightLabel(d: Drawable): Plot[T] = plot :+ PlotLabel(PlotComponent.Right, d)
+    def rightLabel(d: Drawable): Plot[T] = plot :+ PlotLabel(Position.Right, d)
     def rightLabel(label: String, size: Double = defaultLabelSize): Plot[T] =
       rightLabel(Text(label, size).rotated(90).padLeft(size / 2))
 
-    def topLabel(d: Drawable): Plot[T] = plot :+ PlotLabel(PlotComponent.Top, d)
+    def topLabel(d: Drawable): Plot[T] = plot :+ PlotLabel(Position.Top, d)
     def topLabel(label: String, size: Double = defaultLabelSize): Plot[T] =
       topLabel(Text(label, size).padBottom(size / 2))
 
-    def bottomLabel(d: Drawable): Plot[T] = plot :+ PlotLabel(PlotComponent.Bottom, d)
+    def bottomLabel(d: Drawable): Plot[T] = plot :+ PlotLabel(Position.Bottom, d)
     def bottomLabel(label: String, size: Double = defaultLabelSize): Plot[T] =
       bottomLabel(Text(label, size).padTop(size / 2))
 
