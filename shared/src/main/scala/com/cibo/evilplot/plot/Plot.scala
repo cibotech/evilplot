@@ -27,8 +27,10 @@ final case class Plot[T] private[evilplot] (
   def ybounds(newBounds: Bounds): Plot[T] = copy(ybounds = newBounds, yfixed = true)
   def ybounds(lower: Double, upper: Double): Plot[T] = ybounds(Bounds(lower, upper))
 
-  def setXTransform(xt: Plot.Transformer): Plot[T] = copy(xtransform = xt, xfixed = true)
-  def setYTransform(yt: Plot.Transformer): Plot[T] = copy(ytransform = yt, yfixed = true)
+  private[plot] def updateBounds(xb: Bounds, yb: Bounds): Plot[T] = copy(xbounds = xb, ybounds = yb)
+
+  def setXTransform(xt: Plot.Transformer, fixed: Boolean): Plot[T] = copy(xtransform = xt, xfixed = fixed)
+  def setYTransform(yt: Plot.Transformer, fixed: Boolean): Plot[T] = copy(ytransform = yt, yfixed = fixed)
 
   lazy val topComponents: Seq[PlotComponent] = components.filter(_.position == Position.Top)
   lazy val bottomComponents: Seq[PlotComponent] = components.filter(_.position == Position.Bottom)
@@ -127,14 +129,14 @@ object Plot {
   private[plot] def overlayComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
     val pextent = plot.plotExtent(extent)
     plot.overlayComponents.map { a =>
-      a.render(plot, pextent)
+      a.render(plot, pextent).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
     }.group
   }
 
   private[plot] def backgroundComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
     val pextent = plot.plotExtent(extent)
     plot.backgroundComponents.map { a =>
-      a.render(plot, pextent)
+      a.render(plot, pextent).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
     }.group
   }
 

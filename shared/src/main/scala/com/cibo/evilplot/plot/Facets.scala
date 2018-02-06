@@ -18,8 +18,8 @@ object Facets {
   private def updatePlotsForFacet(plot: Plot[FacetData], subplotExtent: Extent): FacetData = {
     Plot.padPlots(plot.data, subplotExtent, 20, 15).map { row =>
       row.map { subplot =>
-        val withX = if (subplot.xfixed) subplot else subplot.setXTransform(plot.xtransform)
-        if (withX.yfixed) withX else withX.setYTransform(plot.ytransform)
+        val withX = if (subplot.xfixed) subplot else subplot.setXTransform(plot.xtransform, fixed = false)
+        if (withX.yfixed) withX else withX.setYTransform(plot.ytransform, fixed = false)
       }
     }
   }
@@ -141,18 +141,6 @@ object Facets {
     }._2
   }
 
-  private def overlayComponentRenderer[T](
-    plot: Plot[FacetData],
-    subplot: Plot[T],
-    subplotExtent: Extent
-  ): Drawable = {
-    // Overlays will be offset to the start of the plot area.
-    val pextent = subplot.plotExtent(subplotExtent)
-    plot.overlayComponents.map { a =>
-      a.render(subplot, pextent).translate(x = subplot.plotOffset.x, y = subplot.plotOffset.y)
-    }.group
-  }
-
   private def gridComponentRenderer[T](
     position: Position,
     plot: Plot[FacetData],
@@ -205,9 +193,9 @@ object Facets {
       row.zipWithIndex.map { case (subplot, x) =>
         (subplot.xfixed, subplot.yfixed) match {
           case (true, true)   => subplot
-          case (true, false)  => subplot.ybounds(rowYBounds(y))
-          case (false, true)  => subplot.xbounds(columnXBounds(x))
-          case (false, false) => subplot.xbounds(columnXBounds(x)).ybounds(rowYBounds(y))
+          case (true, false)  => subplot.updateBounds(subplot.xbounds,  rowYBounds(y))
+          case (false, true)  => subplot.updateBounds(columnXBounds(x), subplot.ybounds)
+          case (false, false) => subplot.updateBounds(columnXBounds(x), rowYBounds(y))
         }
       }
     }

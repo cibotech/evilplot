@@ -216,12 +216,12 @@ object Axes {
       tickRenderer: String => Drawable = xAxisTickRenderer()
     ): Plot[T] = {
       val component = ContinuousXAxisPlotComponent(tickCount, tickRenderer)
-      component +: plot.setXTransform(component)
+      component +: plot.setXTransform(component, fixed = true)
     }
 
     def xAxis(labels: Seq[String]): Plot[T] = {
       val component = DiscreteXAxisPlotComponent(labels, xAxisTickRenderer(rotateText = 90))
-      component +: plot.setXTransform(component)
+      component +: plot.setXTransform(component, fixed = true)
     }
 
     /** Add a Y axis to the plot.
@@ -233,12 +233,12 @@ object Axes {
       tickRenderer: String => Drawable = yAxisTickRenderer()
     ): Plot[T] = {
       val component = ContinuousYAxisPlotComponent(tickCount, tickRenderer)
-      component +: plot.setYTransform(component)
+      component +: plot.setYTransform(component, fixed = true)
     }
 
     def yAxis(labels: Seq[String]): Plot[T] = {
       val component = DiscreteYAxisPlotComponent(labels, yAxisTickRenderer())
-      component +: plot.setYTransform(component)
+      component +: plot.setYTransform(component, fixed = true)
     }
 
     def xGrid(
@@ -246,7 +246,7 @@ object Axes {
       lineRenderer: (String, Extent) => Drawable = xGridLineRenderer()
     ): Plot[T] = {
       val component = ContinuousXGridComponent(lineCount, lineRenderer)
-      plot.setXTransform(component) :+ component
+      plot.setXTransform(component, fixed = true) :+ component
     }
 
     def yGrid(
@@ -254,7 +254,7 @@ object Axes {
       lineRenderer: (String, Extent) => Drawable = yGridLineRenderer()
     ): Plot[T] = {
       val component = ContinuousYGridComponent(lineCount, lineRenderer)
-      plot.setYTransform(component) :+ component
+      plot.setYTransform(component, fixed = true) :+ component
     }
   }
 }

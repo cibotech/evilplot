@@ -7,6 +7,7 @@ package object plot {
   implicit class RichPlot[T](
     protected val plot: Plot[T]
   ) extends Axes.AxesImplicits[T]
+    with PlotLineImplicits[T]
     with AnnotationImplicits[T]
     with BackgroundImplicits[T]
     with LabelImplicits[T]
