@@ -4,38 +4,13 @@ import com.cibo.evilplot.colors.HTMLNamedColors
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, ContinuousAxisDescriptor, DiscreteAxisDescriptor}
 import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.renderers.TickRenderer
 
 object Axes {
 
   val defaultTickCount: Int = 10
   val defaultTickThickness: Double = 1
   val defaultTickLength: Double = 5
-
-  /** Function to render a tick on the x axis.
-    * @param length The length of the tick line.
-    * @param thickness The thickness of the tick line.
-    * @param rotateText The rotation of the label.
-    */
-  def xAxisTickRenderer(
-    length: Double = defaultTickLength,
-    thickness: Double = defaultTickThickness,
-    rotateText: Double = 0
-  )(label: String): Drawable = {
-    val line = Line(length, thickness).rotated(90)
-    Align.center(line, Text(label.toString).rotated(rotateText).padTop(2)).reduce(above)
-  }
-
-  /** Function to render a tick on the y axis.
-    * @param length The length of the tick line.
-    * @param thickness The thickness of the tick line.
-    */
-  def yAxisTickRenderer(
-    length: Double = defaultTickLength,
-    thickness: Double = defaultTickThickness
-  )(label: String): Drawable = {
-    val line = Line(length, thickness)
-    Align.middle(Text(label.toString).padRight(2).padBottom(2), line).reduce(beside)
-  }
 
   def xGridLineRenderer(
     thickness: Double = defaultTickThickness
@@ -53,11 +28,11 @@ object Axes {
     final override val repeated: Boolean = true
 
     val discrete: Boolean
-    val tickRenderer: String => Drawable
+    val tickRenderer: TickRenderer
 
     def getDescriptor[T](plot: Plot[T]): AxisDescriptor
 
-    final protected def ticks(descriptor: AxisDescriptor): Seq[Drawable] = descriptor.labels.map(tickRenderer)
+    final protected def ticks(descriptor: AxisDescriptor): Seq[Drawable] = descriptor.labels.map(tickRenderer.render)
   }
 
   private sealed trait ContinuousAxis {
@@ -129,22 +104,22 @@ object Axes {
 
   private case class ContinuousXAxisPlotComponent(
     tickCount: Int,
-    tickRenderer: String => Drawable
+    tickRenderer: TickRenderer
   ) extends XAxisPlotComponent with ContinuousAxis
 
   private case class DiscreteXAxisPlotComponent(
     labels: Seq[String],
-    tickRenderer: String => Drawable
+    tickRenderer: TickRenderer
   ) extends XAxisPlotComponent with DiscreteAxis
 
   private case class ContinuousYAxisPlotComponent(
     tickCount: Int,
-    tickRenderer: String => Drawable
+    tickRenderer: TickRenderer
   ) extends YAxisPlotComponent with ContinuousAxis
 
   private case class DiscreteYAxisPlotComponent(
     labels: Seq[String],
-    tickRenderer: String => Drawable
+    tickRenderer: TickRenderer
   ) extends YAxisPlotComponent with DiscreteAxis
 
   private sealed trait GridComponent extends PlotComponent {
@@ -213,14 +188,14 @@ object Axes {
       */
     def xAxis(
       tickCount: Int = defaultTickCount,
-      tickRenderer: String => Drawable = xAxisTickRenderer()
+      tickRenderer: TickRenderer = TickRenderer.xAxisTickRenderer()
     ): Plot[T] = {
       val component = ContinuousXAxisPlotComponent(tickCount, tickRenderer)
       component +: plot.setXTransform(component, fixed = true)
     }
 
     def xAxis(labels: Seq[String]): Plot[T] = {
-      val component = DiscreteXAxisPlotComponent(labels, xAxisTickRenderer(rotateText = 90))
+      val component = DiscreteXAxisPlotComponent(labels, TickRenderer.xAxisTickRenderer(rotateText = 90))
       component +: plot.setXTransform(component, fixed = true)
     }
 
@@ -230,14 +205,14 @@ object Axes {
       */
     def yAxis(
       tickCount: Int = defaultTickCount,
-      tickRenderer: String => Drawable = yAxisTickRenderer()
+      tickRenderer: TickRenderer = TickRenderer.yAxisTickRenderer()
     ): Plot[T] = {
       val component = ContinuousYAxisPlotComponent(tickCount, tickRenderer)
       component +: plot.setYTransform(component, fixed = true)
     }
 
     def yAxis(labels: Seq[String]): Plot[T] = {
-      val component = DiscreteYAxisPlotComponent(labels, yAxisTickRenderer())
+      val component = DiscreteYAxisPlotComponent(labels, TickRenderer.yAxisTickRenderer())
       component +: plot.setYTransform(component, fixed = true)
     }
 
