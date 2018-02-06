@@ -1,6 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Group}
+import com.cibo.evilplot.plot.components.Position
 
 object Facets {
 

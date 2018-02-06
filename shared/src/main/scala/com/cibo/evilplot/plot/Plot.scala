@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plot.components.{PlotComponent, Position}
 
 final case class Plot[T] private[evilplot] (
   data: T, // Raw data

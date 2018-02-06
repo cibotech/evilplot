@@ -1,5 +1,7 @@
 package com.cibo.evilplot.plot
 
+import com.cibo.evilplot.plot.renderers.{Bar, BarRenderer}
+
 object Histogram {
 
   val defaultBinCount: Int = 20
