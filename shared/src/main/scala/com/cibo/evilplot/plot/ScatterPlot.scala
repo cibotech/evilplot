@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Extent, Translate}
+import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
 
 object ScatterPlot {
@@ -13,7 +13,7 @@ object ScatterPlot {
     plot.data.filter(plot.inBounds).zipWithIndex.map { case (point, index) =>
       val x = xtransformer(point.x)
       val y = ytransformer(point.y)
-      Translate(pointRenderer.render(index), x = x, y = y)
+      pointRenderer.render(index).translate(x = x, y = y)
     }.group
   }
 

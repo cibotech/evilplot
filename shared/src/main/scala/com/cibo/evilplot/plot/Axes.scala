@@ -102,7 +102,7 @@ object Axes {
       ticks(descriptor).zipWithIndex.map { case (tick, i) =>
         val offset = if (discrete) descriptor.spacing * scale / 2 else 0
         val x = offset + i * descriptor.spacing * scale - tick.extent.width / 2.0
-        Translate(tick, x = x)
+        tick.translate(x = x)
       }.group
     }
   }
@@ -121,7 +121,7 @@ object Axes {
       ts.zipWithIndex.map { case (tick, i) =>
         val offset = if (discrete) descriptor.spacing * scale / 2 else 0
         val y = extent.height - (i * descriptor.spacing * scale + offset) - tick.extent.height / 2.0
-        Translate(tick, x = maxWidth - tick.extent.width, y = y)
+        tick.translate(x = maxWidth - tick.extent.width, y = y)
       }.group
     }
   }
@@ -164,7 +164,7 @@ object Axes {
       val scale = extent.width / descriptor.axisBounds.range
       lines(descriptor, extent).zipWithIndex.map { case (line, i) =>
         val offset = i * descriptor.spacing * scale - line.extent.width / 2.0
-        Translate(line, x = offset)
+        line.translate(x = offset)
       }.group
     }
   }
@@ -178,7 +178,7 @@ object Axes {
       val maxWidth = ls.maxBy(_.extent.width).extent.width
       ls.zipWithIndex.map { case (line, i) =>
         val offset = i * descriptor.spacing * scale + line.extent.height / 2.0
-        Translate(line, x = maxWidth - line.extent.width, y = extent.height - offset)
+        line.translate(x = maxWidth - line.extent.width, y = extent.height - offset)
       }.group
     }
   }

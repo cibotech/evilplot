@@ -41,7 +41,7 @@ object PlotComponent {
       val drawable = f(plot, extent)
       val xoffset = (extent.width - drawable.extent.width) * x
       val yoffset = (extent.height - drawable.extent.height) * y
-      Translate(drawable, x = xoffset, y = yoffset)
+      drawable.translate(x = xoffset, y = yoffset)
     }
   }
 

@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Group, Translate}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Group}
 
 object Facets {
 
@@ -33,7 +33,7 @@ object Facets {
       val y = yIndex * innerExtent.height
       row.zipWithIndex.map { case (subplot, xIndex) =>
         val x = xIndex * innerExtent.width
-        Translate(subplot.render(innerExtent), x = x, y = y)
+        subplot.render(innerExtent).translate(x = x, y = y)
       }.group
     }.group
   }
@@ -52,13 +52,13 @@ object Facets {
           val pextent = subplot.plotExtent(innerExtent)
           val x = i * innerExtent.width + subplot.plotOffset.x + plot.plotOffset.x
           val y = d.extent.height
-          Translate(c.render(subplot, pextent), x = x, y = y)
+          c.render(subplot, pextent).translate(x = x, y = y)
         }.group
       } else {
         val pextent = plot.plotExtent(extent)
         val x = plot.plotOffset.x
         val y = d.extent.height
-        Translate(c.render(plot, pextent), x = x, y = y)
+        c.render(plot, pextent).translate(x = x, y = y)
       } behind d
     }
   }
@@ -79,7 +79,7 @@ object Facets {
           val rendered = c.render(subplot, pextent)
           val x = i * innerExtent.width + subplot.plotOffset.x + plot.plotOffset.x
           val y = prevY - rendered.extent.height
-          (y, Translate(rendered, x = x, y = y))
+          (y, rendered.translate(x = x, y = y))
         }
         (s.maxBy(_._1)._1, s.map(_._2).group behind d)
       } else {
@@ -87,7 +87,7 @@ object Facets {
         val rendered = c.render(plot, pextent)
         val x = plot.plotOffset.x
         val y = prevY - rendered.extent.height
-        (y, Translate(rendered, x = x, y = y) behind d)
+        (y, rendered.translate(x = x, y = y) behind d)
       }
     }._2
   }
@@ -104,12 +104,12 @@ object Facets {
         leftPlots.zipWithIndex.map { case (subplot, i) =>
           val pextent = subplot.plotExtent(innerExtent)
           val y = i * innerExtent.height + subplot.plotOffset.y + plot.plotOffset.y
-          Translate(c.render(subplot, pextent), y = y)
+          c.render(subplot, pextent).translate(y = y)
         }.group
       } else {
         val pextent = plot.plotExtent(extent)
         val y = plot.plotOffset.y
-        Translate(c.render(plot, pextent), y = y)
+        c.render(plot, pextent).translate(y = y)
       } beside d
     }
   }
@@ -131,7 +131,7 @@ object Facets {
           val rendered = c.render(subplot, pextent)
           val x = prevX - rendered.extent.width
           val y = i * innerExtent.height + subplot.plotOffset.y + plot.plotOffset.y
-          (y, Translate(rendered, x, y))
+          (y, rendered.translate(x, y))
         }
         (s.maxBy(_._1)._1, s.map(_._2).group behind d)
       } else {
@@ -139,7 +139,7 @@ object Facets {
         val rendered = c.render(plot, pextent)
         val x = prevX - rendered.extent.width
         val y = plot.plotOffset.y
-        (x, Translate(rendered, x = x, y = y) behind d)
+        (x, rendered.translate(x = x, y = y) behind d)
       }
     }._2
   }
@@ -152,11 +152,7 @@ object Facets {
     // Overlays will be offset to the start of the plot area.
     val pextent = subplot.plotExtent(subplotExtent)
     plot.components.filter(_.position == PlotComponent.Overlay).map { a =>
-      Translate(
-        a.render(subplot, pextent),
-        x = subplot.plotOffset.x,
-        y = subplot.plotOffset.y
-      )
+      a.render(subplot, pextent).translate(x = subplot.plotOffset.x, y = subplot.plotOffset.y)
     }.group
   }
 
@@ -174,7 +170,7 @@ object Facets {
             val pextent = subplot.plotExtent(innerExtent)
             val x = xIndex * innerExtent.width + subplot.plotOffset.x
             val y = yIndex * innerExtent.height + subplot.plotOffset.y
-            Translate(c.render(subplot, pextent), x = x, y = y)
+            c.render(subplot, pextent).translate(x = x, y = y)
           }
         }.group
       } else {

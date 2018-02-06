@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Extent, Translate}
+import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
 
 object BarChart {
@@ -15,11 +15,7 @@ object BarChart {
       val y = ytransformer(bar.height)
       val barWidth = xtransformer(barIndex + 1) - x
       val barHeight = plotExtent.height - y
-      Translate(
-        barRenderer.render(bar, Extent(barWidth, barHeight), barIndex),
-        x = x,
-        y = y
-      )
+      barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(x = x, y = y)
     }.group
   }
 

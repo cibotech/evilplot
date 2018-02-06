@@ -61,7 +61,7 @@ final case class Plot[T] private[evilplot] (
   def render(extent: Extent = Plot.defaultExtent): Drawable = {
     val (overlays, backgrounds) = componentRenderer(this, extent)
     val renderedPlot = backgrounds behind renderer(this, plotExtent(extent))
-    Translate(renderedPlot, x = plotOffset.x, y = plotOffset.y) behind overlays
+    renderedPlot.translate(x = plotOffset.x, y = plotOffset.y) behind overlays
   }
 }
 
@@ -87,7 +87,7 @@ object Plot {
   private[plot] def topComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
     val pextent = plot.plotExtent(extent)
     plot.components.filter(_.position == PlotComponent.Top).reverse.foldLeft(empty) { (d, a) =>
-      Translate(a.render(plot, pextent), x = plot.plotOffset.x, y = d.extent.height) behind d
+      a.render(plot, pextent).translate(x = plot.plotOffset.x, y = d.extent.height) behind d
     }
   }
 
@@ -98,14 +98,14 @@ object Plot {
     }.reverse.foldLeft((extent.height, empty)) { case ((y, d), a) =>
       val rendered = a.render(plot, pextent)
       val newY = y - rendered.extent.height
-      (newY, Translate(rendered, x = plot.plotOffset.x, y = newY) behind d)
+      (newY, rendered.translate(x = plot.plotOffset.x, y = newY) behind d)
     }._2
   }
 
   private[plot] def leftComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
     val pextent = plot.plotExtent(extent)
-    plot.components.filter(_.position == PlotComponent.Left).foldLeft(empty) { (d, a) =>
-      Translate(a.render(plot, pextent), y = plot.plotOffset.y) beside d
+    plot.components.filter(_.position == PlotComponent.Left).foldLeft(empty) { (d, c) =>
+      c.render(plot, pextent).translate(y = plot.plotOffset.y) beside d
     }
   }
 
@@ -116,7 +116,7 @@ object Plot {
     }.reverse.foldLeft((extent.width, empty)) { case ((x, d), a) =>
       val rendered = a.render(plot, pextent)
       val newX = x - rendered.extent.width
-      (newX, Translate(rendered, x = newX, y = plot.plotOffset.y) behind d)
+      (newX, rendered.translate(x = newX, y = plot.plotOffset.y) behind d)
     }._2
   }
 

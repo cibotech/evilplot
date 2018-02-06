@@ -11,8 +11,8 @@ package object geometry {
     def above(other: Drawable): Drawable = geometry.above(r, other)
     def below(other: Drawable): Drawable = geometry.above(other, r)
     def beside(other: Drawable): Drawable = geometry.beside(r, other)
-    def behind(other: Drawable): Group = Group(Seq(r, other))
-    def inFrontOf(other: Drawable): Group = Group(Seq(other, r))
+    def behind(other: Drawable): Drawable = Group(Seq(r, other))
+    def inFrontOf(other: Drawable): Drawable = Group(Seq(other, r))
 
     def labeled(msgSize: (String, Double)): Drawable = Align.center(r, Text(msgSize._1, msgSize._2) padTop 5).group
     def labeled(msg: String): Drawable = labeled(msg -> Text.defaultSize)
@@ -32,15 +32,24 @@ package object geometry {
     def filled(color: Color): Drawable = Style(r, fill = color)
     def weighted(weight: Double): Drawable = StrokeWeight(r, weight = weight)
 
-    def transX(nudge: Double): Translate = Translate(r, x = nudge)
-    def transY(nudge: Double): Translate = Translate(r, y = nudge)
+    def transX(nudge: Double): Drawable = translate(x = nudge)
+    def transY(nudge: Double): Drawable = translate(y = nudge)
 
     def affine(affine: AffineTransform): Affine = Affine(r, affine)
 
-    def center(width: Double): Drawable = Translate(r, x = (width - r.extent.width) / 2)
-    def right(width: Double): Drawable = Translate(r, x = width - r.extent.width)
-    def middle(height: Double): Drawable = Translate(r, y = (height - r.extent.height) / 2)
-    def bottom(height: Double): Drawable = Translate(r, y = height - r.extent.height)
+    def center(width: Double): Drawable = translate(x = (width - r.extent.width) / 2)
+    def right(width: Double): Drawable = translate(x = width - r.extent.width)
+    def middle(height: Double): Drawable = translate(y = (height - r.extent.height) / 2)
+    def bottom(height: Double): Drawable = translate(y = height - r.extent.height)
+
+    /** Translate.
+      * This will optimize away stacked translates.
+      */
+    def translate(x: Double = 0, y: Double = 0): Drawable = r match {
+      case Translate(nextR, nextX, nextY) if nextX + x == 0 && nextY + y == 0 => nextR
+      case Translate(nextR, nextX, nextY)                                     => Translate(nextR, nextX + x, nextY + y)
+      case _                                                                  => Translate(r, x, y)
+    }
 
     // Draw a box around the drawable for debugging.
     def debug: Drawable = {
@@ -91,7 +100,7 @@ package object geometry {
       math.max(top.extent.width, bottom.extent.width),
       top.extent.height + bottom.extent.height
     )
-    Resize(Group(Seq(top, Translate(bottom, y = top.extent.height))), newExtent)
+    Resize(Group(Seq(top, bottom.translate(y = top.extent.height))), newExtent)
   }
 
   def beside(left: Drawable, right: Drawable): Drawable = {
@@ -99,22 +108,22 @@ package object geometry {
       left.extent.width + right.extent.width,
       math.max(left.extent.height, right.extent.height)
     )
-    Resize(Group(Seq(left, Translate(right, x = left.extent.width))), newExtent)
+    Resize(Group(Seq(left, right.translate(x = left.extent.width))), newExtent)
   }
 
   def flipY(r: Drawable, height: Double): Drawable =
-    Resize(Translate(Scale(r, 1, -1), y = height), r.extent.copy(height = height))
+    Resize(Scale(r, 1, -1).translate(y = height), r.extent.copy(height = height))
   def flipY(r: Drawable): Drawable = Translate(Scale(r, 1, -1), y = r.extent.height)
 
   def flipX(r: Drawable, width: Double): Drawable =
-    Resize(Translate(Scale(r, -1, 1), x = width), r.extent.copy(width = width))
+    Resize(Scale(r, -1, 1).translate(x = width), r.extent.copy(width = width))
 
   def pad(item: Drawable, left: Double = 0, right: Double = 0, top: Double = 0, bottom: Double = 0): Drawable = {
     val newExtent = Extent(
       item.extent.width + left + right,
       item.extent.height + top + bottom
     )
-    Resize(Translate(item, x = left, y = top), newExtent)
+    Resize(item.translate(x = left, y = top), newExtent)
   }
 
   def padAll(item: Drawable, size: Double): Drawable = pad(item, size, size, size, size)
