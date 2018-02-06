@@ -18,28 +18,21 @@ trait BarRenderer {
 
 object BarRenderer {
 
-  val defaultBarSpacing: Double = 1.0
-  val defaultGroupSpacing: Double = 4.0
-
   def stackedRenderer(
-    colors: Seq[Color],
-    spacing: Double = defaultBarSpacing,
-    groupSpacing: Double = defaultGroupSpacing
+    colors: Seq[Color]
   ): BarRenderer = new BarRenderer {
     def render(bar: Bar, barExtent: Extent, index: Int): Drawable = {
       val scale = barExtent.height / bar.height
       bar.values.zipWithIndex.map { case (value, stackIndex) =>
         val height = value * scale
-        val width = math.max(barExtent.width - spacing, 1.0)
+        val width = barExtent.width
         Rect(width, height).filled(colors(stackIndex))
       }.reduce(_ below _)
     }
   }
 
   def default(
-    color: Color = DefaultColors.barColor,
-    spacing: Double = defaultBarSpacing,
-    groupSpacing: Double = defaultGroupSpacing
-  ): BarRenderer = stackedRenderer(Seq(color), spacing = spacing, groupSpacing = groupSpacing)
+    color: Color = DefaultColors.barColor
+  ): BarRenderer = stackedRenderer(Seq(color))
 
 }

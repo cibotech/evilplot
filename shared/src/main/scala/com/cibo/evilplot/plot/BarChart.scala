@@ -15,10 +15,17 @@ object BarChart {
     groupSpacing: Double
   )(plot: Plot[Seq[Bar]], plotExtent: Extent): Drawable = {
     val ytransformer = plot.ytransform(plot, plotExtent)
-    val groupCount = plot.data.map(_.group).distinct.size - 1
-    val groupPadding = groupCount * groupSpacing  // Extra space needed for group separators.
+
+    // Space used for groups.
+    val groupPadding = (plot.data.map(_.group).distinct.size - 1) * groupSpacing
+
+    // Total bar spacing used.
     val barCount = plot.data.size
-    val barWidth = (plotExtent.width - groupPadding - spacing * (barCount - 1)) / barCount
+    val totalBarSpacing = (barCount - 1) * spacing
+
+    // The width of each bar.
+    val barWidth = (plotExtent.width - groupPadding - totalBarSpacing) / barCount
+
     val initial: (Double, Drawable) = (0, EmptyDrawable())
     plot.data.sortBy(_.group).zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
       val y = ytransformer(bar.height)
