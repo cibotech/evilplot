@@ -150,10 +150,12 @@ object Plot {
   }
 
   // Force all plots to have the same size plot area.
-  private[plot] def padPlots(plots: Seq[Seq[Plot[_]]], extent: Extent): Seq[Seq[Plot[_]]] = {
-
-    val extraRight = 20
-    val extraTop = 15
+  private[plot] def padPlots(
+    plots: Seq[Seq[Plot[_]]],
+    extent: Extent,
+    padRight: Double,
+    padBottom: Double
+  ): Seq[Seq[Plot[_]]] = {
 
     // First we get the offsets of all subplots.  By selecting the largest
     // offset, we can pad all plots to start at the same location.
@@ -164,7 +166,7 @@ object Plot {
     // Update the plots with their offsets.
     val offsetPlots = plots.map { row =>
       row.map { subplot =>
-        subplot.padTop(extraTop + yoffset - subplot.plotOffset.y).padLeft(xoffset - subplot.plotOffset.x)
+        subplot.padTop(yoffset - subplot.plotOffset.y).padLeft(xoffset - subplot.plotOffset.x)
       }
     }
 
@@ -174,12 +176,16 @@ object Plot {
     val plotAreas = offsetPlots.flatMap(_.map(_.plotExtent(extent)))
     val minWidth = plotAreas.minBy(_.width).width
     val minHeight = plotAreas.minBy(_.height).height
-    offsetPlots.map { row =>
-      row.map { subplot =>
+    val rowCount = offsetPlots.length
+    offsetPlots.zipWithIndex.map { case (row, rowIndex) =>
+      val columnCount = row.length
+      row.zipWithIndex.map { case (subplot, columnIndex) =>
+        val extraRight = if (columnIndex + 1 < columnCount) padRight else 0
+        val extraBottom = if (rowIndex + 1 < rowCount) padBottom else 0
         val pe = subplot.plotExtent(extent)
-        val fillx = pe.width - minWidth
-        val filly = pe.height - minHeight
-        subplot.padRight(extraRight + fillx).padBottom(filly)
+        val fillx = pe.width - minWidth + padRight
+        val filly = pe.height - minHeight + padBottom
+        subplot.padRight(fillx).padBottom(filly)
       }
     }
   }

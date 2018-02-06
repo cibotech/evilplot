@@ -3,7 +3,9 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.geometry.{Drawable, Extent, Translate}
 import com.cibo.evilplot.numeric.{Bounds, Point}
 
-object Scatter {
+object ScatterPlot {
+
+  val defaultBoundBuffer: Double = 0.1
 
   private def renderScatter(pointRenderer: PointRenderer)(plot: Plot[Seq[Point]], plotExtent: Extent): Drawable = {
     val xtransformer = plot.xtransform(plot, plotExtent)
@@ -18,14 +20,17 @@ object Scatter {
   /** Create a scatter plot from some data.
     * @param data The points to plot.
     * @param pointRenderer A function to create a Drawable for each point to plot.
+    * @param boundBuffer Extra padding to add to bounds as a fraction.
     * @return A Plot representing a scatter plot.
     */
   def apply(
     data: Seq[Point],
-    pointRenderer: PointRenderer = PointRenderer.default()
+    pointRenderer: PointRenderer = PointRenderer.default(),
+    boundBuffer: Double = defaultBoundBuffer
   ): Plot[Seq[Point]] = {
-    val xbounds = Bounds(data.minBy(_.x).x, data.maxBy(_.x).x)
-    val ybounds = Bounds(data.minBy(_.y).y, data.maxBy(_.y).y)
+    require(boundBuffer >= 0.0)
+    val xbounds = Bounds(data.minBy(_.x).x * (1.0 - boundBuffer), data.maxBy(_.x).x * (1.0 + boundBuffer))
+    val ybounds = Bounds(data.minBy(_.y).y * (1.0 - boundBuffer), data.maxBy(_.y).y * (1.0 + boundBuffer))
     Plot[Seq[Point]](data, xbounds, ybounds, renderScatter(pointRenderer))
   }
 }

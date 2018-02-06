@@ -15,7 +15,7 @@ object Facets {
 
   // Add padding to subplots so they are all the same size and use the same axis transformation.
   private def updatePlotsForFacet(plot: Plot[FacetData], subplotExtent: Extent): FacetData = {
-    Plot.padPlots(plot.data, subplotExtent).map { row =>
+    Plot.padPlots(plot.data, subplotExtent, 20, 15).map { row =>
       row.map { subplot =>
         val withX = if (subplot.xfixed) subplot else subplot.setXTransform(plot.xtransform)
         if (withX.yfixed) withX else withX.setYTransform(plot.ytransform)

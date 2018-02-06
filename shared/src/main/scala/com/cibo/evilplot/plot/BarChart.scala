@@ -5,6 +5,8 @@ import com.cibo.evilplot.numeric.Bounds
 
 object BarChart {
 
+  val defaultBoundBuffer: Double = 0.1
+
   private def renderBarChart(barRenderer: BarRenderer)(plot: Plot[Seq[Bar]], plotExtent: Extent): Drawable = {
     val xtransformer = plot.xtransform(plot, plotExtent)
     val ytransformer = plot.ytransform(plot, plotExtent)
@@ -23,10 +25,14 @@ object BarChart {
 
   def apply(
     bars: Seq[Bar],
-    barRenderer: BarRenderer = BarRenderer.default()
+    barRenderer: BarRenderer = BarRenderer.default(),
+    boundBuffer: Double = defaultBoundBuffer
   ): Plot[Seq[Bar]] = {
     val xbounds = Bounds(0, bars.size)
-    val ybounds = Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height)
+    val ybounds = Bounds(
+      bars.minBy(_.height).height * (1.0 - boundBuffer),
+      bars.maxBy(_.height).height * (1.0 + boundBuffer)
+    )
     Plot[Seq[Bar]](
       bars,
       xbounds,

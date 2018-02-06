@@ -7,11 +7,12 @@ object Overlay {
   type OverlayData = Seq[Plot[_]]
 
   private def overlayPlotRenderer(plot: Plot[OverlayData], plotExtent: Extent): Drawable = {
-    val paddedPlots = Plot.padPlots(Seq(plot.data), plotExtent).head
+    val paddedPlots = Plot.padPlots(Seq(plot.data), plotExtent, 0, 0).head
     paddedPlots.map(_.render(plotExtent)).group
   }
 
   def apply(plots: Plot[_]*): Plot[OverlayData] = {
+    require(plots.nonEmpty, "must have at least one plot for an overlay")
 
     // Update bounds on subplots.
     val xbounds = Plot.combineBounds(plots.map(_.xbounds))
