@@ -189,8 +189,8 @@ object Plot {
         val extraRight = if (columnIndex + 1 < columnCount) padRight else 0
         val extraBottom = if (rowIndex + 1 < rowCount) padBottom else 0
         val pe = subplot.plotExtent(extent)
-        val fillx = pe.width - minWidth + padRight
-        val filly = pe.height - minHeight + padBottom
+        val fillx = pe.width - minWidth + extraRight
+        val filly = pe.height - minHeight + extraBottom
         subplot.padRight(fillx).padBottom(filly)
       }
     }
