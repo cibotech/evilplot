@@ -23,7 +23,7 @@ class OverlaySpec extends FunSpec with Matchers {
 
     it("occupies the right extents") {
       val inner1 = ScatterPlot(Seq(Point(10.0, -1.0)))
-      val inner2 = ScatterPlot(Seq(Point(3.0, 20.0)))
+      val inner2 = ScatterPlot(Seq(Point(11.0, 1.0)))
       val overlay = Overlay(inner1, inner2)
       val extent = Extent(600, 400)
       overlay.render(extent).extent shouldBe extent

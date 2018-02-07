@@ -30,8 +30,8 @@ object ScatterPlot {
     boundBuffer: Double = defaultBoundBuffer
   ): Plot[Seq[Point]] = {
     require(boundBuffer >= 0.0)
-    val xbounds = Bounds(data.minBy(_.x).x * (1.0 - boundBuffer), data.maxBy(_.x).x * (1.0 + boundBuffer))
-    val ybounds = Bounds(data.minBy(_.y).y * (1.0 - boundBuffer), data.maxBy(_.y).y * (1.0 + boundBuffer))
+    val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), boundBuffer)
+    val ybounds = Plot.expandBounds(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y), boundBuffer)
     Plot[Seq[Point]](data, xbounds, ybounds, renderScatter(pointRenderer))
   }
 }

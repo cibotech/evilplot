@@ -53,10 +53,7 @@ object BarChart {
     boundBuffer: Double = defaultBoundBuffer
   ): Plot[Seq[Bar]] = {
     val xbounds = Bounds(0, bars.size)
-    val ybounds = Bounds(
-      bars.minBy(_.height).height * (1.0 - boundBuffer),
-      bars.maxBy(_.height).height * (1.0 + boundBuffer)
-    )
+    val ybounds = Plot.expandBounds(Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height), boundBuffer)
     Plot[Seq[Bar]](
       bars,
       xbounds,

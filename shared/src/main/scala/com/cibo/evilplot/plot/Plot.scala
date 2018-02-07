@@ -150,6 +150,14 @@ object Plot {
     (overlays, backgrounds)
   }
 
+  // Add some buffer to the specified bounds.
+  private[plot] def expandBounds(bounds: Bounds, buffer: Double): Bounds = {
+    require(buffer >= 0.0)
+    // For an empty range we update by the buffer amount.
+    val amount = if (bounds.range > 0) buffer * bounds.range / 2.0 else buffer / 2.0
+    Bounds(bounds.min - amount, bounds.max + amount)
+  }
+
   // Combine the bounds for multiple plots (taking the widest).
   private[plot] def combineBounds(bounds: Seq[Bounds]): Bounds = {
     Bounds(bounds.minBy(_.min).min, bounds.maxBy(_.max).max)
