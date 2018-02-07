@@ -1,0 +1,82 @@
+package com.cibo.evilplot.plot
+
+import com.cibo.evilplot.geometry.{Drawable, Extent, _}
+import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plot.XyPlot.defaultBoundBuffer
+import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
+
+object XyPlot {
+
+  val defaultBoundBuffer: Double = 0.1
+
+  private def renderPoints(pointRenderer: PointRenderer, pathRenderer: PathRenderer)
+                          (plot: Plot[Seq[Point]], plotExtent: Extent): Drawable = {
+    val xtransformer = plot.xtransform(plot, plotExtent)
+    val ytransformer = plot.ytransform(plot, plotExtent)
+    val xformedPoints = plot.data.filter(plot.inBounds).zipWithIndex.map{case (point, index) =>
+      val x = xtransformer(point.x)
+      val y = ytransformer(point.y)
+      Point(x, y)
+    }
+    val points = xformedPoints.zipWithIndex.map { case (point, index) =>
+      pointRenderer.render(index).translate(x = point.x, y = point.y)
+    }.group
+    pathRenderer.render(xformedPoints) inFrontOf  points
+  }
+
+  /** Create an XY plot (ScatterPlot, LinePlot are both special cases) from some data.
+    *
+    * @param data          The points to plot.
+    * @param pointRenderer A function to create a Drawable for each point to plot.
+    * @param pathRenderer A function to create a Drawable for all the points (such as a path)
+    * @param boundBuffer   Extra padding to add to bounds as a fraction.
+    * @return A Plot representing an XY plot.
+    */
+  def apply(
+             data: Seq[Point],
+             pointRenderer: PointRenderer = PointRenderer.default(),
+             pathRenderer: PathRenderer = PathRenderer.default(),
+             boundBuffer: Double = defaultBoundBuffer
+           ): Plot[Seq[Point]] = {
+    require(boundBuffer >= 0.0)
+    val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), boundBuffer)
+    val ybounds = Plot.expandBounds(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y), boundBuffer)
+    Plot[Seq[Point]](data, xbounds, ybounds, renderPoints(pointRenderer, pathRenderer))
+  }
+}
+
+object LinePlot {
+  /** Create a line plot from some data.  Convenience method on top of XyPlot
+    *
+    * @param data          The points to plot.
+    * @param pointRenderer A function to create a Drawable for each point to plot.
+    * @param pathRenderer A function to create a Drawable for all the points (such as a path)
+    * @param boundBuffer   Extra padding to add to bounds as a fraction.
+    * @return A Plot representing a scatter plot.
+    */
+  def apply(
+             data: Seq[Point],
+             pointRenderer: PointRenderer = PointRenderer.empty(),
+             pathRenderer: PathRenderer = PathRenderer.default(),
+             boundBuffer: Double = defaultBoundBuffer
+           ): Plot[Seq[Point]] = {
+    XyPlot(data, pointRenderer, pathRenderer, boundBuffer)
+  }
+}
+
+object ScatterPlot {
+  /** Create a scatter plot from some data.
+    * @param data The points to plot.
+    * @param pointRenderer A function to create a Drawable for each point to plot.
+    * @param boundBuffer Extra padding to add to bounds as a fraction.
+    * @return A Plot representing a scatter plot.
+    */
+  def apply(
+             data: Seq[Point],
+             pointRenderer: PointRenderer = PointRenderer.default(),
+             boundBuffer: Double = XyPlot.defaultBoundBuffer
+           ): Plot[Seq[Point]] = {
+    XyPlot(data, pointRenderer, pathRenderer= PathRenderer.empty(), boundBuffer)
+  }
+}
+

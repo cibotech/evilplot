@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors._
-import com.cibo.evilplot.geometry.{Disc, Drawable}
+import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable}
 
 trait PointRenderer {
   def render(index: Int): Drawable
@@ -21,6 +21,13 @@ object PointRenderer {
     color: Color = DefaultColors.barColor
   ): PointRenderer = new PointRenderer {
     def render(index: Int): Drawable = Disc(size) filled color
+  }
+
+  /**
+    * A no-op renderer for when you don't want to render points (such as on a line)
+    */
+  def empty(): PointRenderer = new PointRenderer {
+    override def render(index: Int): Drawable = new EmptyDrawable
   }
 
   /** Render points with colors based on depth.
