@@ -18,8 +18,8 @@ object Histogram {
       val ytransformer = plot.ytransform(plot, plotExtent)
 
       plot.data.map { point =>
-        val x = xtransformer(point.x)
-        val barWidth = xtransformer(point.x + binWidth) - x
+        val x = xtransformer(point.x) + spacing / 2.0
+        val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
         val y = ytransformer(point.y)
         val barHeight = plotExtent.height - y
         barRenderer.render(Bar(point.y), Extent(barWidth, barHeight), 0).translate(x = x, y = y)
