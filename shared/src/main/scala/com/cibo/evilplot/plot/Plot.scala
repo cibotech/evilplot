@@ -3,15 +3,14 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.components.{PlotComponent, Position}
-import com.cibo.evilplot.plot.renderers.PlotRenderer
+import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
 
 final case class Plot[T] private[evilplot] (
   data: T, // Raw data
   xbounds: Bounds, // x bounds of the raw data
   ybounds: Bounds, // y bounds of the raw data
   private[plot] val renderer: PlotRenderer[T],
-  private[plot] val componentRenderer: (Plot[T], Extent) => (Drawable, Drawable) =
-    (p: Plot[T], e: Extent) => Plot.defaultComponentRenderer(p, e),
+  private[plot] val componentRenderer: ComponentRenderer[T] = ComponentRenderer.Default[T](),
   private[plot] val xtransform: Plot.Transformer = Plot.DefaultXTransformer(),
   private[plot] val ytransform: Plot.Transformer = Plot.DefaultYTransformer(),
   private[plot] val xfixed: Boolean = false,    // Set if x bounds are fixed.
@@ -70,7 +69,8 @@ final case class Plot[T] private[evilplot] (
   }
 
   def render(extent: Extent = Plot.defaultExtent): Drawable = {
-    val (overlays, backgrounds) = componentRenderer(this, extent)
+    val overlays = componentRenderer.renderFront(this, extent)
+    val backgrounds = componentRenderer.renderBack(this, extent)
     val renderedPlot = renderer.render(this, plotExtent(extent)).translate(x = plotOffset.x, y = plotOffset.y)
     backgrounds behind renderedPlot behind overlays
   }
@@ -83,8 +83,6 @@ object Plot {
     def apply(plot: Plot[_], plotExtent: Extent): Double => Double
   }
 
-  private val empty: Drawable = EmptyDrawable()
-
   private[plot] case class DefaultXTransformer() extends Transformer {
     def apply(plot: Plot[_], plotExtent: Extent): Double => Double =
       (x: Double) => (x - plot.xbounds.min) * plotExtent.width / plot.xbounds.range
@@ -95,61 +93,6 @@ object Plot {
       (y: Double) => plotExtent.height - (y - plot.ybounds.min) * plotExtent.height / plot.ybounds.range
   }
 
-  private[plot] def topComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
-    val pextent = plot.plotExtent(extent)
-    plot.topComponents.reverse.foldLeft(empty) { (d, a) =>
-      a.render(plot, pextent).translate(x = plot.plotOffset.x, y = d.extent.height) behind d
-    }
-  }
-
-  private[plot] def bottomComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
-    val pextent = plot.plotExtent(extent)
-    plot.bottomComponents.reverse.foldLeft((extent.height, empty)) { case ((y, d), a) =>
-      val rendered = a.render(plot, pextent)
-      val newY = y - rendered.extent.height
-      (newY, rendered.translate(x = plot.plotOffset.x, y = newY) behind d)
-    }._2
-  }
-
-  private[plot] def leftComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
-    val pextent = plot.plotExtent(extent)
-    plot.leftComponents.foldLeft(empty) { (d, c) =>
-      c.render(plot, pextent).translate(y = plot.plotOffset.y) beside d
-    }
-  }
-
-  private[plot] def rightComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
-    val pextent = plot.plotExtent(extent)
-    plot.rightComponents.foldLeft((extent.width, empty)) { case ((x, d), a) =>
-      val rendered = a.render(plot, pextent)
-      val newX = x - rendered.extent.width
-      (newX, rendered.translate(x = newX, y = plot.plotOffset.y) behind d)
-    }._2
-  }
-
-  private[plot] def overlayComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
-    val pextent = plot.plotExtent(extent)
-    plot.overlayComponents.map { a =>
-      a.render(plot, pextent).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
-    }.group
-  }
-
-  private[plot] def backgroundComponentRenderer[T](plot: Plot[T], extent: Extent): Drawable = {
-    val pextent = plot.plotExtent(extent)
-    plot.backgroundComponents.map { a =>
-      a.render(plot, pextent).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
-    }.group
-  }
-
-  private[plot] def defaultComponentRenderer[T](plot: Plot[T], extent: Extent): (Drawable, Drawable) = {
-    val overlays = overlayComponentRenderer(plot, extent)
-      .behind(leftComponentRenderer(plot, extent))
-      .behind(rightComponentRenderer(plot, extent))
-      .behind(bottomComponentRenderer(plot, extent))
-      .behind(topComponentRenderer(plot, extent))
-    val backgrounds = backgroundComponentRenderer(plot, extent)
-    (overlays, backgrounds)
-  }
 
   // Add some buffer to the specified bounds.
   private[plot] def expandBounds(bounds: Bounds, buffer: Double): Bounds = {
