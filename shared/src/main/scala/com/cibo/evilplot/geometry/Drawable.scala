@@ -106,9 +106,6 @@ final case class Translate(r: Drawable, x: Double = 0, y: Double = 0) extends Dr
 object Translate {
   implicit val encoder: Encoder[Translate] = deriveEncoder[Translate]
   implicit val decoder: Decoder[Translate] = deriveDecoder[Translate]
-
-  def apply(r: Drawable, bbox: Extent): Translate = Translate(r, bbox.width, bbox.height)
-  def apply(r: Drawable)(translate: Double): Translate = Translate(r, x = translate, y = translate)
 }
 
 final case class Affine(r: Drawable, affine: AffineTransform) extends Drawable {

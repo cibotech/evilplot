@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 CiBO Technologies
  */
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds}
-import com.cibo.evilplot.plot.ContinuousChartDistributable.{HLines, VLines}
+import com.cibo.evilplot.oldplot.ContinuousChartDistributable.{HLines, VLines}
 import com.cibo.evilplot.plotdefs.{HistogramChartDef, PlotOptions}
 
 case class HistogramChart(override val chartSize: Extent, histData: HistogramChartDef) extends Chart with ContinuousAxes {

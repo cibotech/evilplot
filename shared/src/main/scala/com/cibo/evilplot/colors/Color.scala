@@ -67,35 +67,7 @@ object HEX {
 object Color {
   implicit val encoder: Encoder[Color] = io.circe.generic.semiauto.deriveEncoder[Color]
   implicit val decoder: Decoder[Color] = io.circe.generic.semiauto.deriveDecoder[Color]
-}
 
-sealed trait ColorBar
-
-// Use when one color is wanted but a ColorBar is needed.
-case class SingletonColorBar(color: Color) extends ColorBar
-
-// Map a sequence of colors to a continuous variable z.
-case class ScaledColorBar(colorSeq: Seq[Color], zMin: Double, zMax: Double) extends ColorBar {
-  val nColors = colorSeq.length
-  val zWidth = (zMax - zMin) / nColors.toFloat
-  def getColor(i: Int): Color = {
-    require((i >= 0) && (i < colorSeq.length))
-    colorSeq(i)
-  }
-
-  def getColor(z: Double): Color = {
-    val colorIndex = math.min(math.round(math.floor((z - zMin) / zWidth)).toInt, nColors - 1)
-    colorSeq(colorIndex)
-  }
-}
-
-object ColorBar {
-  implicit val encoder: Encoder[ColorBar] = deriveEncoder[ColorBar]
-  implicit val decoder: Decoder[ColorBar] = deriveDecoder[ColorBar]
-}
-
-object Colors {
-  // TODO: this needs work
   def stream: Seq[Color] = {
     val hueSpan = 7
     Stream.from(0).map{ i =>
@@ -135,38 +107,34 @@ object Colors {
     }
   }
 
-  //TODO: Experimental doesn't split analogous colors up properly
-  object ColorSeq {
+  def getGradientSeq(nColors: Int, startHue: Int = 0, endHue: Int = 359): Seq[Color] = {
+    require(endHue > startHue, "End hue not greater than start hue")
+    require(endHue <= 359, "End hue must be <= 359")
+    val deltaH = (endHue - startHue) / nColors.toFloat
+    val colors: Seq[Color] = Seq.tabulate(nColors)(x => HSL(startHue + (x * deltaH).toInt, 90, 54))
+    colors
+  }
 
-    def getDefaultPaletteSeq(nColors: Int): Seq[Color] = {
-      val stream = Stream.continually(DefaultColors.nicePalette.toStream)
-      stream.flatten.take(nColors)
-    }
-
-    def getGradientSeq(nColors: Int, startHue: Int = 0, endHue: Int = 359): Seq[Color] = {
-      require(endHue > startHue, "End hue not greater than start hue")
-      require(endHue <= 359, "End hue must be <= 359")
-      val deltaH = (endHue - startHue) / nColors.toFloat
-      val colors: Seq[Color] = Seq.tabulate(nColors)(x => HSL(startHue + (x * deltaH).toInt, 90, 54))
-      colors
-    }
+  def getDefaultPaletteSeq(nColors: Int): Seq[Color] = {
+    val stream = Stream.continually(DefaultColors.nicePalette.toStream)
+    stream.flatten.take(nColors)
+  }
 
     def getAnalogousSeq(seed: HSLA = HSL(207, 90, 54), depth: Int): Seq[Color] = {
-      analogGrow(seed, depth)
-    }
+    analogGrow(seed, depth)
+  }
 
-    def analogGrow(node: HSLA, depth: Int): Seq[Color] = {
-      val left = node.analogous()._1
-      val right = node.analogous()._2
-      if (depth > 0) node +: (triadGrow(left, depth - 1) ++ triadGrow(right, depth - 1))
-      else Seq()
-    }
+  def analogGrow(node: HSLA, depth: Int): Seq[Color] = {
+    val left = node.analogous()._1
+    val right = node.analogous()._2
+    if (depth > 0) node +: (triadGrow(left, depth - 1) ++ triadGrow(right, depth - 1))
+    else Seq()
+  }
 
-    def triadGrow(node: HSLA, depth: Int): Seq[Color] = {
-      val left = node.triadic._1
-      val right = node.triadic._2
-      if (depth > 0) node +: (analogGrow(left, depth - 1) ++ analogGrow(right, depth - 1))
-      else Seq()
-    }
+  def triadGrow(node: HSLA, depth: Int): Seq[Color] = {
+    val left = node.triadic._1
+    val right = node.triadic._2
+    if (depth > 0) node +: (analogGrow(left, depth - 1) ++ analogGrow(right, depth - 1))
+    else Seq()
   }
 }

@@ -1,4 +1,4 @@
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 object GaussianData {
   // sampled from Gaussian w/ mu = 10, sigma = 1.5
