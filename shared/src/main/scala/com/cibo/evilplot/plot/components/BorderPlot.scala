@@ -12,15 +12,15 @@ case class BorderPlot(
   def render[T](plot: Plot[T], extent: Extent): Drawable = {
     position match {
       case Position.Top    =>
-        border.render(extent.copy(height = borderSize))
+        border.xbounds(plot.xbounds).render(extent.copy(height = borderSize))
       case Position.Bottom =>
-        border.render(extent.copy(height = borderSize)).rotated(180)
+        border.xbounds(plot.xbounds).render(extent.copy(height = borderSize)).rotated(180).flipX
       case Position.Left   =>
         val borderExtent = Extent(extent.height, borderSize)
-        border.render(borderExtent).rotated(270)
+        border.xbounds(plot.ybounds).render(borderExtent).rotated(270)
       case Position.Right  =>
         val borderExtent = Extent(extent.height, borderSize)
-        border.render(borderExtent).rotated(90).flipY
+        border.xbounds(plot.ybounds).render(borderExtent).rotated(90).flipY
       case _               =>
         border.render(extent)
     }
