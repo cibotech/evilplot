@@ -137,6 +137,12 @@ object Colors {
 
   //TODO: Experimental doesn't split analogous colors up properly
   object ColorSeq {
+
+    def getDefaultPalleteSeq(nColors: Int): Seq[Color] = {
+      val stream = Stream.continually(DefaultColors.nicePallete.toStream)
+      stream.flatten.take(nColors)
+    }
+    
     def getGradientSeq(nColors: Int, startHue: Int = 0, endHue: Int = 359): Seq[Color] = {
       require(endHue > startHue, "End hue not greater than start hue")
       require(endHue <= 359, "End hue must be <= 359")
