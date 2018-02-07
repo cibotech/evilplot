@@ -69,6 +69,7 @@ lazy val evilplotJS = evilplot.js
 // For the workbench plugin
 lazy val evilplotRunner = project.in(file("runner"))
   .aggregate(evilplotJS)
+  .dependsOn(evilplotJS)
   .settings(
     publishArtifact := false,
     publish := {},

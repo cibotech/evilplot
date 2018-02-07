@@ -1,48 +1,64 @@
-
-/*
- * Copyright 2017 CiBO Technologies
- */
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry._
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.ContinuousChartDistributable.HLines
-import com.cibo.evilplot.plotdefs.{BarChartDef, PlotOptions}
+import com.cibo.evilplot.plot.renderers.BarRenderer
 
-/**
-  * A categorical bar chart. Each bar corresponds to a different category in the x-variable and is labeled by an
-  * entry in label.
-  * @param chartSize The size of the bounding box which the chart will occupy.
-  * @param data Data object containing counts and labels of each bar.
-  */
-// TODO: The widthGetter / spacingGetter logic is certainly way too complicated, especially since DrawableLater
-// is gone.
-case class BarChart(chartSize: Extent, data: BarChartDef) extends DiscreteX {
-  val options: PlotOptions = data.options
-  private val numBars = data.length
-  val labels: Seq[String] = data.labels
-  val defaultYAxisBounds: Bounds = { // 0 must be present on a bar chart.
-    val bounds = data.yBounds.get
-    if (bounds.max < 0) bounds.copy(max = 0) else bounds
+final case class Bar(values: Seq[Double], group: Int = 0) {
+  lazy val height: Double = values.sum
+}
+
+object Bar {
+  def apply(value: Double): Bar = Bar(Seq(value))
+  def apply(value: Double, group: Int): Bar = Bar(Seq(value), group)
+}
+
+object BarChart {
+
+  val defaultBoundBuffer: Double = 0.1
+  val defaultSpacing: Double = 1.0
+  val defaultGroupSpacing: Double = 4.0
+
+  private def renderBarChart(
+    barRenderer: BarRenderer,
+    spacing: Double,
+    groupSpacing: Double
+  )(plot: Plot[Seq[Bar]], plotExtent: Extent): Drawable = {
+    val ytransformer = plot.ytransform(plot, plotExtent)
+
+    // Space used for groups.
+    val groupPadding = (plot.data.map(_.group).distinct.size - 1) * groupSpacing
+
+    // Total bar spacing used.
+    val barCount = plot.data.size
+    val totalBarSpacing = (barCount - 1) * spacing
+
+    // The width of each bar.
+    val barWidth = (plotExtent.width - groupPadding - totalBarSpacing) / barCount
+
+    val initial: (Double, Drawable) = (0, EmptyDrawable())
+    plot.data.sortBy(_.group).zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
+      val y = ytransformer(bar.height)
+      val barHeight = plotExtent.height - y
+      val x = if (bar.group == lastGroup) spacing else groupSpacing + spacing
+      (bar.group, d beside barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(y = y, x = x))
+    }._2
   }
 
-  // Create functions to get width and spacing, depending on what is specified by caller.
-  protected val (widthGetter, spacingGetter) = DiscreteChartDistributable
-    .widthAndSpacingFunctions(numBars, data.barWidth, data.barSpacing)
-
-    def plottedData(extent: Extent): Drawable = {
-      val _barWidth: Double = widthGetter(extent)
-      val _barSpacing: Double = spacingGetter(extent)
-      val vScale: Double = extent.height / yAxisDescriptor.axisBounds.range
-      val bars = data.counts.map { yValue =>
-        val b = Scale(flipY(Rect(_barWidth, yValue), yAxisDescriptor.axisBounds.max), y = vScale)
-        Style(b, options.barColor)
-      }
-      val allBars = bars.seqDistributeH(_barSpacing) padLeft _barSpacing / 2.0
-      val hLines = options.hLines.map { lines =>
-        HLines(extent, yAxisDescriptor, lines).drawable
-      }.getOrElse(EmptyDrawable())
-
-      allBars behind hLines
-    }
+  def apply(
+    bars: Seq[Bar],
+    barRenderer: BarRenderer = BarRenderer.default(),
+    spacing: Double = defaultSpacing,
+    groupSpacing: Double = defaultGroupSpacing,
+    boundBuffer: Double = defaultBoundBuffer
+  ): Plot[Seq[Bar]] = {
+    val xbounds = Bounds(0, bars.size)
+    val ybounds = Plot.expandBounds(Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height), boundBuffer)
+    Plot[Seq[Bar]](
+      bars,
+      xbounds,
+      ybounds,
+      renderBarChart(barRenderer, spacing, groupSpacing)
+    )
+  }
 }

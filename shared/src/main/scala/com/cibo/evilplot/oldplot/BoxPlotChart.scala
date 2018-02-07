@@ -1,4 +1,4 @@
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.colors.HTMLNamedColors.{blue, white}

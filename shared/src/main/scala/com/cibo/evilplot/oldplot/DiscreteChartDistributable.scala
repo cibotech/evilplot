@@ -1,4 +1,4 @@
-package com.cibo.evilplot.plot
+package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry._

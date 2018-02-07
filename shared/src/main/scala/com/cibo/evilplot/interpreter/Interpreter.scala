@@ -5,7 +5,7 @@ package com.cibo.evilplot.interpreter
 import com.cibo.evilplot.JSONUtils
 import com.cibo.evilplot.colors.ScaledColorBar
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.plot._
+import com.cibo.evilplot.oldplot._
 import com.cibo.evilplot.plotdefs._
 
 /** If an extent is supplied to the PlotDefinitionInterpreter, the serialized plot extent is overridden. */
