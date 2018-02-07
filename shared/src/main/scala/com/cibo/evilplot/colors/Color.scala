@@ -115,6 +115,11 @@ object Color {
     colors
   }
 
+  def getDefaultPaletteSeq(nColors: Int): Seq[Color] = {
+    val stream = Stream.continually(DefaultColors.nicePalette.toStream)
+    stream.flatten.take(nColors)
+  }
+
   def getAnalogousSeq(seed: HSLA = HSL(207, 90, 54), depth: Int): Seq[Color] = {
     analogGrow(seed, depth)
   }
