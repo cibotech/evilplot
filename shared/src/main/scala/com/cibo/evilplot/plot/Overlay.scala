@@ -1,17 +1,20 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
+import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object Overlay {
 
   type OverlayData = Seq[Plot[_]]
 
-  private def overlayPlotRenderer(plot: Plot[OverlayData], plotExtent: Extent): Drawable = {
-    val paddedPlots = Plot.padPlots(Seq(plot.data), plotExtent, 0, 0).head.map { subplot =>
-      val withX = if (subplot.xfixed) subplot else subplot.setXTransform(plot.xtransform, fixed = false)
-      if (withX.yfixed) withX else withX.setYTransform(plot.ytransform, fixed = false)
+  private case object OverlayPlotRenderer extends PlotRenderer[OverlayData] {
+    def render(plot: Plot[OverlayData], plotExtent: Extent): Drawable = {
+      val paddedPlots = Plot.padPlots(Seq(plot.data), plotExtent, 0, 0).head.map { subplot =>
+        val withX = if (subplot.xfixed) subplot else subplot.setXTransform(plot.xtransform, fixed = false)
+        if (withX.yfixed) withX else withX.setYTransform(plot.ytransform, fixed = false)
+      }
+      paddedPlots.map(_.render(plotExtent)).group
     }
-    paddedPlots.map(_.render(plotExtent)).group
   }
 
   def apply(plots: Plot[_]*): Plot[OverlayData] = {
@@ -33,7 +36,7 @@ object Overlay {
       data = updatedPlots,
       xbounds = xbounds,
       ybounds = ybounds,
-      renderer = overlayPlotRenderer
+      renderer = OverlayPlotRenderer
     )
   }
 }

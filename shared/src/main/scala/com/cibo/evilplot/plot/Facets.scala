@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Group}
 import com.cibo.evilplot.plot.components.Position
+import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object Facets {
 
@@ -24,19 +25,22 @@ object Facets {
     }
   }
 
-  private def facetedPlotRenderer(plot: Plot[FacetData], plotExtent: Extent): Drawable = {
-    // Make sure all subplots have the same size plot area.
-    val innerExtent = computeSubplotExtent(plot, plotExtent)
-    val paddedPlots = updatePlotsForFacet(plot, innerExtent)
+  private case object FacetedPlotRenderer extends PlotRenderer[Seq[Seq[Plot[_]]]] {
+    def render(plot: Plot[Seq[Seq[Plot[_]]]], plotExtent: Extent): Drawable = {
 
-    // Render the plots.
-    paddedPlots.zipWithIndex.map { case (row, yIndex) =>
-      val y = yIndex * innerExtent.height
-      row.zipWithIndex.map { case (subplot, xIndex) =>
-        val x = xIndex * innerExtent.width
-        subplot.render(innerExtent).translate(x = x, y = y)
+      // Make sure all subplots have the same size plot area.
+      val innerExtent = computeSubplotExtent(plot, plotExtent)
+      val paddedPlots = updatePlotsForFacet(plot, innerExtent)
+
+      // Render the plots.
+      paddedPlots.zipWithIndex.map { case (row, yIndex) =>
+        val y = yIndex * innerExtent.height
+        row.zipWithIndex.map { case (subplot, xIndex) =>
+          val x = xIndex * innerExtent.width
+          subplot.render(innerExtent).translate(x = x, y = y)
+        }.group
       }.group
-    }.group
+    }
   }
 
   private val empty: Drawable = EmptyDrawable()
@@ -204,7 +208,7 @@ object Facets {
       data = updatedPlots,
       xbounds = Plot.combineBounds(columnXBounds),
       ybounds = Plot.combineBounds(rowYBounds),
-      renderer = facetedPlotRenderer,
+      renderer = FacetedPlotRenderer,
       componentRenderer = facetedComponentRenderer
     )
   }

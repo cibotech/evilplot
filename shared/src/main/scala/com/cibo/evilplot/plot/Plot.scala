@@ -3,12 +3,13 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.components.{PlotComponent, Position}
+import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 final case class Plot[T] private[evilplot] (
   data: T, // Raw data
   xbounds: Bounds, // x bounds of the raw data
   ybounds: Bounds, // y bounds of the raw data
-  private[plot] val renderer: (Plot[T], Extent) => Drawable,
+  private[plot] val renderer: PlotRenderer[T],
   private[plot] val componentRenderer: (Plot[T], Extent) => (Drawable, Drawable) =
     (p: Plot[T], e: Extent) => Plot.defaultComponentRenderer(p, e),
   private[plot] val xtransform: Plot.Transformer = Plot.DefaultXTransformer(),
@@ -70,7 +71,7 @@ final case class Plot[T] private[evilplot] (
 
   def render(extent: Extent = Plot.defaultExtent): Drawable = {
     val (overlays, backgrounds) = componentRenderer(this, extent)
-    val renderedPlot = renderer(this, plotExtent(extent)).translate(x = plotOffset.x, y = plotOffset.y)
+    val renderedPlot = renderer.render(this, plotExtent(extent)).translate(x = plotOffset.x, y = plotOffset.y)
     backgrounds behind renderedPlot behind overlays
   }
 }
