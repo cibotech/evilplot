@@ -9,7 +9,7 @@ object DefaultColors {
   val barColor = HSL(0, 0, 35)
   val titleBarColor = HSL(0, 0, 85)
 
-  val nicePallete = Seq(
+  val nicePalette = Seq(
     RGB(26, 188, 156),
     RGB(46, 204, 113),
     RGB(52, 152, 219),
