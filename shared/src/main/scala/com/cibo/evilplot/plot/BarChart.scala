@@ -36,11 +36,19 @@ object BarChart {
     // The width of each bar.
     val barWidth = (plotExtent.width - groupPadding - totalBarSpacing) / barCount
 
-    val initial: (Double, Drawable) = (0, EmptyDrawable())
-    plot.data.sortBy(_.group).zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
+    val sorted = plot.data.sortBy(_.group)
+    val initial: (Double, Drawable) = (sorted.head.group, EmptyDrawable())
+    sorted.zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
       val y = ytransformer(bar.height)
       val barHeight = plotExtent.height - y
-      val x = if (bar.group == lastGroup) spacing else groupSpacing + spacing
+      val x =
+        if (barIndex == 0) {
+          0
+        } else if (bar.group == lastGroup) {
+          spacing
+        } else {
+          groupSpacing + spacing
+        }
       (bar.group, d beside barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(y = y, x = x))
     }._2
   }
@@ -52,7 +60,7 @@ object BarChart {
     groupSpacing: Double = defaultGroupSpacing,
     boundBuffer: Double = defaultBoundBuffer
   ): Plot[Seq[Bar]] = {
-    val xbounds = Bounds(0, bars.size)
+    val xbounds = Bounds(0, bars.size - 1)
     val ybounds = Plot.expandBounds(Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height), boundBuffer)
     Plot[Seq[Bar]](
       bars,
