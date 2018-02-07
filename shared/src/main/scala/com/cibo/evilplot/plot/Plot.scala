@@ -18,6 +18,8 @@ final case class Plot[T] private[evilplot] (
   private[plot] val components: Seq[PlotComponent] = Seq.empty // Components (ordered inside out)
 ) {
   private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
+  private[plot] def inBounds(point: (Double, Double)): Boolean =
+    xbounds.isInBounds(point._1) && ybounds.isInBounds(point._2)
 
   private[plot] def :+(component: PlotComponent): Plot[T] = copy(components = components :+ component)
   private[plot] def +:(component: PlotComponent): Plot[T] = copy(components = component +: components)
