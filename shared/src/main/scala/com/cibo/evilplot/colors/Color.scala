@@ -120,7 +120,7 @@ object Color {
     stream.flatten.take(nColors)
   }
 
-    def getAnalogousSeq(seed: HSLA = HSL(207, 90, 54), depth: Int): Seq[Color] = {
+  def getAnalogousSeq(seed: HSLA = HSL(207, 90, 54), depth: Int): Seq[Color] = {
     analogGrow(seed, depth)
   }
 
