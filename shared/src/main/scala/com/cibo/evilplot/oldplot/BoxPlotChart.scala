@@ -21,7 +21,7 @@ case class BoxPlotChart(chartSize: Extent, data: BoxPlotDef) extends DiscreteX {
     val points = for {
       point <- pointsData
     } yield Disc(data.pointSize, 0, (point - yAxisDescriptor.axisBounds.min) * vScale)
-    flipY(points.group) transY ((yAxisDescriptor.axisBounds.max - pointsData.max) * vScale - data.pointSize) transX
+    points.group.flipY transY ((yAxisDescriptor.axisBounds.max - pointsData.max) * vScale - data.pointSize) transX
       data.pointSize
   }
   def plottedData(extent: Extent): Drawable = {

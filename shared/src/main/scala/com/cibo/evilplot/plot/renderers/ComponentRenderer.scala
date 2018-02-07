@@ -43,7 +43,7 @@ object ComponentRenderer {
 
     private def renderRight(plot: Plot[T], extent: Extent): Drawable = {
       val pextent = plot.plotExtent(extent)
-      plot.rightComponents.foldLeft((extent.width, empty)) { case ((x, d), a) =>
+      plot.rightComponents.reverse.foldLeft((extent.width, empty)) { case ((x, d), a) =>
         val rendered = a.render(plot, pextent)
         val newX = x - rendered.extent.width
         (newX, rendered.translate(x = newX, y = plot.plotOffset.y) behind d)

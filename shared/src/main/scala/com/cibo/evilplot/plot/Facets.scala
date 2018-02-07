@@ -204,7 +204,7 @@ object Facets {
       row.zipWithIndex.map { case (subplot, x) =>
         (subplot.xfixed, subplot.yfixed) match {
           case (true, true)   => subplot
-          case (true, false)  => subplot.updateBounds(subplot.xbounds,  rowYBounds(y))
+          case (true, false)  => subplot.updateBounds(subplot.xbounds, rowYBounds(y))
           case (false, true)  => subplot.updateBounds(columnXBounds(x), subplot.ybounds)
           case (false, false) => subplot.updateBounds(columnXBounds(x), rowYBounds(y))
         }

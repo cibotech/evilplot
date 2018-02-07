@@ -93,7 +93,6 @@ object Plot {
       (y: Double) => plotExtent.height - (y - plot.ybounds.min) * plotExtent.height / plot.ybounds.range
   }
 
-
   // Add some buffer to the specified bounds.
   private[plot] def expandBounds(bounds: Bounds, buffer: Double): Bounds = {
     require(buffer >= 0.0)

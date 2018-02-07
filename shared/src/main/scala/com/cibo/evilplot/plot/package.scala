@@ -10,6 +10,7 @@ package object plot {
     with PlotLineImplicits[T]
     with AnnotationImplicits[T]
     with BackgroundImplicits[T]
+    with BorderPlotImplicits[T]
     with LabelImplicits[T]
     with PadImplicits[T]
 
