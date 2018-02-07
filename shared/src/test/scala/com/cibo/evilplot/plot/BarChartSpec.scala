@@ -19,6 +19,12 @@ class BarChartSpec extends FunSpec with Matchers {
       plot.ybounds.max should be > 20.0
     }
 
+    it("should have the right bounds with stacked bars") {
+      val plot = BarChart(Seq(Bar(Seq(10.0, 5)), Bar(Seq(20.0, 7)), Bar(Seq(15.0, 0))), boundBuffer = 0)
+      plot.xbounds shouldBe Bounds(0, 2)
+      plot.ybounds shouldBe Bounds(15, 27)
+    }
+
     it("should have the right extents") {
       val plot = BarChart(Seq(Bar(10), Bar(20), Bar(15)))
       val extent = Extent(200, 200)
