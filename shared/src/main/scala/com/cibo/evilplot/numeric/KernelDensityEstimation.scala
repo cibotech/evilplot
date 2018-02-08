@@ -4,8 +4,6 @@
 
 package com.cibo.evilplot.numeric
 
-// The geom_density_2d function in ggplot uses MASS:2dkde to interpolate a grid.
-// We'll need to do 2D interpolation to generate  reports.
 object KernelDensityEstimation {
 
   /**
@@ -17,7 +15,6 @@ object KernelDensityEstimation {
     * @param yBounds desired boundaries of the grid in data coordinates. Defaults to min and max y value of `data`.
     * @return A GridData object containing the 2D density estimation.
     */
-
   def densityEstimate2D(data: Seq[Point], numPoints: (Int, Int) = (100, 100), xBounds: Option[Bounds] = None,
                         yBounds: Option[Bounds] = None): GridData = {
     val _xBounds = xBounds.getOrElse(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x))
