@@ -7,22 +7,6 @@ package com.cibo.evilplot.numeric
 // Implements Lorensen and Cline's Marching Squares algorithm.
 // Some algorithm invariants are protected by assertions now to ease debugging. Move these to tests.
 object MarchingSquares {
-  /**
-    * Contour a grid.
-    * @param levels isocontour values
-    * @param gridData grid representing the surface to be contoured.
-    * @return a Vector of Vectors of 3D points. Each Vector contains the points for one level
-    * in path order. */
-  def apply(levels: Seq[Double], gridData: GridData): Vector[Vector[Point3]] = {
-    import gridData.grid
-    for {
-      level <- levels.toVector
-      cellRow <- grid.indices.init
-      cellCol <- grid.head.indices.init
-      block = new GridBlock(grid, cellRow, cellCol)
-    } yield pointsForBlock(level, gridData, block)
-  }
-
   private[numeric] case class GridCell(row: Int, col: Int, value: Double)
 
   private[numeric] type CellEdge = (GridCell, GridCell)
@@ -55,41 +39,6 @@ object MarchingSquares {
       if (description == 0x5 || description == 0xa && averageValue < target) description ^ 0xf // flip it
       else description
     }
-  }
-
-  // p and q form a "bipolar" edge, i.e. one point is "positive," one is "negative"
-  private[numeric] def interpolate(target: Double)(e: CellEdge): Point3 = {
-    val (p, q) = e
-
-    assert(p.value >= target && q.value < target || p.value < target && q.value >= target,
-      s"interpolate called on edge not satisfying bipolar property: target: $target p: ${p.value} and q: ${q.value}")
-    val alpha = (target - p.value) / (q.value - p.value)
-
-    def component(_p: Int, _q: Int): Double = (1 - alpha) * _p + alpha * _q
-
-    Point3(component(p.row, q.row), component(p.col, q.col), target)
-  }
-
-  def indicesToCartesian(gridData: GridData)(indices: Point3): Point3 = indices match {
-    case Point3(row, col, z) =>
-      Point3(gridData.xSpacing * row + gridData.xBounds.min, gridData.ySpacing * col + gridData.yBounds.min, z)
-  }
-
-  private[numeric] def pointsForBlock(target: Double, gridData: GridData, gb: GridBlock): Vector[Point3] = {
-    import gb.{top, bottom, left, right}
-    val interpolateAtTarget = interpolate(target) _
-    val edges: Vector[(GridCell, GridCell)] = gb.tag(target) match {
-      case 0 | 15 => Vector.empty[CellEdge]
-      case 1 | 14 => Vector(bottom, left)
-      case 2 | 13 => Vector(right, bottom)
-      case 3 | 12 => Vector(left, right)
-      case 4 | 11 => Vector(left, top)
-      case 5      => Vector(left, top, bottom, right)
-      case 6 | 9  => Vector(top, bottom)
-      case 10     => Vector(left, bottom, right, top)
-      case _      => throw new IllegalStateException("Marching Squares: A block tag not in [0, 16) was reached.")
-    }
-    edges.map(edge => indicesToCartesian(gridData)(interpolateAtTarget(edge)))
   }
 
   def getContoursAt(target: Double, gridData: GridData): Seq[Segment] = {

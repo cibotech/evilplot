@@ -24,7 +24,7 @@ object PathRenderer {
             ): PathRenderer = new PathRenderer {
     def render(path: Seq[Point]): Drawable = {
       // better hope this is an indexedseq?
-      StrokeStyle(Path(path :+ path.last, strokeWidth), color)
+      StrokeStyle(Path(path :+ path.head, strokeWidth), color)
     }
   }
 

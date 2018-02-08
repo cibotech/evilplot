@@ -29,19 +29,19 @@ class MarchingSquaresSpec extends FunSpec with Matchers {
     val gd = GridData(grid, xBounds = xBounds, yBounds = yBounds, zBounds = zBounds, xSpacing, ySpacing)
     val numContours = 6
     val levels = Seq.tabulate(numContours - 1)(bin => gd.zBounds.min + (bin + 1) * (gd.zBounds.range / numContours))
-    val contours = MarchingSquares(levels, gd)
+    val contours = levels.map(z => MarchingSquares.getContoursAt(z, gd))
     val tol = 1e-7
 
     it("should produce no more than numRows * numCols segments for a particular level") {
       contours.foreach { segments => segments.length / 2 should be <= numRows * numCols }
     }
     it("should produce isocontours whose vertices lie on grid edges") {
-      def onGridEdge(p: Point3): Boolean =
+      def onGridEdge(p: Point): Boolean =
         xCoordsOnEdge.count((x: Double) => math.abs(x - p.x) <= tol) == 1 ||
         yCoordsOnEdge.count((y: Double) => math.abs(y - p.y) <= tol) == 1
-      contours.foreach { segments: Vector[Point3] =>
-        segments.grouped(2).foreach {
-          case Vector(p1, p2) =>
+      contours.foreach { segments  =>
+        segments.foreach {
+          case Segment(p1, p2) =>
             onGridEdge(p1) shouldBe true
             onGridEdge(p2) shouldBe true
         }

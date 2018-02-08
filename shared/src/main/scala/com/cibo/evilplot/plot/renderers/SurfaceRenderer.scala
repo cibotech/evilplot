@@ -21,10 +21,19 @@ object SurfaceRenderer {
 
   def densityColorContours(strokeWidth: Double = defaultStrokeWidth): SurfaceRenderer = new SurfaceRenderer {
     def render(points: Seq[Seq[Point3]]): Drawable = {
-      val bar = ScaledColorBar(DefaultColors)
+      val bar: ScaledColorBar = ScaledColorBar(Color.stream.take(points.length),
+        points.minBy(_.head.z).head.z, points.maxBy(_.head.z).head.z)
+      densityColorContours(strokeWidth, bar).render(points)
     }
   }
 
-  def desityColorContours(strokeWidth: Double = defaultStrokeWidth,
-                          bar: ScaledColorBar): SurfaceRenderer = ???
+  def densityColorContours(strokeWidth: Double,
+                          bar: ScaledColorBar): SurfaceRenderer = new SurfaceRenderer {
+    def render(points: Seq[Seq[Point3]]): Drawable = {
+      points.map { pointsAtLevel =>
+        val levelRenderer = contours(strokeWidth, bar.getColor(pointsAtLevel.head.z))
+        levelRenderer.render(Seq(pointsAtLevel))
+      }.group
+    }
+  }
 }

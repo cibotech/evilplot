@@ -24,7 +24,7 @@ object SurfacePlot {
           .map(p => Point3(xtransformer(p.x), ytransformer(p.y), p.z))
       )
 
-      xformedSurfaceBoundaries.map(s => surfaceRenderer.render(s)).group
+      surfaceRenderer.render(xformedSurfaceBoundaries)
     }
   }
 }
@@ -36,7 +36,7 @@ object ContourPlot {
   def apply(
       data: Seq[Point],
       gridDimensions: (Int, Int) = defaultGridDimensions,
-      surfaceRenderer: SurfaceRenderer = SurfaceRenderer.contours(),
+      surfaceRenderer: SurfaceRenderer = SurfaceRenderer.densityColorContours(),
       contours: Int = defaultNumContours,
       boundBuffer: Double = defaultBoundBuffer): Plot[Seq[Seq[Point3]]] = {
     require(contours > 0, "Must use at least one contour.")
@@ -56,7 +56,7 @@ object ContourPlot {
     Plot[Seq[Seq[Point3]]](contourPoints,
                            xbounds,
                            ybounds,
-                           SurfacePlotRenderer(SurfaceRenderer.contours()))
+                           SurfacePlotRenderer(surfaceRenderer))
   }
 
   // MS implementation returns Seq[Segment], bridge to Seq[Point3] to avoid
