@@ -2,28 +2,28 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.renderers.BarRenderer
+import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
 object Heatmap {
 
-  private def renderHeatmap(
-    barRenderer: BarRenderer
-  )(plot: Plot[Seq[Seq[Bar]]], plotExtent: Extent): Drawable = {
-    val xtransformer = plot.xtransform(plot, plotExtent)
-    val ytransformer = plot.ytransform(plot, plotExtent)
-    val rowCount = plot.data.size
+  private case class HeatmapRenderer(barRenderer: BarRenderer) extends PlotRenderer[Seq[Seq[Bar]]] {
+    def render(plot: Plot[Seq[Seq[Bar]]], plotExtent: Extent): Drawable = {
+      val xtransformer = plot.xtransform(plot, plotExtent)
+      val ytransformer = plot.ytransform(plot, plotExtent)
+      val rowCount = plot.data.size
 
-    plot.data.zipWithIndex.map { case (row, yIndex) =>
-      row.zipWithIndex.map { case (bar, xIndex) =>
-        val y = ytransformer(yIndex)
-        val x = xtransformer(xIndex)
-        val width = xtransformer(xIndex + 1) - x
-        val height = ytransformer(yIndex + 1) - y
-        val barExtent = Extent(width, height)
-        val barIndex = xIndex + yIndex * rowCount
-        barRenderer.render(bar, barExtent, barIndex).translate(x, y)
+      plot.data.zipWithIndex.map { case (row, yIndex) =>
+        row.zipWithIndex.map { case (bar, xIndex) =>
+          val y = ytransformer(yIndex)
+          val x = xtransformer(xIndex)
+          val width = xtransformer(xIndex + 1) - x
+          val height = ytransformer(yIndex + 1) - y
+          val barExtent = Extent(width, height)
+          val barIndex = xIndex + yIndex * rowCount
+          barRenderer.render(bar, barExtent, barIndex).translate(x, y)
+        }.group
       }.group
-    }.group
+    }
   }
 
   def barHeatmap(
@@ -39,7 +39,7 @@ object Heatmap {
       ybounds = ybounds,
       xfixed = true,
       yfixed = true,
-      renderer = renderHeatmap(barRenderer)
+      renderer = HeatmapRenderer(barRenderer)
     )
   }
 

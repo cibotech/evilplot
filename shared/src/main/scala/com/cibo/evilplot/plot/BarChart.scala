@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.renderers.BarRenderer
+import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
 final case class Bar(values: Seq[Double], group: Int = 0) {
   lazy val height: Double = values.sum
@@ -19,30 +19,40 @@ object BarChart {
   val defaultSpacing: Double = 1.0
   val defaultGroupSpacing: Double = 4.0
 
-  private def renderBarChart(
+  case class BarChartRenderer(
     barRenderer: BarRenderer,
     spacing: Double,
     groupSpacing: Double
-  )(plot: Plot[Seq[Bar]], plotExtent: Extent): Drawable = {
-    val ytransformer = plot.ytransform(plot, plotExtent)
+  ) extends PlotRenderer[Seq[Bar]] {
+    def render(plot: Plot[Seq[Bar]], plotExtent: Extent): Drawable = {
+      val ytransformer = plot.ytransform(plot, plotExtent)
 
-    // Space used for groups.
-    val groupPadding = (plot.data.map(_.group).distinct.size - 1) * groupSpacing
+      // Space used for groups.
+      val groupPadding = (plot.data.map(_.group).distinct.size - 1) * groupSpacing
 
-    // Total bar spacing used.
-    val barCount = plot.data.size
-    val totalBarSpacing = (barCount - 1) * spacing
+      // Total bar spacing used.
+      val barCount = plot.data.size
+      val totalBarSpacing = (barCount - 1) * spacing
 
-    // The width of each bar.
-    val barWidth = (plotExtent.width - groupPadding - totalBarSpacing) / barCount
+      // The width of each bar.
+      val barWidth = (plotExtent.width - groupPadding - totalBarSpacing) / barCount
 
-    val initial: (Double, Drawable) = (0, EmptyDrawable())
-    plot.data.sortBy(_.group).zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
-      val y = ytransformer(bar.height)
-      val barHeight = plotExtent.height - y
-      val x = if (bar.group == lastGroup) spacing else groupSpacing + spacing
-      (bar.group, d beside barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(y = y, x = x))
-    }._2
+      val sorted = plot.data.sortBy(_.group)
+      val initial: (Double, Drawable) = (sorted.head.group, EmptyDrawable())
+      sorted.zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
+        val y = ytransformer(bar.height)
+        val barHeight = plotExtent.height - y
+        val x =
+          if (barIndex == 0) {
+            0
+          } else if (bar.group == lastGroup) {
+            spacing
+          } else {
+            groupSpacing + spacing
+          }
+        (bar.group, d beside barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(y = y, x = x))
+      }._2
+    }
   }
 
   def apply(
@@ -52,13 +62,13 @@ object BarChart {
     groupSpacing: Double = defaultGroupSpacing,
     boundBuffer: Double = defaultBoundBuffer
   ): Plot[Seq[Bar]] = {
-    val xbounds = Bounds(0, bars.size)
+    val xbounds = Bounds(0, bars.size - 1)
     val ybounds = Plot.expandBounds(Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height), boundBuffer)
     Plot[Seq[Bar]](
       bars,
       xbounds,
       ybounds,
-      renderBarChart(barRenderer, spacing, groupSpacing)
+      BarChartRenderer(barRenderer, spacing, groupSpacing)
     )
   }
 }

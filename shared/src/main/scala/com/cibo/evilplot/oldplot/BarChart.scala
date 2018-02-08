@@ -35,7 +35,7 @@ case class BarChart(chartSize: Extent, data: BarChartDef) extends DiscreteX {
       val _barSpacing: Double = spacingGetter(extent)
       val vScale: Double = extent.height / yAxisDescriptor.axisBounds.range
       val bars = data.counts.map { yValue =>
-        val b = Scale(flipY(Rect(_barWidth, yValue), yAxisDescriptor.axisBounds.max), y = vScale)
+        val b = Scale(Rect(_barWidth, yValue).flipY(yAxisDescriptor.axisBounds.max), y = vScale)
         Style(b, options.barColor)
       }
       val allBars = bars.seqDistributeH(_barSpacing) padLeft _barSpacing / 2.0

@@ -29,6 +29,12 @@ package object geometry {
     def rotated(degrees: Double): Drawable = Rotate(r, degrees)
     def scaled(x: Double = 1, y: Double = 1): Drawable = Scale(r, x, y)
 
+    def flipY(height: Double): Drawable = Resize(Scale(r, 1, -1).translate(y = height), r.extent.copy(height = height))
+    def flipY: Drawable = Scale(r, 1, -1).translate(y = r.extent.height)
+
+    def flipX(width: Double): Drawable = Resize(Scale(r, -1, 1).translate(x = width), r.extent.copy(width = width))
+    def flipX: Drawable = Scale(r, -1, 1).translate(x = r.extent.width)
+
     def colored(color: Color): Drawable = StrokeStyle(r, fill = color)
     def filled(color: Color): Drawable = Style(r, fill = color)
     def weighted(weight: Double): Drawable = StrokeWeight(r, weight = weight)
@@ -111,13 +117,6 @@ package object geometry {
     )
     Resize(Group(Seq(left, right.translate(x = left.extent.width))), newExtent)
   }
-
-  def flipY(r: Drawable, height: Double): Drawable =
-    Resize(Scale(r, 1, -1).translate(y = height), r.extent.copy(height = height))
-  def flipY(r: Drawable): Drawable = Translate(Scale(r, 1, -1), y = r.extent.height)
-
-  def flipX(r: Drawable, width: Double): Drawable =
-    Resize(Scale(r, -1, 1).translate(x = width), r.extent.copy(width = width))
 
   def pad(item: Drawable, left: Double = 0, right: Double = 0, top: Double = 0, bottom: Double = 0): Drawable = {
     val newExtent = Extent(

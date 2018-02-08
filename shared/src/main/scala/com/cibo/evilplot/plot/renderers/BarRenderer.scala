@@ -14,7 +14,7 @@ object BarRenderer {
     colors: Seq[Color]
   ): BarRenderer = new BarRenderer {
     def render(bar: Bar, barExtent: Extent, index: Int): Drawable = {
-      val scale = barExtent.height / bar.height
+      val scale = if (bar.height == 0) 0.0 else barExtent.height / bar.height
       bar.values.zipWithIndex.map { case (value, stackIndex) =>
         val height = value * scale
         val width = barExtent.width
