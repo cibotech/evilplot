@@ -71,7 +71,11 @@ final case class Plot[T] private[evilplot] (
   def render(extent: Extent = Plot.defaultExtent): Drawable = {
     val overlays = componentRenderer.renderFront(this, extent)
     val backgrounds = componentRenderer.renderBack(this, extent)
-    val renderedPlot = renderer.render(this, plotExtent(extent)).translate(x = plotOffset.x, y = plotOffset.y)
+    val pextent = plotExtent(extent)
+    val renderedPlot = Resize(
+      renderer.render(this, pextent),
+      pextent
+    ).translate(x = plotOffset.x, y = plotOffset.y)
     backgrounds behind renderedPlot behind overlays
   }
 }
