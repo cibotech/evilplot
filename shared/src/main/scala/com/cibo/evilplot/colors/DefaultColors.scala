@@ -8,6 +8,7 @@ object DefaultColors {
   val backgroundColor = HSL(0, 0, 92)
   val barColor = HSL(0, 0, 35)
   val titleBarColor = HSL(0, 0, 85)
+  val fillColor: Color = HTMLNamedColors.white
   val pathColor = HSL(0, 0, 0)
 
   val nicePalette = Seq(
