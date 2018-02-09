@@ -51,8 +51,8 @@ object BarChart {
           else 0
         val x =
           if (barIndex == 0) {
-            (groupOffset + spacing) / 2 }
-          else {
+            (groupOffset + spacing) / 2
+          } else {
             groupOffset + spacing
           }
         (bar.group, d beside barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(y = y, x = x))
