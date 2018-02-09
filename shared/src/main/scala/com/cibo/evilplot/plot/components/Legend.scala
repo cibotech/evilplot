@@ -35,8 +35,8 @@ trait LegendImplicits[T] {
   private def setLegend(
     position: Position,
     renderer: LegendRenderer,
-    x: Double = 0,
-    y: Double = 0
+    x: Double,
+    y: Double
   ): Plot[T] = plot.legendContext match {
     case Some(context) => plot :+ Legend(position, plot.data, context, renderer, x, y)
     case None          => plot
@@ -45,22 +45,22 @@ trait LegendImplicits[T] {
   /** Place a legend on the right side of the plot. */
   def rightLegend(
     renderer: LegendRenderer = LegendRenderer.vertical()
-  ): Plot[T] = setLegend(Position.Right, renderer)
+  ): Plot[T] = setLegend(Position.Right, renderer, 0, 0.5)
 
   /** Place a legend on the left side of the plot. */
   def leftLegend(
     renderer: LegendRenderer = LegendRenderer.vertical()
-  ): Plot[T] = setLegend(Position.Left, renderer)
+  ): Plot[T] = setLegend(Position.Left, renderer, 0, 0.5)
 
   /** Place a legend on the top of the plot. */
   def topLegend(
     renderer: LegendRenderer = LegendRenderer.horizontal()
-  ): Plot[T] = setLegend(Position.Top, renderer)
+  ): Plot[T] = setLegend(Position.Top, renderer, 0.5, 0)
 
   /** Place a legend on the bottom of the plot. */
   def bottomLegend(
     renderer: LegendRenderer = LegendRenderer.horizontal()
-  ): Plot[T] = setLegend(Position.Bottom, renderer)
+  ): Plot[T] = setLegend(Position.Bottom, renderer, 0.5, 0)
 
   /** Overlay a legend on the plot.
     * @param x The relative X position (0 to 1).
