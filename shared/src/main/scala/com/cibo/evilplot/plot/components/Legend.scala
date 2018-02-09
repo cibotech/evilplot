@@ -13,13 +13,12 @@ case class Legend[T](
   y: Double
 ) extends PlotComponent {
 
-  private def getDrawable: Drawable = legendRenderer.render(data, context)
+  private lazy val drawable: Drawable = legendRenderer.render(data, context)
 
-  override def size[X](plot: Plot[X]): Extent = getDrawable.extent
+  override def size[X](plot: Plot[X]): Extent = drawable.extent
 
   def render[X](plot: Plot[X], extent: Extent): Drawable = {
     if (context.categories.nonEmpty) {
-      val drawable = getDrawable
       drawable.translate(
         x = (extent.width - drawable.extent.width) * x,
         y = (extent.height - drawable.extent.height) * y
