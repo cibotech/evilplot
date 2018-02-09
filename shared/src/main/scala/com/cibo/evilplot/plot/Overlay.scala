@@ -36,7 +36,8 @@ object Overlay {
       data = updatedPlots,
       xbounds = xbounds,
       ybounds = ybounds,
-      renderer = OverlayPlotRenderer
+      renderer = OverlayPlotRenderer,
+      legendContext = plots.flatMap(_.legendContext).headOption
     )
   }
 }
