@@ -22,7 +22,7 @@ object PathRenderer {
   def closed(strokeWidth: Double = defaultStrokeWidth,
              color: Color = DefaultColors.pathColor
             ): PathRenderer = new PathRenderer {
-    def render(path: Seq[Point]): Drawable = {
+    def render(extent: Extent, path: Seq[Point]): Drawable = {
       // better hope this is an indexedseq?
       StrokeStyle(Path(path :+ path.head, strokeWidth), color)
     }
