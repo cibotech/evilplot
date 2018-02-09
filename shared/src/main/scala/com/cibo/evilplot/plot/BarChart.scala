@@ -27,12 +27,14 @@ object BarChart {
     def render(plot: Plot[Seq[Bar]], plotExtent: Extent): Drawable = {
       val ytransformer = plot.ytransform(plot, plotExtent)
 
-      // Space used for groups.
-      val groupPadding = (plot.data.map(_.group).distinct.size - 1) * groupSpacing
 
-      // Total bar spacing used.
       val barCount = plot.data.size
-      val totalBarSpacing = (barCount - 1) * spacing
+
+      // Space used for bars. Space between each bar and half space at each left and right.
+      val totalBarSpacing = barCount * spacing
+
+      // Space used for groups. Same logic as for bars.
+      val groupPadding = (plot.data.map(_.group).distinct.size - 1) * groupSpacing
 
       // The width of each bar.
       val barWidth = (plotExtent.width - groupPadding - totalBarSpacing) / barCount
@@ -44,11 +46,11 @@ object BarChart {
         val barHeight = plotExtent.height - y
         val x =
           if (barIndex == 0) {
-            0
+            spacing / 2
           } else if (bar.group == lastGroup) {
             spacing
           } else {
-            groupSpacing + spacing
+            groupSpacing + (spacing + barWidth) / 2
           }
         (bar.group, d beside barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(y = y, x = x))
       }._2
