@@ -10,11 +10,11 @@ private final case class BoxPlotRenderer(
                                         spacing: Double
                                         ) extends PlotRenderer[Seq[BoxPlotSummaryStatistics]] {
   def render(plot: Plot[Seq[BoxPlotSummaryStatistics]], plotExtent: Extent): Drawable = {
-    val ytransformer: Double => Double = plot.ytransform(plot, plotExtent)
+    val ytransformer = plot.ytransform(plot, plotExtent)
 
     // Total box spacing used.
     val boxCount = plot.data.size
-    val totalBoxSpacing = (boxCount - 1) * spacing
+    val totalBoxSpacing = boxCount * spacing
 
     // The width of each box.
     val boxWidth = (plotExtent.width - totalBoxSpacing) / boxCount
@@ -22,36 +22,15 @@ private final case class BoxPlotRenderer(
     plot.data.zipWithIndex.foldLeft(EmptyDrawable(): Drawable) { case (d, (summary, index)) =>
       val boxHeight = ytransformer(summary.lowerWhisker) - ytransformer(summary.upperWhisker)
       val box = boxRenderer.render(summary, Extent(boxWidth, boxHeight), index)
-      println(box.extent.height, summary.upperWhisker - summary.lowerWhisker)
+
+      val x = if (index == 0) spacing / 2 else spacing
       val y = ytransformer(summary.upperWhisker)
 
       val points = summary.outliers
-        .map(pt => pointRenderer.render(index).translate(x = boxWidth / 2 + (if (index == 0) 0 else spacing), y = ytransformer(pt)))
-      d beside (box.translate(x = if (index == 0) 0 else spacing, y = y) behind points.group)
+        .map(pt => pointRenderer.render(index)
+          .translate(x = x + boxWidth / 2, y = ytransformer(pt)))
+      d beside (box.translate(x = x, y = y) behind points.group)
     }
-
-//    val sorted = plot.data.sorted
-
-//    val initial: (Double, Drawable) = (sorted.head.head, EmptyDrawable())
-/*    sorted.zipWithIndex
-      .foldLeft(initial) {
-        case ((lastGroup, d), (bar, barIndex)) =>
-          val y = ytransformer(bar.height)
-          val barHeight = plotExtent.height - y
-          val x =
-            if (barIndex == 0) {
-              0
-            } else if (bar.group == lastGroup) {
-              spacing
-            } else {
-              groupSpacing + spacing
-            }
-          (bar.group,
-           d beside barRenderer
-             .render(bar, Extent(barWidth, barHeight), barIndex)
-             .translate(y = y, x = x))
-      }
-      ._2*/
   }
 }
 
