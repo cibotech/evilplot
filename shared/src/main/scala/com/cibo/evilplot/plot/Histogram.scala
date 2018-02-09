@@ -22,7 +22,7 @@ object Histogram {
         val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
         val y = ytransformer(point.y)
         val barHeight = plotExtent.height - y
-        barRenderer.render(Bar(point.y), Extent(barWidth, barHeight), 0).translate(x = x, y = y)
+        barRenderer.render(Extent(barWidth, barHeight), Bar(point.y)).translate(x = x, y = y)
       }.group
     }
   }

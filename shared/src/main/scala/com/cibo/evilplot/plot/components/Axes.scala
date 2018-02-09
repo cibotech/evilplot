@@ -115,7 +115,7 @@ object Axes {
     override final val repeated: Boolean = true
 
     protected def lines[T](descriptor: AxisDescriptor, extent: Extent): Seq[Drawable] =
-      descriptor.labels.map(l => lineRenderer.render(l, extent))
+      descriptor.labels.map(l => lineRenderer.render(extent, l))
   }
 
   private trait XGridComponent extends GridComponent with XTransform {

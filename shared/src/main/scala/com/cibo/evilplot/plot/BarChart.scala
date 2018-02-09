@@ -55,7 +55,7 @@ object BarChart {
           } else {
             groupOffset + spacing
           }
-        (bar.group, d beside barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(y = y, x = x))
+        (bar.group, d beside barRenderer.render(Extent(barWidth, barHeight), bar).translate(y = y, x = x))
       }._2
     }
   }

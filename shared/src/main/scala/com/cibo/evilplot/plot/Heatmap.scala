@@ -19,8 +19,7 @@ object Heatmap {
           val width = xtransformer(xIndex + 1) - x
           val height = ytransformer(yIndex + 1) - y
           val barExtent = Extent(width, height)
-          val barIndex = xIndex + yIndex * rowCount
-          barRenderer.render(bar, barExtent, barIndex).translate(x, y)
+          barRenderer.render(barExtent, bar).translate(x, y)
         }.group
       }.group
     }

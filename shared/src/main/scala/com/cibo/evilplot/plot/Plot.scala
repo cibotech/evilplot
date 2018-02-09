@@ -3,7 +3,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.components.{PlotComponent, Position}
-import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
+import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotElementRenderer, PlotRenderer}
 
 final case class Plot[T] private[evilplot] (
   data: T, // Raw data
@@ -15,7 +15,8 @@ final case class Plot[T] private[evilplot] (
   private[plot] val ytransform: Plot.Transformer = Plot.DefaultYTransformer(),
   private[plot] val xfixed: Boolean = false,    // Set if x bounds are fixed.
   private[plot] val yfixed: Boolean = false,    // Set if y bounds are fixed.
-  private[plot] val components: Seq[PlotComponent] = Seq.empty // Components (ordered inside out)
+  private[plot] val components: Seq[PlotComponent] = Seq.empty, // Components (ordered inside out)
+  private[plot] val legendContext: Option[LegendContext[_]] = None // Data for rendering a legend
 ) {
   private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 
