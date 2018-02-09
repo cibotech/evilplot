@@ -28,14 +28,14 @@ object SurfaceRenderer {
   def densityColorContours(
     strokeWidth: Double = defaultStrokeWidth
   ): SurfaceRenderer = new SurfaceRenderer {
-    override def legendContext(points: Seq[Seq[Point3]]): Option[LegendContext[Seq[Seq[Point3]], Seq[Point3]]] = {
+    override def legendContext(points: Seq[Seq[Point3]]): Option[LegendContext[Seq[Point3]]] = {
       val bar = ScaledColorBar(
         Color.stream.take(points.length),
         points.minBy(_.head.z).head.z,
         points.maxBy(_.head.z).head.z
       )
       Some(
-        LegendContext[Seq[Seq[Point3]], Seq[Point3]](
+        LegendContext[Seq[Point3]](
           categories = (0 until bar.nColors).map { c => Seq(Point3(0, 0, bar.colorValue(c))) },
           elementFunction = (c: Seq[Point3]) => Rect(1, 1).filled(bar.getColor(c.head.z)),
           labelFunction = (c: Seq[Point3]) => Text(math.round(c.head.z).toString),

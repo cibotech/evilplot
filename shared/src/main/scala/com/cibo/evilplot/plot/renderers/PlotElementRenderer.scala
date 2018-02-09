@@ -9,7 +9,7 @@ import com.cibo.evilplot.plot.{LegendContext, Plot}
   */
 trait PlotElementRenderer[T, C] {
   /** Get the legend context if applicable. */
-  def legendContext(data: T): Option[LegendContext[T, C]] = None
+  def legendContext(data: T): Option[LegendContext[C]] = None
 
   /** Render a category within the extent. */
   def render(extent: Extent, data: T, context: C): Drawable

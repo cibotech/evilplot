@@ -1,9 +1,9 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors._
-import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Resize, Text}
+import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Text}
 import com.cibo.evilplot.numeric.Point
-import com.cibo.evilplot.plot.{LegendContext, Plot}
+import com.cibo.evilplot.plot.LegendContext
 
 trait PointRenderer extends PlotElementRenderer[Seq[Point], Int] {
   def render(extent: Extent, data: Seq[Point], index: Int): Drawable
@@ -68,7 +68,7 @@ object PointRenderer {
   ): PointRenderer = {
     require(labels.lengthCompare(bar.nColors) == 0, "Number of labels does not match the number of categories")
     new PointRenderer {
-      override def legendContext(data: Seq[Point]): Option[LegendContext[Seq[Point], Int]] = {
+      override def legendContext(data: Seq[Point]): Option[LegendContext[Int]] = {
         Some(
           LegendContext(
             categories = 0 until bar.nColors,

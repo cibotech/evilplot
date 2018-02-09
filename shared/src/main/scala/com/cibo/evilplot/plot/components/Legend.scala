@@ -7,7 +7,7 @@ import com.cibo.evilplot.plot.{LegendContext, Plot}
 case class Legend[T](
   position: Position,
   data: T,
-  context: LegendContext[T, _],
+  context: LegendContext[_],
   legendRenderer: LegendRenderer,
   x: Double,
   y: Double

@@ -4,7 +4,7 @@ import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plot.LegendContext
 
 trait LegendRenderer {
-  def render[T, C](data: T, context: LegendContext[T, C]): Drawable
+  def render[T, C](data: T, context: LegendContext[C]): Drawable
 }
 
 object LegendRenderer {
@@ -15,7 +15,7 @@ object LegendRenderer {
   def discrete(
     reduction: (Drawable, Drawable) => Drawable = above
   ): LegendRenderer = new LegendRenderer {
-    def render[T, C](data: T, context: LegendContext[T, C]): Drawable = {
+    def render[T, C](data: T, context: LegendContext[C]): Drawable = {
       val labels = context.labels
       val elementSize = labels.maxBy(_.extent.height).extent.height
       val elementExtent = Extent(elementSize, elementSize)
@@ -30,7 +30,7 @@ object LegendRenderer {
   def gradient(
     reduction: (Drawable, Drawable) => Drawable = above
   ): LegendRenderer = new LegendRenderer {
-    def render[T, C](data: T, context: LegendContext[T, C]): Drawable = {
+    def render[T, C](data: T, context: LegendContext[C]): Drawable = {
       val (startLabel, stopLabel) = (context.labels.head, context.labels.last)
       val elementSize = math.max(startLabel.extent.height, stopLabel.extent.height)
       val elementExtent = Extent(elementSize, elementSize)
@@ -44,7 +44,7 @@ object LegendRenderer {
   def default(
     reduction: (Drawable, Drawable) => Drawable = above
   ): LegendRenderer = new LegendRenderer {
-    def render[T, C](data: T, context: LegendContext[T, C]): Drawable = {
+    def render[T, C](data: T, context: LegendContext[C]): Drawable = {
       if (context.discrete) {
         discrete(reduction).render(data, context)
       } else {
