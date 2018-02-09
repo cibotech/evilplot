@@ -22,9 +22,9 @@ object XyPlot {
         Point(x, y)
       }
       val points = xformedPoints.zipWithIndex.map { case (point, index) =>
-        pointRenderer.render(plotExtent, index).translate(x = point.x, y = point.y)
+        pointRenderer.render(plotExtent, plot.data, index).translate(x = point.x, y = point.y)
       }.group
-      pathRenderer.render(plotExtent, xformedPoints) inFrontOf points
+      pathRenderer.render(plotExtent, plot.data, xformedPoints) inFrontOf points
     }
   }
 
@@ -45,7 +45,7 @@ object XyPlot {
     require(boundBuffer >= 0.0)
     val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), boundBuffer)
     val ybounds = Plot.expandBounds(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y), boundBuffer)
-    val legend = pointRenderer.legendContext.orElse(pathRenderer.legendContext)
+    val legend = pointRenderer.legendContext(data).orElse(pathRenderer.legendContext(data))
     Plot[Seq[Point]](data, xbounds, ybounds, XyPlotRenderer(pointRenderer, pathRenderer), legendContext = legend)
   }
 }

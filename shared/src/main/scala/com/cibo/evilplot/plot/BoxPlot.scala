@@ -27,7 +27,7 @@ private final case class BoxPlotRenderer(
       val y = ytransformer(summary.upperWhisker)
 
       val points = summary.outliers
-        .map(pt => pointRenderer.render(index)
+        .map(pt => pointRenderer.render(plotExtent, Seq.empty, index)
           .translate(x = x + boxWidth / 2, y = ytransformer(pt)))
       d beside (box.translate(x = x, y = y) behind points.group)
     }

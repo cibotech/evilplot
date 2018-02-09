@@ -16,7 +16,7 @@ final case class Plot[T] private[evilplot] (
   private[plot] val xfixed: Boolean = false,    // Set if x bounds are fixed.
   private[plot] val yfixed: Boolean = false,    // Set if y bounds are fixed.
   private[plot] val components: Seq[PlotComponent] = Seq.empty, // Components (ordered inside out)
-  private[plot] val legendContext: Option[LegendContext[_]] = None // Data for rendering a legend
+  private[plot] val legendContext: Option[LegendContext[T, _]] = None // Data for rendering a legend
 ) {
   private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 
