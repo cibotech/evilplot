@@ -33,8 +33,10 @@ object BarChart {
       // Space used for bars. Space between each bar and half space at each left and right.
       val totalBarSpacing = barCount * spacing
 
-      // Space used for groups. Same logic as for bars.
-      val groupPadding = (plot.data.map(_.group).distinct.size - 1) * groupSpacing
+      val numGroups = plot.data.map(_.group).distinct.size
+
+      // Space used for groups. Same logic as for bars (except zero it out for 1 group).
+      val groupPadding = if (numGroups == 1) 0 else numGroups * groupSpacing
 
       // The width of each bar.
       val barWidth = (plotExtent.width - groupPadding - totalBarSpacing) / barCount
@@ -44,13 +46,14 @@ object BarChart {
       sorted.zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
         val y = ytransformer(bar.height)
         val barHeight = plotExtent.height - y
+        val groupOffset =
+          if (numGroups != 1 && bar.group != lastGroup) groupSpacing
+          else 0
         val x =
           if (barIndex == 0) {
-            spacing / 2
-          } else if (bar.group == lastGroup) {
-            spacing
-          } else {
-            groupSpacing + (spacing + barWidth) / 2
+            (groupOffset + spacing) / 2 }
+          else {
+            groupOffset + spacing
           }
         (bar.group, d beside barRenderer.render(bar, Extent(barWidth, barHeight), barIndex).translate(y = y, x = x))
       }._2

@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
-import com.cibo.evilplot.plot.renderers.{BarRenderer, BoxRenderer, PlotRenderer, PointRenderer}
+import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
 private final case class BoxPlotRenderer(
                                         boxRenderer: BoxRenderer,
@@ -35,8 +35,18 @@ private final case class BoxPlotRenderer(
 }
 
 object BoxPlot {
-  private val defaultBoundBuffer: Double = 0.1
-  private val defaultSpacing: Double = 20
+  val defaultBoundBuffer: Double = 0.1
+  val defaultSpacing: Double = 20
+
+  /** Create a box plots for a sequence of distributions.
+    * @param data the distributions to plot
+    * @param boxRenderer the `BoxRenderer` to use to display each distribution
+    * @param pointRenderer the `PointRenderer` used to display outliers
+    * @param quantiles quantiles to use for summary statistics.
+    *                  defaults to 1st, 2nd, 3rd quartiles.
+    * @param spacing spacing how much spacing to put between boxes
+    * @param boundBuffer expand bounds by this factor
+    */
   def apply(data: Seq[Seq[Double]],
             boxRenderer: BoxRenderer = BoxRenderer.default(),
             pointRenderer: PointRenderer = PointRenderer.default(),
@@ -48,5 +58,4 @@ object BoxPlot {
     val ybounds = Plot.expandBounds(Bounds(summaries.minBy(_.min).min, summaries.maxBy(_.max).max), boundBuffer)
     Plot(summaries, xbounds, ybounds, BoxPlotRenderer(boxRenderer, pointRenderer, spacing))
   }
-
 }
