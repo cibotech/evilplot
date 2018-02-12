@@ -1,6 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
+import com.cibo.evilplot.plot.Overlay.OverlayData
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object Overlay {
@@ -39,4 +40,10 @@ object Overlay {
       renderer = OverlayPlotRenderer
     )
   }
+}
+
+trait OverlayImplicits[T] {
+  protected val plot: Plot[T]
+
+  def overlay[U](plot2: Plot[U]): Plot[OverlayData] = Overlay(plot, plot2)
 }
