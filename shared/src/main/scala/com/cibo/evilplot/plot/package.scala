@@ -13,5 +13,6 @@ package object plot {
     with BorderPlotImplicits[T]
     with LabelImplicits[T]
     with PadImplicits[T]
-
+    with PlotDefaultsImplicits[T]
+    with OverlayImplicits[T]
 }
