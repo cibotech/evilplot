@@ -4,7 +4,7 @@ import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Line}
 
 trait GridLineRenderer {
-  def render(label: String, extent: Extent): Drawable
+  def render(extent: Extent, label: String): Drawable
 }
 
 object GridLineRenderer {
@@ -16,7 +16,7 @@ object GridLineRenderer {
     thickness: Double = defaultThickness,
     color: Color = defaultColor
   ): GridLineRenderer = new GridLineRenderer {
-    def render(label: String, extent: Extent): Drawable = {
+    def render(extent: Extent, label: String): Drawable = {
       Line(extent.height, thickness).colored(color).rotated(90)
     }
   }
@@ -25,7 +25,7 @@ object GridLineRenderer {
     thickness: Double = defaultThickness,
     color: Color = defaultColor
   ): GridLineRenderer = new GridLineRenderer {
-    def render(label: String, extent: Extent): Drawable = {
+    def render(extent: Extent, label: String): Drawable = {
       Line(extent.width, thickness).colored(color)
     }
   }

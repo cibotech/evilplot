@@ -12,6 +12,7 @@ package object plot {
     with BackgroundImplicits[T]
     with BorderPlotImplicits[T]
     with LabelImplicits[T]
+    with LegendImplicits[T]
     with PadImplicits[T]
     with PlotDefaultsImplicits[T]
     with OverlayImplicits[T]

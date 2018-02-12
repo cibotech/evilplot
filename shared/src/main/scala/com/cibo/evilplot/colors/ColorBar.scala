@@ -1,7 +1,8 @@
 package com.cibo.evilplot.colors
 
+import com.cibo.evilplot.numeric.AxisDescriptor
 import io.circe.{Decoder, Encoder}
-import io.circe.generic.semiauto.{deriveEncoder, deriveDecoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
 sealed trait ColorBar {
   val nColors: Int
@@ -24,11 +25,10 @@ case class ScaledColorBar(colorSeq: Seq[Color], zMin: Double, zMax: Double) exte
   private val zWidth = (zMax - zMin) / nColors.toFloat
 
   def getColor(i: Int): Color = colorSeq(i)
+  def getColor(z: Double): Color = getColor(colorIndex(z))
 
-  def getColor(z: Double): Color = {
-    val colorIndex = math.min(math.round(math.floor((z - zMin) / zWidth)).toInt, nColors - 1)
-    getColor(colorIndex)
-  }
+  def colorIndex(z: Double): Int = math.min(math.round(math.floor((z - zMin) / zWidth)).toInt, nColors - 1)
+  def colorValue(i: Int): Double = i * zWidth + zMin
 }
 
 object ColorBar {

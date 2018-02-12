@@ -17,12 +17,15 @@ object Histogram {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 
-      plot.data.map { point =>
+      val bars = plot.data.map { point =>
+        Bar(ytransformer(point.y))
+      }
+      plot.data.zip(bars).map { case (point, bar) =>
         val x = xtransformer(point.x) + spacing / 2.0
         val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
-        val y = ytransformer(point.y)
+        val y = bar.height
         val barHeight = plotExtent.height - y
-        barRenderer.render(Bar(point.y), Extent(barWidth, barHeight), 0).translate(x = x, y = y)
+        barRenderer.render(Extent(barWidth, barHeight), bars, bar).translate(x = x, y = y)
       }.group
     }
   }
