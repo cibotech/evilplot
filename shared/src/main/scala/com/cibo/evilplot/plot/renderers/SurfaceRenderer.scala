@@ -3,7 +3,7 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors.{Color, DefaultColors, ScaledColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Line, Path, Rect, StrokeStyle, Text}
 import com.cibo.evilplot.numeric.{Point, Point3}
-import com.cibo.evilplot.plot.LegendContext
+import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
 
 trait SurfaceRenderer extends PlotElementRenderer[Seq[Seq[Point3]], Seq[Point3]] {
   def render(extent: Extent, data: Seq[Seq[Point3]], surface: Seq[Point3]): Drawable
@@ -36,10 +36,10 @@ object SurfaceRenderer {
       )
       Some(
         LegendContext[Seq[Point3]](
-          categories = (0 until bar.nColors).map { c => Seq(Point3(0, 0, bar.colorValue(c))) },
+          levels = (0 until bar.nColors).map { c => Seq(Point3(0, 0, bar.colorValue(c))) },
           elementFunction = (c: Seq[Point3]) => Rect(1, 1).filled(bar.getColor(c.head.z)),
           labelFunction = (c: Seq[Point3]) => Text(math.round(c.head.z).toString),
-          discrete = false
+          defaultStyle = LegendStyle.Gradient
         )
       )
     }

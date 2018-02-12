@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.plot.LegendContext
+import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
 
 trait LegendRenderer {
   def render[T, C](data: T, context: LegendContext[C]): Drawable
@@ -19,7 +19,7 @@ object LegendRenderer {
       val labels = context.labels
       val elementSize = labels.maxBy(_.extent.height).extent.height
       val elementExtent = Extent(elementSize, elementSize)
-      context.categories.zip(labels).map { case (category, label) =>
+      context.levels.zip(labels).map { case (category, label) =>
         // The indicator will render itself centered on the origin, so we need to translate.
         val indicator = fit(context.elementFunction(category), elementExtent)
         indicator.beside(label.padLeft(leftPadding)).padAll(spacing / 2)
@@ -34,7 +34,7 @@ object LegendRenderer {
       val (startLabel, stopLabel) = (context.labels.head, context.labels.last)
       val elementSize = math.max(startLabel.extent.height, stopLabel.extent.height)
       val elementExtent = Extent(elementSize, elementSize)
-      val inner = context.categories.map { category =>
+      val inner = context.levels.map { category =>
         fit(context.elementFunction(category), elementExtent)
       }.reduce(reduction)
       Seq(startLabel.padAll(spacing / 2), inner, stopLabel.padAll(spacing / 2)).reduce(reduction)
@@ -45,10 +45,9 @@ object LegendRenderer {
     reduction: (Drawable, Drawable) => Drawable = above
   ): LegendRenderer = new LegendRenderer {
     def render[T, C](data: T, context: LegendContext[C]): Drawable = {
-      if (context.discrete) {
-        discrete(reduction).render(data, context)
-      } else {
-        gradient(reduction).render(data, context)
+      context.defaultStyle match {
+        case LegendStyle.Categorical => discrete(reduction).render(data, context)
+        case LegendStyle.Gradient    => gradient(reduction).render(data, context)
       }
     }
   }

@@ -3,7 +3,7 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Text}
 import com.cibo.evilplot.numeric.Point
-import com.cibo.evilplot.plot.LegendContext
+import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
 
 trait PointRenderer extends PlotElementRenderer[Seq[Point], Int] {
   def render(extent: Extent, data: Seq[Point], index: Int): Drawable
@@ -71,10 +71,10 @@ object PointRenderer {
       override def legendContext(data: Seq[Point]): Option[LegendContext[Int]] = {
         Some(
           LegendContext(
-            categories = 0 until bar.nColors,
+            levels = 0 until bar.nColors,
             labelFunction = labels.apply,
             elementFunction = (c: Int) => Disc(1, 1, 1).filled(bar.getColor(c)),
-            discrete = true
+            defaultStyle = LegendStyle.Categorical
           )
         )
       }

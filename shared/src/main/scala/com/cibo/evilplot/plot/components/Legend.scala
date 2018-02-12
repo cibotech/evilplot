@@ -18,7 +18,7 @@ case class Legend[T](
   override def size[X](plot: Plot[X]): Extent = drawable.extent
 
   def render[X](plot: Plot[X], extent: Extent): Drawable = {
-    if (context.categories.nonEmpty) {
+    if (context.levels.nonEmpty) {
       drawable.translate(
         x = (extent.width - drawable.extent.width) * x,
         y = (extent.height - drawable.extent.height) * y
