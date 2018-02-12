@@ -5,18 +5,32 @@ import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.components.{PlotComponent, Position}
 import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotElementRenderer, PlotRenderer}
 
+/** A plot.
+  * @param data The data used to render the plot.
+  * @param xbounds The x-axis bounds of the plot.
+  * @param ybounds The y-axis bounds of the plot.
+  * @param renderer The PlotRenderer used to render the plot area.
+  * @param componentRenderer The ComponentRenderer used to render components (axes, labels, backgrounds, etc.).
+  * @param xtransform Transformation to convert from plot X-coordinates to pixel coordinates.
+  * @param ytransform Transformation to convert from plot Y-coordinates to pixel coordinates.
+  * @param xfixed Set if the X bounds are fixed by an axis/grid/facet/etc. or the user.
+  * @param yfixed Set if the Y bounds are fixed by an axis/grid/facet/etc. or the user.
+  * @param components Plot components (axes, labels, etc.).
+  * @param legendContext Context used to display a legend for this plot.
+  * @tparam T The top of the plot data.
+  */
 final case class Plot[T] private[evilplot] (
-  data: T, // Raw data
-  xbounds: Bounds, // x bounds of the raw data
-  ybounds: Bounds, // y bounds of the raw data
+  data: T,
+  xbounds: Bounds,
+  ybounds: Bounds,
   private[plot] val renderer: PlotRenderer[T],
   private[plot] val componentRenderer: ComponentRenderer[T] = ComponentRenderer.Default[T](),
   private[plot] val xtransform: Plot.Transformer = Plot.DefaultXTransformer(),
   private[plot] val ytransform: Plot.Transformer = Plot.DefaultYTransformer(),
-  private[plot] val xfixed: Boolean = false,    // Set if x bounds are fixed.
-  private[plot] val yfixed: Boolean = false,    // Set if y bounds are fixed.
-  private[plot] val components: Seq[PlotComponent] = Seq.empty, // Components (ordered inside out)
-  private[plot] val legendContext: Option[LegendContext[_]] = None // Data for rendering a legend
+  private[plot] val xfixed: Boolean = false,
+  private[plot] val yfixed: Boolean = false,
+  private[plot] val components: Seq[PlotComponent] = Seq.empty,
+  private[plot] val legendContext: Option[LegendContext[_]] = None
 ) {
   private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 

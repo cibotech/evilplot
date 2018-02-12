@@ -55,6 +55,14 @@ object Histogram {
     }
   }
 
+  /** Create a histogram.
+    * @param values The data.
+    * @param bins The number of bins to divide the data into.
+    * @param barRenderer The renderer to render bars for each bin.
+    * @param spacing The spacing between bars.
+    * @param boundBuffer Extra padding to place at the top of the plot.
+    * @return A histogram plot.
+    */
   def apply(
     values: Seq[Double],
     bins: Int = defaultBinCount,
