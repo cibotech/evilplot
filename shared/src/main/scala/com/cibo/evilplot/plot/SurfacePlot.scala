@@ -60,7 +60,7 @@ object ContourPlot {
       xbounds,
       ybounds,
       SurfacePlotRenderer(surfaceRenderer),
-      legendContext = surfaceRenderer.legendContext(contourPoints)
+      legendContext = surfaceRenderer.legendContext(contourPoints).toSeq
     )
   }
 

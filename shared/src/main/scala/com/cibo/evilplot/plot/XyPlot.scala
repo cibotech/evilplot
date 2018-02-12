@@ -45,8 +45,8 @@ object XyPlot {
     require(boundBuffer >= 0.0)
     val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), boundBuffer)
     val ybounds = Plot.expandBounds(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y), boundBuffer)
-    val legend = pointRenderer.legendContext(data).orElse(pathRenderer.legendContext(data))
-    Plot[Seq[Point]](data, xbounds, ybounds, XyPlotRenderer(pointRenderer, pathRenderer), legendContext = legend)
+    val legends = pointRenderer.legendContext(data).toSeq ++ pathRenderer.legendContext(data).toSeq
+    Plot[Seq[Point]](data, xbounds, ybounds, XyPlotRenderer(pointRenderer, pathRenderer), legendContext = legends)
   }
 }
 
