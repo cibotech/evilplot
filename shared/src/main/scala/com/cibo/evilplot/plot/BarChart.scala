@@ -45,7 +45,7 @@ object BarChart {
       val initial: (Double, Drawable) = (sorted.head.group, EmptyDrawable())
       sorted.zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
         val y = ytransformer(math.abs(bar.height))
-        val barHeight = ytransformer(0) - y
+        val barHeight = ytransformer(math.max(0, plot.ybounds.min)) - y
         val transY = if (bar.height < 0) y + barHeight else y
         val groupOffset =
           if (numGroups != 1 && bar.group != lastGroup) groupSpacing

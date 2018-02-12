@@ -1,7 +1,8 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.Extent
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plot.renderers.PlotRenderer
 import org.scalatest.{FunSpec, Matchers}
 
 class OverlaySpec extends FunSpec with Matchers {
@@ -27,6 +28,33 @@ class OverlaySpec extends FunSpec with Matchers {
       val overlay = Overlay(inner1, inner2)
       val extent = Extent(600, 400)
       overlay.render(extent).extent shouldBe extent
+    }
+
+    it("updates bounds on subplots") {
+      var xbounds: Bounds = Bounds(0, 0)
+      var ybounds: Bounds = Bounds(0, 0)
+
+      val testRenderer = new PlotRenderer[Int] {
+        def render(plot: Plot[Int], plotExtent: Extent): Drawable = {
+          xbounds = plot.xbounds
+          ybounds = plot.ybounds
+          EmptyDrawable(plotExtent)
+        }
+      }
+
+      val inner = new Plot[Int](
+        data = 1,
+        xbounds = Bounds(1, 2),
+        ybounds = Bounds(3, 4),
+        renderer = testRenderer
+      )
+
+      val overlay = Overlay(inner)
+      val updated = overlay.xbounds(5, 6).ybounds(7, 8)
+      updated.render(Extent(100, 200))
+
+      xbounds shouldBe Bounds(5, 6)
+      ybounds shouldBe Bounds(7, 8)
     }
   }
 }
