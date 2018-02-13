@@ -27,7 +27,7 @@ final case class Plot private[evilplot] (
   private[plot] val xfixed: Boolean = false,
   private[plot] val yfixed: Boolean = false,
   private[plot] val components: Seq[PlotComponent] = Seq.empty,
-  private[plot] val legendContext: Seq[LegendContext[_]] = Seq.empty
+  private[plot] val legendContext: Seq[LegendContext] = Seq.empty
 ) {
   private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 

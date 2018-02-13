@@ -29,7 +29,7 @@ object PointRenderer {
     color: Color = DefaultColors.barColor,
     name: Option[String] = None
   ): PointRenderer = new PointRenderer {
-    override def legendContext: Option[LegendContext[Int]] = name.map { n =>
+    override def legendContext: Option[LegendContext] = name.map { n =>
       LegendContext.single(Disc(size) filled color, n)
     }
     def render(plot: Plot, extent: Extent, index: Int): Drawable = Disc(size) filled color
@@ -73,12 +73,11 @@ object PointRenderer {
   ): PointRenderer = {
     require(labels.lengthCompare(bar.nColors) == 0, "Number of labels does not match the number of categories")
     new PointRenderer {
-      override def legendContext: Option[LegendContext[Int]] = {
+      override def legendContext: Option[LegendContext] = {
         Some(
           LegendContext(
-            levels = 0 until bar.nColors,
-            labelFunction = labels.apply,
-            elementFunction = (c: Int) => Disc(1, 1, 1).filled(bar.getColor(c)),
+            elements = (0 until bar.nColors).map { c => Disc(size, size, size).filled(bar.getColor(c)) } ,
+            labels = labels,
             defaultStyle = LegendStyle.Categorical
           )
         )

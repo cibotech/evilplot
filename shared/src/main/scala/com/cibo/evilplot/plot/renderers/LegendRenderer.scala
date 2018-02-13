@@ -7,7 +7,7 @@ import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
   * @param reduction A function to combine multiple legends.
   */
 abstract class LegendRenderer(val reduction: (Drawable, Drawable) => Drawable) {
-  def render[C](context: LegendContext[C]): Drawable
+  def render(context: LegendContext): Drawable
 }
 
 object LegendRenderer {
@@ -21,13 +21,15 @@ object LegendRenderer {
   def discrete(
     reduction: (Drawable, Drawable) => Drawable = above
   ): LegendRenderer = new LegendRenderer(reduction) {
-    def render[C](context: LegendContext[C]): Drawable = {
+    def render(context: LegendContext): Drawable = {
       val labels = context.labels
       val elementSize = labels.maxBy(_.extent.height).extent.height
       val elementExtent = Extent(elementSize, elementSize)
-      context.levels.zip(labels).map { case (category, label) =>
+      context.elements.zip(labels).map { case (element, label) =>
         // The indicator will render itself centered on the origin, so we need to translate.
-        val indicator = fit(context.elementFunction(category), elementExtent)
+        val offsetx = (elementSize - element.extent.width) / 2
+        val offsety = (elementSize - element.extent.height) / 2
+        val indicator = Resize(element.translate(x = offsetx, y = offsety), elementExtent)
         indicator.beside(label.padLeft(leftPadding)).padAll(spacing / 2)
       }.reduce(reduction)
     }
@@ -39,12 +41,14 @@ object LegendRenderer {
   def gradient(
     reduction: (Drawable, Drawable) => Drawable = above
   ): LegendRenderer = new LegendRenderer(reduction) {
-    def render[C](context: LegendContext[C]): Drawable = {
+    def render(context: LegendContext): Drawable = {
       val (startLabel, stopLabel) = (context.labels.head, context.labels.last)
       val elementSize = math.max(startLabel.extent.height, stopLabel.extent.height)
       val elementExtent = Extent(elementSize, elementSize)
-      val inner = context.levels.map { category =>
-        fit(context.elementFunction(category), elementExtent)
+      val inner = context.elements.map { element =>
+        val offsetx = (elementSize - element.extent.width) / 2
+        val offsety = (elementSize - element.extent.height) / 2
+        Resize(element.translate(x = offsetx, y = offsety), elementExtent)
       }.reduce(reduction)
       Seq(startLabel.padAll(spacing / 2), inner, stopLabel.padAll(spacing / 2)).reduce(reduction)
     }
@@ -56,7 +60,7 @@ object LegendRenderer {
   def default(
     reduction: (Drawable, Drawable) => Drawable = above
   ): LegendRenderer = new LegendRenderer(reduction) {
-    def render[C](context: LegendContext[C]): Drawable = {
+    def render(context: LegendContext): Drawable = {
       context.defaultStyle match {
         case LegendStyle.Categorical => discrete(reduction).render(context)
         case LegendStyle.Gradient    => gradient(reduction).render(context)

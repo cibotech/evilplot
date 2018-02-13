@@ -11,6 +11,7 @@ trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
 
 object PathRenderer {
   val defaultStrokeWidth: Double = 2.0
+  private val legendStrokeLength: Double = 8.0
 
   /** The default path renderer.
     * @param strokeWidth The width of the path.
@@ -22,9 +23,9 @@ object PathRenderer {
     color: Color = DefaultColors.pathColor,
     name: Option[String] = None
   ): PathRenderer = new PathRenderer {
-    override def legendContext: Option[LegendContext[Int]] = {
+    override def legendContext: Option[LegendContext] = {
       name.map { n =>
-        LegendContext.single(StrokeStyle(Line(10, strokeWidth), color), n)
+        LegendContext.single(StrokeStyle(Line(legendStrokeLength, strokeWidth), color), n)
       }
     }
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
