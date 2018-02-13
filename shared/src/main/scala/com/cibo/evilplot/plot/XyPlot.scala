@@ -9,13 +9,14 @@ object XyPlot {
   val defaultBoundBuffer: Double = 0.1
 
   private case class XyPlotRenderer(
-    pointRenderer: PointRenderer[Seq[Point]],
+    data: Seq[Point],
+    pointRenderer: PointRenderer,
     pathRenderer: PathRenderer
-  ) extends PlotRenderer[Seq[Point]] {
-    def render(plot: Plot[Seq[Point]], plotExtent: Extent): Drawable = {
+  ) extends PlotRenderer {
+    def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
-      val xformedPoints = plot.data.filter(plot.inBounds).zipWithIndex.map { case (point, index) =>
+      val xformedPoints = data.filter(plot.inBounds).zipWithIndex.map { case (point, index) =>
         val x = xtransformer(point.x)
         val y = ytransformer(point.y)
         Point(x, y)
@@ -37,15 +38,15 @@ object XyPlot {
     */
   def apply(
              data: Seq[Point],
-             pointRenderer: PointRenderer[Seq[Point]] = PointRenderer.default(),
+             pointRenderer: PointRenderer = PointRenderer.default(),
              pathRenderer: PathRenderer = PathRenderer.default(),
              boundBuffer: Double = defaultBoundBuffer
-           ): Plot[Seq[Point]] = {
+           ): Plot = {
     require(boundBuffer >= 0.0)
     val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), boundBuffer)
     val ybounds = Plot.expandBounds(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y), boundBuffer)
-    val legends = pointRenderer.legendContext(data).toSeq ++ pathRenderer.legendContext(data).toSeq
-    Plot[Seq[Point]](data, xbounds, ybounds, XyPlotRenderer(pointRenderer, pathRenderer), legendContext = legends)
+    val legends = pointRenderer.legendContext.toSeq ++ pathRenderer.legendContext.toSeq
+    Plot(xbounds, ybounds, XyPlotRenderer(data, pointRenderer, pathRenderer), legendContext = legends)
   }
 }
 

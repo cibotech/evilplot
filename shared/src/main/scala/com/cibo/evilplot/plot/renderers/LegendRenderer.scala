@@ -7,7 +7,7 @@ import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
   * @param reduction A function to combine multiple legends.
   */
 abstract class LegendRenderer(val reduction: (Drawable, Drawable) => Drawable) {
-  def render[T, C](data: T, context: LegendContext[C]): Drawable
+  def render[C](context: LegendContext[C]): Drawable
 }
 
 object LegendRenderer {
@@ -21,7 +21,7 @@ object LegendRenderer {
   def discrete(
     reduction: (Drawable, Drawable) => Drawable = above
   ): LegendRenderer = new LegendRenderer(reduction) {
-    def render[T, C](data: T, context: LegendContext[C]): Drawable = {
+    def render[C](context: LegendContext[C]): Drawable = {
       val labels = context.labels
       val elementSize = labels.maxBy(_.extent.height).extent.height
       val elementExtent = Extent(elementSize, elementSize)
@@ -39,7 +39,7 @@ object LegendRenderer {
   def gradient(
     reduction: (Drawable, Drawable) => Drawable = above
   ): LegendRenderer = new LegendRenderer(reduction) {
-    def render[T, C](data: T, context: LegendContext[C]): Drawable = {
+    def render[C](context: LegendContext[C]): Drawable = {
       val (startLabel, stopLabel) = (context.labels.head, context.labels.last)
       val elementSize = math.max(startLabel.extent.height, stopLabel.extent.height)
       val elementExtent = Extent(elementSize, elementSize)
@@ -56,10 +56,10 @@ object LegendRenderer {
   def default(
     reduction: (Drawable, Drawable) => Drawable = above
   ): LegendRenderer = new LegendRenderer(reduction) {
-    def render[T, C](data: T, context: LegendContext[C]): Drawable = {
+    def render[C](context: LegendContext[C]): Drawable = {
       context.defaultStyle match {
-        case LegendStyle.Categorical => discrete(reduction).render(data, context)
-        case LegendStyle.Gradient    => gradient(reduction).render(data, context)
+        case LegendStyle.Categorical => discrete(reduction).render(context)
+        case LegendStyle.Gradient    => gradient(reduction).render(context)
       }
     }
   }

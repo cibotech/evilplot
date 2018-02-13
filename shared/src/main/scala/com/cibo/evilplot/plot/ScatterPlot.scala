@@ -13,9 +13,9 @@ object ScatterPlot {
     */
   def apply(
     data: Seq[Point],
-    pointRenderer: PointRenderer[Seq[Point]] = PointRenderer.default(),
+    pointRenderer: PointRenderer = PointRenderer.default(),
     boundBuffer: Double = XyPlot.defaultBoundBuffer
-  ): Plot[Seq[Point]] = {
+  ): Plot = {
     XyPlot(data, pointRenderer, pathRenderer = PathRenderer.empty(), boundBuffer)
   }
 
@@ -32,8 +32,8 @@ object ScatterPlot {
     color: Color,
     pointSize: Double = PointRenderer.defaultPointSize,
     boundBuffer: Double = XyPlot.defaultBoundBuffer
-  ): Plot[Seq[Point]] = {
-    val pointRenderer = PointRenderer.default[Seq[Point]](pointSize, color, Some(name))
+  ): Plot = {
+    val pointRenderer = PointRenderer.default(pointSize, color, Some(name))
     val pathRenderer = PathRenderer.empty()
     XyPlot(data, pointRenderer, pathRenderer, boundBuffer)
   }

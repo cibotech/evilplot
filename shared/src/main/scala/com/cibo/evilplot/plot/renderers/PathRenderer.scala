@@ -5,8 +5,8 @@ import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, Path, 
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
-trait PathRenderer extends PlotElementRenderer[Seq[Point], Seq[Point]] {
-  def render(plot: Plot[Seq[Point]], extent: Extent, path: Seq[Point]): Drawable
+trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
+  def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable
 }
 
 object PathRenderer {
@@ -22,12 +22,12 @@ object PathRenderer {
     color: Color = DefaultColors.pathColor,
     name: Option[String] = None
   ): PathRenderer = new PathRenderer {
-    override def legendContext(data: Seq[Point]): Option[LegendContext[Seq[Point]]] = {
+    override def legendContext: Option[LegendContext[Int]] = {
       name.map { n =>
-        LegendContext.single(data, StrokeStyle(Line(10, strokeWidth), color), n)
+        LegendContext.single(StrokeStyle(Line(10, strokeWidth), color), n)
       }
     }
-    def render(plot: Plot[Seq[Point]], extent: Extent, path: Seq[Point]): Drawable = {
+    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       StrokeStyle(Path(path, strokeWidth), color)
     }
   }
@@ -46,7 +46,7 @@ object PathRenderer {
   def closed(strokeWidth: Double = defaultStrokeWidth,
              color: Color = DefaultColors.pathColor
             ): PathRenderer = new PathRenderer {
-    def render(plot: Plot[Seq[Point]], extent: Extent, path: Seq[Point]): Drawable = {
+    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       // better hope this is an indexedseq?
       StrokeStyle(Path(path :+ path.head, strokeWidth), color)
     }
@@ -56,7 +56,7 @@ object PathRenderer {
     * A no-op renderer for when you don't want to render paths (such as on a scatter plot)
     */
   def empty[T](): PathRenderer = new PathRenderer {
-    def render(plot: Plot[Seq[Point]], extent: Extent, path: Seq[Point]): Drawable = EmptyDrawable()
+    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = EmptyDrawable()
   }
 }
 

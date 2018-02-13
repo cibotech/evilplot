@@ -4,16 +4,16 @@ import com.cibo.evilplot.colors.{Color, DefaultColors, ScaledColorBar}
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plot.{Bar, Plot}
 
-trait BarRenderer[T] extends PlotElementRenderer[T, Bar] {
-  def render(plot: Plot[T], extent: Extent, category: Bar): Drawable
+trait BarRenderer extends PlotElementRenderer[Bar] {
+  def render(plot: Plot, extent: Extent, category: Bar): Drawable
 }
 
 object BarRenderer {
 
-  def stackedRenderer[T](
+  def stackedRenderer(
     colors: Seq[Color]
-  ): BarRenderer[T] = new BarRenderer[T] {
-    def render(plot: Plot[T], extent: Extent, bar: Bar): Drawable = {
+  ): BarRenderer = new BarRenderer {
+    def render(plot: Plot, extent: Extent, bar: Bar): Drawable = {
       val scale = if (bar.height == 0) 0.0 else extent.height / bar.height
       bar.values.zipWithIndex.map { case (value, stackIndex) =>
         val height = value * scale
@@ -23,25 +23,25 @@ object BarRenderer {
     }
   }
 
-  def default[T](
+  def default(
     color: Color = DefaultColors.barColor
-  ): BarRenderer[T] = stackedRenderer(Seq(color))
+  ): BarRenderer = stackedRenderer(Seq(color))
 
-  def temperature[T](
+  def temperature(
     colors: Seq[Color] = Color.stream
   )(
     bars: Seq[Seq[Bar]]
-  ): BarRenderer[T] = {
+  ): BarRenderer = {
     val minValue = bars.flatten.minBy(_.height).height
     val maxValue = bars.flatten.maxBy(_.height).height
     val colorCount = bars.flatten.map(_.height).distinct.size
     temperature(ScaledColorBar(colors.take(colorCount), minValue, maxValue))
   }
 
-  def temperature[T](
+  def temperature(
     colorBar: ScaledColorBar
-  ): BarRenderer[T] = new BarRenderer[T] {
-    def render(plot: Plot[T], barExtent: Extent, bar: Bar): Drawable = {
+  ): BarRenderer = new BarRenderer {
+    def render(plot: Plot, barExtent: Extent, bar: Bar): Drawable = {
       val color = colorBar.getColor(bar.height)
       Rect(barExtent.width, barExtent.height).filled(color)
     }

@@ -5,17 +5,17 @@ import com.cibo.evilplot.geometry.{Align, BorderRect, Drawable, Extent, Line, St
 import com.cibo.evilplot.numeric.BoxPlotSummaryStatistics
 import com.cibo.evilplot.plot.Plot
 
-trait BoxRenderer[T] extends PlotElementRenderer[T, BoxPlotSummaryStatistics] {
-  def render(plot: Plot[T], extent: Extent, summary: BoxPlotSummaryStatistics): Drawable
+trait BoxRenderer extends PlotElementRenderer[BoxPlotSummaryStatistics] {
+  def render(plot: Plot, extent: Extent, summary: BoxPlotSummaryStatistics): Drawable
 }
 
 object BoxRenderer {
   private val defaultStrokeWidth: Double = 2
   def default(strokeWidth: Double = defaultStrokeWidth, pathColor: Color = DefaultColors.pathColor,
               fillColor: Color = DefaultColors.fillColor
-  ): BoxRenderer[Seq[BoxPlotSummaryStatistics]] = new BoxRenderer[Seq[BoxPlotSummaryStatistics]] {
+  ): BoxRenderer = new BoxRenderer {
     def render(
-      plot: Plot[Seq[BoxPlotSummaryStatistics]],
+      plot: Plot,
       extent: Extent,
       summary: BoxPlotSummaryStatistics
     ): Drawable = {

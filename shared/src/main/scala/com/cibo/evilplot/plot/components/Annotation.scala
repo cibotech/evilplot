@@ -4,14 +4,14 @@ import com.cibo.evilplot.geometry.{Drawable, Extent, Text, above}
 import com.cibo.evilplot.plot.Plot
 
 case class Annotation(
-  f: (Plot[_], Extent) => Drawable,
+  f: (Plot, Extent) => Drawable,
   x: Double,
   y: Double
 ) extends PlotComponent {
   require(x >= 0.0 && x <= 1.0, s"x must be between 0.0 and 1.0, got $x")
   require(y >= 0.0 && y <= 1.0, s"y must be between 0.0 and 1.0, got $y")
   val position: Position = Position.Overlay
-  def render[T](plot: Plot[T], extent: Extent): Drawable = {
+  def render(plot: Plot, extent: Extent): Drawable = {
     val drawable = f(plot, extent)
     val xoffset = (extent.width - drawable.extent.width) * x
     val yoffset = (extent.height - drawable.extent.height) * y
@@ -20,8 +20,8 @@ case class Annotation(
 }
 
 
-trait AnnotationImplicits[T] {
-  protected val plot: Plot[T]
+trait AnnotationImplicits {
+  protected val plot: Plot
 
   /** Add an annotation to the plot.
     *
@@ -30,7 +30,7 @@ trait AnnotationImplicits[T] {
     * @param y The Y coordinate to plot the drawable (between 0 and 1).
     * @return The updated plot.
     */
-  def annotate(f: (Plot[_], Extent) => Drawable, x: Double, y: Double): Plot[T] = {
+  def annotate(f: (Plot, Extent) => Drawable, x: Double, y: Double): Plot = {
     plot :+ Annotation(f, x, y)
   }
 
@@ -41,7 +41,7 @@ trait AnnotationImplicits[T] {
     * @param y   The Y coordinate.
     * @return
     */
-  def annotate(msg: String, x: Double = 1.0, y: Double = 0.5): Plot[T] =
+  def annotate(msg: String, x: Double = 1.0, y: Double = 0.5): Plot =
     annotate((_, _) => msg.split('\n').map(Text(_)).reduce(above), x, y)
 
 }

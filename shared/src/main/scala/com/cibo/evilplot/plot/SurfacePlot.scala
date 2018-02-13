@@ -12,13 +12,14 @@ object SurfacePlot {
   private[plot] val defaultBoundBuffer: Double = 0.2
 
   private[plot] case class SurfacePlotRenderer(
+    data: Seq[Seq[Point3]],
     surfaceRenderer: SurfaceRenderer
-  ) extends PlotRenderer[Seq[Seq[Point3]]] {
-    def render(plot: Plot[Seq[Seq[Point3]]], plotExtent: Extent): Drawable = {
+  ) extends PlotRenderer {
+    def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 
-      plot.data.map { level =>
+      data.map { level =>
         val transformedLevel = level.withFilter { p =>
           plot.xbounds.isInBounds(p.x) && plot.ybounds.isInBounds(p.y)
         }.map { p => Point3(xtransformer(p.x), ytransformer(p.y), p.z) }
@@ -32,13 +33,14 @@ object ContourPlot {
   import SurfacePlot._
   val defaultNumContours: Int = 20
   val defaultGridDimensions: (Int, Int) = (100, 100)
+
   def apply(
     data: Seq[Point],
     gridDimensions: (Int, Int) = defaultGridDimensions,
-    surfaceRenderer: SurfaceRenderer = SurfaceRenderer.densityColorContours(),
+    surfaceRenderer: Seq[Seq[Point3]] => SurfaceRenderer = SurfaceRenderer.densityColorContours(),
     contours: Int = defaultNumContours,
     boundBuffer: Double = defaultBoundBuffer
-  ): Plot[Seq[Seq[Point3]]] = {
+  ): Plot = {
     require(contours > 0, "Must use at least one contour.")
 
     val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), boundBuffer)
@@ -55,12 +57,12 @@ object ContourPlot {
       toPoint3(MarchingSquares.getContoursAt(l, gridData), l)
     }
 
-    Plot[Seq[Seq[Point3]]](
-      contourPoints,
+    val sr = surfaceRenderer(contourPoints)
+    Plot(
       xbounds,
       ybounds,
-      SurfacePlotRenderer(surfaceRenderer),
-      legendContext = surfaceRenderer.legendContext(contourPoints).toSeq
+      SurfacePlotRenderer(contourPoints, sr),
+      legendContext = sr.legendContext.toSeq
     )
   }
 

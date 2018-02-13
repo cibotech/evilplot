@@ -5,21 +5,22 @@ import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
 private final case class BoxPlotRenderer(
-                                        boxRenderer: BoxRenderer[Seq[BoxPlotSummaryStatistics]],
-                                        pointRenderer: PointRenderer[Seq[BoxPlotSummaryStatistics]],
-                                        spacing: Double
-                                        ) extends PlotRenderer[Seq[BoxPlotSummaryStatistics]] {
-  def render(plot: Plot[Seq[BoxPlotSummaryStatistics]], plotExtent: Extent): Drawable = {
+  data: Seq[BoxPlotSummaryStatistics],
+  boxRenderer: BoxRenderer,
+  pointRenderer: PointRenderer,
+  spacing: Double
+) extends PlotRenderer {
+  def render(plot: Plot, plotExtent: Extent): Drawable = {
     val ytransformer = plot.ytransform(plot, plotExtent)
 
     // Total box spacing used.
-    val boxCount = plot.data.size
+    val boxCount = data.size
     val totalBoxSpacing = boxCount * spacing
 
     // The width of each box.
     val boxWidth = (plotExtent.width - totalBoxSpacing) / boxCount
 
-    plot.data.zipWithIndex.foldLeft(EmptyDrawable(): Drawable) { case (d, (summary, index)) =>
+    data.zipWithIndex.foldLeft(EmptyDrawable(): Drawable) { case (d, (summary, index)) =>
       val boxHeight = ytransformer(summary.lowerWhisker) - ytransformer(summary.upperWhisker)
       val box = boxRenderer.render(plot, Extent(boxWidth, boxHeight), summary)
 
@@ -48,14 +49,14 @@ object BoxPlot {
     * @param boundBuffer expand bounds by this factor
     */
   def apply(data: Seq[Seq[Double]],
-            boxRenderer: BoxRenderer[Seq[BoxPlotSummaryStatistics]] = BoxRenderer.default(),
-            pointRenderer: PointRenderer[Seq[BoxPlotSummaryStatistics]] = PointRenderer.default(),
+            boxRenderer: BoxRenderer = BoxRenderer.default(),
+            pointRenderer: PointRenderer = PointRenderer.default(),
             quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
             spacing: Double = defaultSpacing,
-            boundBuffer: Double = defaultBoundBuffer): Plot[Seq[BoxPlotSummaryStatistics]] = {
+            boundBuffer: Double = defaultBoundBuffer): Plot = {
     val summaries = data.map(dist => BoxPlotSummaryStatistics(dist, quantiles))
     val xbounds = Bounds(0, summaries.size - 1)
     val ybounds = Plot.expandBounds(Bounds(summaries.minBy(_.min).min, summaries.maxBy(_.max).max), boundBuffer)
-    Plot[Seq[BoxPlotSummaryStatistics]](summaries, xbounds, ybounds, BoxPlotRenderer(boxRenderer, pointRenderer, spacing))
+    Plot(xbounds, ybounds, BoxPlotRenderer(summaries, boxRenderer, pointRenderer, spacing))
   }
 }
