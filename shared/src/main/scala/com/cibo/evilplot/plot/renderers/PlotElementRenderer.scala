@@ -4,13 +4,12 @@ import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
 /** A renderer for an element that is plotted (such as a point or bar).
-  * @tparam T Type of data to render.
   * @tparam C Type of context used to identify categories.
   */
-trait PlotElementRenderer[T, C] {
+trait PlotElementRenderer[C] {
   /** Get the legend context if applicable. */
-  def legendContext(data: T): Option[LegendContext[C]] = None
+  def legendContext: Option[LegendContext[_]] = None
 
   /** Render a category within the extent. */
-  def render(extent: Extent, data: T, context: C): Drawable
+  def render(plot: Plot, extent: Extent, context: C): Drawable
 }

@@ -4,8 +4,8 @@ import com.cibo.evilplot.colors.{Color, DefaultColors, ScaledColorBar}
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plot.{Bar, Plot}
 
-trait BarRenderer extends PlotElementRenderer[Seq[Bar], Bar] {
-  def render(extent: Extent, data: Seq[Bar], category: Bar): Drawable
+trait BarRenderer extends PlotElementRenderer[Bar] {
+  def render(plot: Plot, extent: Extent, category: Bar): Drawable
 }
 
 object BarRenderer {
@@ -13,7 +13,7 @@ object BarRenderer {
   def stackedRenderer(
     colors: Seq[Color]
   ): BarRenderer = new BarRenderer {
-    def render(extent: Extent, data: Seq[Bar], bar: Bar): Drawable = {
+    def render(plot: Plot, extent: Extent, bar: Bar): Drawable = {
       val scale = if (bar.height == 0) 0.0 else extent.height / bar.height
       bar.values.zipWithIndex.map { case (value, stackIndex) =>
         val height = value * scale
@@ -41,7 +41,7 @@ object BarRenderer {
   def temperature(
     colorBar: ScaledColorBar
   ): BarRenderer = new BarRenderer {
-    def render(barExtent: Extent, data: Seq[Bar], bar: Bar): Drawable = {
+    def render(plot: Plot, barExtent: Extent, bar: Bar): Drawable = {
       val color = colorBar.getColor(bar.height)
       Rect(barExtent.width, barExtent.height).filled(color)
     }

@@ -11,15 +11,15 @@ class PlotSpec extends FunSpec with Matchers {
   DOMInitializer.init()
 
   // Renderer to do nothing.
-  private case object EmptyPlotRenderer extends PlotRenderer[Int] {
-    def render(plot: Plot[Int], plotExtent: Extent): Drawable = EmptyDrawable(plotExtent)
+  private case object EmptyPlotRenderer extends PlotRenderer {
+    def render(plot: Plot, plotExtent: Extent): Drawable = EmptyDrawable(plotExtent)
   }
 
   // Renderer to get the plot extent.
-  private case class PlotExtentPlotRenderer() extends PlotRenderer[Int] {
+  private case class PlotExtentPlotRenderer() extends PlotRenderer {
     var plotExtentOpt: Option[Extent] = None
 
-    def render(plot: Plot[Int], plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent): Drawable = {
       plotExtentOpt = Some(plotExtent)
       EmptyDrawable(plotExtent)
     }
@@ -29,8 +29,8 @@ class PlotSpec extends FunSpec with Matchers {
     value: Int = 0,
     xbounds: Bounds = Bounds(0, 1),
     ybounds: Bounds = Bounds(0, 1),
-    renderer: PlotRenderer[Int] = EmptyPlotRenderer
-  ): Plot[Int] = Plot[Int](value, xbounds, ybounds, renderer)
+    renderer: PlotRenderer = EmptyPlotRenderer
+  ): Plot = Plot(xbounds, ybounds, renderer)
 
   it("should have the right extent") {
     val plot = newPlot()

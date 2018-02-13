@@ -6,10 +6,10 @@ import com.cibo.evilplot.plot.Plot
 case class BorderPlot(
   position: Position,
   borderSize: Double,
-  border: Plot[_]
+  border: Plot
 ) extends PlotComponent {
-  override def size[T](plot: Plot[T]): Extent = Extent(borderSize, borderSize)
-  def render[T](plot: Plot[T], extent: Extent): Drawable = {
+  override def size(plot: Plot): Extent = Extent(borderSize, borderSize)
+  def render(plot: Plot, extent: Extent): Drawable = {
     position match {
       case Position.Top    =>
         border.xbounds(plot.xbounds).copy(xtransform = plot.xtransform).render(extent.copy(height = borderSize))
@@ -28,13 +28,13 @@ case class BorderPlot(
   }
 }
 
-trait BorderPlotImplicits[T] {
-  protected val plot: Plot[T]
+trait BorderPlotImplicits {
+  protected val plot: Plot
 
   val defaultSize: Double = 20
 
-  def topPlot(p: Plot[_], size: Double = defaultSize): Plot[T] = plot :+ BorderPlot(Position.Top, size, p)
-  def bottomPlot(p: Plot[_], size: Double = defaultSize): Plot[T] = plot :+ BorderPlot(Position.Bottom, size, p)
-  def leftPlot(p: Plot[_], size: Double = defaultSize): Plot[T] = plot :+ BorderPlot(Position.Left, size, p)
-  def rightPlot(p: Plot[_], size: Double = defaultSize): Plot[T] = plot :+ BorderPlot(Position.Right, size, p)
+  def topPlot(p: Plot, size: Double = defaultSize): Plot = plot :+ BorderPlot(Position.Top, size, p)
+  def bottomPlot(p: Plot, size: Double = defaultSize): Plot = plot :+ BorderPlot(Position.Bottom, size, p)
+  def leftPlot(p: Plot, size: Double = defaultSize): Plot = plot :+ BorderPlot(Position.Left, size, p)
+  def rightPlot(p: Plot, size: Double = defaultSize): Plot = plot :+ BorderPlot(Position.Right, size, p)
 }

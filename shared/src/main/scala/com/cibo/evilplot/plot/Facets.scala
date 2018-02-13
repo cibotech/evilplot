@@ -6,18 +6,18 @@ import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
 
 object Facets {
 
-  type FacetData = Seq[Seq[Plot[_]]]
+  type FacetData = Seq[Seq[Plot]]
 
   // Divide the plotExtent evenly among subplots.
-  private def computeSubplotExtent(plot: Plot[FacetData], plotExtent: Extent): Extent = {
-    val rows = plot.data.size
-    val cols = plot.data.map(_.size).max
+  private def computeSubplotExtent(plot: Plot, subplots: FacetData, plotExtent: Extent): Extent = {
+    val rows = subplots.size
+    val cols = subplots.map(_.size).max
     Extent(plotExtent.width / cols, plotExtent.height / rows)
   }
 
   // Add padding to subplots so they are all the same size and use the same axis transformation.
-  private def updatePlotsForFacet(plot: Plot[FacetData], subplotExtent: Extent): FacetData = {
-    Plot.padPlots(plot.data, subplotExtent, 20, 15).map { row =>
+  private def updatePlotsForFacet(plot: Plot, subplots: FacetData, subplotExtent: Extent): FacetData = {
+    Plot.padPlots(subplots, subplotExtent, 20, 15).map { row =>
       row.map { subplot =>
         val withX = if (subplot.xfixed) subplot else subplot.setXTransform(plot.xtransform, fixed = false)
         if (withX.yfixed) withX else withX.setYTransform(plot.ytransform, fixed = false)
@@ -25,12 +25,12 @@ object Facets {
     }
   }
 
-  private case object FacetedPlotRenderer extends PlotRenderer[FacetData] {
-    def render(plot: Plot[Seq[Seq[Plot[_]]]], plotExtent: Extent): Drawable = {
+  private case class FacetedPlotRenderer(subplots: FacetData) extends PlotRenderer {
+    def render(plot: Plot, plotExtent: Extent): Drawable = {
 
       // Make sure all subplots have the same size plot area.
-      val innerExtent = computeSubplotExtent(plot, plotExtent)
-      val paddedPlots = updatePlotsForFacet(plot, innerExtent)
+      val innerExtent = computeSubplotExtent(plot, subplots, plotExtent)
+      val paddedPlots = updatePlotsForFacet(plot, subplots, innerExtent)
 
       // Render the plots.
       paddedPlots.zipWithIndex.map { case (row, yIndex) =>
@@ -43,12 +43,12 @@ object Facets {
     }
   }
 
-  private case object FacetedComponentRenderer extends ComponentRenderer[FacetData] {
+  private case class FacetedComponentRenderer(data: FacetData) extends ComponentRenderer {
 
     private val empty: Drawable = EmptyDrawable()
 
     private def renderTop(
-      plot: Plot[FacetData],
+      plot: Plot,
       subplots: FacetData,
       extent: Extent,
       innerExtent: Extent
@@ -71,7 +71,7 @@ object Facets {
     }
 
     private def renderBottom(
-      plot: Plot[FacetData],
+      plot: Plot,
       subplots: FacetData,
       extent: Extent,
       innerExtent: Extent
@@ -98,7 +98,7 @@ object Facets {
     }
 
     private def renderLeft(
-      plot: Plot[FacetData],
+      plot: Plot,
       subplots: FacetData,
       extent: Extent,
       innerExtent: Extent
@@ -120,7 +120,7 @@ object Facets {
     }
 
     private def renderRight(
-      plot: Plot[FacetData],
+      plot: Plot,
       subplots: FacetData,
       extent: Extent,
       innerExtent: Extent
@@ -149,7 +149,7 @@ object Facets {
 
     private def renderGrid(
       position: Position,
-      plot: Plot[FacetData],
+      plot: Plot,
       subplots: FacetData,
       extent: Extent,
       innerExtent: Extent
@@ -171,10 +171,10 @@ object Facets {
       }.group.translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
     }
 
-    def renderFront(plot: Plot[FacetData], extent: Extent): Drawable = {
+    def renderFront(plot: Plot, extent: Extent): Drawable = {
       val plotExtent = plot.plotExtent(extent)
-      val innerExtent = computeSubplotExtent(plot, plotExtent)
-      val paddedPlots = updatePlotsForFacet(plot, innerExtent)
+      val innerExtent = computeSubplotExtent(plot, data, plotExtent)
+      val paddedPlots = updatePlotsForFacet(plot, data, innerExtent)
       val top = renderTop(plot, paddedPlots, extent, innerExtent)
       val bottom = renderBottom(plot, paddedPlots, extent, innerExtent)
       val left = renderLeft(plot, paddedPlots, extent, innerExtent)
@@ -183,15 +183,15 @@ object Facets {
       Group(Seq(top, bottom, left, right, overlay))
     }
 
-    def renderBack(plot: Plot[FacetData], extent: Extent): Drawable = {
+    def renderBack(plot: Plot, extent: Extent): Drawable = {
       val plotExtent = plot.plotExtent(extent)
-      val innerExtent = computeSubplotExtent(plot, plotExtent)
-      val paddedPlots = updatePlotsForFacet(plot, innerExtent)
+      val innerExtent = computeSubplotExtent(plot, data, plotExtent)
+      val paddedPlots = updatePlotsForFacet(plot, data, innerExtent)
       renderGrid(Position.Background, plot, paddedPlots, extent, innerExtent)
     }
   }
 
-  def apply(plots: Seq[Seq[Plot[_]]]): Plot[FacetData] = {
+  def apply(plots: Seq[Seq[Plot]]): Plot = {
 
     // X bounds for each column.
     val columnXBounds = plots.transpose.map(col => Plot.combineBounds(col.map(_.xbounds)))
@@ -211,12 +211,11 @@ object Facets {
       }
     }
 
-    Plot[FacetData](
-      data = updatedPlots,
+    Plot(
       xbounds = Plot.combineBounds(columnXBounds),
       ybounds = Plot.combineBounds(rowYBounds),
-      renderer = FacetedPlotRenderer,
-      componentRenderer = FacetedComponentRenderer,
+      renderer = FacetedPlotRenderer(updatedPlots),
+      componentRenderer = FacetedComponentRenderer(updatedPlots),
       legendContext = plots.flatten.flatMap(_.legendContext)
     )
   }

@@ -3,10 +3,10 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Text}
 import com.cibo.evilplot.numeric.Point
-import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
+import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
-trait PointRenderer extends PlotElementRenderer[Seq[Point], Int] {
-  def render(extent: Extent, data: Seq[Point], index: Int): Drawable
+trait PointRenderer extends PlotElementRenderer[Int] {
+  def render(plot: Plot, extent: Extent, index: Int): Drawable
 }
 
 object PointRenderer {
@@ -29,17 +29,17 @@ object PointRenderer {
     color: Color = DefaultColors.barColor,
     name: Option[String] = None
   ): PointRenderer = new PointRenderer {
-    override def legendContext(data: Seq[Point]): Option[LegendContext[Int]] = name.map { n =>
-      LegendContext.single(0, Disc(size) filled color, n)
+    override def legendContext: Option[LegendContext[Int]] = name.map { n =>
+      LegendContext.single(Disc(size) filled color, n)
     }
-    def render(extent: Extent, data: Seq[Point], index: Int): Drawable = Disc(size) filled color
+    def render(plot: Plot, extent: Extent, index: Int): Drawable = Disc(size) filled color
   }
 
   /**
     * A no-op renderer for when you don't want to render points (such as on a line)
     */
   def empty(): PointRenderer = new PointRenderer {
-    def render(extent: Extent, data: Seq[Point], index: Int): Drawable = new EmptyDrawable
+    def render(plot: Plot, extent: Extent, index: Int): Drawable = EmptyDrawable()
   }
 
   /** Render points with colors based on depth.
@@ -73,7 +73,7 @@ object PointRenderer {
   ): PointRenderer = {
     require(labels.lengthCompare(bar.nColors) == 0, "Number of labels does not match the number of categories")
     new PointRenderer {
-      override def legendContext(data: Seq[Point]): Option[LegendContext[Int]] = {
+      override def legendContext: Option[LegendContext[Int]] = {
         Some(
           LegendContext(
             levels = 0 until bar.nColors,
@@ -83,7 +83,7 @@ object PointRenderer {
           )
         )
       }
-      def render(extent: Extent, data: Seq[Point], index: Int): Drawable = {
+      def render(plot: Plot, extent: Extent, index: Int): Drawable = {
         Disc(size) filled bar.getColor(depths(index))
       }
     }

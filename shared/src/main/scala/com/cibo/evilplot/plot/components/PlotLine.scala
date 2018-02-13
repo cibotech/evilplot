@@ -10,14 +10,14 @@ sealed trait PlotLine extends PlotComponent {
 }
 
 case class HorizontalPlotLine(y: Double, thickness: Double, color: Color) extends PlotLine {
-  def render[T](plot: Plot[T], extent: Extent): Drawable = {
+  def render(plot: Plot, extent: Extent): Drawable = {
     val offset = plot.ytransform(plot, extent)(y)
     Line(extent.width, thickness).colored(color).translate(y = offset)
   }
 }
 
 case class VerticalPlotLine(x: Double, thickness: Double, color: Color) extends PlotLine {
-  def render[T](plot: Plot[T], extent: Extent): Drawable = {
+  def render(plot: Plot, extent: Extent): Drawable = {
     val offset = plot.xtransform(plot, extent)(x)
     Line(extent.height, thickness).colored(color).rotated(90).translate(x = offset)
   }
@@ -27,7 +27,7 @@ case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickne
   private def solveForX(y: Double): Double = (y - intercept) / slope
   private def valueAt(x: Double): Double = x * slope + intercept
 
-  private def points(plot: Plot[_]): Option[Seq[Point]] = {
+  private def points(plot: Plot): Option[Seq[Point]] = {
 
     // from two points, return one in the plot window or None if neither is visible.
     def pointInBounds(a: Point, b: Point): Option[Point] =
@@ -45,7 +45,7 @@ case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickne
     }
   }
 
-  def render[T](plot: Plot[T], extent: Extent): Drawable = {
+  def render(plot: Plot, extent: Extent): Drawable = {
     val xtransform = plot.xtransform(plot, extent)
     val ytransform = plot.ytransform(plot, extent)
     points(plot).map { ps =>
@@ -55,8 +55,8 @@ case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickne
   }
 }
 
-trait PlotLineImplicits[T] {
-  protected val plot: Plot[T]
+trait PlotLineImplicits {
+  protected val plot: Plot
 
   val defaultColor: Color = DefaultColors.barColor
   val defaultThickness: Double = 2.0
@@ -65,18 +65,18 @@ trait PlotLineImplicits[T] {
     y: Double,
     color: Color = defaultColor,
     thickness: Double = defaultThickness
-  ): Plot[T] = plot :+ HorizontalPlotLine(y, thickness, color)
+  ): Plot = plot :+ HorizontalPlotLine(y, thickness, color)
 
   def vline(
     x: Double,
     color: Color = defaultColor,
     thickness: Double = defaultThickness
-  ): Plot[T] = plot :+ VerticalPlotLine(x, thickness, color)
+  ): Plot = plot :+ VerticalPlotLine(x, thickness, color)
 
   def trend(
     slope: Double,
     intercept: Double,
     color: Color = defaultColor,
     thickness: Double = defaultThickness
-  ): Plot[T] = plot :+ TrendPlotLine(slope, intercept, color, thickness)
+  ): Plot = plot :+ TrendPlotLine(slope, intercept, color, thickness)
 }

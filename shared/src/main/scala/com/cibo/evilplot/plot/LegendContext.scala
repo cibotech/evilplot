@@ -27,20 +27,18 @@ case class LegendContext[C](
 }
 
 object LegendContext {
-  def single[C](
-    value: C,
+  def single(
     element: Drawable,
     label: Drawable
-  ): LegendContext[C] = LegendContext(
-    levels = Seq(value),
-    elementFunction = (c: C) => element,
-    labelFunction = (c: C) => label,
+  ): LegendContext[Int] = LegendContext(
+    levels = Seq(0),
+    elementFunction = (c: Int) => element,
+    labelFunction = (c: Int) => label,
     defaultStyle = LegendStyle.Categorical
   )
 
-  def single[C](
-    value: C,
+  def single(
     element: Drawable,
     label: String
-  ): LegendContext[C] = single(value, element, Text(label))
+  ): LegendContext[Int] = single(element, Text(label))
 }

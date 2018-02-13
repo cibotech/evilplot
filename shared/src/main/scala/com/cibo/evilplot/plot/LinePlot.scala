@@ -17,7 +17,7 @@ object LinePlot {
     pointRenderer: PointRenderer = PointRenderer.empty(),
     pathRenderer: PathRenderer = PathRenderer.default(),
     boundBuffer: Double = XyPlot.defaultBoundBuffer
-  ): Plot[Seq[Point]] = {
+  ): Plot = {
     XyPlot(data, pointRenderer, pathRenderer, boundBuffer)
   }
 
@@ -32,7 +32,7 @@ object LinePlot {
     color: Color,
     strokeWidth: Double = PathRenderer.defaultStrokeWidth,
     boundBuffer: Double = XyPlot.defaultBoundBuffer
-  ): Plot[Seq[Point]] = {
+  ): Plot = {
     val pointRenderer = PointRenderer.empty()
     val pathRenderer = PathRenderer.named(name, color, strokeWidth)
     XyPlot(data, pointRenderer, pathRenderer, boundBuffer)

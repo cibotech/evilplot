@@ -2,19 +2,16 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.Overlay.OverlayData
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object Overlay {
 
-  type OverlayData = Seq[Plot[_]]
-
   // Update subplots to have the specified bounds (if not already fixed).
   private def updateSubplotBounds(
-    subplots: Seq[Plot[_]],
+    subplots: Seq[Plot],
     xbounds: Bounds,
     ybounds: Bounds
-  ): Seq[Plot[_]] = {
+  ): Seq[Plot] = {
     subplots.map { subplot =>
       (subplot.xfixed, subplot.yfixed) match {
         case (true, true)   => subplot
@@ -26,17 +23,17 @@ object Overlay {
   }
 
   // Update subplots to have the same transform (if not fixed).
-  private def getTransformedSubplots(plot: Plot[OverlayData]): OverlayData = {
-    plot.data.map { subplot =>
+  private def getTransformedSubplots(plot: Plot, subplots: Seq[Plot]): Seq[Plot] = {
+    subplots.map { subplot =>
       val withX = if (subplot.xfixed) subplot else subplot.setXTransform(plot.xtransform, fixed = false)
       if (withX.yfixed) withX else withX.setYTransform(plot.ytransform, fixed = false)
     }
   }
 
-  private case object OverlayPlotRenderer extends PlotRenderer[OverlayData] {
-    def render(plot: Plot[OverlayData], plotExtent: Extent): Drawable = {
+  private case class OverlayPlotRenderer(subplots: Seq[Plot]) extends PlotRenderer {
+    def render(plot: Plot, plotExtent: Extent): Drawable = {
       val updatedPlots = updateSubplotBounds(
-        subplots = Plot.padPlots(Seq(getTransformedSubplots(plot)), plotExtent, 0, 0).head,
+        subplots = Plot.padPlots(Seq(getTransformedSubplots(plot, subplots)), plotExtent, 0, 0).head,
         xbounds = plot.xbounds,
         ybounds = plot.ybounds
       )
@@ -44,7 +41,7 @@ object Overlay {
     }
   }
 
-  def apply(plots: Plot[_]*): Plot[OverlayData] = {
+  def apply(plots: Plot*): Plot = {
     require(plots.nonEmpty, "must have at least one plot for an overlay")
 
     // Update bounds on subplots.
@@ -52,18 +49,17 @@ object Overlay {
     val ybounds = Plot.combineBounds(plots.map(_.ybounds))
     val updatedPlots = updateSubplotBounds(plots, xbounds, ybounds)
 
-    Plot[OverlayData](
-      data = updatedPlots,
+    Plot(
       xbounds = xbounds,
       ybounds = ybounds,
-      renderer = OverlayPlotRenderer,
+      renderer = OverlayPlotRenderer(updatedPlots),
       legendContext = plots.flatMap(_.legendContext)
     )
   }
 }
 
-trait OverlayImplicits[T] {
-  protected val plot: Plot[T]
+trait OverlayImplicits {
+  protected val plot: Plot
 
-  def overlay[U](plot2: Plot[U]): Plot[OverlayData] = Overlay(plot, plot2)
+  def overlay(plot2: Plot): Plot = Overlay(plot, plot2)
 }

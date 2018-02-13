@@ -14,8 +14,8 @@ trait PlotComponent {
   val repeated: Boolean = false
 
   // Get the minimum size of this component.
-  def size[T](plot: Plot[T]): Extent = Extent(0, 0)
+  def size(plot: Plot): Extent = Extent(0, 0)
 
   // Render the component.
-  def render[T](plot: Plot[T], extent: Extent): Drawable
+  def render(plot: Plot, extent: Extent): Drawable
 }

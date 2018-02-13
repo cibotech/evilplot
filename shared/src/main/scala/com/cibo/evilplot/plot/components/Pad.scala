@@ -7,15 +7,15 @@ case class Pad(
   position: Position,
   pad: Double
 ) extends PlotComponent {
-  override def size[T](plot: Plot[T]): Extent = Extent(pad, pad)
-  def render[T](plot: Plot[T], extent: Extent): Drawable = EmptyDrawable(size(plot))
+  override def size(plot: Plot): Extent = Extent(pad, pad)
+  def render(plot: Plot, extent: Extent): Drawable = EmptyDrawable(size(plot))
 }
 
-trait PadImplicits[T] {
-  protected val plot: Plot[T]
+trait PadImplicits {
+  protected val plot: Plot
 
-  def padTop(size: Double): Plot[T] = plot :+ Pad(Position.Top, size)
-  def padBottom(size: Double): Plot[T] = plot :+ Pad(Position.Bottom, size)
-  def padLeft(size: Double): Plot[T] = plot :+ Pad(Position.Left, size)
-  def padRight(size: Double): Plot[T] = plot :+ Pad(Position.Right, size)
+  def padTop(size: Double): Plot = plot :+ Pad(Position.Top, size)
+  def padBottom(size: Double): Plot = plot :+ Pad(Position.Bottom, size)
+  def padLeft(size: Double): Plot = plot :+ Pad(Position.Left, size)
+  def padRight(size: Double): Plot = plot :+ Pad(Position.Right, size)
 }

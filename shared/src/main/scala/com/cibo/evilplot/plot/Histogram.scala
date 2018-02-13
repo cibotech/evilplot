@@ -22,12 +22,13 @@ object Histogram {
   }
 
   case class HistogramRenderer(
+    data: Seq[Double],
     barRenderer: BarRenderer,
     binCount: Int,
     spacing: Double,
     boundBuffer: Double
-  ) extends PlotRenderer[Seq[Double]] {
-    def render(plot: Plot[Seq[Double]], plotExtent: Extent): Drawable = {
+  ) extends PlotRenderer {
+    def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 
@@ -38,7 +39,7 @@ object Histogram {
       // Scaling the bars would show the correct histogram as long as no axis is displayed.  However, if
       // an axis is display, we would end up showing the wrong values. Thus, we clip if the y boundary is
       // fixed, otherwise we scale to make it look pretty.
-      val points = createBins(plot.data, plot.xbounds, binCount)
+      val points = createBins(data, plot.xbounds, binCount)
       val maxY = points.maxBy(_.y).y * (1.0 + boundBuffer)
       val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
 
@@ -50,7 +51,7 @@ object Histogram {
         val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
         val bar = Bar(clippedY)
         val barHeight = plotExtent.height - y
-        barRenderer.render(Extent(barWidth, barHeight), Seq.empty, bar).translate(x = x, y = y)
+        barRenderer.render(plot, Extent(barWidth, barHeight), bar).translate(x = x, y = y)
       }.group
     }
   }
@@ -69,16 +70,15 @@ object Histogram {
     barRenderer: BarRenderer = BarRenderer.default(),
     spacing: Double = BarChart.defaultSpacing,
     boundBuffer: Double = BarChart.defaultBoundBuffer
-  ): Plot[Seq[Double]] = {
+  ): Plot = {
     require(bins > 0, "must have at least one bin")
     val xbounds = Bounds(values.min, values.max)
     val maxY = createBins(values, xbounds, bins).maxBy(_.y).y
     val binWidth = xbounds.range / bins
-    Plot[Seq[Double]](
-      data = values,
+    Plot(
       xbounds = xbounds,
       ybounds = Bounds(0, maxY * (1.0 + boundBuffer)),
-      renderer = HistogramRenderer(barRenderer, bins, spacing, boundBuffer)
+      renderer = HistogramRenderer(values, barRenderer, bins, spacing, boundBuffer)
     )
   }
 }

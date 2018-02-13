@@ -6,7 +6,6 @@ import com.cibo.evilplot.plot.components.{PlotComponent, Position}
 import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotElementRenderer, PlotRenderer}
 
 /** A plot.
-  * @param data The data used to render the plot.
   * @param xbounds The x-axis bounds of the plot.
   * @param ybounds The y-axis bounds of the plot.
   * @param renderer The PlotRenderer used to render the plot area.
@@ -17,14 +16,12 @@ import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotElementRenderer,
   * @param yfixed Set if the Y bounds are fixed by an axis/grid/facet/etc. or the user.
   * @param components Plot components (axes, labels, etc.).
   * @param legendContext Contexts used to display a legend for this plot.
-  * @tparam T The top of the plot data.
   */
-final case class Plot[T] private[evilplot] (
-  data: T,
+final case class Plot private[evilplot] (
   xbounds: Bounds,
   ybounds: Bounds,
-  private[plot] val renderer: PlotRenderer[T],
-  private[plot] val componentRenderer: ComponentRenderer[T] = ComponentRenderer.Default[T](),
+  private[plot] val renderer: PlotRenderer,
+  private[plot] val componentRenderer: ComponentRenderer = ComponentRenderer.Default(),
   private[plot] val xtransform: Plot.Transformer = Plot.DefaultXTransformer(),
   private[plot] val ytransform: Plot.Transformer = Plot.DefaultYTransformer(),
   private[plot] val xfixed: Boolean = false,
@@ -34,18 +31,18 @@ final case class Plot[T] private[evilplot] (
 ) {
   private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 
-  private[plot] def :+(component: PlotComponent): Plot[T] = copy(components = components :+ component)
-  private[plot] def +:(component: PlotComponent): Plot[T] = copy(components = component +: components)
+  private[plot] def :+(component: PlotComponent): Plot = copy(components = components :+ component)
+  private[plot] def +:(component: PlotComponent): Plot = copy(components = component +: components)
 
-  def xbounds(newBounds: Bounds): Plot[T] = copy(xbounds = newBounds, xfixed = true)
-  def xbounds(lower: Double, upper: Double): Plot[T] = xbounds(Bounds(lower, upper))
-  def ybounds(newBounds: Bounds): Plot[T] = copy(ybounds = newBounds, yfixed = true)
-  def ybounds(lower: Double, upper: Double): Plot[T] = ybounds(Bounds(lower, upper))
+  def xbounds(newBounds: Bounds): Plot = copy(xbounds = newBounds, xfixed = true)
+  def xbounds(lower: Double, upper: Double): Plot = xbounds(Bounds(lower, upper))
+  def ybounds(newBounds: Bounds): Plot = copy(ybounds = newBounds, yfixed = true)
+  def ybounds(lower: Double, upper: Double): Plot = ybounds(Bounds(lower, upper))
 
-  private[plot] def updateBounds(xb: Bounds, yb: Bounds): Plot[T] = copy(xbounds = xb, ybounds = yb)
+  private[plot] def updateBounds(xb: Bounds, yb: Bounds): Plot = copy(xbounds = xb, ybounds = yb)
 
-  def setXTransform(xt: Plot.Transformer, fixed: Boolean): Plot[T] = copy(xtransform = xt, xfixed = fixed)
-  def setYTransform(yt: Plot.Transformer, fixed: Boolean): Plot[T] = copy(ytransform = yt, yfixed = fixed)
+  def setXTransform(xt: Plot.Transformer, fixed: Boolean): Plot = copy(xtransform = xt, xfixed = fixed)
+  def setYTransform(yt: Plot.Transformer, fixed: Boolean): Plot = copy(ytransform = yt, yfixed = fixed)
 
   lazy val topComponents: Seq[PlotComponent] = components.filter(_.position == Position.Top)
   lazy val bottomComponents: Seq[PlotComponent] = components.filter(_.position == Position.Bottom)
@@ -99,16 +96,16 @@ object Plot {
   val defaultExtent: Extent = Extent(800, 600)
 
   private[plot] trait Transformer {
-    def apply(plot: Plot[_], plotExtent: Extent): Double => Double
+    def apply(plot: Plot, plotExtent: Extent): Double => Double
   }
 
   private[plot] case class DefaultXTransformer() extends Transformer {
-    def apply(plot: Plot[_], plotExtent: Extent): Double => Double =
+    def apply(plot: Plot, plotExtent: Extent): Double => Double =
       (x: Double) => (x - plot.xbounds.min) * plotExtent.width / plot.xbounds.range
   }
 
   private[plot] case class DefaultYTransformer() extends Transformer {
-    def apply(plot: Plot[_], plotExtent: Extent): Double => Double =
+    def apply(plot: Plot, plotExtent: Extent): Double => Double =
       (y: Double) => plotExtent.height - (y - plot.ybounds.min) * plotExtent.height / plot.ybounds.range
   }
 
@@ -127,11 +124,11 @@ object Plot {
 
   // Force all plots to have the same size plot area.
   private[plot] def padPlots(
-    plots: Seq[Seq[Plot[_]]],
+    plots: Seq[Seq[Plot]],
     extent: Extent,
     padRight: Double,
     padBottom: Double
-  ): Seq[Seq[Plot[_]]] = {
+  ): Seq[Seq[Plot]] = {
 
     // First we get the offsets of all subplots.  By selecting the largest
     // offset, we can pad all plots to start at the same location.
