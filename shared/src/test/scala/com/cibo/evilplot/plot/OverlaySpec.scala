@@ -34,16 +34,15 @@ class OverlaySpec extends FunSpec with Matchers {
       var xbounds: Bounds = Bounds(0, 0)
       var ybounds: Bounds = Bounds(0, 0)
 
-      val testRenderer = new PlotRenderer[Int] {
-        def render(plot: Plot[Int], plotExtent: Extent): Drawable = {
+      val testRenderer = new PlotRenderer {
+        def render(plot: Plot, plotExtent: Extent): Drawable = {
           xbounds = plot.xbounds
           ybounds = plot.ybounds
           EmptyDrawable(plotExtent)
         }
       }
 
-      val inner = new Plot[Int](
-        data = 1,
+      val inner = new Plot(
         xbounds = Bounds(1, 2),
         ybounds = Bounds(3, 4),
         renderer = testRenderer
