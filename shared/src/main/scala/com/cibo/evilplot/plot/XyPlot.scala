@@ -9,7 +9,7 @@ object XyPlot {
   val defaultBoundBuffer: Double = 0.1
 
   private case class XyPlotRenderer(
-    pointRenderer: PointRenderer,
+    pointRenderer: PointRenderer[Seq[Point]],
     pathRenderer: PathRenderer
   ) extends PlotRenderer[Seq[Point]] {
     def render(plot: Plot[Seq[Point]], plotExtent: Extent): Drawable = {
@@ -21,9 +21,9 @@ object XyPlot {
         Point(x, y)
       }
       val points = xformedPoints.zipWithIndex.map { case (point, index) =>
-        pointRenderer.render(plotExtent, plot.data, index).translate(x = point.x, y = point.y)
+        pointRenderer.render(plot, plotExtent, index).translate(x = point.x, y = point.y)
       }.group
-      pathRenderer.render(plotExtent, plot.data, xformedPoints) inFrontOf points
+      pathRenderer.render(plot, plotExtent, xformedPoints) inFrontOf points
     }
   }
 
@@ -37,7 +37,7 @@ object XyPlot {
     */
   def apply(
              data: Seq[Point],
-             pointRenderer: PointRenderer = PointRenderer.default(),
+             pointRenderer: PointRenderer[Seq[Point]] = PointRenderer.default(),
              pathRenderer: PathRenderer = PathRenderer.default(),
              boundBuffer: Double = defaultBoundBuffer
            ): Plot[Seq[Point]] = {

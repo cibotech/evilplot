@@ -3,10 +3,10 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors.{Color, DefaultColors, ScaledColorBar}
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Path, Rect, StrokeStyle, Text}
 import com.cibo.evilplot.numeric.{Bounds, Point, Point3}
-import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
+import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
 trait SurfaceRenderer extends PlotElementRenderer[Seq[Seq[Point3]], Seq[Point3]] {
-  def render(extent: Extent, data: Seq[Seq[Point3]], surface: Seq[Point3]): Drawable
+  def render(plot: Plot[Seq[Seq[Point3]]], extent: Extent, surface: Seq[Point3]): Drawable
 }
 
 object SurfaceRenderer {
@@ -17,7 +17,7 @@ object SurfaceRenderer {
     strokeWidth: Double = defaultStrokeWidth,
     color: Color = DefaultColors.pathColor
   ): SurfaceRenderer = new SurfaceRenderer {
-    def render(extent: Extent, data: Seq[Seq[Point3]], surface: Seq[Point3]): Drawable = {
+    def render(plot: Plot[Seq[Seq[Point3]]], extent: Extent, surface: Seq[Point3]): Drawable = {
       surface.grouped(2).map { seg =>
         StrokeStyle(Path(seg.map(p => Point(p.x, p.y)), strokeWidth), color)
       }.toSeq.group
@@ -50,12 +50,12 @@ object SurfaceRenderer {
       }
     }
 
-    def render(extent: Extent, data: Seq[Seq[Point3]], surface: Seq[Point3]): Drawable = {
-      val surfaceRenderer = getBySafe(data)(_.headOption.map(_.z)).map { bs =>
-        val bar = ScaledColorBar(getColorSeq(data.length), bs.min, bs.max)
+    def render(plot: Plot[Seq[Seq[Point3]]], extent: Extent, surface: Seq[Point3]): Drawable = {
+      val surfaceRenderer = getBySafe(plot.data)(_.headOption.map(_.z)).map { bs =>
+        val bar = ScaledColorBar(getColorSeq(plot.data.length), bs.min, bs.max)
         densityColorContours(strokeWidth, bar)
       }.getOrElse(contours(strokeWidth))
-      surfaceRenderer.render(extent, data, surface)
+      surfaceRenderer.render(plot, extent, surface)
     }
   }
 
@@ -63,9 +63,9 @@ object SurfaceRenderer {
     strokeWidth: Double,
     bar: ScaledColorBar
   ): SurfaceRenderer = new SurfaceRenderer {
-    def render(extent: Extent, data: Seq[Seq[Point3]], points: Seq[Point3]): Drawable = {
+    def render(plot: Plot[Seq[Seq[Point3]]], extent: Extent, points: Seq[Point3]): Drawable = {
       points.headOption.map(p => contours(strokeWidth, bar.getColor(p.z))
-        .render(extent, data, points)
+        .render(plot, extent, points)
       )
       .getOrElse(EmptyDrawable())
     }

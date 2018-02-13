@@ -6,7 +6,7 @@ import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
 object Heatmap {
 
-  private case class HeatmapRenderer(barRenderer: BarRenderer) extends PlotRenderer[Seq[Seq[Bar]]] {
+  private case class HeatmapRenderer(barRenderer: BarRenderer[Seq[Seq[Bar]]]) extends PlotRenderer[Seq[Seq[Bar]]] {
     def render(plot: Plot[Seq[Seq[Bar]]], plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
@@ -19,7 +19,7 @@ object Heatmap {
           val width = xtransformer(xIndex + 1) - x
           val height = ytransformer(yIndex + 1) - y
           val barExtent = Extent(width, height)
-          barRenderer.render(barExtent, row, bar).translate(x, y)
+          barRenderer.render(plot, barExtent, bar).translate(x, y)
         }.group
       }.group
     }
@@ -27,7 +27,7 @@ object Heatmap {
 
   def barHeatmap(
     bars: Seq[Seq[Bar]],
-    mapRenderer: Seq[Seq[Bar]] => BarRenderer = BarRenderer.temperature()
+    mapRenderer: Seq[Seq[Bar]] => BarRenderer[Seq[Seq[Bar]]] = BarRenderer.temperature()
   ): Plot[Seq[Seq[Bar]]] = {
     val barRenderer = mapRenderer(bars)
     val xbounds = Bounds(0, bars.map(_.size).max)
@@ -44,7 +44,7 @@ object Heatmap {
 
   def apply(
     data: Seq[Seq[Double]],
-    mapRenderer: Seq[Seq[Bar]] => BarRenderer = BarRenderer.temperature()
+    mapRenderer: Seq[Seq[Bar]] => BarRenderer[Seq[Seq[Bar]]] = BarRenderer.temperature()
   ): Plot[Seq[Seq[Bar]]] = barHeatmap(data.map(_.map(Bar.apply)), mapRenderer)
 
 }

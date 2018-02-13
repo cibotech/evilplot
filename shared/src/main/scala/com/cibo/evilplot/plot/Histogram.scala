@@ -22,7 +22,7 @@ object Histogram {
   }
 
   case class HistogramRenderer(
-    barRenderer: BarRenderer,
+    barRenderer: BarRenderer[Seq[Double]],
     binCount: Int,
     spacing: Double,
     boundBuffer: Double
@@ -50,7 +50,7 @@ object Histogram {
         val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
         val bar = Bar(clippedY)
         val barHeight = plotExtent.height - y
-        barRenderer.render(Extent(barWidth, barHeight), Seq.empty, bar).translate(x = x, y = y)
+        barRenderer.render(plot, Extent(barWidth, barHeight), bar).translate(x = x, y = y)
       }.group
     }
   }
@@ -66,7 +66,7 @@ object Histogram {
   def apply(
     values: Seq[Double],
     bins: Int = defaultBinCount,
-    barRenderer: BarRenderer = BarRenderer.default(),
+    barRenderer: BarRenderer[Seq[Double]] = BarRenderer.default(),
     spacing: Double = BarChart.defaultSpacing,
     boundBuffer: Double = BarChart.defaultBoundBuffer
   ): Plot[Seq[Double]] = {

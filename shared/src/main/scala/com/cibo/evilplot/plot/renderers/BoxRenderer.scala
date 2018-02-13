@@ -1,18 +1,24 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors.{Color, DefaultColors}
-import com.cibo.evilplot.geometry.{Align, BorderRect, Drawable, Extent, Line, Rect, StrokeStyle}
+import com.cibo.evilplot.geometry.{Align, BorderRect, Drawable, Extent, Line, StrokeStyle}
 import com.cibo.evilplot.numeric.BoxPlotSummaryStatistics
+import com.cibo.evilplot.plot.Plot
 
-trait BoxRenderer extends {
-  def render(summary: BoxPlotSummaryStatistics, extent: Extent, index: Int): Drawable
+trait BoxRenderer[T] extends PlotElementRenderer[T, BoxPlotSummaryStatistics] {
+  def render(plot: Plot[T], extent: Extent, summary: BoxPlotSummaryStatistics): Drawable
 }
 
 object BoxRenderer {
   private val defaultStrokeWidth: Double = 2
   def default(strokeWidth: Double = defaultStrokeWidth, pathColor: Color = DefaultColors.pathColor,
-              fillColor: Color = DefaultColors.fillColor): BoxRenderer = new BoxRenderer {
-    def render(summary: BoxPlotSummaryStatistics, extent: Extent, index: Int): Drawable = {
+              fillColor: Color = DefaultColors.fillColor
+  ): BoxRenderer[Seq[BoxPlotSummaryStatistics]] = new BoxRenderer[Seq[BoxPlotSummaryStatistics]] {
+    def render(
+      plot: Plot[Seq[BoxPlotSummaryStatistics]],
+      extent: Extent,
+      summary: BoxPlotSummaryStatistics
+    ): Drawable = {
       val scale = extent.height / (summary.upperWhisker - summary.lowerWhisker)
       val topWhisker = summary.upperWhisker - summary.upperQuantile
       val uppperToMiddle = summary.upperQuantile - summary.middleQuantile

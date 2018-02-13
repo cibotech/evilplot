@@ -22,7 +22,7 @@ object SurfacePlot {
         val transformedLevel = level.withFilter { p =>
           plot.xbounds.isInBounds(p.x) && plot.ybounds.isInBounds(p.y)
         }.map { p => Point3(xtransformer(p.x), ytransformer(p.y), p.z) }
-        surfaceRenderer.render(plotExtent, plot.data, transformedLevel)
+        surfaceRenderer.render(plot, plotExtent, transformedLevel)
       }.group
     }
   }

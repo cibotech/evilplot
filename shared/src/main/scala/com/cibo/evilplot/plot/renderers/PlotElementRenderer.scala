@@ -12,5 +12,5 @@ trait PlotElementRenderer[T, C] {
   def legendContext(data: T): Option[LegendContext[C]] = None
 
   /** Render a category within the extent. */
-  def render(extent: Extent, data: T, context: C): Drawable
+  def render(plot: Plot[T], extent: Extent, context: C): Drawable
 }

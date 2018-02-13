@@ -20,7 +20,7 @@ object BarChart {
   val defaultGroupSpacing: Double = 4.0
 
   case class BarChartRenderer(
-    barRenderer: BarRenderer,
+    barRenderer: BarRenderer[Seq[Bar]],
     spacing: Double,
     groupSpacing: Double
   ) extends PlotRenderer[Seq[Bar]] {
@@ -57,7 +57,7 @@ object BarChart {
             groupOffset + spacing
           }
 
-        (bar.group, d beside barRenderer.render(Extent(barWidth, barHeight), plot.data, bar)
+        (bar.group, d beside barRenderer.render(plot, Extent(barWidth, barHeight), bar)
           .translate(y = transY, x = x))
       }._2
     }
@@ -65,7 +65,7 @@ object BarChart {
 
   def apply(
     bars: Seq[Bar],
-    barRenderer: BarRenderer = BarRenderer.default(),
+    barRenderer: BarRenderer[Seq[Bar]] = BarRenderer.default(),
     spacing: Double = defaultSpacing,
     groupSpacing: Double = defaultGroupSpacing,
     boundBuffer: Double = defaultBoundBuffer
