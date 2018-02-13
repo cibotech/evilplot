@@ -1,8 +1,7 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Extent, _}
+import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plot.XyPlot.defaultBoundBuffer
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 
 object XyPlot {
@@ -45,43 +44,8 @@ object XyPlot {
     require(boundBuffer >= 0.0)
     val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), boundBuffer)
     val ybounds = Plot.expandBounds(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y), boundBuffer)
-    val legend = pointRenderer.legendContext(data).orElse(pathRenderer.legendContext(data))
-    Plot[Seq[Point]](data, xbounds, ybounds, XyPlotRenderer(pointRenderer, pathRenderer), legendContext = legend)
-  }
-}
-
-object LinePlot {
-  /** Create a line plot from some data.  Convenience method on top of XyPlot
-    *
-    * @param data          The points to plot.
-    * @param pointRenderer A function to create a Drawable for each point to plot.
-    * @param pathRenderer A function to create a Drawable for all the points (such as a path)
-    * @param boundBuffer   Extra padding to add to bounds as a fraction.
-    * @return A Plot representing a scatter plot.
-    */
-  def apply(
-             data: Seq[Point],
-             pointRenderer: PointRenderer = PointRenderer.empty(),
-             pathRenderer: PathRenderer = PathRenderer.default(),
-             boundBuffer: Double = defaultBoundBuffer
-           ): Plot[Seq[Point]] = {
-    XyPlot(data, pointRenderer, pathRenderer, boundBuffer)
-  }
-}
-
-object ScatterPlot {
-  /** Create a scatter plot from some data.
-    * @param data The points to plot.
-    * @param pointRenderer A function to create a Drawable for each point to plot.
-    * @param boundBuffer Extra padding to add to bounds as a fraction.
-    * @return A Plot representing a scatter plot.
-    */
-  def apply(
-             data: Seq[Point],
-             pointRenderer: PointRenderer = PointRenderer.default(),
-             boundBuffer: Double = XyPlot.defaultBoundBuffer
-           ): Plot[Seq[Point]] = {
-    XyPlot(data, pointRenderer, pathRenderer = PathRenderer.empty(), boundBuffer)
+    val legends = pointRenderer.legendContext(data).toSeq ++ pathRenderer.legendContext(data).toSeq
+    Plot[Seq[Point]](data, xbounds, ybounds, XyPlotRenderer(pointRenderer, pathRenderer), legendContext = legends)
   }
 }
 

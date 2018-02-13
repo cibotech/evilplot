@@ -16,7 +16,7 @@ import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotElementRenderer,
   * @param xfixed Set if the X bounds are fixed by an axis/grid/facet/etc. or the user.
   * @param yfixed Set if the Y bounds are fixed by an axis/grid/facet/etc. or the user.
   * @param components Plot components (axes, labels, etc.).
-  * @param legendContext Context used to display a legend for this plot.
+  * @param legendContext Contexts used to display a legend for this plot.
   * @tparam T The top of the plot data.
   */
 final case class Plot[T] private[evilplot] (
@@ -30,7 +30,7 @@ final case class Plot[T] private[evilplot] (
   private[plot] val xfixed: Boolean = false,
   private[plot] val yfixed: Boolean = false,
   private[plot] val components: Seq[PlotComponent] = Seq.empty,
-  private[plot] val legendContext: Option[LegendContext[_]] = None
+  private[plot] val legendContext: Seq[LegendContext[_]] = Seq.empty
 ) {
   private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 

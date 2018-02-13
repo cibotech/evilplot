@@ -57,7 +57,7 @@ object Overlay {
       xbounds = xbounds,
       ybounds = ybounds,
       renderer = OverlayPlotRenderer,
-      legendContext = plots.flatMap(_.legendContext).headOption
+      legendContext = plots.flatMap(_.legendContext)
     )
   }
 }

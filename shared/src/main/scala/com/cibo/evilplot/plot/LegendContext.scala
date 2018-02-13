@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.Drawable
+import com.cibo.evilplot.geometry.{Drawable, Text}
 import com.cibo.evilplot.plot.renderers.PlotElementRenderer
 
 sealed trait LegendStyle
@@ -24,4 +24,23 @@ case class LegendContext[C](
   defaultStyle: LegendStyle
 ) {
   def labels: Seq[Drawable] = levels.map(labelFunction)
+}
+
+object LegendContext {
+  def single[C](
+    value: C,
+    element: Drawable,
+    label: Drawable
+  ): LegendContext[C] = LegendContext(
+    levels = Seq(value),
+    elementFunction = (c: C) => element,
+    labelFunction = (c: C) => label,
+    defaultStyle = LegendStyle.Categorical
+  )
+
+  def single[C](
+    value: C,
+    element: Drawable,
+    label: String
+  ): LegendContext[C] = single(value, element, Text(label))
 }

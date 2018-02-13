@@ -7,25 +7,28 @@ import com.cibo.evilplot.plot.{LegendContext, Plot}
 case class Legend[T](
   position: Position,
   data: T,
-  context: LegendContext[_],
+  contexts: Seq[LegendContext[_]],
   legendRenderer: LegendRenderer,
   x: Double,
   y: Double
 ) extends PlotComponent {
 
-  private lazy val drawable: Drawable = legendRenderer.render(data, context)
+  private lazy val drawable: Drawable = {
+    val filteredContexts = contexts.filter(_.levels.nonEmpty)
+    if (filteredContexts.nonEmpty) {
+      filteredContexts.map { ctx =>
+        legendRenderer.render(data, ctx)
+      }.reduce(legendRenderer.reduction)
+    } else EmptyDrawable()
+  }
 
   override def size[X](plot: Plot[X]): Extent = drawable.extent
 
   def render[X](plot: Plot[X], extent: Extent): Drawable = {
-    if (context.levels.nonEmpty) {
-      drawable.translate(
-        x = (extent.width - drawable.extent.width) * x,
-        y = (extent.height - drawable.extent.height) * y
-      )
-    } else {
-      EmptyDrawable()
-    }
+    drawable.translate(
+      x = (extent.width - drawable.extent.width) * x,
+      y = (extent.height - drawable.extent.height) * y
+    )
   }
 }
 
@@ -37,10 +40,9 @@ trait LegendImplicits[T] {
     renderer: LegendRenderer,
     x: Double,
     y: Double
-  ): Plot[T] = plot.legendContext match {
-    case Some(context) => plot :+ Legend(position, plot.data, context, renderer, x, y)
-    case None          => plot
-  }
+  ): Plot[T] = if (plot.legendContext.nonEmpty) {
+    plot :+ Legend(position, plot.data, plot.legendContext, renderer, x, y)
+  } else plot
 
   /** Place a legend on the right side of the plot. */
   def rightLegend(
@@ -78,8 +80,8 @@ trait LegendImplicits[T] {
   /** Get the legend as a drawable. */
   def renderLegend(
     renderer: LegendRenderer = LegendRenderer.vertical()
-  ): Option[Drawable] = plot.legendContext.map { ctx =>
-    val legend = Legend(Position.Right, plot.data, ctx, renderer, 0, 0)
-    legend.render(plot, legend.size(plot))
-  }
+  ): Option[Drawable] = if (plot.legendContext.nonEmpty) {
+    val legend = Legend(Position.Right, plot.data, plot.legendContext, renderer, 0, 0)
+    Some(legend.render(plot, legend.size(plot)))
+  } else None
 }

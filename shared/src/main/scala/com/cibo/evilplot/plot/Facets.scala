@@ -217,7 +217,7 @@ object Facets {
       ybounds = Plot.combineBounds(rowYBounds),
       renderer = FacetedPlotRenderer,
       componentRenderer = FacetedComponentRenderer,
-      legendContext = plots.flatten.flatMap(_.legendContext).headOption
+      legendContext = plots.flatten.flatMap(_.legendContext)
     )
   }
 }
