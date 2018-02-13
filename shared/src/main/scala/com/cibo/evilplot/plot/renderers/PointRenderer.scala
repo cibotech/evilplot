@@ -22,11 +22,16 @@ object PointRenderer {
   /** The default point renderer to render a disc.
     * @param size  The size of the point.
     * @param color The color of the point.
+    * @param name An optional name to be shown in a legend.
     */
   def default(
     size: Double = defaultPointSize,
-    color: Color = DefaultColors.barColor
+    color: Color = DefaultColors.barColor,
+    name: Option[String] = None
   ): PointRenderer = new PointRenderer {
+    override def legendContext(data: Seq[Point]): Option[LegendContext[Int]] = name.map { n =>
+      LegendContext.single(0, Disc(size) filled color, n)
+    }
     def render(extent: Extent, data: Seq[Point], index: Int): Drawable = Disc(size) filled color
   }
 
