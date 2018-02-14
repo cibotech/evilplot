@@ -2,8 +2,8 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plot.components.{PlotComponent, Position}
-import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotElementRenderer, PlotRenderer}
+import com.cibo.evilplot.plot.components.{FacetedPlotComponent, Position}
+import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
 
 /** A plot.
   * @param xbounds The x-axis bounds of the plot.
@@ -26,13 +26,13 @@ final case class Plot private[evilplot] (
   private[plot] val ytransform: Plot.Transformer = Plot.DefaultYTransformer(),
   private[plot] val xfixed: Boolean = false,
   private[plot] val yfixed: Boolean = false,
-  private[plot] val components: Seq[PlotComponent] = Seq.empty,
+  private[plot] val components: Seq[FacetedPlotComponent] = Seq.empty,
   private[plot] val legendContext: Seq[LegendContext] = Seq.empty
 ) {
   private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 
-  private[plot] def :+(component: PlotComponent): Plot = copy(components = components :+ component)
-  private[plot] def +:(component: PlotComponent): Plot = copy(components = component +: components)
+  private[plot] def :+(component: FacetedPlotComponent): Plot = copy(components = components :+ component)
+  private[plot] def +:(component: FacetedPlotComponent): Plot = copy(components = component +: components)
 
   def xbounds(newBounds: Bounds): Plot = copy(xbounds = newBounds, xfixed = true)
   def xbounds(lower: Double, upper: Double): Plot = xbounds(Bounds(lower, upper))
@@ -44,12 +44,12 @@ final case class Plot private[evilplot] (
   def setXTransform(xt: Plot.Transformer, fixed: Boolean): Plot = copy(xtransform = xt, xfixed = fixed)
   def setYTransform(yt: Plot.Transformer, fixed: Boolean): Plot = copy(ytransform = yt, yfixed = fixed)
 
-  lazy val topComponents: Seq[PlotComponent] = components.filter(_.position == Position.Top)
-  lazy val bottomComponents: Seq[PlotComponent] = components.filter(_.position == Position.Bottom)
-  lazy val leftComponents: Seq[PlotComponent] = components.filter(_.position == Position.Left)
-  lazy val rightComponents: Seq[PlotComponent] = components.filter(_.position == Position.Right)
-  lazy val backgroundComponents: Seq[PlotComponent] = components.filter(_.position == Position.Background)
-  lazy val overlayComponents: Seq[PlotComponent] = components.filter(_.position == Position.Overlay)
+  lazy val topComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Top)
+  lazy val bottomComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Bottom)
+  lazy val leftComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Left)
+  lazy val rightComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Right)
+  lazy val backgroundComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Background)
+  lazy val overlayComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Overlay)
 
   // Get the offset of the plot area.
   private[plot] lazy val plotOffset: Point = {

@@ -11,6 +11,7 @@ package object plot {
     with AnnotationImplicits
     with BackgroundImplicits
     with BorderPlotImplicits
+    with FacetLabelImplicits
     with LabelImplicits
     with LegendImplicits
     with PadImplicits

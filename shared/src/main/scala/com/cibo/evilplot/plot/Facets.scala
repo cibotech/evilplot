@@ -56,17 +56,19 @@ object Facets {
       plot.topComponents.reverse.foldLeft(empty) { (d, c) =>
         if (c.repeated) {
           subplots.head.zipWithIndex.map { case (subplot, i) =>
-            val pextent = subplot.plotExtent(innerExtent)
+            val minExtent = c.size(subplot)
+            val cextent = subplot.plotExtent(innerExtent).copy(height = minExtent.height)
             val x = i * innerExtent.width + subplot.plotOffset.x + plot.plotOffset.x
             val y = d.extent.height
-            c.render(subplot, pextent).translate(x = x, y = y)
-          }.group
+            c.render(subplot, cextent, 0, i).translate(x = x, y = y)
+          }.group behind d
         } else {
-          val pextent = plot.plotExtent(extent)
+          val minExtent = c.size(plot)
+          val cextent = plot.plotExtent(extent).copy(height = minExtent.height)
           val x = plot.plotOffset.x
           val y = d.extent.height
-          c.render(plot, pextent).translate(x = x, y = y)
-        } behind d
+          c.render(plot, cextent, 0, 0).translate(x = x, y = y) behind d
+        }
       }
     }
 
@@ -77,19 +79,22 @@ object Facets {
       innerExtent: Extent
     ): Drawable = {
       val startY = extent.height
+      val bottomRowIndex = subplots.size - 1
       plot.bottomComponents.reverse.foldLeft((startY, empty)) { case ((prevY, d), c) =>
         if (c.repeated) {
           val s = subplots.last.zipWithIndex.map { case (subplot, i) =>
-            val pextent = subplot.plotExtent(innerExtent)
-            val rendered = c.render(subplot, pextent)
+            val minExtent = c.size(subplot)
+            val cextent = subplot.plotExtent(innerExtent).copy(height = minExtent.height)
+            val rendered = c.render(subplot, cextent, bottomRowIndex, i)
             val x = i * innerExtent.width + subplot.plotOffset.x + plot.plotOffset.x
             val y = prevY - rendered.extent.height
             (y, rendered.translate(x = x, y = y))
           }
           (s.maxBy(_._1)._1, s.map(_._2).group behind d)
         } else {
-          val pextent = plot.plotExtent(extent)
-          val rendered = c.render(plot, pextent)
+          val minExtent = c.size(plot)
+          val cextent = plot.plotExtent(extent).copy(height = minExtent.height)
+          val rendered = c.render(plot, cextent, 0, 0)
           val x = plot.plotOffset.x
           val y = prevY - rendered.extent.height
           (y, rendered.translate(x = x, y = y) behind d)
@@ -107,15 +112,17 @@ object Facets {
       plot.leftComponents.foldLeft(empty) { (d, c) =>
         if (c.repeated) {
           leftPlots.zipWithIndex.map { case (subplot, i) =>
-            val pextent = subplot.plotExtent(innerExtent)
+            val minExtent = c.size(subplot)
+            val cextent = subplot.plotExtent(innerExtent).copy(width = minExtent.width)
             val y = i * innerExtent.height + subplot.plotOffset.y + plot.plotOffset.y
-            c.render(subplot, pextent).translate(y = y)
-          }.group
+            c.render(subplot, cextent, i, 0).translate(y = y)
+          }.group beside d
         } else {
-          val pextent = plot.plotExtent(extent)
+          val minExtent = c.size(plot)
+          val cextent = plot.plotExtent(extent).copy(width = minExtent.width)
           val y = plot.plotOffset.y
-          c.render(plot, pextent).translate(y = y)
-        } beside d
+          c.render(plot, cextent, 0, 0).translate(y = y) beside d
+        }
       }
     }
 
@@ -130,16 +137,18 @@ object Facets {
       plot.rightComponents.reverse.foldLeft((startX, empty)) { case ((prevX, d), c) =>
         if (c.repeated) {
           val s = rightPlots.zipWithIndex.map { case (subplot, i) =>
-            val pextent = subplot.plotExtent(innerExtent)
-            val rendered = c.render(subplot, pextent)
+            val minExtent = c.size(subplot)
+            val cextent = subplot.plotExtent(innerExtent).copy(width = minExtent.width)
+            val rendered = c.render(subplot, cextent, i, subplots(i).size - 1)
             val x = prevX - rendered.extent.width
             val y = i * innerExtent.height + subplot.plotOffset.y + plot.plotOffset.y
-            (y, rendered.translate(x, y))
+            (x, rendered.translate(x, y))
           }
           (s.maxBy(_._1)._1, s.map(_._2).group behind d)
         } else {
-          val pextent = plot.plotExtent(extent)
-          val rendered = c.render(plot, pextent)
+          val minExtent = c.size(plot)
+          val cextent = plot.plotExtent(extent).copy(width = minExtent.width)
+          val rendered = c.render(plot, cextent, 0, 0)
           val x = prevX - rendered.extent.width
           val y = plot.plotOffset.y
           (x, rendered.translate(x = x, y = y) behind d)
@@ -161,12 +170,12 @@ object Facets {
               val pextent = subplot.plotExtent(innerExtent)
               val x = xIndex * innerExtent.width + subplot.plotOffset.x
               val y = yIndex * innerExtent.height + subplot.plotOffset.y
-              c.render(subplot, pextent).translate(x = x, y = y)
+              c.render(subplot, pextent, xIndex, yIndex).translate(x = x, y = y)
             }
           }.group
         } else {
           val pextent = plot.plotExtent(extent)
-          c.render(plot, pextent)
+          c.render(plot, pextent, 0, 0)
         }
       }.group.translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
     }

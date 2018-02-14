@@ -3,19 +3,13 @@ package com.cibo.evilplot.plot.components
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plot.Plot
 
-/** A component that is aligned with the data of a plot. */
-trait PlotComponent {
+/** A component that is aligned with the data of a plot (used when all facets are treated identically). */
+trait PlotComponent extends FacetedPlotComponent {
 
-  // The position of this component.
-  val position: Position
-
-  // Determines if this component is repeated in facets.
-  // For example, axes and backgrounds are repeated.
-  val repeated: Boolean = false
-
-  // Get the minimum size of this component.
-  def size(plot: Plot): Extent = Extent(0, 0)
-
-  // Render the component.
+  // Render the component (assumes all facets are handled the same way).
   def render(plot: Plot, extent: Extent): Drawable
+
+  // Render the component for a particular facet.
+  // This this calls the implementation that ignores facet information.
+  final def render(plot: Plot, extent: Extent, row: Int, column: Int): Drawable = render(plot, extent)
 }
