@@ -26,8 +26,8 @@ object EmptyDrawable {
   implicit val decoder: Decoder[EmptyDrawable] = deriveDecoder[EmptyDrawable]
 }
 
-final case class Line(length: Double, strokeWidth: Double) extends Drawable {
-  lazy val extent = Extent(length, strokeWidth)
+final case class Line(l: Double, w: Double) extends Drawable {
+  lazy val extent = Extent(l, w)
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Line {
@@ -35,9 +35,9 @@ object Line {
   implicit val decoder: Decoder[Line] = deriveDecoder[Line]
 }
 
-final case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
-  private lazy val xS: Seq[Double] = points.map(_.x)
-  private lazy val yS: Seq[Double] = points.map(_.y)
+final case class Path(ps: Seq[Point], w: Double) extends Drawable {
+  private lazy val xS: Seq[Double] = ps.map(_.x)
+  private lazy val yS: Seq[Double] = ps.map(_.y)
   lazy val extent = Extent(xS.max - xS.min, yS.max - yS.min)
   def draw(context: RenderContext): Unit = context.draw(this)
 }
@@ -47,8 +47,8 @@ object Path {
   def apply(segment: Segment, strokeWidth: Double): Path = Path(Seq(segment.a, segment.b), strokeWidth)
 }
 
-final case class Rect(width: Double, height: Double) extends Drawable {
-  lazy val extent: Extent = Extent(width, height)
+final case class Rect(w: Double, h: Double) extends Drawable {
+  lazy val extent: Extent = Extent(w, h)
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Rect {
@@ -59,8 +59,8 @@ object Rect {
   def apply(size: Extent): Rect = Rect(size.width, size.height)
 }
 
-final case class BorderRect(width: Double, height: Double) extends Drawable {
-  lazy val extent: Extent = Extent(width, height)
+final case class BorderRect(w: Double, h: Double) extends Drawable {
+  lazy val extent: Extent = Extent(w, h)
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object BorderRect {
@@ -72,9 +72,9 @@ object BorderRect {
   }
 }
 
-final case class Disc(radius: Double, x: Double = 0, y: Double = 0) extends Drawable {
+final case class Disc(r: Double, x: Double = 0, y: Double = 0) extends Drawable {
   require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
-  lazy val extent = Extent(x + radius, y + radius)
+  lazy val extent = Extent(x + r, y + r)
 
   def draw(context: RenderContext): Unit = context.draw(this)
 }
@@ -85,8 +85,8 @@ object Disc {
   def apply(radius: Double, p: Point): Disc = Disc(radius, p.x, p.y)
 }
 
-final case class Wedge(degrees: Double, radius: Double) extends Drawable {
-  lazy val extent = Extent(2 * radius, 2 * radius)
+final case class Wedge(d: Double, r: Double) extends Drawable {
+  lazy val extent = Extent(2 * r, 2 * r)
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Wedge {
@@ -137,9 +137,9 @@ object Scale {
 }
 
 // Our rotate semantics are, rotate about your centroid, and shift back to all positive coordinates
-final case class Rotate(r: Drawable, degrees: Double) extends Drawable {
+final case class Rotate(r: Drawable, d: Double) extends Drawable {
 
-  lazy val radians: Double = math.toRadians(degrees)
+  lazy val radians: Double = math.toRadians(d)
 
   def originRotate(point: Point): Point = {
     Point(
@@ -186,16 +186,16 @@ object UnsafeRotate {
   implicit val decoder: Decoder[UnsafeRotate] = deriveDecoder[UnsafeRotate]
 }
 
-final case class Group(items: Seq[Drawable]) extends Drawable {
+final case class Group(ds: Seq[Drawable]) extends Drawable {
   lazy val extent: Extent = {
-    if (items.isEmpty) {
+    if (ds.isEmpty) {
       Extent(0, 0)
     } else {
-      Extent(items.map(_.extent.width).max, items.map(_.extent.height).max)
+      Extent(ds.map(_.extent.width).max, ds.map(_.extent.height).max)
     }
   }
 
-  def draw(context: RenderContext): Unit = items.foreach(_.draw(context))
+  def draw(context: RenderContext): Unit = ds.foreach(_.draw(context))
 }
 object Group {
   implicit val encoder: Encoder[Group] = deriveEncoder[Group]
@@ -233,7 +233,7 @@ object StrokeStyle {
   implicit val decoder: Decoder[StrokeStyle] = deriveDecoder[StrokeStyle]
 }
 
-final case class StrokeWeight(r: Drawable, weight: Double) extends Drawable {
+final case class StrokeWeight(r: Drawable, w: Double) extends Drawable {
   lazy val extent: Extent = r.extent
   def draw(context: RenderContext): Unit = context.draw(this)
 }
@@ -243,7 +243,7 @@ object StrokeWeight {
 }
 
 final case class Text(
-  msg: String,
+  s: String,
   size: Double = Text.defaultSize,
   extentOpt: Option[Extent] = None
 ) extends Drawable {

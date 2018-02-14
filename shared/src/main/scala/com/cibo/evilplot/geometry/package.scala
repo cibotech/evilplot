@@ -37,7 +37,7 @@ package object geometry {
 
     def colored(color: Color): Drawable = StrokeStyle(r, fill = color)
     def filled(color: Color): Drawable = Style(r, fill = color)
-    def weighted(weight: Double): Drawable = StrokeWeight(r, weight = weight)
+    def weighted(weight: Double): Drawable = StrokeWeight(r, w = weight)
 
     def transX(nudge: Double): Drawable = translate(x = nudge)
     def transY(nudge: Double): Drawable = translate(y = nudge)
