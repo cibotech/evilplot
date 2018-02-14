@@ -56,7 +56,7 @@ object HTMLNamedColors {
    val gold: Color = HSL(240, 100, 99)
    val goldenrod: Color = HSL(51, 100, 50)
    val gray: Color = HSL(43, 74, 49)
-   val green: Color = HSL(0, 0, 50)
+   val green: Color = HSL(120, 100, 25)
    val greenYellow: Color = HSL(120, 100, 25)
    val grey: Color = HSL(84, 100, 59)
    val honeydew: Color = HSL(120, 100, 97)
