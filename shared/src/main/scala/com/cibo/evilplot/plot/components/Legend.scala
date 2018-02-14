@@ -6,14 +6,14 @@ import com.cibo.evilplot.plot.{LegendContext, Plot}
 
 case class Legend(
   position: Position,
-  contexts: Seq[LegendContext[_]],
+  contexts: Seq[LegendContext],
   legendRenderer: LegendRenderer,
   x: Double,
   y: Double
 ) extends PlotComponent {
 
   private lazy val drawable: Drawable = {
-    val filteredContexts = contexts.filter(_.levels.nonEmpty)
+    val filteredContexts = contexts.filter(_.elements.nonEmpty)
     if (filteredContexts.nonEmpty) {
       filteredContexts.map { ctx =>
         legendRenderer.render(ctx)

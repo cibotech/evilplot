@@ -36,15 +36,14 @@ object SurfaceRenderer {
       Bounds.get(mapped)
     }
 
-    override def legendContext: Option[LegendContext[Seq[Point3]]] = {
+    override def legendContext: Option[LegendContext] = {
       val colors = getColorSeq(points.length)
 
       getBySafe(points)(_.headOption.map(_.z)).map { bs =>
         val bar = ScaledColorBar(colors, bs.min, bs.max)
-        LegendContext[Seq[Point3]](
-          levels = (0 until bar.nColors).map { c => Seq(Point3(0, 0, bar.colorValue(c))) },
-          elementFunction = (c: Seq[Point3]) => Rect(1, 1).filled(bar.getColor(c.head.z)),
-          labelFunction = (c: Seq[Point3]) => Text(math.round(c.head.z).toString),
+        LegendContext(
+          elements = (0 until bar.nColors).map { c => Rect(1, 1).filled(bar.getColor(c)) },
+          labels = (0 until bar.nColors).map { c => Text(math.round(bar.colorValue(c)).toString) },
           defaultStyle = LegendStyle.Gradient
         )
       }

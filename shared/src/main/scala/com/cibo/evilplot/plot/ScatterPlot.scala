@@ -16,7 +16,7 @@ object ScatterPlot {
     pointRenderer: PointRenderer = PointRenderer.default(),
     boundBuffer: Double = XyPlot.defaultBoundBuffer
   ): Plot = {
-    XyPlot(data, pointRenderer, pathRenderer = PathRenderer.empty(), boundBuffer)
+    XyPlot(data, pointRenderer, pathRenderer = PathRenderer.empty(), boundBuffer, boundBuffer)
   }
 
   /** Create a scatter plot with the specified name and color.
@@ -35,7 +35,7 @@ object ScatterPlot {
   ): Plot = {
     val pointRenderer = PointRenderer.default(pointSize, color, Some(name))
     val pathRenderer = PathRenderer.empty()
-    XyPlot(data, pointRenderer, pathRenderer, boundBuffer)
+    XyPlot(data, pointRenderer, pathRenderer, boundBuffer, boundBuffer)
   }
 }
 

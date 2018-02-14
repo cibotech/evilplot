@@ -14,8 +14,8 @@ case class Pad(
 trait PadImplicits {
   protected val plot: Plot
 
-  def padTop(size: Double): Plot = plot :+ Pad(Position.Top, size)
-  def padBottom(size: Double): Plot = plot :+ Pad(Position.Bottom, size)
-  def padLeft(size: Double): Plot = plot :+ Pad(Position.Left, size)
-  def padRight(size: Double): Plot = plot :+ Pad(Position.Right, size)
+  def padTop(size: Double): Plot = if (size > 0) plot :+ Pad(Position.Top, size) else plot
+  def padBottom(size: Double): Plot = if (size > 0) plot :+ Pad(Position.Bottom, size) else plot
+  def padLeft(size: Double): Plot = if (size > 0) plot :+ Pad(Position.Left, size) else plot
+  def padRight(size: Double): Plot = if (size > 0) plot :+ Pad(Position.Right, size) else plot
 }

@@ -28,7 +28,6 @@ object BarChart {
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       val ytransformer = plot.ytransform(plot, plotExtent)
 
-
       val barCount = data.size
 
       // Space used for bars. Space between each bar and half space at each left and right.

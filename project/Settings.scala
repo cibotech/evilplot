@@ -24,7 +24,7 @@ object Settings {
 
   /** Declare global dependency versions here to avoid mismatches in multi part dependencies */
   object versions { //scalastyle:ignore
-    val crossScalaVersions = Seq("2.11.11", "2.12.4")
+    val crossScalaVersions = Seq("2.12.4")
     val scalaDom = "0.9.3"
     val scalaTest = "3.0.1"
     val scalactic = "3.0.1"

@@ -11,34 +11,26 @@ object LegendStyle {
 }
 
 /** Context information used to render a legend for a plot.
-  * @param levels The categories or levels to display for the legend.
-  * @param elementFunction A function to render a drawable to represent a level.
-  * @param labelFunction A function to render a drawable to label a level.
+  * @param elements The elements for each level.
+  * @param labels Labels for each element.
   * @param defaultStyle The default legend style to render.
-  * @tparam C The type of levels.
   */
-case class LegendContext[C](
-  levels: Seq[C],
-  elementFunction: C => Drawable,
-  labelFunction: C => Drawable,
+case class LegendContext(
+  elements: Seq[Drawable],
+  labels: Seq[Drawable],
   defaultStyle: LegendStyle
 ) {
-  def labels: Seq[Drawable] = levels.map(labelFunction)
+  require(elements.lengthCompare(labels.size) == 0)
 }
 
 object LegendContext {
   def single(
     element: Drawable,
     label: Drawable
-  ): LegendContext[Int] = LegendContext(
-    levels = Seq(0),
-    elementFunction = (c: Int) => element,
-    labelFunction = (c: Int) => label,
-    defaultStyle = LegendStyle.Categorical
-  )
+  ): LegendContext = LegendContext(Seq(element), Seq(label), LegendStyle.Categorical)
 
   def single(
     element: Drawable,
     label: String
-  ): LegendContext[Int] = single(element, Text(label))
+  ): LegendContext = single(element, Text(label))
 }
