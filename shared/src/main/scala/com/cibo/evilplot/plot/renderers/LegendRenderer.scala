@@ -29,7 +29,7 @@ object LegendRenderer {
         // The indicator will render itself centered on the origin, so we need to translate.
         val offsetx = (elementSize - element.extent.width) / 2
         val offsety = (elementSize - element.extent.height) / 2
-        val indicator = Resize(element.translate(x = offsetx, y = offsety), elementExtent)
+        val indicator = element.translate(x = offsetx, y = offsety).resize(elementExtent)
         indicator.beside(label.padLeft(leftPadding)).padAll(spacing / 2)
       }.reduce(reduction)
     }
@@ -48,7 +48,7 @@ object LegendRenderer {
       val inner = context.elements.map { element =>
         val offsetx = (elementSize - element.extent.width) / 2
         val offsety = (elementSize - element.extent.height) / 2
-        Resize(element.translate(x = offsetx, y = offsety), elementExtent)
+        element.translate(x = offsetx, y = offsety).resize(elementExtent)
       }.reduce(reduction)
       Seq(startLabel.padAll(spacing / 2), inner, stopLabel.padAll(spacing / 2)).reduce(reduction)
     }

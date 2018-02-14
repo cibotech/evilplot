@@ -4,7 +4,7 @@
 package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, Extent, Group, Path, StrokeStyle}
+import com.cibo.evilplot.geometry.{Drawable, Extent, Path, StrokeStyle}
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plotdefs.{LinePlotDef, OneLinePlotData, PlotOptions}
 
@@ -21,7 +21,7 @@ case class Lines(
       points.map(pt => Point((pt.x - xAxisDrawBounds.min) * xScale, (yAxisDrawBounds.max - pt.y) * yScale))
     StrokeStyle(Path(scaledPoints, 2.0), color)
   }
-  def drawable: Drawable = Group(pathSeq)
+  def drawable: Drawable = pathSeq.group
 }
 
 // Draw a line plot consisting of a set of lines. Each Seq in `data` is a separate line. The colors Seq

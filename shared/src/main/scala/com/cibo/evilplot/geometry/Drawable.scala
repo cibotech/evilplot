@@ -68,7 +68,7 @@ object BorderRect {
   implicit val decoder: Decoder[BorderRect] = deriveDecoder[BorderRect]
 
   def filled(width: Double, height: Double): Drawable = {
-    Group(Seq(Rect(width, height), BorderRect(width, height)))
+    Seq(Rect(width, height), BorderRect(width, height)).group
   }
 }
 
