@@ -65,7 +65,7 @@ object HEX {
 }
 
 object Color {
-  implicit val cfg = com.cibo.evilplot.JSONUtils.minifyProperties
+  private implicit val cfg = com.cibo.evilplot.JSONUtils.minifyProperties
   implicit val encoder: Encoder[Color] = io.circe.generic.extras.semiauto.deriveEncoder[Color]
   implicit val decoder: Decoder[Color] = io.circe.generic.extras.semiauto.deriveDecoder[Color]
 
