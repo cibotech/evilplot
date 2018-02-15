@@ -33,7 +33,7 @@ object TextMetrics extends TextMetricsInterface {
 
   def measure(text: Text): Extent = {
     withStyle(text.size) { c =>
-      Extent(c.measureText(text.s).width, extractHeight)
+      Extent(c.measureText(text.msg).width, extractHeight)
     }(offscreenBuffer)
   }
 }
