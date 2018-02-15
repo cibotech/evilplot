@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Group}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.plot.components.Position
 import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
 
@@ -189,7 +189,7 @@ object Facets {
       val left = renderLeft(plot, paddedPlots, extent, innerExtent)
       val right = renderRight(plot, paddedPlots, extent, innerExtent)
       val overlay = renderGrid(Position.Overlay, plot, paddedPlots, extent, innerExtent)
-      Group(Seq(top, bottom, left, right, overlay))
+      Seq(top, bottom, left, right, overlay).group
     }
 
     def renderBack(plot: Plot, extent: Extent): Drawable = {

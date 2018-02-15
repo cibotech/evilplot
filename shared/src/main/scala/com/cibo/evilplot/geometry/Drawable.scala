@@ -4,10 +4,12 @@
 
 package com.cibo.evilplot.geometry
 
+import com.cibo.evilplot.JSONUtils.minifyProperties
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.numeric.{Point, Segment}
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.semiauto._
 import io.circe.{Decoder, Encoder}
-import io.circe.generic.semiauto._
 
 /**
   * All Drawable objects define a draw method that draws to a 2D canvas, and a bounding box (Extent).
@@ -68,7 +70,7 @@ object BorderRect {
   implicit val decoder: Decoder[BorderRect] = deriveDecoder[BorderRect]
 
   def filled(width: Double, height: Double): Drawable = {
-    Group(Seq(Rect(width, height), BorderRect(width, height)))
+    Seq(Rect(width, height), BorderRect(width, height)).group
   }
 }
 
@@ -265,6 +267,7 @@ object Text {
 }
 
 object Drawable {
-  implicit val drawableEncoder: Encoder[Drawable] = io.circe.generic.semiauto.deriveEncoder[Drawable]
-  implicit val drawableDecoder: Decoder[Drawable] = io.circe.generic.semiauto.deriveDecoder[Drawable]
+  require(implicitly[Configuration] == minifyProperties) // prevent auto removal.
+  implicit val drawableEncoder: Encoder[Drawable] = deriveEncoder[Drawable]
+  implicit val drawableDecoder: Decoder[Drawable] = deriveDecoder[Drawable]
 }
