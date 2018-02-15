@@ -40,8 +40,8 @@ object Line {
 final case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
   private lazy val xS: Seq[Double] = points.map(_.x)
   private lazy val yS: Seq[Double] = points.map(_.y)
-  lazy val extent = Extent(xS.max - xS.min, yS.max - yS.min)
-  def draw(context: RenderContext): Unit = context.draw(this)
+  lazy val extent: Extent = if (points.nonEmpty) Extent(xS.max - xS.min, yS.max - yS.min) else Extent(0, 0)
+  def draw(context: RenderContext): Unit = if (points.nonEmpty) context.draw(this) else ()
 }
 object Path {
   implicit val encoder: Encoder[Path] = deriveEncoder[Path]
@@ -88,7 +88,7 @@ object Disc {
 }
 
 final case class Wedge(degrees: Double, radius: Double) extends Drawable {
-  lazy val extent = Extent(2 * radius, 2 * radius)
+  lazy val extent: Extent = Extent(2 * radius, 2 * radius)
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Wedge {
@@ -162,7 +162,7 @@ final case class Rotate(r: Drawable, degrees: Double) extends Drawable {
   private[evilplot] lazy val minY: Double = rotatedCorners.minBy(_.y).y
   private[evilplot] lazy val maxY: Double = rotatedCorners.maxBy(_.y).y
 
-  lazy val extent = Extent(maxX - minX, maxY - minY)
+  lazy val extent: Extent = Extent(maxX - minX, maxY - minY)
 
   def draw(context: RenderContext): Unit = context.draw(this)
 }
