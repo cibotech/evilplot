@@ -281,22 +281,22 @@ object Drawable {
       case "Rect" => "R"
       case "BorderRect" => "B"
       case "Disc" => "D"
-      case "Wedge" => "We"
+      case "Wedge" => "W"
       case "Translate" => "T"
       case "Affine" => "A"
-      case "Scale" => "Sc"
-      case "Rotate" => "Ro"
-      case "UnsafeRotate" => "UR"
+      case "Scale" => "C"
+      case "Rotate" => "O"
+      case "UnsafeRotate" => "U"
       case "Group" => "G"
       case "Resize" => "Re"
       case "Style" => "S"
-      case "StrokeStyle" => "St"
-      case "StrokeWeight" => "W"
+      case "StrokeStyle" => "Y"
+      case "StrokeWeight" => "H"
       case "Text" => "X"
       case other => other
     }
   }
 
-  implicit val drawableEncoder: Encoder[Drawable] = io.circe.generic.semiauto.deriveEncoder[Drawable]
-  implicit val drawableDecoder: Decoder[Drawable] = io.circe.generic.semiauto.deriveDecoder[Drawable]
+  implicit val drawableEncoder: Encoder[Drawable] = io.circe.generic.extras.semiauto.deriveEncoder[Drawable]
+  implicit val drawableDecoder: Decoder[Drawable] = io.circe.generic.extras.semiauto.deriveDecoder[Drawable]
 }
