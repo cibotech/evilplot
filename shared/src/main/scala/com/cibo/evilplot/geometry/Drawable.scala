@@ -6,6 +6,7 @@ package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.numeric.{Point, Segment}
+import io.circe.generic.extras.Configuration
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
 
@@ -265,6 +266,37 @@ object Text {
 }
 
 object Drawable {
+  implicit val minifyContructorNames: Configuration = Configuration(
+    transformMemberNames = identity[String],
+    transformConstructorNames = shortenedName,
+    useDefaults = true,
+    discriminator = None
+  )
+
+  private def shortenedName(s: String): String = {
+    s match {
+      case "EmptyDrawable" => "E"
+      case "Line" => "L"
+      case "Path" => "P"
+      case "Rect" => "R"
+      case "BorderRect" => "B"
+      case "Disc" => "D"
+      case "Wedge" => "We"
+      case "Translate" => "T"
+      case "Affine" => "A"
+      case "Scale" => "Sc"
+      case "Rotate" => "Ro"
+      case "UnsafeRotate" => "UR"
+      case "Group" => "G"
+      case "Resize" => "Re"
+      case "Style" => "S"
+      case "StrokeStyle" => "St"
+      case "StrokeWeight" => "W"
+      case "Text" => "X"
+      case other => other
+    }
+  }
+
   implicit val drawableEncoder: Encoder[Drawable] = io.circe.generic.semiauto.deriveEncoder[Drawable]
   implicit val drawableDecoder: Decoder[Drawable] = io.circe.generic.semiauto.deriveDecoder[Drawable]
 }
