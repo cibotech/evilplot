@@ -4,11 +4,12 @@
 
 package com.cibo.evilplot.geometry
 
+import com.cibo.evilplot.JSONUtils.minifyProperties
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.numeric.{Point, Segment}
 import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.semiauto._
 import io.circe.{Decoder, Encoder}
-import io.circe.generic.semiauto._
 
 /**
   * All Drawable objects define a draw method that draws to a 2D canvas, and a bounding box (Extent).
@@ -266,37 +267,7 @@ object Text {
 }
 
 object Drawable {
-  implicit val minifyContructorNames: Configuration = Configuration(
-    transformMemberNames = identity[String],
-    transformConstructorNames = shortenedName,
-    useDefaults = true,
-    discriminator = None
-  )
-
-  private def shortenedName(s: String): String = {
-    s match {
-      case "EmptyDrawable" => "E"
-      case "Line" => "L"
-      case "Path" => "P"
-      case "Rect" => "R"
-      case "BorderRect" => "B"
-      case "Disc" => "D"
-      case "Wedge" => "W"
-      case "Translate" => "T"
-      case "Affine" => "A"
-      case "Scale" => "C"
-      case "Rotate" => "O"
-      case "UnsafeRotate" => "U"
-      case "Group" => "G"
-      case "Resize" => "Re"
-      case "Style" => "S"
-      case "StrokeStyle" => "Y"
-      case "StrokeWeight" => "H"
-      case "Text" => "X"
-      case other => other
-    }
-  }
-
-  implicit val drawableEncoder: Encoder[Drawable] = io.circe.generic.extras.semiauto.deriveEncoder[Drawable]
-  implicit val drawableDecoder: Decoder[Drawable] = io.circe.generic.extras.semiauto.deriveDecoder[Drawable]
+  require(implicitly[Configuration] == minifyProperties) // prevent auto removal.
+  implicit val drawableEncoder: Encoder[Drawable] = deriveEncoder[Drawable]
+  implicit val drawableDecoder: Decoder[Drawable] = deriveDecoder[Drawable]
 }
