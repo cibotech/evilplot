@@ -22,8 +22,8 @@ final case class Plot private[evilplot] (
   ybounds: Bounds,
   private[plot] val renderer: PlotRenderer,
   private[plot] val componentRenderer: ComponentRenderer = ComponentRenderer.Default(),
-  private[plot] val xtransform: Plot.Transformer = Plot.DefaultXTransformer(),
-  private[plot] val ytransform: Plot.Transformer = Plot.DefaultYTransformer(),
+  xtransform: Plot.Transformer = Plot.DefaultXTransformer(),
+  ytransform: Plot.Transformer = Plot.DefaultYTransformer(),
   private[plot] val xfixed: Boolean = false,
   private[plot] val yfixed: Boolean = false,
   private[plot] val components: Seq[FacetedPlotComponent] = Seq.empty,
@@ -95,18 +95,23 @@ final case class Plot private[evilplot] (
 object Plot {
   val defaultExtent: Extent = Extent(800, 600)
 
-  private[plot] trait Transformer {
+  /** Transform coordinates in plot space to pixel space. */
+  trait Transformer {
     def apply(plot: Plot, plotExtent: Extent): Double => Double
   }
 
   private[plot] case class DefaultXTransformer() extends Transformer {
-    def apply(plot: Plot, plotExtent: Extent): Double => Double =
-      (x: Double) => (x - plot.xbounds.min) * plotExtent.width / plot.xbounds.range
+    def apply(plot: Plot, plotExtent: Extent): Double => Double = {
+      val scale = plotExtent.width / plot.xbounds.range
+      (x: Double) => (x - plot.xbounds.min) * scale
+    }
   }
 
   private[plot] case class DefaultYTransformer() extends Transformer {
-    def apply(plot: Plot, plotExtent: Extent): Double => Double =
-      (y: Double) => plotExtent.height - (y - plot.ybounds.min) * plotExtent.height / plot.ybounds.range
+    def apply(plot: Plot, plotExtent: Extent): Double => Double = {
+      val scale = plotExtent.height / plot.ybounds.range
+      (y: Double) => plotExtent.height - (y - plot.ybounds.min) * scale
+    }
   }
 
   // Add some buffer to the specified bounds.
