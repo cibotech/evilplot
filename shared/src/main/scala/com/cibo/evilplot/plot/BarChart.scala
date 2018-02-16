@@ -26,6 +26,7 @@ object BarChart {
     groupSpacing: Double
   ) extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent): Drawable = {
+      val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 
       val barCount = data.size
@@ -38,27 +39,34 @@ object BarChart {
       // Space used for groups. Same logic as for bars (except zero it out for 1 group).
       val groupPadding = if (numGroups == 1) 0 else numGroups * groupSpacing
 
-      // The width of each bar.
-      val barWidth = (plotExtent.width - groupPadding - totalBarSpacing) / barCount
 
       val sorted = data.sortBy(_.group)
       val initial: (Double, Drawable) = (sorted.head.group, EmptyDrawable())
       sorted.zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
-        val y = ytransformer(math.abs(bar.height))
+
+        // X offset and bar width.
+        val x = xtransformer(barIndex)
+        val barWidth = xtransformer(barIndex + 1) - x
+
+        // Y offset and bar height.
+        val y = ytransformer(math.min(math.abs(bar.height), plot.ybounds.max))
         val barHeight = ytransformer(math.max(0, plot.ybounds.min)) - y
+
         val transY = if (bar.height < 0) y + barHeight else y
         val groupOffset =
           if (numGroups != 1 && bar.group != lastGroup) groupSpacing
           else 0
-        val x =
+
+        // Extra X offset to account for the group and spacing.
+        val xoffset =
           if (barIndex == 0) {
             (groupOffset + spacing) / 2
           } else {
             groupOffset + spacing
           }
 
-        (bar.group, d beside barRenderer.render(plot, Extent(barWidth, barHeight), bar)
-          .translate(y = transY, x = x))
+        val extent = Extent(barWidth, barHeight)
+        (bar.group, d behind barRenderer.render(plot, extent, bar).translate(y = transY, x = x + xoffset))
       }._2
     }
   }

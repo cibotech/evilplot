@@ -29,7 +29,7 @@ object Axes {
 
   private sealed trait DiscreteAxis {
     final val discrete: Boolean = true
-    val labels: Seq[String]
+    val labels: Seq[(String, Double)]
     def getDescriptor(plot: Plot): AxisDescriptor = DiscreteAxisDescriptor(labels)
   }
 
@@ -42,9 +42,10 @@ object Axes {
     def render(plot: Plot, extent: Extent): Drawable = {
       val descriptor = getDescriptor(plot)
       val scale = extent.width / descriptor.axisBounds.range
-      ticks(descriptor).zipWithIndex.map { case (tick, i) =>
-        val offset = if (discrete) descriptor.spacing * scale / 2 else 0
-        val x = offset + i * descriptor.spacing * scale - tick.extent.width / 2.0
+      // Move the tick to the center of the range for discrete axes.
+      val offset = if (discrete) scale / 2 else 0
+      ticks(descriptor).zip(descriptor.values).map { case (tick, value) =>
+        val x = offset + value * scale - tick.extent.width / 2
         tick.translate(x = x)
       }.group
     }
@@ -61,9 +62,10 @@ object Axes {
       val scale = extent.height / descriptor.axisBounds.range
       val ts = ticks(descriptor)
       val maxWidth = ts.maxBy(_.extent.width).extent.width
-      ts.zipWithIndex.map { case (tick, i) =>
-        val offset = if (discrete) descriptor.spacing * scale / 2 else 0
-        val y = extent.height - (i * descriptor.spacing * scale + offset) - tick.extent.height / 2.0
+      // Move the tick to the center of the range for discrete axes.
+      val offset = if (discrete) scale / 2 else 0
+      ts.zip(descriptor.values).map { case (tick, value) =>
+        val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
         tick.translate(x = maxWidth - tick.extent.width, y = y)
       }.group
     }
@@ -75,7 +77,7 @@ object Axes {
   ) extends XAxisPlotComponent with ContinuousAxis
 
   private case class DiscreteXAxisPlotComponent(
-    labels: Seq[String],
+    labels: Seq[(String, Double)],
     tickRenderer: TickRenderer
   ) extends XAxisPlotComponent with DiscreteAxis
 
@@ -85,7 +87,7 @@ object Axes {
   ) extends YAxisPlotComponent with ContinuousAxis
 
   private case class DiscreteYAxisPlotComponent(
-    labels: Seq[String],
+    labels: Seq[(String, Double)],
     tickRenderer: TickRenderer
   ) extends YAxisPlotComponent with DiscreteAxis
 
@@ -105,9 +107,8 @@ object Axes {
     def render(plot: Plot, extent: Extent): Drawable = {
       val descriptor = getDescriptor(plot)
       val scale = extent.width / descriptor.axisBounds.range
-      lines(descriptor, extent).zipWithIndex.map { case (line, i) =>
-        val offset = i * descriptor.spacing * scale - line.extent.width / 2.0
-        line.translate(x = offset)
+      lines(descriptor, extent).zip(descriptor.values).map { case (line, value) =>
+        line.translate(x = value * scale + line.extent.width / 2.0)
       }.group
     }
   }
@@ -119,9 +120,9 @@ object Axes {
       val scale = extent.height / descriptor.axisBounds.range
       val ls = lines(descriptor, extent)
       val maxWidth = ls.maxBy(_.extent.width).extent.width
-      ls.zipWithIndex.map { case (line, i) =>
-        val offset = i * descriptor.spacing * scale + line.extent.height / 2.0
-        line.translate(x = maxWidth - line.extent.width, y = extent.height - offset)
+      ls.zip(descriptor.values).map { case (line, value) =>
+        val y = value * scale + line.extent.height / 2.0
+        line.translate(x = maxWidth - line.extent.width, y = extent.height - y)
       }.group
     }
   }
@@ -131,20 +132,10 @@ object Axes {
     lineRenderer: GridLineRenderer
   ) extends XGridComponent with ContinuousAxis
 
-  private case class DiscreteXGridComponent(
-    labels: Seq[String],
-    lineRenderer: GridLineRenderer
-  ) extends XGridComponent with DiscreteAxis
-
   private case class ContinuousYGridComponent(
     tickCount: Int,
     lineRenderer: GridLineRenderer
   ) extends YGridComponent with ContinuousAxis
-
-  private case class DiscreteYGridComponent(
-    labels: Seq[String],
-    lineRenderer: GridLineRenderer
-  ) extends YGridComponent with DiscreteAxis
 
   trait AxesImplicits {
     protected val plot: Plot
@@ -161,8 +152,19 @@ object Axes {
       component +: plot.xbounds(component.getDescriptor(plot).axisBounds)
     }
 
-    def xAxis(labels: Seq[String]): Plot = {
-      val component = DiscreteXAxisPlotComponent(labels, TickRenderer.xAxisTickRenderer(rotateText = 90))
+    /** Add an X axis to the plot
+      * @param labels The labels. The x values are assumed to start at 0 and increment by one for each label.
+      */
+    def xAxis(labels: Seq[String]): Plot = xAxis(labels, labels.indices.map(_.toDouble))
+
+    /** Add an X axis to the plot.
+      * @param labels The labels.
+      * @param values The X value for each label.
+      */
+    def xAxis(labels: Seq[String], values: Seq[Double]): Plot = {
+      require(labels.lengthCompare(values.length) == 0)
+      val labelsAndValues = labels.zip(values)
+      val component = DiscreteXAxisPlotComponent(labelsAndValues, TickRenderer.xAxisTickRenderer(rotateText = 90))
       component +: plot.xbounds(component.getDescriptor(plot).axisBounds)
     }
 
@@ -178,8 +180,19 @@ object Axes {
       component +: plot.ybounds(component.getDescriptor(plot).axisBounds)
     }
 
-    def yAxis(labels: Seq[String]): Plot = {
-      val component = DiscreteYAxisPlotComponent(labels, TickRenderer.yAxisTickRenderer())
+    /** Add a Y axis to the plot.
+      * @param labels The label. The y values are assumed to start at 0 and increment by one for each label.
+      */
+    def yAxis(labels: Seq[String]): Plot = yAxis(labels, labels.indices.map(_.toDouble))
+
+    /** Add a Y axis to the plot.
+      * @param labels The labels.
+      * @param values The Y value for each label.
+      */
+    def yAxis(labels: Seq[String], values: Seq[Double]): Plot = {
+      require(labels.lengthCompare(values.length) == 0)
+      val labelsAndValues = labels.zip(values)
+      val component = DiscreteYAxisPlotComponent(labelsAndValues, TickRenderer.yAxisTickRenderer())
       component +: plot.ybounds(component.getDescriptor(plot).axisBounds)
     }
 
