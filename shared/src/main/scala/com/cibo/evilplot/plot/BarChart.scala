@@ -45,8 +45,8 @@ object BarChart {
       sorted.zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
 
         // X offset and bar width.
-        val x = xtransformer(barIndex)
-        val barWidth = xtransformer(barIndex + 1) - x
+        val x = xtransformer(plot.xbounds.min + barIndex)
+        val barWidth = xtransformer(plot.xbounds.min + barIndex + 1) - x
 
         // Y offset and bar height.
         val y = ytransformer(math.min(math.abs(bar.height), plot.ybounds.max))
