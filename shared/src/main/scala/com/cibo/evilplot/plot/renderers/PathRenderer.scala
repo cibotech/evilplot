@@ -49,7 +49,10 @@ object PathRenderer {
             ): PathRenderer = new PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       // better hope this is an indexedseq?
-      StrokeStyle(Path(path :+ path.head, strokeWidth), color)
+      path.headOption match {
+        case Some(h) => StrokeStyle(Path(path :+ h, strokeWidth), color)
+        case None    => EmptyDrawable()
+      }
     }
   }
 
