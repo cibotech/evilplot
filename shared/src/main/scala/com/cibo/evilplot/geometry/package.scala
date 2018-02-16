@@ -46,10 +46,10 @@ package object geometry {
 
     def affine(affine: AffineTransform): Affine = Affine(r, affine)
 
-    def center(width: Double): Drawable = translate(x = (width - r.extent.width) / 2)
-    def right(width: Double): Drawable = translate(x = width - r.extent.width)
-    def middle(height: Double): Drawable = translate(y = (height - r.extent.height) / 2)
-    def bottom(height: Double): Drawable = translate(y = height - r.extent.height)
+    def center(width: Double = 0): Drawable = translate(x = (width - r.extent.width) / 2)
+    def right(width: Double = 0): Drawable = translate(x = width - r.extent.width)
+    def middle(height: Double = 0): Drawable = translate(y = (height - r.extent.height) / 2)
+    def bottom(height: Double = 0): Drawable = translate(y = height - r.extent.height)
 
     /** Translate.
       * This will optimize away stacked translates.
