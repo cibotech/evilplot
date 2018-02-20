@@ -7,16 +7,16 @@ trait AxisDescriptor {
   val bounds: Bounds
   val numTicks: Int
   val axisBounds: Bounds
-  val numFrac: Int
-  val spacing: Double
   val labels: Seq[String]
+  val values: Seq[Double]
 }
 
-case class DiscreteAxisDescriptor(labels: Seq[String]) extends AxisDescriptor {
-  val bounds: Bounds = Bounds(0, labels.length)
-  val numTicks: Int = labels.length
-  val numFrac: Int = 0
-  val spacing: Double = 1.0
+case class DiscreteAxisDescriptor(_ticks: Seq[(String, Double)]) extends AxisDescriptor {
+  val ticks: Seq[(String, Double)] = _ticks.sortBy(_._2)
+  val labels: Seq[String] = ticks.map(_._1)
+  val values: Seq[Double] = ticks.map(_._2)
+  val bounds: Bounds = if (values.nonEmpty) Bounds(values.min, values.max + 1) else Bounds(0, 0)
+  val numTicks: Int = values.length
   val axisBounds: Bounds = bounds
 }
 
@@ -61,8 +61,11 @@ case class ContinuousAxisDescriptor(
     else 0
   }
 
-  lazy val labels: Seq[String] = (0 until numTicks).map { i =>
-    val value = axisBounds.min + i * spacing
+  lazy val values: Seq[Double] = (0 until numTicks).map { i =>
+    axisBounds.min + i * spacing
+  }
+
+  lazy val labels: Seq[String] = values.map { value =>
     AxisDescriptor.createNumericLabel(value, numFrac)
   }
 }

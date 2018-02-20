@@ -44,13 +44,14 @@ object Histogram {
       val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
 
       val binWidth = plot.xbounds.range / binCount
+      val yintercept = ytransformer(0)
       points.map { point =>
         val x = xtransformer(point.x) + spacing / 2.0
         val clippedY = math.min(point.y * yscale, plot.ybounds.max)
         val y = ytransformer(clippedY)
         val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
         val bar = Bar(clippedY)
-        val barHeight = plotExtent.height - y
+        val barHeight = yintercept - y
         barRenderer.render(plot, Extent(barWidth, barHeight), bar).translate(x = x, y = y)
       }.group
     }

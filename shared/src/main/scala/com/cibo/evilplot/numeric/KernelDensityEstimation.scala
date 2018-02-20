@@ -26,7 +26,8 @@ object KernelDensityEstimation {
 
     val xMatrix = kernelMatrix(data.map(_.x).toArray, _xBounds, numXs, spacingX, bandwidthX)
     val yMatrix = kernelMatrix(data.map(_.y).toArray, _yBounds, numYs, spacingY, bandwidthY)
-    val estimate = matrixMatrixTransposeMult(xMatrix, yMatrix).map(_.map(_ / (data.length * bandwidthX * bandwidthY)))
+    val denominator = data.length * bandwidthX * bandwidthY
+    val estimate = matrixMatrixTransposeMult(xMatrix, yMatrix).map(_.map(_ / denominator))
     val zBounds = Bounds(estimate.map(_.min).min, estimate.map(_.max).max)
     assert(estimate.length == numXs && estimate.head.length == numYs,
     "density estimate dimensions do not match expectation")
@@ -36,11 +37,12 @@ object KernelDensityEstimation {
   def matrixMatrixTransposeMult(a: Array[Array[Double]], b: Array[Array[Double]]): Array[Array[Double]] = {
     require(a.head.length == b.head.length, "matrix multiplication is not defined for matrices whose" +
       " inner dimensions are not equal")
-    val result: Array[Array[Double]] = Array.fill(a.length, b.length) { 0.0 }
-    for (i <- a.indices; j <- a.indices; k <- a.head.indices) {
-      result(i)(j) = result(i)(j) + a(i)(k) * b(j)(k)
+    val innerIndices = a.head.indices
+    Array.tabulate[Double](a.length, b.length) { case (i, j) =>
+      innerIndices.foldLeft(0.0) { (total, k) =>
+        total + a(i)(k) * b(j)(k)
+      }
     }
-    result
   }
 
   private def kernelMatrix(vals: Array[Double], bounds: Bounds, nGridPoints: Int, spacing: Double,
