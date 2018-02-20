@@ -38,7 +38,7 @@ class OverlaySpec extends FunSpec with Matchers {
         def render(plot: Plot, plotExtent: Extent): Drawable = {
           xbounds = plot.xbounds
           ybounds = plot.ybounds
-          EmptyDrawable(plotExtent)
+          EmptyDrawable().resize(plotExtent)
         }
       }
 

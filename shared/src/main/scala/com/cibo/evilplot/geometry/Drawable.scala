@@ -18,10 +18,15 @@ import io.circe.{Decoder, Encoder}
 sealed trait Drawable {
   def extent: Extent
   def draw(context: RenderContext): Unit
+
+  private[evilplot] def isEmpty: Boolean = false
 }
 
-final case class EmptyDrawable(extent: Extent = Extent(0, 0)) extends Drawable {
+final case class EmptyDrawable() extends Drawable {
+  val extent: Extent = Extent(0, 0)
   def draw(context: RenderContext): Unit = ()
+
+  override private[evilplot] def isEmpty: Boolean = true
 }
 object EmptyDrawable {
   implicit val encoder: Encoder[EmptyDrawable] = deriveEncoder[EmptyDrawable]

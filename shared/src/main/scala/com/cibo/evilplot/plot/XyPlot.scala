@@ -21,8 +21,9 @@ object XyPlot {
         val y = ytransformer(point.y)
         Point(x, y)
       }
-      val points = xformedPoints.zipWithIndex.map { case (point, index) =>
-        pointRenderer.render(plot, plotExtent, index).translate(x = point.x, y = point.y)
+      val points = xformedPoints.zipWithIndex.flatMap { case (point, index) =>
+        val r = pointRenderer.render(plot, plotExtent, index)
+        if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
       }.group
       pathRenderer.render(plot, plotExtent, xformedPoints) inFrontOf points
     }

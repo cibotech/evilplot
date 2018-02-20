@@ -19,8 +19,8 @@ object SurfaceRenderer {
   ): SurfaceRenderer = new SurfaceRenderer {
     def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable = {
       surface.grouped(2).map { seg =>
-        StrokeStyle(Path(seg.map(p => Point(p.x, p.y)), strokeWidth), color)
-      }.toSeq.group
+        Path(seg.map(p => Point(p.x, p.y)), strokeWidth)
+      }.toSeq.group colored color
     }
   }
 
