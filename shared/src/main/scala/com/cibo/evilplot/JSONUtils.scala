@@ -29,7 +29,6 @@ object JSONUtils {
       case "Affine" => "A"
       case "Scale" => "C"
       case "Rotate" => "O"
-      case "UnsafeRotate" => "U"
       case "Group" => "G"
       case "Resize" => "Re"
       case "Style" => "S"

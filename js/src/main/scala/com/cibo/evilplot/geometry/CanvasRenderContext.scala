@@ -38,10 +38,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
     canvas.translate(wedge.radius, wedge.radius)
     canvas.beginPath()
     canvas.moveTo(0, 0)
-    canvas.arc(0, 0, wedge.radius,
-      -Math.PI * wedge.degrees / 360.0,
-      Math.PI * wedge.degrees / 360.0
-    )
+    canvas.arc(0, 0, wedge.radius, 0, 2 * Math.PI * wedge.degrees / 360.0)
     canvas.closePath()
     canvas.fill()
   }
@@ -72,13 +69,6 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
     canvas.translate(-1 * rotate.minX, -1 * rotate.minY)
     canvas.rotate(math.toRadians(rotate.degrees))
     canvas.translate(rotate.r.extent.width / -2, rotate.r.extent.height / -2)
-    rotate.r.draw(this)
-  }
-
-  def draw(rotate: UnsafeRotate): Unit = CanvasOp(canvas) {
-    canvas.translate(rotate.extent.width / 2, rotate.extent.height / 2)
-    canvas.rotate(math.toRadians(rotate.degrees))
-    canvas.translate(rotate.extent.width / -2, rotate.extent.height / -2)
     rotate.r.draw(this)
   }
 

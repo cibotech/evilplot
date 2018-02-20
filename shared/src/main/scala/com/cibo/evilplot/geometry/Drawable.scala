@@ -176,23 +176,6 @@ object Rotate {
   implicit val decoder: Decoder[Rotate] = deriveDecoder[Rotate]
 }
 
-//TODO: A future way to eliminate this is:
-// * replace "extents" and reaching into the object with a more sophisticated class
-// * that class should support widestWidth, tallestHeight, and a rotate method that returns a new copy with same wW/tH
-// * then extents can be arbitrary polygons instead of just Rect's
-// end TODO
-
-// Our rotate semantics are, rotate about your centroid, and shift back to all positive coordinates
-// BUT CircularExtented things' rotated extents cannot be computed as a rotated rectangles, they are assumed invariant
-final case class UnsafeRotate(r: Drawable, degrees: Double) extends Drawable {
-  lazy val extent: Extent = r.extent
-  def draw(context: RenderContext): Unit = context.draw(this)
-}
-object UnsafeRotate {
-  implicit val encoder: Encoder[UnsafeRotate] = deriveEncoder[UnsafeRotate]
-  implicit val decoder: Decoder[UnsafeRotate] = deriveDecoder[UnsafeRotate]
-}
-
 final case class Group(items: Seq[Drawable]) extends Drawable {
   lazy val extent: Extent = {
     if (items.isEmpty) {

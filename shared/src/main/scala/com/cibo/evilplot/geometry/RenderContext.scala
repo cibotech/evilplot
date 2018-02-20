@@ -11,7 +11,6 @@ trait RenderContext {
   def draw(affine: Affine): Unit
   def draw(scale: Scale): Unit
   def draw(rotate: Rotate): Unit
-  def draw(rotate: UnsafeRotate): Unit
   def draw(style: Style): Unit
   def draw(style: StrokeStyle): Unit
   def draw(weight: StrokeWeight): Unit
