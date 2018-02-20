@@ -11,26 +11,22 @@ private final case class BoxPlotRenderer(
   spacing: Double
 ) extends PlotRenderer {
   def render(plot: Plot, plotExtent: Extent): Drawable = {
+    val xtransformer = plot.xtransform(plot, plotExtent)
     val ytransformer = plot.ytransform(plot, plotExtent)
 
-    // Total box spacing used.
-    val boxCount = data.size
-    val totalBoxSpacing = boxCount * spacing
-
-    // The width of each box.
-    val boxWidth = (plotExtent.width - totalBoxSpacing) / boxCount
-
     data.zipWithIndex.foldLeft(EmptyDrawable(): Drawable) { case (d, (summary, index)) =>
-      val boxHeight = ytransformer(summary.lowerWhisker) - ytransformer(summary.upperWhisker)
-      val box = boxRenderer.render(plot, Extent(boxWidth, boxHeight), summary)
-
-      val x = if (index == 0) spacing / 2 else spacing
+      val x = xtransformer(plot.xbounds.min + index) + spacing / 2
       val y = ytransformer(summary.upperWhisker)
 
-      val points = summary.outliers
-        .map(pt => pointRenderer.render(plot, plotExtent, index)
-          .translate(x = x + boxWidth / 2, y = ytransformer(pt)))
-      d beside (box.translate(x = x, y = y) behind points.group)
+      val boxHeight = ytransformer(summary.lowerWhisker) - ytransformer(summary.upperWhisker)
+      val boxWidth = xtransformer(plot.xbounds.min + index + 1) - x - spacing / 2
+
+      val box = boxRenderer.render(plot, Extent(boxWidth, boxHeight), summary)
+
+      val points = summary.outliers.map { pt =>
+        pointRenderer.render(plot, plotExtent, index).translate(x = x + boxWidth / 2, y = ytransformer(pt))
+      }
+      d behind (box.translate(x = x, y = y) behind points.group)
     }
   }
 }
