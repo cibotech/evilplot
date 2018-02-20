@@ -12,7 +12,7 @@ class PlotSpec extends FunSpec with Matchers {
 
   // Renderer to do nothing.
   private case object EmptyPlotRenderer extends PlotRenderer {
-    def render(plot: Plot, plotExtent: Extent): Drawable = EmptyDrawable(plotExtent)
+    def render(plot: Plot, plotExtent: Extent): Drawable = EmptyDrawable().resize(plotExtent)
   }
 
   // Renderer to get the plot extent.
@@ -21,7 +21,7 @@ class PlotSpec extends FunSpec with Matchers {
 
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       plotExtentOpt = Some(plotExtent)
-      EmptyDrawable(plotExtent)
+      EmptyDrawable().resize(plotExtent)
     }
   }
 

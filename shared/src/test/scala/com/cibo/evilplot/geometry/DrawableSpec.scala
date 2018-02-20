@@ -4,7 +4,7 @@ import org.scalatest.{FunSpec, Matchers}
 
 class DrawableSpec extends FunSpec with Matchers {
   describe("EmptyDrawable") {
-    it("has zero size by default") {
+    it("has zero size") {
       EmptyDrawable().extent shouldBe Extent(0, 0)
     }
 
@@ -14,7 +14,7 @@ class DrawableSpec extends FunSpec with Matchers {
     }
 
     it("can be serialized") {
-      val before = EmptyDrawable(Extent(10, 20))
+      val before = EmptyDrawable()
       val str = Drawable.drawableEncoder(before).noSpaces
       val after = io.circe.parser.parse(str).right.get.as[Drawable].right.get
       after shouldBe before
