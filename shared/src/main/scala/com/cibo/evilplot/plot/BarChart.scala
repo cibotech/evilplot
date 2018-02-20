@@ -78,7 +78,7 @@ object BarChart {
     groupSpacing: Double = defaultGroupSpacing,
     boundBuffer: Double = defaultBoundBuffer
   ): Plot = {
-    val xbounds = Bounds(0, bars.size - 1)
+    val xbounds = Bounds(0, bars.size)
     val ybounds = Plot.expandBounds(Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height), boundBuffer)
     Plot(xbounds, ybounds, BarChartRenderer(bars, barRenderer, spacing, groupSpacing))
   }
