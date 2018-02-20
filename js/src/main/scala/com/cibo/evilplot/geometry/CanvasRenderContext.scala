@@ -38,10 +38,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
     canvas.translate(wedge.radius, wedge.radius)
     canvas.beginPath()
     canvas.moveTo(0, 0)
-    canvas.arc(0, 0, wedge.radius,
-      -Math.PI * wedge.degrees / 360.0,
-      Math.PI * wedge.degrees / 360.0
-    )
+    canvas.arc(0, 0, wedge.radius, 0, 2 * Math.PI * wedge.degrees / 360.0)
     canvas.closePath()
     canvas.fill()
   }
