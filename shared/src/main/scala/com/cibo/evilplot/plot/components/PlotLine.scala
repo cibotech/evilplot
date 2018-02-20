@@ -65,7 +65,7 @@ case class FunctionPlotLine(fn: Double => Double,
     val xtransform = plot.xtransform(plot, extent)
     val ytransform = plot.ytransform(plot, extent)
 
-    // Ensure decent resolution by using 1 point per pixel.
+    // Should give decent resolution.
     val numPoints = extent.width.toInt
     val width = plot.xbounds.range / numPoints
     val points = Vector.tabulate(numPoints) { i =>
@@ -129,7 +129,6 @@ trait PlotLineImplicits {
   def function(
               fn: Double => Double,
               color: Color = defaultColor,
-              thickness: Double = defaultThickness,
-              numPoints: Int = defaultNumPoints
+              thickness: Double = defaultThickness
               ): Plot = plot :+ FunctionPlotLine(fn, color, thickness)
 }
