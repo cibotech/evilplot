@@ -72,13 +72,6 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
     rotate.r.draw(this)
   }
 
-  def draw(rotate: UnsafeRotate): Unit = CanvasOp(canvas) {
-    canvas.translate(rotate.extent.width / 2, rotate.extent.height / 2)
-    canvas.rotate(math.toRadians(rotate.degrees))
-    canvas.translate(rotate.extent.width / -2, rotate.extent.height / -2)
-    rotate.r.draw(this)
-  }
-
   def draw(style: Style): Unit = CanvasOp(canvas) {
     canvas.fillStyle = style.fill.repr
     style.r.draw(this)
