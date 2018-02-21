@@ -112,7 +112,7 @@ object Axes {
       val descriptor = getDescriptor(plot)
       val scale = extent.width / descriptor.axisBounds.range
       lines(descriptor, extent).zip(descriptor.values).map { case (line, value) =>
-        line.translate(x = value * scale + line.extent.width / 2.0)
+        line.translate(x = (value - descriptor.axisBounds.min) * scale + line.extent.width / 2.0)
       }.group
     }
   }
@@ -125,7 +125,7 @@ object Axes {
       val ls = lines(descriptor, extent)
       val maxWidth = ls.maxBy(_.extent.width).extent.width
       ls.zip(descriptor.values).map { case (line, value) =>
-        val y = value * scale + line.extent.height / 2.0
+        val y = (value - descriptor.axisBounds.min) * scale + line.extent.height / 2.0
         line.translate(x = maxWidth - line.extent.width, y = extent.height - y)
       }.group
     }
