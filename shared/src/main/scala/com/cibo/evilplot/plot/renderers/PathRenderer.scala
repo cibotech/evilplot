@@ -23,10 +23,10 @@ object PathRenderer {
     color: Color = DefaultColors.pathColor,
     name: Option[String] = None
   ): PathRenderer = new PathRenderer {
-    override def legendContext: Option[LegendContext] = {
+    override def legendContext: LegendContext = {
       name.map { n =>
         LegendContext.single(StrokeStyle(Line(legendStrokeLength, strokeWidth), color), n)
-      }
+      }.getOrElse(LegendContext.empty)
     }
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       StrokeStyle(Path(path, strokeWidth), color)

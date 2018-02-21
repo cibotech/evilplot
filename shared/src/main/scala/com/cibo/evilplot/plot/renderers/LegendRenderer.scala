@@ -3,10 +3,8 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
 
-/** Renderer to convert data and a legend context into a drawable.
-  * @param reduction A function to combine multiple legends.
-  */
-abstract class LegendRenderer(val reduction: (Drawable, Drawable) => Drawable) {
+/** Renderer to convert data and a legend context into a drawable. */
+trait LegendRenderer {
   def render(context: LegendContext): Drawable
 }
 
@@ -20,7 +18,7 @@ object LegendRenderer {
     */
   def discrete(
     reduction: (Drawable, Drawable) => Drawable = above
-  ): LegendRenderer = new LegendRenderer(reduction) {
+  ): LegendRenderer = new LegendRenderer {
     def render(context: LegendContext): Drawable = {
       val labels = context.labels
       val elementSize = labels.maxBy(_.extent.height).extent.height
@@ -40,7 +38,7 @@ object LegendRenderer {
     */
   def gradient(
     reduction: (Drawable, Drawable) => Drawable = above
-  ): LegendRenderer = new LegendRenderer(reduction) {
+  ): LegendRenderer = new LegendRenderer {
     def render(context: LegendContext): Drawable = {
       val (startLabel, stopLabel) = (context.labels.head, context.labels.last)
       val elementSize = math.max(startLabel.extent.height, stopLabel.extent.height)
@@ -59,7 +57,7 @@ object LegendRenderer {
     */
   def default(
     reduction: (Drawable, Drawable) => Drawable = above
-  ): LegendRenderer = new LegendRenderer(reduction) {
+  ): LegendRenderer = new LegendRenderer {
     def render(context: LegendContext): Drawable = {
       context.defaultStyle match {
         case LegendStyle.Categorical => discrete(reduction).render(context)

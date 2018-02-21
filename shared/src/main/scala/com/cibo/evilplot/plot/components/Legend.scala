@@ -6,20 +6,13 @@ import com.cibo.evilplot.plot.{LegendContext, Plot}
 
 case class Legend(
   position: Position,
-  contexts: Seq[LegendContext],
+  context: LegendContext,
   legendRenderer: LegendRenderer,
   x: Double,
   y: Double
 ) extends PlotComponent {
 
-  private lazy val drawable: Drawable = {
-    val filteredContexts = contexts.filter(_.elements.nonEmpty)
-    if (filteredContexts.nonEmpty) {
-      filteredContexts.map { ctx =>
-        legendRenderer.render(ctx)
-      }.reduce(legendRenderer.reduction)
-    } else EmptyDrawable()
-  }
+  private lazy val drawable: Drawable = legendRenderer.render(context)
 
   override def size(plot: Plot): Extent = drawable.extent
 
