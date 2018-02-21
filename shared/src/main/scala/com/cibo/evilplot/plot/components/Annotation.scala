@@ -26,7 +26,7 @@ trait AnnotationImplicits {
   /** Add an annotation to the plot.
     *
     * @param f A function to create the drawable to render.
-    * @param x The X coordinate to plot the drawable (between 0 to 1).
+    * @param x The X coordinate to plot the drawable (between 0 and 1).
     * @param y The Y coordinate to plot the drawable (between 0 and 1).
     * @return The updated plot.
     */
@@ -34,14 +34,21 @@ trait AnnotationImplicits {
     plot :+ Annotation(f, x, y)
   }
 
+  /** Add a drawable annotation to the plot
+    *
+    * @param d The annotation.
+    * @param x The X coordinate (between 0 and 1).
+    * @param y The Y coordinate (between 0 and 1).
+    */
+  def annotate(d: Drawable, x: Double, y: Double): Plot = annotate((_, _) => d, x, y)
+
   /** Add a text annotation to the plot.
     *
     * @param msg The annotation.
-    * @param x   The X coordinate.
-    * @param y   The Y coordinate.
-    * @return
+    * @param x   The X coordinate (between 0 and 1).
+    * @param y   The Y coordinate (between 0 and 1).
     */
   def annotate(msg: String, x: Double = 1.0, y: Double = 0.5): Plot =
-    annotate((_, _) => msg.split('\n').map(Text(_)).reduce(above), x, y)
+    annotate(msg.split('\n').map(Text(_)).reduce(above), x, y)
 
 }

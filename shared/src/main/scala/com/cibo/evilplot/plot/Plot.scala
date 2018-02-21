@@ -17,7 +17,7 @@ import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
   * @param components Plot components (axes, labels, etc.).
   * @param legendContext Contexts used to display a legend for this plot.
   */
-final case class Plot private[evilplot] (
+final case class Plot(
   xbounds: Bounds,
   ybounds: Bounds,
   private[plot] val renderer: PlotRenderer,
@@ -27,7 +27,7 @@ final case class Plot private[evilplot] (
   private[plot] val xfixed: Boolean = false,
   private[plot] val yfixed: Boolean = false,
   private[plot] val components: Seq[FacetedPlotComponent] = Seq.empty,
-  private[plot] val legendContext: Seq[LegendContext] = Seq.empty
+  private[plot] val legendContext: LegendContext = LegendContext.empty
 ) {
   private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 

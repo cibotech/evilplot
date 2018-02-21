@@ -36,7 +36,7 @@ object SurfaceRenderer {
       Bounds.get(mapped)
     }
 
-    override def legendContext: Option[LegendContext] = {
+    override def legendContext: LegendContext = {
       val colors = getColorSeq(points.length)
 
       getBySafe(points)(_.headOption.map(_.z)).map { bs =>
@@ -46,7 +46,7 @@ object SurfaceRenderer {
           labels = (0 until bar.nColors).map { c => Text(math.round(bar.colorValue(c)).toString) },
           defaultStyle = LegendStyle.Gradient
         )
-      }
+      }.getOrElse(LegendContext.empty)
     }
 
     def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable = {

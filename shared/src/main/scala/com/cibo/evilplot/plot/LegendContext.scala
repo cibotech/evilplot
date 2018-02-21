@@ -16,14 +16,30 @@ object LegendStyle {
   * @param defaultStyle The default legend style to render.
   */
 case class LegendContext(
-  elements: Seq[Drawable],
-  labels: Seq[Drawable],
-  defaultStyle: LegendStyle
+  elements: Seq[Drawable] = Seq.empty,
+  labels: Seq[Drawable] = Seq.empty,
+  defaultStyle: LegendStyle = LegendStyle.Categorical
 ) {
   require(elements.lengthCompare(labels.size) == 0)
+
+  def isEmpty: Boolean = elements.isEmpty
+  def nonEmpty: Boolean = !isEmpty
+
+  // Combine this LegendContext with another, taking only new content.
+  def combine(other: LegendContext): LegendContext = {
+    val oldElementLabels = elements.zip(labels)
+    val newElementLabels = other.elements.zip(other.labels).filterNot(oldElementLabels.contains)
+    copy(
+      elements = elements ++ newElementLabels.map(_._1),
+      labels = labels ++ newElementLabels.map(_._2),
+      defaultStyle = if (nonEmpty) defaultStyle else other.defaultStyle
+    )
+  }
 }
 
 object LegendContext {
+  def empty: LegendContext = LegendContext()
+
   def single(
     element: Drawable,
     label: Drawable
