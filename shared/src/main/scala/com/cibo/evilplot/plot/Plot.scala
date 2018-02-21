@@ -17,7 +17,7 @@ import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
   * @param components Plot components (axes, labels, etc.).
   * @param legendContext Contexts used to display a legend for this plot.
   */
-final case class Plot private[evilplot] (
+final case class Plot(
   xbounds: Bounds,
   ybounds: Bounds,
   private[plot] val renderer: PlotRenderer,
