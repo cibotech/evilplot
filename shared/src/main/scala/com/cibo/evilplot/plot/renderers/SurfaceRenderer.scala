@@ -41,11 +41,7 @@ object SurfaceRenderer {
 
       getBySafe(points)(_.headOption.map(_.z)).map { bs =>
         val bar = ScaledColorBar(colors, bs.min, bs.max)
-        LegendContext(
-          elements = (0 until bar.nColors).map { c => Rect(Text.defaultSize, Text.defaultSize).filled(bar.getColor(c)) },
-          labels = (0 until bar.nColors).map { c => Text(math.round(bar.colorValue(c)).toString) },
-          defaultStyle = LegendStyle.Gradient
-        )
+        LegendContext.fromColorBar(bar)
       }.getOrElse(LegendContext.empty)
     }
 

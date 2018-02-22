@@ -40,7 +40,8 @@ object Heatmap {
       ybounds = ybounds,
       xfixed = true,
       yfixed = true,
-      renderer = HeatmapRenderer(bars, barRenderer)
+      renderer = HeatmapRenderer(bars, barRenderer),
+      legendContext = barRenderer.legendContext
     )
   }
 

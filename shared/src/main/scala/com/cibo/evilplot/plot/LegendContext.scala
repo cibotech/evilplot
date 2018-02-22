@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Text}
-import com.cibo.evilplot.plot.renderers.PlotElementRenderer
+import com.cibo.evilplot.colors.ScaledColorBar
+import com.cibo.evilplot.geometry.{Drawable, Rect, Text}
 
 sealed trait LegendStyle
 
@@ -49,4 +49,32 @@ object LegendContext {
     element: Drawable,
     label: String
   ): LegendContext = single(element, Text(label))
+
+  def fromColorBar(
+    colorBar: ScaledColorBar,
+    style: LegendStyle = LegendStyle.Gradient
+  ): LegendContext = {
+    val elements = (0 until colorBar.nColors).map { c =>
+      Rect(Text.defaultSize, Text.defaultSize).filled(colorBar.getColor(c))
+    }
+    val labels = (0 until colorBar.nColors).map { c =>
+      val value = style match {
+        case LegendStyle.Gradient if c == 0 =>
+          // Floor if labeling the first value in a gradient.
+          math.floor(colorBar.colorValue (c))
+        case LegendStyle.Gradient =>
+          // Ceiling if labeling the last value in a gradient.
+          math.ceil(colorBar.colorValue (c))
+        case LegendStyle.Categorical =>
+          // Otherwise round
+          math.round(colorBar.colorValue(c))
+      }
+      Text(value.toString)
+    }
+    LegendContext(
+      elements = elements,
+      labels = labels,
+      defaultStyle = LegendStyle.Gradient
+    )
+  }
 }

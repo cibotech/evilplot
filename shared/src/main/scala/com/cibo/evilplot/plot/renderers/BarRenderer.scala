@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors.{Color, DefaultColors, ScaledColorBar}
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.plot.{Bar, Plot}
+import com.cibo.evilplot.plot.{Bar, LegendContext, LegendStyle, Plot}
 
 trait BarRenderer extends PlotElementRenderer[Bar] {
   def render(plot: Plot, extent: Extent, category: Bar): Drawable
@@ -41,6 +41,7 @@ object BarRenderer {
   def temperature(
     colorBar: ScaledColorBar
   ): BarRenderer = new BarRenderer {
+    override def legendContext: LegendContext = LegendContext.fromColorBar(colorBar)
     def render(plot: Plot, barExtent: Extent, bar: Bar): Drawable = {
       val color = colorBar.getColor(bar.height)
       Rect(barExtent.width, barExtent.height).filled(color)
