@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
-import com.cibo.evilplot.geometry.{Drawable, Extent, Text, Wedge}
+import com.cibo.evilplot.geometry.{Drawable, Extent, Rect, Text, Wedge}
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
@@ -11,6 +11,15 @@ object PieChart {
     data: Seq[(Drawable, Double)],
     colors: Seq[Color]
   ) extends PlotRenderer {
+
+    override def legendContext: LegendContext = {
+      val labelColors = data.map(_._1).zip(colors)
+      LegendContext(
+        elements = labelColors.map(lc => Rect(Text.defaultSize, Text.defaultSize).filled(lc._2)),
+        labels = labelColors.map(_._1),
+        defaultStyle = LegendStyle.Categorical
+      )
+    }
 
     def render(plot: Plot, plotExtent: Extent): Drawable = {
 
