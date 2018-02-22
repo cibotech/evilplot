@@ -42,6 +42,7 @@ object Overlay {
     }
   }
 
+  /** Overlay one or more plots. */
   def apply(plots: Plot*): Plot = {
     require(plots.nonEmpty, "must have at least one plot for an overlay")
 
@@ -56,6 +57,9 @@ object Overlay {
       renderer = OverlayPlotRenderer(updatedPlots)
     )
   }
+
+  /** Overlay a sequence of plots. */
+  def fromSeq(plots: Seq[Plot]): Plot = apply(plots: _*)
 }
 
 trait OverlayImplicits {
