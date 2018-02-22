@@ -2,7 +2,7 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors.{Color, DefaultColors, ScaledColorBar}
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.plot.{Bar, LegendContext, LegendStyle, Plot}
+import com.cibo.evilplot.plot.{Bar, LegendContext, Plot}
 
 trait BarRenderer extends PlotElementRenderer[Bar] {
   def render(plot: Plot, extent: Extent, category: Bar): Drawable

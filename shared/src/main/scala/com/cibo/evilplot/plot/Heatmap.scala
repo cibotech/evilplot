@@ -10,6 +10,7 @@ object Heatmap {
     data: Seq[Seq[Bar]],
     barRenderer: BarRenderer
   ) extends PlotRenderer {
+    override def legendContext: LegendContext = barRenderer.legendContext
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
@@ -40,8 +41,7 @@ object Heatmap {
       ybounds = ybounds,
       xfixed = true,
       yfixed = true,
-      renderer = HeatmapRenderer(bars, barRenderer),
-      legendContext = barRenderer.legendContext
+      renderer = HeatmapRenderer(bars, barRenderer)
     )
   }
 

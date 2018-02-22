@@ -31,6 +31,7 @@ object Overlay {
   }
 
   private case class OverlayPlotRenderer(subplots: Seq[Plot]) extends PlotRenderer {
+    override def legendContext: LegendContext = subplots.map(_.renderer.legendContext).reduce(_.combine(_))
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       val updatedPlots = updateSubplotBounds(
         subplots = Plot.padPlots(Seq(getTransformedSubplots(plot, subplots)), plotExtent, 0, 0).head,
@@ -52,8 +53,7 @@ object Overlay {
     Plot(
       xbounds = xbounds,
       ybounds = ybounds,
-      renderer = OverlayPlotRenderer(updatedPlots),
-      legendContext = plots.map(_.legendContext).reduce(_.combine(_))
+      renderer = OverlayPlotRenderer(updatedPlots)
     )
   }
 }

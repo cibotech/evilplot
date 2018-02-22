@@ -15,6 +15,7 @@ object SurfacePlot {
     data: Seq[Seq[Point3]],
     surfaceRenderer: SurfaceRenderer
   ) extends PlotRenderer {
+    override def legendContext: LegendContext = surfaceRenderer.legendContext
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
@@ -61,8 +62,7 @@ object ContourPlot {
     Plot(
       xbounds,
       ybounds,
-      SurfacePlotRenderer(contourPoints, sr),
-      legendContext = sr.legendContext
+      SurfacePlotRenderer(contourPoints, sr)
     )
   }
 

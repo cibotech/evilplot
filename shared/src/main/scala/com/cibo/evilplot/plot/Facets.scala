@@ -26,6 +26,7 @@ object Facets {
   }
 
   private case class FacetedPlotRenderer(subplots: FacetData) extends PlotRenderer {
+    override def legendContext: LegendContext = subplots.flatMap(_.map(_.renderer.legendContext)).reduce(_.combine(_))
     def render(plot: Plot, plotExtent: Extent): Drawable = {
 
       // Make sure all subplots have the same size plot area.
@@ -224,8 +225,7 @@ object Facets {
       xbounds = Plot.combineBounds(columnXBounds),
       ybounds = Plot.combineBounds(rowYBounds),
       renderer = FacetedPlotRenderer(updatedPlots),
-      componentRenderer = FacetedComponentRenderer(updatedPlots),
-      legendContext = plots.flatten.map(_.legendContext).reduce(_.combine(_))
+      componentRenderer = FacetedComponentRenderer(updatedPlots)
     )
   }
 }
