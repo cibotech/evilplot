@@ -13,6 +13,7 @@ object XyPlot {
     pointRenderer: PointRenderer,
     pathRenderer: PathRenderer
   ) extends PlotRenderer {
+    override def legendContext: LegendContext = pointRenderer.legendContext.combine(pathRenderer.legendContext)
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
@@ -49,8 +50,7 @@ object XyPlot {
     require(yboundBuffer >= 0.0)
     val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), xboundBuffer)
     val ybounds = Plot.expandBounds(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y), yboundBuffer)
-    val legends = pointRenderer.legendContext.combine(pathRenderer.legendContext)
-    Plot(xbounds, ybounds, XyPlotRenderer(data, pointRenderer, pathRenderer), legendContext = legends)
+    Plot(xbounds, ybounds, XyPlotRenderer(data, pointRenderer, pathRenderer))
   }
 }
 

@@ -1,52 +1,68 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Extent}
+import com.cibo.evilplot.colors.{Color, ScaledColorBar}
+import com.cibo.evilplot.geometry.{Drawable, Extent, Rect}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
+import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object Heatmap {
 
+  val defaultColorCount: Int = 10
+
   private case class HeatmapRenderer(
-    data: Seq[Seq[Bar]],
-    barRenderer: BarRenderer
+    data: Seq[Seq[Double]],
+    colorBar: ScaledColorBar
   ) extends PlotRenderer {
+    override def legendContext: LegendContext = LegendContext.fromColorBar(colorBar)
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
       val rowCount = data.size
 
       data.zipWithIndex.map { case (row, yIndex) =>
-        row.zipWithIndex.map { case (bar, xIndex) =>
+        row.zipWithIndex.map { case (value, xIndex) =>
           val y = ytransformer(yIndex)
           val x = xtransformer(xIndex)
           val width = xtransformer(xIndex + 1) - x
           val height = ytransformer(yIndex + 1) - y
-          val barExtent = Extent(width, height)
-          barRenderer.render(plot, barExtent, bar).translate(x, y)
+          Rect(width, height).filled(colorBar.getColor(value)).translate(x, y)
         }.group
       }.group
     }
   }
 
-  def barHeatmap(
-    bars: Seq[Seq[Bar]],
-    mapRenderer: Seq[Seq[Bar]] => BarRenderer = BarRenderer.temperature()
+  /** Create a heatmap using a ScaledColorBar.
+    * @param data The heatmap data.
+    * @param colorBar The color bar to use.
+    */
+  def apply(
+    data: Seq[Seq[Double]],
+    colorBar: ScaledColorBar
   ): Plot = {
-    val barRenderer = mapRenderer(bars)
-    val xbounds = Bounds(0, bars.map(_.size).max)
-    val ybounds = Bounds(0, bars.size)
+    val xbounds = Bounds(0, data.maxBy(_.size).size)
+    val ybounds = Bounds(0, data.size)
     Plot(
       xbounds = xbounds,
       ybounds = ybounds,
       xfixed = true,
       yfixed = true,
-      renderer = HeatmapRenderer(bars, barRenderer)
+      renderer = HeatmapRenderer(data, colorBar)
     )
   }
 
+  /** Create a heatmap using a color sequence.
+    * @param data The heatmap data.
+    * @param colorCount The number of colors to use from the sequence.
+    * @param colors The color sequence.
+    */
   def apply(
     data: Seq[Seq[Double]],
-    mapRenderer: Seq[Seq[Bar]] => BarRenderer = BarRenderer.temperature()
-  ): Plot = barHeatmap(data.map(_.map(Bar.apply)), mapRenderer)
-
+    colorCount: Int = defaultColorCount,
+    colors: Seq[Color] = Color.stream
+  ): Plot = {
+    val minValue = data.minBy(_.min).min
+    val maxValue = data.maxBy(_.max).max
+    val colorBar = ScaledColorBar(colors.take(colorCount), minValue, maxValue)
+    apply(data, colorBar)
+  }
 }

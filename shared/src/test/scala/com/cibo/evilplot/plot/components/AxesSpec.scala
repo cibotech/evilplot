@@ -7,22 +7,22 @@ import org.scalatest.{FunSpec, Matchers}
 class AxesSpec extends FunSpec with Matchers {
   describe("discrete X") {
     it("should set the default bounds") {
-      val plot = BarChart(Seq(Bar(3), Bar(4))).xAxis()
+      val plot = BarChart(Seq(3.0, 4)).xAxis()
       plot.xbounds shouldBe Bounds(0, 2)
     }
 
     it("should set bounds for labels") {
-      val plot = BarChart(Seq(Bar(3), Bar(4))).xAxis(Seq("one", "two"))
+      val plot = BarChart(Seq(3.0, 4)).xAxis(Seq("one", "two"))
       plot.xbounds shouldBe Bounds(0, 2)
     }
 
     it("should set bounds for more labels") {
-      val plot = BarChart(Seq(Bar(3), Bar(4))).xAxis(Seq("one", "two", "three"))
+      val plot = BarChart(Seq(3.0, 4)).xAxis(Seq("one", "two", "three"))
       plot.xbounds shouldBe Bounds(0, 3)
     }
 
     it("should set bounds for fewer labels") {
-      val plot = BarChart(Seq(Bar(3), Bar(4))).xAxis(Seq("one"))
+      val plot = BarChart(Seq(3.0, 4)).xAxis(Seq("one"))
       plot.xbounds shouldBe Bounds(0, 1)
     }
   }

@@ -32,8 +32,8 @@ trait LegendImplicits {
     renderer: LegendRenderer,
     x: Double,
     y: Double
-  ): Plot = if (plot.legendContext.nonEmpty) {
-    plot :+ Legend(position, plot.legendContext, renderer, x, y)
+  ): Plot = if (plot.renderer.legendContext.nonEmpty) {
+    plot :+ Legend(position, plot.renderer.legendContext, renderer, x, y)
   } else plot
 
   /** Place a legend on the right side of the plot. */
@@ -72,8 +72,8 @@ trait LegendImplicits {
   /** Get the legend as a drawable. */
   def renderLegend(
     renderer: LegendRenderer = LegendRenderer.vertical()
-  ): Option[Drawable] = if (plot.legendContext.nonEmpty) {
-    val legend = Legend(Position.Right, plot.legendContext, renderer, 0, 0)
+  ): Option[Drawable] = if (plot.renderer.legendContext.nonEmpty) {
+    val legend = Legend(Position.Right, plot.renderer.legendContext, renderer, 0, 0)
     Some(legend.render(plot, legend.size(plot)))
   } else None
 }

@@ -29,11 +29,11 @@ package object geometry {
     def rotated(degrees: Double): Drawable = if (degrees == 0) r else Rotate(r, degrees)
     def scaled(x: Double = 1, y: Double = 1): Drawable = if (x == 1 && y == 1) r else Scale(r, x, y)
 
-    def flipY(height: Double): Drawable = Scale(r, 1, -1).translate(y = height).resize(r.extent.copy(height = height))
-    def flipY: Drawable = Scale(r, 1, -1).translate(y = r.extent.height)
+    def flipY(height: Double): Drawable = r.scaled(1, -1).translate(y = height).resize(r.extent.copy(height = height))
+    def flipY: Drawable = r.scaled(1, -1).translate(y = r.extent.height)
 
-    def flipX(width: Double): Drawable = Scale(r, -1, 1).translate(x = width).resize(r.extent.copy(width = width))
-    def flipX: Drawable = Scale(r, -1, 1).translate(x = r.extent.width)
+    def flipX(width: Double): Drawable = r.scaled(-1, 1).translate(x = width).resize(r.extent.copy(width = width))
+    def flipX: Drawable = r.scaled(-1, 1).translate(x = r.extent.width)
 
     def colored(color: Color): Drawable = StrokeStyle(r, fill = color)
     def filled(color: Color): Drawable = Style(r, fill = color)
@@ -42,9 +42,14 @@ package object geometry {
     def transX(nudge: Double): Drawable = translate(x = nudge)
     def transY(nudge: Double): Drawable = translate(y = nudge)
 
-    def resize(extent: Extent): Drawable = if (r.extent != extent) Resize(r, extent) else r
+    def resize(extent: Extent): Drawable = r match {
+      case Resize(innerR, _) if extent == r.extent => r
+      case Resize(innerR, _)                       => Resize(innerR, extent)
+      case _ if extent == r.extent                 => r
+      case _                                       => Resize(r, extent)
+    }
 
-    def affine(affine: AffineTransform): Affine = Affine(r, affine)
+    def affine(affine: AffineTransform): Drawable = Affine(r, affine)
 
     def center(width: Double = 0): Drawable = translate(x = (width - r.extent.width) / 2)
     def right(width: Double = 0): Drawable = translate(x = width - r.extent.width)
@@ -80,15 +85,15 @@ package object geometry {
       // Flatten nested groups.
       val flattened = drawables.foldLeft(Seq.empty[Drawable]) { (ds, d) =>
         d match {
-          case Group(inner) => ds ++ inner
-          case _            => ds :+ d
+          case Group(inner)    => ds ++ inner
+          case EmptyDrawable() => ds
+          case _               => ds :+ d
         }
       }
-      if (flattened.lengthCompare(1) == 0) {
-        // Only one item in the group, so remove the group.
-        flattened.head
-      } else {
-        Group(flattened)
+      flattened.length match {
+        case 0 => EmptyDrawable()
+        case 1 => flattened.head
+        case _ => Group(flattened)
       }
     }
   }
