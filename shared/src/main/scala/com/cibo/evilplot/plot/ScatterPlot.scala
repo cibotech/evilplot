@@ -1,6 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.geometry.{Drawable, Text}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
@@ -32,8 +33,23 @@ object ScatterPlot {
     color: Color,
     pointSize: Double = PointRenderer.defaultPointSize,
     boundBuffer: Double = XyPlot.defaultBoundBuffer
+  ): Plot = series(data, Text(name), color, pointSize, boundBuffer)
+
+  /** Create a scatter plot with the specified name and color.
+    * @param data The points to plot.
+    * @param name The name of this series.
+    * @param color The color of the points in this series.
+    * @param pointSize The size of points in this series.
+    * @param boundBuffer Extra padding to add to bounds as a fraction.
+    */
+  def series(
+    data: Seq[Point],
+    name: Drawable,
+    color: Color,
+    pointSize: Double,
+    boundBuffer: Double
   ): Plot = {
-    val pointRenderer = PointRenderer.default(pointSize, color, Some(name))
+    val pointRenderer = PointRenderer.default(pointSize, color, name)
     val pathRenderer = PathRenderer.empty()
     XyPlot(data, pointRenderer, pathRenderer, boundBuffer, boundBuffer)
   }
