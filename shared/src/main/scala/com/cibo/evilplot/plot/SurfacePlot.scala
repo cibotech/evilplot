@@ -64,13 +64,18 @@ object ContourPlot {
     )
   }
 
+  // We're dealing with pixels here, so the tolerance is quite high.
+  private val tolerance = 1e-2
+
   // MS implementation returns Seq[Segment], bridge to Seq[Point3] to avoid
   // breaking old plots (for now...)
   private def toPoint3(segments: Seq[Segment],
                        level: Double): Vector[Point3] = {
     segments
-      .flatMap(s =>
-        Vector(Point3(s.a.x, s.a.y, level), Point3(s.b.x, s.b.y, level)))
-      .toVector
+      .withFilter { case Segment(a, b) => // discard zero length segments.
+        math.abs(a.x - b.x) > tolerance || math.abs(a.y - b.y) > tolerance
+      }.flatMap(s =>
+        Vector(Point3(s.a.x, s.a.y, level), Point3(s.b.x, s.b.y, level))
+    ).toVector
   }
 }
