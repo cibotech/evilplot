@@ -77,4 +77,10 @@ object LegendContext {
       defaultStyle = LegendStyle.Gradient
     )
   }
+
+  def combine(contexts: Seq[LegendContext]): LegendContext = {
+    contexts.foldLeft(LegendContext.empty) { (a, b) =>
+      a.combine(b)
+    }
+  }
 }

@@ -25,6 +25,9 @@ object BarChart {
     spacing: Double,
     groupSpacing: Double
   ) extends PlotRenderer {
+
+    override def legendContext: LegendContext = barRenderer.legendContext
+
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
@@ -38,7 +41,6 @@ object BarChart {
 
       // Space used for groups. Same logic as for bars (except zero it out for 1 group).
       val groupPadding = if (numGroups == 1) 0 else numGroups * groupSpacing
-
 
       val sorted = data.sortBy(_.group)
       val initial: (Double, Drawable) = (sorted.head.group, EmptyDrawable())

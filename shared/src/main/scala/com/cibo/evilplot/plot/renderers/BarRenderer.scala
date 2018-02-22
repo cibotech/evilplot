@@ -11,8 +11,15 @@ trait BarRenderer extends PlotElementRenderer[Bar] {
 object BarRenderer {
 
   def stackedRenderer(
-    colors: Seq[Color]
+    colors: Seq[Color],
+    labels: Seq[String] = Seq.empty
   ): BarRenderer = new BarRenderer {
+    override def legendContext: LegendContext = LegendContext.combine {
+      colors.zip(labels).map { case (color, label) =>
+        val element = Rect(Text.defaultSize, Text.defaultSize).filled(color)
+        LegendContext.single(element, label)
+      }
+    }
     def render(plot: Plot, extent: Extent, bar: Bar): Drawable = {
       val scale = if (bar.height == 0) 0.0 else extent.height / bar.height
       bar.values.zipWithIndex.map { case (value, stackIndex) =>
