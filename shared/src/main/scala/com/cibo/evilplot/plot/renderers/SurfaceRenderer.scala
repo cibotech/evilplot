@@ -6,6 +6,7 @@ import com.cibo.evilplot.numeric.{Bounds, Point, Point3}
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
 trait SurfaceRenderer extends PlotElementRenderer[Seq[Point3]] {
+  def legendContext: LegendContext = LegendContext.empty
   def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable
 }
 

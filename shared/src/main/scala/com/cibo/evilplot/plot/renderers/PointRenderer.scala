@@ -6,6 +6,7 @@ import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
 trait PointRenderer extends PlotElementRenderer[Int] {
+  def legendContext: LegendContext = LegendContext()
   def render(plot: Plot, extent: Extent, index: Int): Drawable
 }
 

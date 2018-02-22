@@ -1,87 +1,198 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
+import com.cibo.evilplot.colors.{Color, DefaultColors}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Rect, Text}
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
-final case class Bar(values: Seq[Double], group: Int = 0) {
+/** Data for a bar in a bar chart.
+  * @param values The values (one per stack, starting at the bottom).
+  * @param colors Colors for each bar segment (optional).
+  * @param labels Labels for each bar segment (optional, for legends).
+  * @param cluster The cluster to which this bar belongs.
+  */
+final case class Bar(
+  values: Seq[Double],
+  cluster: Int = 0,
+  colors: Seq[Color] = Color.stream,
+  labels: Seq[Drawable] = Seq.empty
+) {
   lazy val height: Double = values.sum
+
+  def getColor(i: Int): Color = if (colors.lengthCompare(i) > 0) colors(i) else DefaultColors.barColor
+
+  def legendContext: LegendContext = LegendContext(
+    elements = labels.zip(colors).map(lc => Rect(Text.defaultSize, Text.defaultSize).filled(lc._2)),
+    labels = labels.zip(colors).map(lc => lc._1),
+    defaultStyle = LegendStyle.Categorical
+  )
 }
 
 object Bar {
   def apply(value: Double): Bar = Bar(Seq(value))
-  def apply(value: Double, group: Int): Bar = Bar(Seq(value), group)
+  def apply(value: Double, cluster: Int): Bar = Bar(Seq(value), cluster = cluster)
 }
 
 object BarChart {
 
   val defaultBoundBuffer: Double = 0.1
   val defaultSpacing: Double = 1.0
-  val defaultGroupSpacing: Double = 4.0
+  val defaultClusterSpacing: Double = 4.0
 
   case class BarChartRenderer(
     data: Seq[Bar],
     barRenderer: BarRenderer,
     spacing: Double,
-    groupSpacing: Double
+    clusterSpacing: Double
   ) extends PlotRenderer {
 
-    override def legendContext: LegendContext = barRenderer.legendContext
+    override def legendContext: LegendContext = LegendContext.combine(data.map(_.legendContext))
 
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 
-      val barCount = data.size
+      val numGroups = data.map(_.cluster).distinct.size
+      val barsPerGroup = if (numGroups > 1) data.groupBy(_.cluster).map(_._2.size).max else 1
 
-      // Space used for bars. Space between each bar and half space at each left and right.
-      val totalBarSpacing = barCount * spacing
-
-      val numGroups = data.map(_.group).distinct.size
-
-      // Space used for groups. Same logic as for bars (except zero it out for 1 group).
-      val groupPadding = if (numGroups == 1) 0 else numGroups * groupSpacing
-
-      val sorted = data.sortBy(_.group)
-      val initial: (Double, Drawable) = (sorted.head.group, EmptyDrawable())
-      sorted.zipWithIndex.foldLeft(initial) { case ((lastGroup, d), (bar, barIndex)) =>
+      val sorted = data.sortBy(_.cluster)
+      val initial: (Double, Drawable) = (sorted.head.cluster, EmptyDrawable())
+      sorted.zipWithIndex.foldLeft(initial) { case ((lastCluster, d), (bar, barIndex)) =>
 
         // X offset and bar width.
-        val x = xtransformer(plot.xbounds.min + barIndex)
-        val barWidth = xtransformer(plot.xbounds.min + barIndex + 1) - x
+        val xscale = 1.0 / barsPerGroup
+        val barx = barIndex * xscale
+        val x = xtransformer(plot.xbounds.min + barx)
+        val barWidth = xtransformer(plot.xbounds.min + barx + xscale) - x
 
         // Y offset and bar height.
         val y = ytransformer(math.min(math.abs(bar.height), plot.ybounds.max))
         val barHeight = ytransformer(math.max(0, plot.ybounds.min)) - y
 
         val transY = if (bar.height < 0) y + barHeight else y
-        val groupOffset =
-          if (numGroups != 1 && bar.group != lastGroup) groupSpacing
-          else 0
+        val clusterPadding = if (numGroups > 1 && bar.cluster != lastCluster) clusterSpacing else 0
 
-        // Extra X offset to account for the group and spacing.
-        val xoffset =
-          if (barIndex == 0) {
-            (groupOffset + spacing) / 2
-          } else {
-            groupOffset + spacing
-          }
+        // Extra X offset to account for the cluster and spacing.
+        val xPadding = if (barIndex == 0) (clusterPadding + spacing) / 2 else clusterPadding + spacing / 2
 
-        val extent = Extent(barWidth, barHeight)
-        (bar.group, d behind barRenderer.render(plot, extent, bar).translate(y = transY, x = x + xoffset))
+        val extent = Extent(barWidth - spacing - clusterPadding, barHeight)
+        (bar.cluster, d behind barRenderer.render(plot, extent, bar).translate(y = transY, x = x + xPadding))
       }._2
     }
   }
 
+  /** Create a bar chart where the bars differ only by height
+    * @param values The height values for the bars.
+    * @param color Bar color.
+    * @param spacing Bar spacing.
+    * @param boundBuffer Extra padding above the plot area.
+    */
   def apply(
+    values: Seq[Double],
+    color: Color = DefaultColors.barColor,
+    spacing: Double = defaultSpacing,
+    boundBuffer: Double = defaultBoundBuffer
+  ): Plot = {
+    val barRenderer = BarRenderer.default(color)
+    val bars = values.map(Bar(_))
+    custom(bars, barRenderer, spacing, defaultClusterSpacing, boundBuffer)
+  }
+
+  /** Create a bar chart where bars are divided into clusters. */
+  def clustered(
+    values: Seq[Seq[Double]],
+    labels: Seq[String] = Seq.empty,
+    colors: Seq[Color] = Color.stream,
+    spacing: Double = defaultSpacing,
+    clusterSpacing: Double = defaultClusterSpacing,
+    boundBuffer: Double = defaultBoundBuffer
+  ): Plot = {
+    val barRenderer = BarRenderer.clustered()
+    val bars = values.zipWithIndex.flatMap { case (cluster, clusterIndex) =>
+      cluster.zipWithIndex.map { case (value, index) =>
+        val barLabel = if (clusterIndex == 0 && labels.lengthCompare(index) > 0) {
+          Seq(Text(labels(index)))
+        } else {
+          Seq.empty[Drawable]
+        }
+        Bar(
+          values = Seq(value),
+          cluster = clusterIndex,
+          colors = Seq(colors(index)),
+          labels = barLabel
+        )
+      }
+    }
+    custom(bars, barRenderer, spacing, clusterSpacing, boundBuffer)
+  }
+
+  /** Create a stacked bar chart.
+    * @param values A sequence of bars where each bar is a sequence of values.
+    * @param colors The color to use for each slice.
+    * @param labels Labels for each slice.
+    * @param spacing The bar spacing.
+    * @param boundBuffer Extra padding at the top of the plot.
+    */
+  def stacked(
+    values: Seq[Seq[Double]],
+    colors: Seq[Color] = Color.stream,
+    labels: Seq[String] = Seq.empty,
+    spacing: Double = defaultSpacing,
+    boundBuffer: Double = defaultBoundBuffer
+  ): Plot = {
+    val barRenderer = BarRenderer.stacked()
+    val barLabels = labels.map(Text(_))
+    val bars = values.map { stack => Bar(stack, colors = colors, labels = barLabels) }
+    custom(bars, barRenderer, spacing, defaultClusterSpacing, boundBuffer)
+  }
+
+  /** Create a clusted bar chart of stacked bars.
+    * @param values A sequence of clusters of bars where each bar is a sequence of values.
+    * @param colors The color to use for each slice of a stacked bar.
+    * @param labels Labels for each color in the stacked bar.
+    * @param spacing Spacing between bars.
+    * @param clusterSpacing Spacing between clusters.
+    * @param boundBuffer Padding above the bar chart.
+    */
+  def clusteredStacked(
+    values: Seq[Seq[Seq[Double]]],
+    colors: Seq[Color] = Color.stream,
+    labels: Seq[String] = Seq.empty,
+    spacing: Double = defaultSpacing,
+    clusterSpacing: Double = defaultClusterSpacing,
+    boundBuffer: Double = defaultBoundBuffer
+  ): Plot = {
+    val barRenderer = BarRenderer.stacked()
+    val barLabels = labels.map(Text(_))
+    val bars = values.zipWithIndex.flatMap { case (cluster, clusterIndex) =>
+      cluster.zipWithIndex.map { case (stack, barIndex) =>
+        Bar(
+          values = stack,
+          cluster = clusterIndex,
+          colors = colors,
+          labels = barLabels
+        )
+      }
+    }
+    custom(bars, barRenderer, spacing, clusterSpacing, boundBuffer)
+  }
+
+  /** Create a custom bar chart.
+    * @param bars The bars to render.
+    * @param barRenderer The renderer to use.
+    * @param spacing Spacing between bars within a cluster.
+    * @param clusterSpacing Spacing between clusters.
+    * @param boundBuffer Extra padding above the plot area.
+    */
+  def custom(
     bars: Seq[Bar],
     barRenderer: BarRenderer = BarRenderer.default(),
     spacing: Double = defaultSpacing,
-    groupSpacing: Double = defaultGroupSpacing,
-    boundBuffer: Double = defaultBoundBuffer
+    clusterSpacing: Double = defaultClusterSpacing,
+    boundBuffer: Double = defaultBoundBuffer,
   ): Plot = {
     val xbounds = Bounds(0, bars.size)
     val ybounds = Plot.expandBounds(Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height), boundBuffer)
-    Plot(xbounds, ybounds, BarChartRenderer(bars, barRenderer, spacing, groupSpacing))
+    Plot(xbounds, ybounds, BarChartRenderer(bars, barRenderer, spacing, clusterSpacing))
   }
 }
