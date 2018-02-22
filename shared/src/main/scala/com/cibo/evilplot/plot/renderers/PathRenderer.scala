@@ -17,17 +17,16 @@ object PathRenderer {
   /** The default path renderer.
     * @param strokeWidth The width of the path.
     * @param color The color of the path.
-    * @param name The name of the path (for legends).
+    * @param label A label for this path (for legends).
     */
   def default(
     strokeWidth: Double = defaultStrokeWidth,
     color: Color = DefaultColors.pathColor,
-    name: Option[String] = None
+    label: Drawable = EmptyDrawable()
   ): PathRenderer = new PathRenderer {
-    override def legendContext: LegendContext = {
-      name.map { n =>
-        LegendContext.single(StrokeStyle(Line(legendStrokeLength, strokeWidth), color), n)
-      }.getOrElse(LegendContext.empty)
+    override def legendContext: LegendContext = label match {
+      case _: EmptyDrawable => LegendContext.empty
+      case d                => LegendContext.single(StrokeStyle(Line(legendStrokeLength, strokeWidth), color), d)
     }
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       StrokeStyle(Path(path, strokeWidth), color)
@@ -43,7 +42,7 @@ object PathRenderer {
     name: String,
     color: Color,
     strokeWidth: Double = defaultStrokeWidth
-  ): PathRenderer = default(strokeWidth, color, Some(name))
+  ): PathRenderer = default(strokeWidth, color, Text(name))
 
   def closed(strokeWidth: Double = defaultStrokeWidth,
              color: Color = DefaultColors.pathColor
