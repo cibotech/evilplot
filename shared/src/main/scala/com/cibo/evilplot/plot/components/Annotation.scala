@@ -48,7 +48,12 @@ trait AnnotationImplicits {
     * @param x   The X coordinate (between 0 and 1).
     * @param y   The Y coordinate (between 0 and 1).
     */
-  def annotate(msg: String, x: Double = 1.0, y: Double = 0.5): Plot =
-    annotate(msg.split('\n').map(Text(_)).reduce(above), x, y)
+  def annotate(
+    msg: String,
+    x: Double = 1.0,
+    y: Double = 0.5,
+    textSize: Double = Text.defaultSize
+  ): Plot =
+    annotate(msg.split('\n').map(s => Text(s, textSize)).reduce(above), x, y)
 
 }
