@@ -40,7 +40,7 @@ case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickne
     val p3 = Point(solveForX(plot.ybounds.max), plot.ybounds.max)
     val p4 = Point(plot.xbounds.max, valueAt(plot.xbounds.max))
     val candidates = Seq(p1, p2, p3, p4).filter(plot.inBounds)
-    if (candidates.length >= 2) {
+    if (candidates.lengthCompare(2) >= 0) {
       Some(Seq(candidates.minBy(_.x), candidates.maxBy(_.x)))
     } else {
       None
