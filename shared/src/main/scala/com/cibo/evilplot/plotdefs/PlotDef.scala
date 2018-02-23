@@ -26,12 +26,10 @@ sealed trait PlotDef {
   def withOptions(opts: PlotOptions): PlotDef = this match {
     case d: DrawablePlotDef => d
     case sp: ScatterPlotDef => sp.copy(options = opts)
-    case cp: ContourPlotDef => cp.copy(options = opts)
     case bc: BarChartDef => bc.copy(options = opts)
     case bp: BoxPlotDef => bp.copy(options = opts)
     case lp: LinePlotDef => lp.copy(options = opts)
     case h: HistogramChartDef => h.copy(options = opts)
-    case xypd: XYPosteriorPlotDef => xypd.copy(options = opts)
     case fd: FacetsDef => fd.copy(options = opts)
   }
 
@@ -72,20 +70,6 @@ final case class ScatterPlotDef(
 
   override def xBounds: Option[Bounds] = dataXBounds
   override def yBounds: Option[Bounds] = Bounds.widest(Seq(dataYBounds, endpointYBounds))
-}
-
-final case class ContourPlotDef(
-                                 gridData: GridData,
-                                 numContours: Int,
-                                 colorBar: ColorBar = SingletonColorBar(HTMLNamedColors.blue),
-                                 override val extent: Option[Extent] = None,
-                                 override val options: PlotOptions = PlotOptions())
-  extends PlotDef {
-  override def xBounds: Option[Bounds] = Some(gridData.xBounds)
-
-  override def yBounds: Option[Bounds] = Some(gridData.yBounds)
-
-  def zBounds: Bounds = gridData.zBounds
 }
 
 final case class HistogramChartDef(data: Histogram,
@@ -155,36 +139,6 @@ final case class LinePlotDef(lines: Seq[OneLinePlotData],
     val yMin = bounds.map(_.min).min
     val yMax = bounds.map(_.max).max
     Some(Bounds(yMin, yMax))
-  }
-}
-
-// Temporarily special casing this for  reports.
-final case class XYPosteriorPlotDef(gridData: GridData,
-                                    numContours: Int,
-                                    priors: Seq[Seq[Point]],
-                                    best: Option[Point],
-                                    colorBar: ColorBar = SingletonColorBar(HTMLNamedColors.blue),
-                                    override val extent: Option[Extent] = None,
-                                    override val options: PlotOptions = PlotOptions()
-                                 ) extends PlotDef {
-  override def xBounds: Option[Bounds] = Some(gridData.xBounds)
-  override def yBounds: Option[Bounds] = Some(gridData.yBounds)
-  def zBounds: Bounds = gridData.zBounds
-}
-
-object XYPosteriorPlotDef {
-  def apply(data: Seq[Point],
-            numContours: Int,
-            priors: Seq[Seq[Point]],
-            best: Option[Point],
-            colorBar: ColorBar,
-            extent: Option[Extent],
-            options: PlotOptions): XYPosteriorPlotDef = {
-    val flattened: Seq[Point] = priors.flatten
-    val xBounds: Option[Bounds] = Bounds.widest(Seq(Bounds.getBy(data)(_.x), Bounds.getBy(flattened)(_.x)))
-    val yBounds: Option[Bounds] = Bounds.widest(Seq(Bounds.getBy(data)(_.y), Bounds.getBy(flattened)(_.y)))
-    val kde = KernelDensityEstimation.densityEstimate2D(data, (100, 100), xBounds = xBounds, yBounds = yBounds)
-    XYPosteriorPlotDef(kde, numContours, priors, best, colorBar, extent, options)
   }
 }
 

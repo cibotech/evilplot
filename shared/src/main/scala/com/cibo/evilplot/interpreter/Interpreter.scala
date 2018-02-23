@@ -25,17 +25,6 @@ object PlotDefinitionInterpreter {
         if (scatter.options.makeLegend && scatter.zData.isDefined) {
           plot beside Legend[Double](scatter.colorBar, scatter.zData.get.distinct, Disc(2, 0, 0), Style.apply).drawable
         } else plot
-      case contour: ContourPlotDef =>
-        val plot = ContourPlot(getSize(contour), contour).drawable
-        if (contour.options.makeLegend) contour.colorBar match {
-          case scb: ScaledColorBar => plot beside GradientLegend(scb).drawable
-          case _ => plot
-        } else plot
-      case xyPosterior: XYPosteriorPlotDef =>
-        val plot = PosteriorPlot(getSize(xyPosterior), xyPosterior).drawable
-        if (xyPosterior.options.makeLegend && xyPosterior.colorBar.isInstanceOf[ScaledColorBar])
-          plot beside GradientLegend(xyPosterior.colorBar.asInstanceOf[ScaledColorBar]).drawable
-        else plot
       case histogram: HistogramChartDef => HistogramChart(getSize(histogram), histogram).drawable
       case barChart: BarChartDef => BarChart(getSize(barChart), barChart).drawable
       case boxPlot: BoxPlotDef => BoxPlotChart(getSize(boxPlot), boxPlot).drawable

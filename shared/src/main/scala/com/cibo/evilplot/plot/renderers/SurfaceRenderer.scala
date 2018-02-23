@@ -5,9 +5,8 @@ import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Path, Rect, 
 import com.cibo.evilplot.numeric.{Bounds, Point, Point3}
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
-trait SurfaceRenderer extends PlotElementRenderer[Seq[Point3]] {
-  def legendContext: LegendContext = LegendContext.empty
-  def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable
+trait SurfaceRenderer extends PlotElementRenderer[Seq[Seq[Point3]]] {
+  def render(plot: Plot, extent: Extent, surface: Seq[Seq[Point3]]): Drawable
 }
 
 object SurfaceRenderer {
@@ -18,16 +17,16 @@ object SurfaceRenderer {
     strokeWidth: Double = defaultStrokeWidth,
     color: Color = DefaultColors.pathColor
   ): SurfaceRenderer = new SurfaceRenderer {
-    def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable = {
-      surface.grouped(2).map { seg =>
-        Path(seg.map(p => Point(p.x, p.y)), strokeWidth)
-      }.toSeq.group colored color
+    def render(plot: Plot, extent: Extent, surface: Seq[Seq[Point3]]): Drawable = {
+      surface.map(pathpts => Path(pathpts.map(p => Point(p.x, p.y)), strokeWidth))
+        .group
+        .colored(color)
     }
   }
 
   def densityColorContours(
     strokeWidth: Double = defaultStrokeWidth
-  )(points: Seq[Seq[Point3]]): SurfaceRenderer = new SurfaceRenderer {
+  )(points: Seq[Seq[Seq[Point3]]]): SurfaceRenderer = new SurfaceRenderer {
     private def getColorSeq(numPoints: Int): Seq[Color] =
       if (numPoints <= DefaultColors.nicePalette.length) DefaultColors.nicePalette.take(numPoints)
       else Color.stream.take(numPoints)
@@ -37,17 +36,8 @@ object SurfaceRenderer {
       Bounds.get(mapped)
     }
 
-    override def legendContext: LegendContext = {
-      val colors = getColorSeq(points.length)
-
-      getBySafe(points)(_.headOption.map(_.z)).map { bs =>
-        val bar = ScaledColorBar(colors, bs.min, bs.max)
-        LegendContext.fromColorBar(bar)
-      }.getOrElse(LegendContext.empty)
-    }
-
-    def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable = {
-      val surfaceRenderer = getBySafe(points)(_.headOption.map(_.z)).map { bs =>
+    def render(plot: Plot, extent: Extent, surface: Seq[Seq[Point3]]): Drawable = {
+      val surfaceRenderer = getBySafe(points)(_.headOption.flatMap(_.headOption.map(_.z))).map { bs =>
         val bar = ScaledColorBar(getColorSeq(points.length), bs.min, bs.max)
         densityColorContours(strokeWidth, bar)(points)
       }.getOrElse(contours(strokeWidth))
@@ -58,10 +48,11 @@ object SurfaceRenderer {
   def densityColorContours(
     strokeWidth: Double,
     bar: ScaledColorBar
-  )(points: Seq[Seq[Point3]]): SurfaceRenderer = new SurfaceRenderer {
-    def render(plot: Plot, extent: Extent, points: Seq[Point3]): Drawable = {
-      points.headOption.map(p => contours(strokeWidth, bar.getColor(p.z))
-        .render(plot, extent, points)
+  )(points: Seq[Seq[Seq[Point3]]]): SurfaceRenderer = new SurfaceRenderer {
+    def render(plot: Plot, extent: Extent, surface: Seq[Seq[Point3]]): Drawable = {
+      surface.headOption.map(pts =>
+        contours(strokeWidth, pts.headOption.fold(DefaultColors.pathColor: Color)(p => bar.getColor(p.z)))
+        .render(plot, extent, surface)
       )
       .getOrElse(EmptyDrawable())
     }
