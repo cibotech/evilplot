@@ -9,6 +9,7 @@ import scala.annotation.tailrec
 
 sealed trait PlotLine extends PlotComponent {
   val position: Position = Position.Overlay
+  override val repeated: Boolean = true
 }
 
 case class HorizontalPlotLine(y: Double, thickness: Double, color: Color) extends PlotLine {
