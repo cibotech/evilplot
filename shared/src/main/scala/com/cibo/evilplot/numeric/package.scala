@@ -1,5 +1,6 @@
 package com.cibo.evilplot
 
+import scala.language.implicitConversions
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
 
@@ -13,6 +14,7 @@ package object numeric {
     implicit val encoder: Encoder[Point] = io.circe.generic.semiauto.deriveEncoder[Point]
     implicit val decoder: Decoder[Point] = io.circe.generic.semiauto.deriveDecoder[Point]
     def tupled(t: (Double, Double)): Point = Point(t._1, t._2)
+    implicit def toTuple(p: Point): (Double, Double) = (p.x, p.y)
   }
 
   case class Point3(x: Double, y: Double, z: Double)

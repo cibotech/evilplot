@@ -1,6 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.geometry.Drawable
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
@@ -41,6 +42,27 @@ object LinePlot {
   ): Plot = {
     val pointRenderer = PointRenderer.empty()
     val pathRenderer = PathRenderer.named(name, color, strokeWidth)
+    XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
+  }
+
+  /** Create a line plot with the specified name and color.
+    * @param data The points to plot.
+    * @param label A label for this series.
+    * @param color The color of the line.
+    * @param strokeWidth The width of the line.
+    * @param xboundBuffer Extra padding to add to x bounds as a fraction.
+    * @param yboundBuffer Extra padding to add to y bounds as a fraction.
+    */
+  def series(
+    data: Seq[Point],
+    label: Drawable,
+    color: Color,
+    strokeWidth: Double,
+    xboundBuffer: Double,
+    yboundBuffer: Double
+  ): Plot = {
+    val pointRenderer = PointRenderer.empty()
+    val pathRenderer = PathRenderer.default(strokeWidth, color, label)
     XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
   }
 }

@@ -51,7 +51,7 @@ trait FacetLabelImplicits {
   def topLabels(
     labels: Extent => Seq[Drawable],
     height: Double
-  ): Plot = plot :+ FacetLabel(Position.Top, labels, Extent(0, height))
+  ): Plot = FacetLabel(Position.Top, labels, Extent(0, height)) +: plot
 
   /** Add a label above each facet.
     * @param labels The labels for each facet.
@@ -75,7 +75,7 @@ trait FacetLabelImplicits {
   def bottomLabels(
     labels: Extent => Seq[Drawable],
     height: Double
-  ): Plot = plot :+ FacetLabel(Position.Bottom, labels, Extent(0, height))
+  ): Plot = FacetLabel(Position.Bottom, labels, Extent(0, height)) +: plot
 
   /** Add a label below each facet.
     * @param labels The labels for each facet.
@@ -99,7 +99,7 @@ trait FacetLabelImplicits {
   def rightLabels(
     labels: Extent => Seq[Drawable],
     width: Double
-  ): Plot = plot :+ FacetLabel(Position.Right, labels, Extent(width, 0))
+  ): Plot = FacetLabel(Position.Right, labels, Extent(width, 0)) +: plot
 
   /** Add a label to the right of each facet. */
   def rightLabels(
@@ -119,7 +119,7 @@ trait FacetLabelImplicits {
   def leftLabels(
     labels: Extent => Seq[Drawable],
     width: Double
-  ): Plot = plot :+ FacetLabel(Position.Left, labels, Extent(width, 0))
+  ): Plot = FacetLabel(Position.Left, labels, Extent(width, 0)) +: plot
 
   /** Add a label to the left of each facet. */
   def leftLabels(

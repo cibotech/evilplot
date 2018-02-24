@@ -34,9 +34,11 @@ lazy val evilplotAsset = crossProject.in(file("asset"))
   )
   .jvmSettings(
     resourceGenerators.in(Compile) += Def.task {
-      val asset = fullOptJS.in(evilplotJS).in(Compile).value.data
-      val dest = resourceDirectory.in(Compile).value / asset.getName
-      IO.copy(Seq(asset -> dest)).toSeq
+      val fullOptAsset = fullOptJS.in(evilplotJS).in(Compile).value.data
+      val fastOptAsset = fastOptJS.in(evilplotJS).in(Compile).value.data
+      val fullOptDest = resourceDirectory.in(Compile).value / fullOptAsset.getName
+      val fastOptDest = resourceDirectory.in(Compile).value / fastOptAsset.getName
+      IO.copy(Seq(fullOptAsset -> fullOptDest, fastOptAsset -> fastOptDest)).toSeq
     }
   )
 
