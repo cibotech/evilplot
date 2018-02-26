@@ -1,12 +1,8 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Extent}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric._
-import com.cibo.evilplot.plot.renderers.{
-  PathRenderer,
-  PlotRenderer,
-  SurfaceRenderer
-}
+import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, SurfaceRenderer}
 
 object SurfacePlot {
   private[plot] val defaultBoundBuffer: Double = 0.2
@@ -24,7 +20,9 @@ object SurfacePlot {
         val transformedLevel = level.withFilter { p =>
           plot.xbounds.isInBounds(p.x) && plot.ybounds.isInBounds(p.y)
         }.map { p => Point3(xtransformer(p.x), ytransformer(p.y), p.z) }
-        surfaceRenderer.render(plot, plotExtent, transformedLevel)
+        val path = surfaceRenderer.render(plot, plotExtent, transformedLevel)
+        if (path.extent.width < 1.0 && path.extent.height < 1.0) EmptyDrawable()
+        else path
       }.group
     }
   }
