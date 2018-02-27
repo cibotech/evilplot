@@ -28,7 +28,6 @@ object MarchingSquares {
     levels.map(z => contourLevel(z, blocks, indicesToCartesian(gridData))).toVector
   }
 
-
   // Contour at level, given a function for transforming index space to Cartesian.
   private[numeric] def contourLevel(
                                      level: Double,
@@ -38,13 +37,14 @@ object MarchingSquares {
     mkPaths(blockPoints.flatten.grouped(2)).map(_.map(transform))
   }
 
-
   //scalastyle:off
   // Takes the raw "segments" returned from the blocking step and creates
   // paths out of it. This is technically not part of Marching Squares proper,
   // but is an important consideration for drawing isocontours.
   // This implementation mostly comes from the SciKit Image implementation in Python.
   private[numeric] def mkPaths(grouped: Iterator[Seq[Point]]): Vector[Vector[Point]] = {
+    // Maintain lists of starting points of contours, endpoints, and current contours
+    // at this level we know about.
     @tailrec
     def mkPaths(startPoints: Map[Point, (Vector[Point], Int)],
                 endPoints: Map[Point, (Vector[Point], Int)],
@@ -133,10 +133,9 @@ object MarchingSquares {
     lazy val averageValue = (upLeft.value + upRight.value + bottomRight.value + bottomLeft.value) / 4.0
 
     /* A 4 bit tag, representing this block, from msb to lsb clockwise starting at the upper left cell.
-     * Each bit represents whether a cell is "positive" or "negative" (if its z value is >= or < than the target z
-     * we're trying to contour).
-     * tags 5 and 10 are considered ambiguous; we adopt the heuristic that if that average block value is < target
-     * and the tag is 5 or 10, it gets switched to the other. */
+     * Each bit represents whether its value is > or <= than the target we're trying to contour.
+     * Tags 6 and 9 are considered ambiguous; we adopt the heuristic that if that average block value is <= target
+     * and the tag is 6 or 9, it gets switched to the other. */
     private[numeric] def tag(target: Double): Int = {
       val ulIndexPart = if (upLeft.value > target) 1 else 0 // i.e. 1 << 3
       val urIndexPart = if (upRight.value > target) 2 else 0
@@ -144,7 +143,7 @@ object MarchingSquares {
       val brIndexPart = if (bottomRight.value > target) 8 else 0
       val description = ulIndexPart | urIndexPart | brIndexPart | blIndexPart
 
-      if (description == 6 || description == 9 && averageValue < target)
+      if (description == 6 || description == 9 && averageValue <= target)
         description ^ 15 // flip it
       else description
     }
