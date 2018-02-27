@@ -10,16 +10,14 @@ object Settings {
 
   /** The version of your application */
   lazy val buildVersion: String = sys.env.getOrElse("TRAVIS_BUILD_NUMBER", (System.currentTimeMillis / 1000).toString)
-  val version = s"0.1.2-SNAPSHOT"
+  val version = s"0.1.$buildVersion"
 
   /** Options for the scala compiler */
   val scalacOptions = Seq(
     "-deprecation",
-    // "-Xlint",
-    "-unchecked"
-    // "-deprecation",
-    // "-feature",
-    // "-J-Xss1024m"
+    "-unchecked",
+    "-feature",
+    "-Xfatal-warnings"
   )
 
   /** Declare global dependency versions here to avoid mismatches in multi part dependencies */
@@ -30,6 +28,7 @@ object Settings {
     val scalactic = "3.0.1"
     val scopt = "3.5.0"
     val circe = "0.9.0"
+    val scalacheck = "1.13.5"
   }
 
   /**
@@ -43,6 +42,7 @@ object Settings {
     "io.circe" %%% "circe-generic-extras" % versions.circe,
     "org.scalactic" %%% "scalactic" % versions.scalactic,
     "org.scalatest" %%% "scalatest" % versions.scalaTest % "test",
+    "org.scalacheck" %%% "scalacheck" % versions.scalacheck % "test",
     compilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
   ))
 

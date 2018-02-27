@@ -1,8 +1,8 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
+import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric._
-import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, SurfaceRenderer}
+import com.cibo.evilplot.plot.renderers.{PlotRenderer, SurfaceRenderer}
 
 object SurfacePlot {
   private[plot] val defaultBoundBuffer: Double = 0.2

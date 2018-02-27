@@ -20,6 +20,8 @@ object MarchingSquares {
   def apply(levels: Seq[Double],
             gridData: GridData): Vector[Vector[Vector[Point]]] = {
     import gridData.grid
+    require(grid.length >= 2 && grid.head.length >= 2,
+      "A grid of at least dimensions 2 x 2 is required to perform contouring.")
     val blocks = for {
       cellRow <- grid.indices.init
       cellCol <- grid.head.indices.init
@@ -132,8 +134,8 @@ object MarchingSquares {
     val bottomLeft = GridCell(cellRow + 1, cellCol, grid(cellRow + 1)(cellCol))
     lazy val averageValue = (upLeft.value + upRight.value + bottomRight.value + bottomLeft.value) / 4.0
 
-    /* A 4 bit tag, representing this block, from msb to lsb clockwise starting at the upper left cell.
-     * Each bit represents whether its value is > or <= than the target we're trying to contour.
+    /* A 4 bit tag, representing this block, from msb to lsb in left-right-top-bottom order.
+     * Each bit represents whether the array value is > or <= than the target we're trying to contour.
      * Tags 6 and 9 are considered ambiguous; we adopt the heuristic that if that average block value is <= target
      * and the tag is 6 or 9, it gets switched to the other. */
     private[numeric] def tag(target: Double): Int = {

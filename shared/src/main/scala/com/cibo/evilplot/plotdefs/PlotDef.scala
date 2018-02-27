@@ -8,7 +8,7 @@ import com.cibo.evilplot.colors.{Color, ColorBar, HTMLNamedColors, SingletonColo
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric._
 import io.circe.generic.semiauto._
-import io.circe.{Encoder, Decoder}
+import io.circe.{Decoder, Encoder}
 
 // A plot definition is a descriptor containing all of the data and settings required for the renderer to construct
 // a renderable plot object.
