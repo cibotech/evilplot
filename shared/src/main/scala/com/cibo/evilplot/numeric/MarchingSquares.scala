@@ -35,11 +35,9 @@ object MarchingSquares {
                                      blocks: Seq[GridBlock],
                                      transform: Point => Point): Vector[Vector[Point]] = {
     val blockPoints = blocks.map(b => pointsForBlock(level, b))
-//    println(blockPoints.flatten)
     mkPaths(blockPoints.flatten.grouped(2)).map(_.map(transform))
   }
 
-  def isOpen(contour: Vector[Point]): Boolean = contour.head != contour.last
 
   //scalastyle:off
   // Takes the raw "segments" returned from the blocking step and creates
@@ -52,55 +50,41 @@ object MarchingSquares {
                 endPoints: Map[Point, (Vector[Point], Int)],
                 contours: Map[Int, Vector[Point]],
                 index: Int): Vector[Vector[Point]] = {
-//      assert(contours.filter(p => isOpen(p._2)).forall(p => startPoints.contains(p._2.head) && endPoints.contains(p._2.last)
-//      ), "Contours invariant not satisfied.")
-//      assert(contours.count(p => isOpen(p._2)) == startPoints.size && startPoints.size == endPoints.size,
-//        s"Open contours, start points, and end points must all be the same size but there were ${contours.count(p => isOpen(p._2))} open contours, " +
-//      s"${startPoints.size} startpoints and ${endPoints.size} end points")
       lazy val Seq(from, to) = grouped.next()
       if (grouped.isEmpty) contours.values.toVector
       else if (from == to) {
-        // Ignore
-        println("case 0")
+        // Ignore it.
         mkPaths(startPoints, endPoints, contours, index)
       } else {
         val tails = startPoints.get(to)
         val heads = endPoints.get(from)
-//        println(tails, heads)
         if (tails.isDefined && heads.isDefined) {
           val (head, headIndex) = heads.get
           val (tail, tailIndex) = tails.get
           if (head == tail) { /* close the contour */
-            println("case 1a")
             mkPaths(startPoints - to,
               endPoints - from,
-              contours.updated(headIndex, contours(headIndex) :+ to),
+              contours.updated(headIndex, head :+ to),
               index)
           } else if (tailIndex > headIndex) { /* "tail" comes before head in the contour */
-            println("case 1b")
-//            val concat = tail ++ head
             val concat = head ++ tail
             mkPaths(
               startPoints - to,
-              (endPoints - (head.last, from)).updated(concat.last, concat -> headIndex),
-              contours.updated(headIndex, concat) - tailIndex,
+              (endPoints - (tail.last, from)).updated(concat.last, concat -> headIndex),
+              (contours - tailIndex).updated(headIndex, concat),
               index
             )
           } else { /* "head" comes before tail in the contour */
-            println("case 1c")
-            val concat = head.reverse ++ tail
+            val concat = head ++ tail
             mkPaths(
               (startPoints - (head.head, to)).updated(concat.head, concat -> tailIndex),
               endPoints - from,
-              contours.updated(tailIndex, concat) - headIndex,
+              (contours - headIndex).updated(tailIndex, concat),
               index
             )
           }
         } else if (tails.isDefined && heads.isEmpty) { /* Add to the beginning of endpoints. */
-//          println("case 2")
           val (tail, tailIndex) = tails.get
-          require(startPoints.contains(to), s"$to was not in $startPoints")
-//          require(!startPoints.contains(from), s"case 2: $from was in $startPoints")
           val concat = from +: tail
           mkPaths(
             (startPoints - to).updated(from, concat -> tailIndex),
@@ -109,10 +93,7 @@ object MarchingSquares {
             index
           )
         } else if (tails.isEmpty && heads.isDefined) { /* Symmetric to previous case. */
-//          println("case 3")
           val (head, headIndex) = heads.get
-          require(endPoints.contains(from), s"$from was not in $endPoints")
-//          require(!endPoints.contains(to), s"case 3: $to was in $endPoints")
           val concat = head :+ to
           mkPaths(
             startPoints,
@@ -121,12 +102,9 @@ object MarchingSquares {
             index
           )
         } else { /* Append a new contour. */
-//          println("case 4")
           val nextContourIndex = index + 1
           val contour = Vector(from, to)
-          println(contour)
 
-//          val end = endPoints.updated(to, contour -> nextContourIndex)
           mkPaths(
             startPoints.updated(from, contour -> nextContourIndex),
             endPoints.updated(to, contour -> nextContourIndex),
@@ -194,7 +172,7 @@ object MarchingSquares {
       upLeft.col.toDouble)
     lazy val right = Point(upRight.row.toDouble + alpha(upRight.value, bottomRight.value),
       upRight.col.toDouble)
-    println(gb.tag(target))
+
     gb.tag(target) match {
       case 0 | 15 => Vector.empty[Point]
       case 1      => Vector(top, left)
