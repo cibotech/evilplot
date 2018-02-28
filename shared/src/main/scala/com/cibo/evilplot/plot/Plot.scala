@@ -132,7 +132,12 @@ object Plot {
 
     // Pad all plots in each column to start at the same x offset.
     val plotOffsets = plots.map(_.map(_.plotOffset))
-    val xoffsets = plotOffsets.transpose.map(_.maxBy(_.x).x)
+    val xoffsets = plotOffsets.tail.foldLeft(plotOffsets.head.map(_.x)) { (xs, row) =>
+      val common = xs.zip(row).map { case (x, p) => math.max(x, p.x) }
+      val extraXs = xs.drop(row.size)
+      val rowExtra = row.drop(xs.size).map(_.x)
+      common ++ extraXs ++ rowExtra
+    }
     val xoffsetPlots = plots.map { row =>
       row.zip(xoffsets).map { case (subplot, xoffset) =>
         subplot.padLeft(xoffset - subplot.plotOffset.x)
