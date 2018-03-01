@@ -159,8 +159,8 @@ object Plot {
     val minWidth = plotAreas.minBy(_.width).width
     val minHeight = plotAreas.minBy(_.height).height
     val rowCount = offsetPlots.length
+    val columnCount = offsetPlots.maxBy(_.length).length
     offsetPlots.zipWithIndex.map { case (row, rowIndex) =>
-      val columnCount = row.length
       row.zipWithIndex.map { case (subplot, columnIndex) =>
         val extraRight = if (columnIndex + 1 < columnCount) padRight else 0
         val extraBottom = if (rowIndex + 1 < rowCount) padBottom else 0
