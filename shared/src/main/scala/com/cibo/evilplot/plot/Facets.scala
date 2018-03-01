@@ -204,7 +204,12 @@ object Facets {
   def apply(plots: Seq[Seq[Plot]]): Plot = {
 
     // X bounds for each column.
-    val columnXBounds = plots.transpose.map(col => Plot.combineBounds(col.map(_.xbounds)))
+    val columnXBounds = plots.tail.foldLeft(plots.head.map(_.xbounds)) { (bounds, row) =>
+      val common = bounds.zip(row).map { case (b, r) => Plot.combineBounds(Seq(b, r.xbounds)) }
+      val extraBounds = bounds.drop(row.size)
+      val extraRows = row.drop(bounds.size).map(_.xbounds)
+      common ++ extraBounds ++ extraRows
+    }
 
     // Y bounds for each row.
     val rowYBounds = plots.map(row => Plot.combineBounds(row.map(_.ybounds)))
