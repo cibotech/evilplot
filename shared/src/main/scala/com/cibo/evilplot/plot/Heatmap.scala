@@ -3,6 +3,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, ScaledColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Rect}
 import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object Heatmap {
@@ -14,7 +15,7 @@ object Heatmap {
     colorBar: ScaledColorBar
   ) extends PlotRenderer {
     override def legendContext: LegendContext = LegendContext.fromColorBar(colorBar)
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
       val rowCount = data.size

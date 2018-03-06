@@ -3,11 +3,12 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors.{Color, DefaultColors, ScaledColorBar}
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Path, Rect, StrokeStyle, Text}
 import com.cibo.evilplot.numeric.{Bounds, Point, Point3}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
 trait SurfaceRenderer extends PlotElementRenderer[Seq[Point3]] {
   def legendContext: LegendContext = LegendContext.empty
-  def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable
+  def render(plot: Plot, extent: Extent, surface: Seq[Point3])(implicit theme: Theme): Drawable
 }
 
 object SurfaceRenderer {
@@ -18,7 +19,7 @@ object SurfaceRenderer {
     strokeWidth: Double = defaultStrokeWidth,
     color: Color = DefaultColors.pathColor
   ): SurfaceRenderer = new SurfaceRenderer {
-    def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable = {
+    def render(plot: Plot, extent: Extent, surface: Seq[Point3])(implicit theme: Theme): Drawable = {
       surface.grouped(2).map { seg =>
         Path(seg.map(p => Point(p.x, p.y)), strokeWidth)
       }.toSeq.group colored color
@@ -46,7 +47,7 @@ object SurfaceRenderer {
       }.getOrElse(LegendContext.empty)
     }
 
-    def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable = {
+    def render(plot: Plot, extent: Extent, surface: Seq[Point3])(implicit theme: Theme): Drawable = {
       val surfaceRenderer = getBySafe(points)(_.headOption.map(_.z)).map { bs =>
         val bar = ScaledColorBar(getColorSeq(points.length), bs.min, bs.max)
         densityColorContours(strokeWidth, bar)(points)
@@ -59,7 +60,7 @@ object SurfaceRenderer {
     strokeWidth: Double,
     bar: ScaledColorBar
   )(points: Seq[Seq[Point3]]): SurfaceRenderer = new SurfaceRenderer {
-    def render(plot: Plot, extent: Extent, points: Seq[Point3]): Drawable = {
+    def render(plot: Plot, extent: Extent, points: Seq[Point3])(implicit theme: Theme): Drawable = {
       points.headOption.map(p => contours(strokeWidth, bar.getColor(p.z))
         .render(plot, extent, points)
       )

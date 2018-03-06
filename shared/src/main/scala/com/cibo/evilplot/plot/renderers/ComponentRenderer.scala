@@ -2,14 +2,15 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.aesthetics.Theme
 
 /** Renderer for non-plot area components of a plot (labels, etc.). */
 trait ComponentRenderer {
   /** Render components that go in front of and around the plot area. */
-  def renderFront(plot: Plot, extent: Extent): Drawable
+  def renderFront(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable
 
   /** Render components that go behind the plot area. */
-  def renderBack(plot: Plot, extent: Extent): Drawable
+  def renderBack(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable
 }
 
 object ComponentRenderer {
@@ -18,7 +19,7 @@ object ComponentRenderer {
 
     private val empty: Drawable = EmptyDrawable()
 
-    private def renderTop(plot: Plot, extent: Extent): Drawable = {
+    private def renderTop(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val plotExtent = plot.plotExtent(extent)
       plot.topComponents.reverse.foldLeft(empty) { (d, c) =>
         val componentExtent = plotExtent.copy(height = c.size(plot).height)
@@ -26,7 +27,7 @@ object ComponentRenderer {
       }
     }
 
-    private def renderBottom(plot: Plot, extent: Extent): Drawable = {
+    private def renderBottom(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val plotExtent = plot.plotExtent(extent)
       plot.bottomComponents.reverse.foldLeft((extent.height, empty)) { case ((y, d), c) =>
         val componentExtent = plotExtent.copy(height = c.size(plot).height)
@@ -36,7 +37,7 @@ object ComponentRenderer {
       }._2
     }
 
-    private def renderLeft(plot: Plot, extent: Extent): Drawable = {
+    private def renderLeft(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val plotExtent = plot.plotExtent(extent)
       plot.leftComponents.foldLeft(empty) { (d, c) =>
         val componentExtent = plotExtent.copy(width = c.size(plot).width)
@@ -44,7 +45,7 @@ object ComponentRenderer {
       }
     }
 
-    private def renderRight(plot: Plot, extent: Extent): Drawable = {
+    private def renderRight(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val plotExtent = plot.plotExtent(extent)
       plot.rightComponents.reverse.foldLeft((extent.width, empty)) { case ((x, d), c) =>
         val componentExtent = plotExtent.copy(width = c.size(plot).width)
@@ -54,14 +55,14 @@ object ComponentRenderer {
       }._2
     }
 
-    private def renderOverlay(plot: Plot, extent: Extent): Drawable = {
+    private def renderOverlay(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val plotExtent = plot.plotExtent(extent)
       plot.overlayComponents.map { a =>
         a.render(plot, plotExtent, 0, 0).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
       }.group
     }
 
-    def renderFront(plot: Plot, extent: Extent): Drawable = {
+    def renderFront(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       renderOverlay(plot, extent)
         .behind(renderLeft(plot, extent))
         .behind(renderRight(plot, extent))
@@ -69,7 +70,7 @@ object ComponentRenderer {
         .behind(renderTop(plot, extent))
     }
 
-    def renderBack(plot: Plot, extent: Extent): Drawable = {
+    def renderBack(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val plotExtent = plot.plotExtent(extent)
       plot.backgroundComponents.map { a =>
         a.render(plot, plotExtent, 0, 0).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)

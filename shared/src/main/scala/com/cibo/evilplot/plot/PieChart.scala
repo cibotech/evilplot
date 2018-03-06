@@ -3,6 +3,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Rect, Text, Wedge}
 import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object PieChart {
@@ -21,7 +22,7 @@ object PieChart {
       )
     }
 
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
 
       val radius = math.min(plotExtent.width, plotExtent.height) / 2
 

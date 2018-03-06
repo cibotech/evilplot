@@ -4,6 +4,9 @@ import com.cibo.evilplot.numeric.Point
 import org.scalatest.{FunSpec, Matchers}
 
 class ScatterPlotSpec extends FunSpec with Matchers {
+
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
   describe("ScatterPlot") {
     it("sets reasonable bounds") {
       val data = Seq(Point(-1, 10), Point(20, -5))

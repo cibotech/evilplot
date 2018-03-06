@@ -3,6 +3,7 @@ package com.cibo.evilplot.plot.components
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, ContinuousAxisDescriptor, DiscreteAxisDescriptor}
 import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{GridLineRenderer, TickRenderer}
 
 object Axes {
@@ -39,7 +40,7 @@ object Axes {
 
     def bounds(plot: Plot): Bounds = plot.xbounds
 
-    def render(plot: Plot, extent: Extent): Drawable = {
+    def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val descriptor = getDescriptor(plot)
       val scale = extent.width / descriptor.axisBounds.range
       // Move the tick to the center of the range for discrete axes.
@@ -59,7 +60,7 @@ object Axes {
 
     def bounds(plot: Plot): Bounds = plot.ybounds
 
-    def render(plot: Plot, extent: Extent): Drawable = {
+    def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val descriptor = getDescriptor(plot)
       val scale = extent.height / descriptor.axisBounds.range
       val ts = ticks(descriptor)
@@ -108,7 +109,7 @@ object Axes {
 
   private trait XGridComponent extends GridComponent {
     def bounds(plot: Plot): Bounds = plot.xbounds
-    def render(plot: Plot, extent: Extent): Drawable = {
+    def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val descriptor = getDescriptor(plot)
       val scale = extent.width / descriptor.axisBounds.range
       lines(descriptor, extent).zip(descriptor.values).map { case (line, value) =>
@@ -119,7 +120,7 @@ object Axes {
 
   private trait YGridComponent extends GridComponent {
     def bounds(plot: Plot): Bounds = plot.ybounds
-    def render(plot: Plot, extent: Extent): Drawable = {
+    def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val descriptor = getDescriptor(plot)
       val scale = extent.height / descriptor.axisBounds.range
       val ls = lines(descriptor, extent)
@@ -200,17 +201,29 @@ object Axes {
       component +: plot.ybounds(component.getDescriptor(plot).axisBounds)
     }
 
+    def xGrid()(implicit theme: Theme): Plot = {
+      val lineRenderer: GridLineRenderer = GridLineRenderer.xGridLineRenderer()
+      val component = ContinuousXGridComponent(defaultTickCount, lineRenderer)
+      plot.xbounds(component.getDescriptor(plot).axisBounds) :+ component
+    }
+
     def xGrid(
-      lineCount: Int = defaultTickCount,
-      lineRenderer: GridLineRenderer = GridLineRenderer.xGridLineRenderer()
+      lineCount: Int,
+      lineRenderer: GridLineRenderer
     ): Plot = {
       val component = ContinuousXGridComponent(lineCount, lineRenderer)
       plot.xbounds(component.getDescriptor(plot).axisBounds) :+ component
     }
 
+    def yGrid()(implicit theme: Theme): Plot = {
+      val lineRenderer: GridLineRenderer = GridLineRenderer.yGridLineRenderer()
+      val component = ContinuousYGridComponent(defaultTickCount, lineRenderer)
+      plot.ybounds(component.getDescriptor(plot).axisBounds) :+ component
+    }
+
     def yGrid(
-      lineCount: Int = defaultTickCount,
-      lineRenderer: GridLineRenderer = GridLineRenderer.yGridLineRenderer()
+      lineCount: Int,
+      lineRenderer: GridLineRenderer
     ): Plot = {
       val component = ContinuousYGridComponent(lineCount, lineRenderer)
       plot.ybounds(component.getDescriptor(plot).axisBounds) :+ component

@@ -3,6 +3,9 @@ package com.cibo.evilplot.geometry
 import org.scalatest.{FunSpec, Matchers}
 
 class DrawableSpec extends FunSpec with Matchers {
+
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
   describe("EmptyDrawable") {
     it("has zero size") {
       EmptyDrawable().extent shouldBe Extent(0, 0)

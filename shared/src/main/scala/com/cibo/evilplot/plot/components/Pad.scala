@@ -2,13 +2,14 @@ package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.aesthetics.Theme
 
 case class Pad(
   position: Position,
   pad: Double
 ) extends PlotComponent {
   override def size(plot: Plot): Extent = Extent(pad, pad)
-  def render(plot: Plot, extent: Extent): Drawable = EmptyDrawable().resize(size(plot))
+  def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = EmptyDrawable().resize(size(plot))
 }
 
 trait PadImplicits {

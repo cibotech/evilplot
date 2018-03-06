@@ -3,6 +3,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, DefaultColors}
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Rect, Text}
 import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
 /** Data for a bar in a bar chart.
@@ -48,7 +49,7 @@ object BarChart {
 
     override def legendContext: LegendContext = LegendContext.combine(data.map(_.legendContext))
 
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 
@@ -92,7 +93,7 @@ object BarChart {
     color: Color = DefaultColors.barColor,
     spacing: Double = defaultSpacing,
     boundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.default(color)
     val bars = values.map(Bar(_))
     custom(bars, barRenderer, spacing, defaultClusterSpacing, boundBuffer)
@@ -106,7 +107,7 @@ object BarChart {
     spacing: Double = defaultSpacing,
     clusterSpacing: Double = defaultClusterSpacing,
     boundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.clustered()
     val bars = values.zipWithIndex.flatMap { case (cluster, clusterIndex) =>
       cluster.zipWithIndex.map { case (value, index) =>
@@ -139,7 +140,7 @@ object BarChart {
     labels: Seq[String] = Seq.empty,
     spacing: Double = defaultSpacing,
     boundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.stacked()
     val barLabels = labels.map(Text(_))
     val bars = values.map { stack => Bar(stack, colors = colors, labels = barLabels) }
@@ -161,7 +162,7 @@ object BarChart {
     spacing: Double = defaultSpacing,
     clusterSpacing: Double = defaultClusterSpacing,
     boundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.stacked()
     val barLabels = labels.map(Text(_))
     val bars = values.zipWithIndex.flatMap { case (cluster, clusterIndex) =>
@@ -190,7 +191,7 @@ object BarChart {
     spacing: Double = defaultSpacing,
     clusterSpacing: Double = defaultClusterSpacing,
     boundBuffer: Double = defaultBoundBuffer,
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     val xbounds = Bounds(0, bars.size)
     val ybounds = Plot.expandBounds(Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height), boundBuffer)
     Plot(xbounds, ybounds, BarChartRenderer(bars, barRenderer, spacing, clusterSpacing))

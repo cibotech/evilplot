@@ -1,12 +1,13 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
-import com.cibo.evilplot.plot.{LegendContext, Plot}
+import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.Plot
 
 /** A renderer for an element that is plotted (such as a point or bar).
   * @tparam C Type of context used to identify categories.
   */
 trait PlotElementRenderer[C] {
   /** Render a category within the extent. */
-  def render(plot: Plot, extent: Extent, context: C): Drawable
+  def render(plot: Plot, extent: Extent, context: C)(implicit theme: Theme): Drawable
 }

@@ -4,22 +4,26 @@ import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 import com.cibo.evilplot.DOMInitializer
+import com.cibo.evilplot.plot.aesthetics.Theme
 import org.scalatest.{FunSpec, Matchers}
 
 class PlotSpec extends FunSpec with Matchers {
+
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 
   DOMInitializer.init()
 
   // Renderer to do nothing.
   private case object EmptyPlotRenderer extends PlotRenderer {
-    def render(plot: Plot, plotExtent: Extent): Drawable = EmptyDrawable().resize(plotExtent)
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable =
+      EmptyDrawable().resize(plotExtent)
   }
 
   // Renderer to get the plot extent.
   private case class PlotExtentPlotRenderer() extends PlotRenderer {
     var plotExtentOpt: Option[Extent] = None
 
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       plotExtentOpt = Some(plotExtent)
       EmptyDrawable().resize(plotExtent)
     }

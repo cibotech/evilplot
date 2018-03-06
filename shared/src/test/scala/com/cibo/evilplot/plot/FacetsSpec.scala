@@ -5,6 +5,9 @@ import com.cibo.evilplot.numeric.Point
 import org.scalatest.{FunSpec, Matchers}
 
 class FacetsSpec extends FunSpec with Matchers {
+
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
   describe("Facets") {
     it("is the correct size with one facet") {
       val inner = ScatterPlot(Seq(Point(1, 1), Point(2, 2)))

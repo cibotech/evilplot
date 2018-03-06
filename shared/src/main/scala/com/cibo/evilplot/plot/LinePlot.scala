@@ -3,9 +3,26 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.Drawable
 import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
 object LinePlot {
+  /** Create a line plot from some data.  Convenience method on top of XyPlot
+    *
+    * @param data          The points to plot.
+    * @param xboundBuffer Extra padding to add to x bounds as a fraction.
+    * @param yboundBuffer Extra padding to add to y bounds as a fraction.
+    */
+  def apply(
+    data: Seq[Point],
+    xboundBuffer: Double = 0,
+    yboundBuffer: Double = XyPlot.defaultBoundBuffer
+  )(implicit theme: Theme): Plot = {
+    val pointRenderer = PointRenderer.empty()
+    val pathRenderer = PathRenderer.default()
+    XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
+  }
+
   /** Create a line plot from some data.  Convenience method on top of XyPlot
     *
     * @param data          The points to plot.
@@ -14,13 +31,13 @@ object LinePlot {
     * @param xboundBuffer Extra padding to add to x bounds as a fraction.
     * @param yboundBuffer Extra padding to add to y bounds as a fraction.
     */
-  def apply(
+  def custom(
     data: Seq[Point],
-    pointRenderer: PointRenderer = PointRenderer.empty(),
-    pathRenderer: PathRenderer = PathRenderer.default(),
-    xboundBuffer: Double = 0,
-    yboundBuffer: Double = XyPlot.defaultBoundBuffer
-  ): Plot = {
+    pointRenderer: PointRenderer,
+    pathRenderer: PathRenderer,
+    xboundBuffer: Double,
+    yboundBuffer: Double
+  )(implicit theme: Theme): Plot = {
     XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
   }
 
@@ -39,7 +56,7 @@ object LinePlot {
     strokeWidth: Double = PathRenderer.defaultStrokeWidth,
     xboundBuffer: Double = 0,
     yboundBuffer: Double = XyPlot.defaultBoundBuffer
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.empty()
     val pathRenderer = PathRenderer.named(name, color, strokeWidth)
     XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
@@ -60,7 +77,7 @@ object LinePlot {
     strokeWidth: Double,
     xboundBuffer: Double,
     yboundBuffer: Double
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.empty()
     val pathRenderer = PathRenderer.default(strokeWidth, color, label)
     XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)

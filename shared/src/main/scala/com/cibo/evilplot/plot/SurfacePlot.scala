@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric._
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, SurfaceRenderer}
 
 object SurfacePlot {
@@ -12,7 +13,7 @@ object SurfacePlot {
     surfaceRenderer: SurfaceRenderer
   ) extends PlotRenderer {
     override def legendContext: LegendContext = surfaceRenderer.legendContext
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 

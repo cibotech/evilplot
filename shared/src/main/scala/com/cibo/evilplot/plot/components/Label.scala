@@ -1,6 +1,7 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry.{Drawable, Extent, Text}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.Plot
 
 /** A plot label.
@@ -14,7 +15,7 @@ case class Label(
   minExtent: Extent
 ) extends PlotComponent {
   override def size(plot: Plot): Extent = minExtent
-  def render(plot: Plot, extent: Extent): Drawable = position match {
+  def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = position match {
     case Position.Top    => f(extent).center(extent.width)
     case Position.Bottom => f(extent).center(extent.width)
     case Position.Left   => f(extent).middle(extent.height)
@@ -30,36 +31,35 @@ object Label {
 trait LabelImplicits {
   protected val plot: Plot
 
-  val defaultTitleSize: Double = 22
-  val defaultLabelSize: Double = 20
-
   def title(d: Drawable): Plot = plot :+ Label(Position.Top, d)
-  def title(label: String, size: Double = defaultTitleSize): Plot =
-    title(Text(label, size).padBottom(size / 2))
+  def title(label: String)(implicit theme: Theme): Plot = {
+    println(theme.fonts.titleSize)
+    title(Text(label, theme.fonts.titleSize).padBottom(theme.fonts.titleSize / 2))
+  }
 
   def leftLabel(f: Extent => Drawable, width: Double): Plot = plot :+ Label(Position.Left, f, Extent(width, 0))
   def leftLabel(d: Drawable): Plot = plot :+ Label(Position.Left, _ => d, d.extent)
-  def leftLabel(label: String, size: Double = defaultLabelSize): Plot =
-    leftLabel(Text(label, size).rotated(270).padRight(size / 2))
+  def leftLabel(label: String)(implicit theme: Theme): Plot =
+    leftLabel(Text(label, theme.fonts.labelSize).rotated(270).padRight(theme.fonts.labelSize / 2))
 
   def rightLabel(f: Extent => Drawable, width: Double): Plot = plot :+ Label(Position.Right, f, Extent(width, 0))
   def rightLabel(d: Drawable): Plot = plot :+ Label(Position.Right, d)
-  def rightLabel(label: String, size: Double = defaultLabelSize): Plot =
-    rightLabel(Text(label, size).rotated(90).padLeft(size / 2))
+  def rightLabel(label: String)(implicit theme: Theme): Plot =
+    rightLabel(Text(label, theme.fonts.labelSize).rotated(90).padLeft(theme.fonts.labelSize / 2))
 
   def topLabel(f: Extent => Drawable, height: Double): Plot = plot :+ Label(Position.Top, f, Extent(0, height))
   def topLabel(d: Drawable): Plot = plot :+ Label(Position.Top, d)
-  def topLabel(label: String, size: Double = defaultLabelSize): Plot =
-    topLabel(Text(label, size).padBottom(size / 2))
+  def topLabel(label: String)(implicit theme: Theme): Plot =
+    topLabel(Text(label, theme.fonts.labelSize).padBottom(theme.fonts.labelSize / 2))
 
   def bottomLabel(f: Extent => Drawable, height: Double): Plot = plot :+ Label(Position.Bottom, f, Extent(0, height))
   def bottomLabel(d: Drawable): Plot = plot :+ Label(Position.Bottom, d)
-  def bottomLabel(label: String, size: Double = defaultLabelSize): Plot =
-    bottomLabel(Text(label, size).padTop(size / 2))
+  def bottomLabel(label: String)(implicit theme: Theme): Plot =
+    bottomLabel(Text(label, theme.fonts.labelSize).padTop(theme.fonts.labelSize / 2))
 
   def xLabel(d: Drawable): Plot = bottomLabel(d)
-  def xLabel(label: String, size: Double = defaultLabelSize): Plot = bottomLabel(label, size)
+  def xLabel(label: String)(implicit theme: Theme): Plot = bottomLabel(label)
 
   def yLabel(d: Drawable): Plot = leftLabel(d)
-  def yLabel(label: String, size: Double = defaultLabelSize): Plot = leftLabel(label, size)
+  def yLabel(label: String)(implicit theme: Theme): Plot = leftLabel(label)
 }

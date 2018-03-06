@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
 private final case class BoxPlotRenderer(
@@ -10,7 +11,7 @@ private final case class BoxPlotRenderer(
   pointRenderer: PointRenderer,
   spacing: Double
 ) extends PlotRenderer {
-  def render(plot: Plot, plotExtent: Extent): Drawable = {
+  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
     val xtransformer = plot.xtransform(plot, plotExtent)
     val ytransformer = plot.ytransform(plot, plotExtent)
 
@@ -37,6 +38,25 @@ object BoxPlot {
 
   /** Create a box plots for a sequence of distributions.
     * @param data the distributions to plot
+    * @param quantiles quantiles to use for summary statistics.
+    *                  defaults to 1st, 2nd, 3rd quartiles.
+    * @param spacing spacing how much spacing to put between boxes
+    * @param boundBuffer expand bounds by this factor
+    */
+  def apply(data: Seq[Seq[Double]],
+            quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
+            spacing: Double = defaultSpacing,
+            boundBuffer: Double = defaultBoundBuffer)(implicit theme: Theme): Plot = {
+    val boxRenderer = BoxRenderer.default()
+    val pointRenderer = PointRenderer.default()
+    val summaries = data.map(dist => BoxPlotSummaryStatistics(dist, quantiles))
+    val xbounds = Bounds(0, summaries.size - 1)
+    val ybounds = Plot.expandBounds(Bounds(summaries.minBy(_.min).min, summaries.maxBy(_.max).max), boundBuffer)
+    Plot(xbounds, ybounds, BoxPlotRenderer(summaries, boxRenderer, pointRenderer, spacing))
+  }
+
+  /** Create a box plots for a sequence of distributions.
+    * @param data the distributions to plot
     * @param boxRenderer the `BoxRenderer` to use to display each distribution
     * @param pointRenderer the `PointRenderer` used to display outliers
     * @param quantiles quantiles to use for summary statistics.
@@ -44,12 +64,14 @@ object BoxPlot {
     * @param spacing spacing how much spacing to put between boxes
     * @param boundBuffer expand bounds by this factor
     */
-  def apply(data: Seq[Seq[Double]],
-            boxRenderer: BoxRenderer = BoxRenderer.default(),
-            pointRenderer: PointRenderer = PointRenderer.default(),
-            quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
-            spacing: Double = defaultSpacing,
-            boundBuffer: Double = defaultBoundBuffer): Plot = {
+  def custom(
+    data: Seq[Seq[Double]],
+    boxRenderer: BoxRenderer,
+    pointRenderer: PointRenderer,
+    quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
+    spacing: Double = defaultSpacing,
+    boundBuffer: Double = defaultBoundBuffer
+  )(implicit theme: Theme): Plot = {
     val summaries = data.map(dist => BoxPlotSummaryStatistics(dist, quantiles))
     val xbounds = Bounds(0, summaries.size - 1)
     val ybounds = Plot.expandBounds(Bounds(summaries.minBy(_.min).min, summaries.maxBy(_.max).max), boundBuffer)

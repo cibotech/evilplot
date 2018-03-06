@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Line}
+import com.cibo.evilplot.plot.aesthetics.Theme
 
 trait GridLineRenderer {
   def render(extent: Extent, label: String): Drawable
@@ -10,23 +10,20 @@ trait GridLineRenderer {
 object GridLineRenderer {
 
   val defaultThickness: Double = 1.0
-  val defaultColor: Color = HTMLNamedColors.white
 
   def xGridLineRenderer(
-    thickness: Double = defaultThickness,
-    color: Color = defaultColor
-  ): GridLineRenderer = new GridLineRenderer {
+    thickness: Double = defaultThickness
+  )(implicit theme: Theme): GridLineRenderer = new GridLineRenderer {
     def render(extent: Extent, label: String): Drawable = {
-      Line(extent.height, thickness).colored(color).rotated(90)
+      Line(extent.height, thickness).colored(theme.colors.gridLine).rotated(90)
     }
   }
 
   def yGridLineRenderer(
-    thickness: Double = defaultThickness,
-    color: Color = defaultColor
-  ): GridLineRenderer = new GridLineRenderer {
+    thickness: Double = defaultThickness
+  )(implicit theme: Theme): GridLineRenderer = new GridLineRenderer {
     def render(extent: Extent, label: String): Drawable = {
-      Line(extent.width, thickness).colored(color)
+      Line(extent.width, thickness).colored(theme.colors.gridLine)
     }
   }
 }

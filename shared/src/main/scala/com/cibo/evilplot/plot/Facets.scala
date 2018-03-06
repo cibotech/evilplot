@@ -1,6 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.Position
 import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
 
@@ -27,7 +28,7 @@ object Facets {
 
   private case class FacetedPlotRenderer(subplots: FacetData) extends PlotRenderer {
     override def legendContext: LegendContext = LegendContext.combine(subplots.flatMap(_.map(_.renderer.legendContext)))
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
 
       // Make sure all subplots have the same size plot area.
       val innerExtent = computeSubplotExtent(plot, subplots, plotExtent)
@@ -53,7 +54,7 @@ object Facets {
       subplots: FacetData,
       extent: Extent,
       innerExtent: Extent
-    ): Drawable = {
+    )(implicit theme: Theme): Drawable = {
       plot.topComponents.reverse.foldLeft(empty) { (d, c) =>
         if (c.repeated) {
           subplots.head.zipWithIndex.map { case (subplot, i) =>
@@ -78,7 +79,7 @@ object Facets {
       subplots: FacetData,
       extent: Extent,
       innerExtent: Extent
-    ): Drawable = {
+    )(implicit theme: Theme): Drawable = {
       val startY = extent.height
       val bottomRowIndex = subplots.size - 1
       plot.bottomComponents.reverse.foldLeft((startY, empty)) { case ((prevY, d), c) =>
@@ -108,7 +109,7 @@ object Facets {
       subplots: FacetData,
       extent: Extent,
       innerExtent: Extent
-    ): Drawable = {
+    )(implicit theme: Theme): Drawable = {
       val leftPlots = subplots.map(_.head)
       plot.leftComponents.foldLeft(empty) { (d, c) =>
         if (c.repeated) {
@@ -132,7 +133,7 @@ object Facets {
       subplots: FacetData,
       extent: Extent,
       innerExtent: Extent
-    ): Drawable = {
+    )(implicit theme: Theme): Drawable = {
       val rightPlots = subplots.map(_.last)
       val startX = extent.width
       plot.rightComponents.reverse.foldLeft((startX, empty)) { case ((prevX, d), c) =>
@@ -163,7 +164,7 @@ object Facets {
       subplots: FacetData,
       extent: Extent,
       innerExtent: Extent
-    ): Drawable = {
+    )(implicit theme: Theme): Drawable = {
       plot.components.filter(_.position == position).map { c =>
         if (c.repeated) {
           subplots.zipWithIndex.flatMap { case (row, yIndex) =>
@@ -181,7 +182,7 @@ object Facets {
       }.group.translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
     }
 
-    def renderFront(plot: Plot, extent: Extent): Drawable = {
+    def renderFront(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val plotExtent = plot.plotExtent(extent)
       val innerExtent = computeSubplotExtent(plot, data, plotExtent)
       val paddedPlots = updatePlotsForFacet(plot, data, innerExtent)
@@ -193,7 +194,7 @@ object Facets {
       Seq(top, bottom, left, right, overlay).group
     }
 
-    def renderBack(plot: Plot, extent: Extent): Drawable = {
+    def renderBack(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val plotExtent = plot.plotExtent(extent)
       val innerExtent = computeSubplotExtent(plot, data, plotExtent)
       val paddedPlots = updatePlotsForFacet(plot, data, innerExtent)
