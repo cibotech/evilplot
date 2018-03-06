@@ -9,4 +9,10 @@ trait Colors {
   val path: Color
   val gridLine: Color
   val trendLine: Color
+
+  val title: Color
+  val label: Color
+  val annotation: Color
+  val legendLabel: Color
+  val tickLabel: Color
 }

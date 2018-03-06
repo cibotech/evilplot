@@ -27,7 +27,7 @@ object SurfaceRenderer {
   }
 
   def densityColorContours(
-    strokeWidth: Double = defaultStrokeWidth
+    theme: Theme
   )(points: Seq[Seq[Point3]]): SurfaceRenderer = new SurfaceRenderer {
     private def getColorSeq(numPoints: Int): Seq[Color] =
       if (numPoints <= DefaultColors.nicePalette.length) DefaultColors.nicePalette.take(numPoints)
@@ -43,15 +43,15 @@ object SurfaceRenderer {
 
       getBySafe(points)(_.headOption.map(_.z)).map { bs =>
         val bar = ScaledColorBar(colors, bs.min, bs.max)
-        LegendContext.fromColorBar(bar)
+        LegendContext.fromColorBar(bar)(theme)
       }.getOrElse(LegendContext.empty)
     }
 
     def render(plot: Plot, extent: Extent, surface: Seq[Point3])(implicit theme: Theme): Drawable = {
       val surfaceRenderer = getBySafe(points)(_.headOption.map(_.z)).map { bs =>
         val bar = ScaledColorBar(getColorSeq(points.length), bs.min, bs.max)
-        densityColorContours(strokeWidth, bar)(points)
-      }.getOrElse(contours(strokeWidth))
+        densityColorContours(theme.elements.strokeWidth, bar)(points)
+      }.getOrElse(contours(theme.elements.strokeWidth))
       surfaceRenderer.render(plot, extent, surface)
     }
   }

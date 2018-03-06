@@ -145,13 +145,20 @@ object Axes {
   trait AxesImplicits {
     protected val plot: Plot
 
+    /** Add an X axis to the plot. */
+    def xAxis()(implicit theme: Theme): Plot = {
+      val tickRenderer = TickRenderer.xAxisTickRenderer()
+      val component = ContinuousXAxisPlotComponent(defaultTickCount, tickRenderer)
+      component +: plot.xbounds(component.getDescriptor(plot).axisBounds)
+    }
+
     /** Add an X axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
       */
     def xAxis(
-      tickCount: Int = defaultTickCount,
-      tickRenderer: TickRenderer = TickRenderer.xAxisTickRenderer()
+      tickCount: Int,
+      tickRenderer: TickRenderer
     ): Plot = {
       val component = ContinuousXAxisPlotComponent(tickCount, tickRenderer)
       component +: plot.xbounds(component.getDescriptor(plot).axisBounds)
@@ -160,17 +167,24 @@ object Axes {
     /** Add an X axis to the plot
       * @param labels The labels. The x values are assumed to start at 0 and increment by one for each label.
       */
-    def xAxis(labels: Seq[String]): Plot = xAxis(labels, labels.indices.map(_.toDouble))
+    def xAxis(labels: Seq[String])(implicit theme: Theme): Plot = xAxis(labels, labels.indices.map(_.toDouble))
 
     /** Add an X axis to the plot.
       * @param labels The labels.
       * @param values The X value for each label.
       */
-    def xAxis(labels: Seq[String], values: Seq[Double]): Plot = {
+    def xAxis(labels: Seq[String], values: Seq[Double])(implicit theme: Theme): Plot = {
       require(labels.lengthCompare(values.length) == 0)
       val labelsAndValues = labels.zip(values)
       val component = DiscreteXAxisPlotComponent(labelsAndValues, TickRenderer.xAxisTickRenderer(rotateText = 90))
       component +: plot.xbounds(component.getDescriptor(plot).axisBounds)
+    }
+
+    /** Add a Y axis to the plot. */
+    def yAxis()(implicit theme: Theme): Plot = {
+      val tickRenderer = TickRenderer.yAxisTickRenderer()
+      val component = ContinuousYAxisPlotComponent(defaultTickCount, tickRenderer)
+      component +: plot.ybounds(component.getDescriptor(plot).axisBounds)
     }
 
     /** Add a Y axis to the plot.
@@ -178,8 +192,8 @@ object Axes {
       * @param tickRenderer Function to draw a tick line/label.
       */
     def yAxis(
-      tickCount: Int = defaultTickCount,
-      tickRenderer: TickRenderer = TickRenderer.yAxisTickRenderer()
+      tickCount: Int,
+      tickRenderer: TickRenderer
     ): Plot = {
       val component = ContinuousYAxisPlotComponent(tickCount, tickRenderer)
       component +: plot.ybounds(component.getDescriptor(plot).axisBounds)
@@ -188,13 +202,13 @@ object Axes {
     /** Add a Y axis to the plot.
       * @param labels The label. The y values are assumed to start at 0 and increment by one for each label.
       */
-    def yAxis(labels: Seq[String]): Plot = yAxis(labels, labels.indices.map(_.toDouble))
+    def yAxis(labels: Seq[String])(implicit theme: Theme): Plot = yAxis(labels, labels.indices.map(_.toDouble))
 
     /** Add a Y axis to the plot.
       * @param labels The labels.
       * @param values The Y value for each label.
       */
-    def yAxis(labels: Seq[String], values: Seq[Double]): Plot = {
+    def yAxis(labels: Seq[String], values: Seq[Double])(implicit theme: Theme): Plot = {
       require(labels.lengthCompare(values.length) == 0)
       val labelsAndValues = labels.zip(values)
       val component = DiscreteYAxisPlotComponent(labelsAndValues, TickRenderer.yAxisTickRenderer())

@@ -1,7 +1,8 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.ScaledColorBar
-import com.cibo.evilplot.geometry.{Drawable, Rect, Text}
+import com.cibo.evilplot.geometry.{Drawable, Rect, Style, Text}
+import com.cibo.evilplot.plot.aesthetics.Theme
 
 sealed trait LegendStyle
 
@@ -48,12 +49,12 @@ object LegendContext {
   def single(
     element: Drawable,
     label: String
-  ): LegendContext = single(element, Text(label))
+  )(implicit theme: Theme): LegendContext = single(element, Style(Text(label), theme.colors.legendLabel))
 
   def fromColorBar(
     colorBar: ScaledColorBar,
     style: LegendStyle = LegendStyle.Gradient
-  ): LegendContext = {
+  )(implicit theme: Theme): LegendContext = {
     val elements = (0 until colorBar.nColors).map { c =>
       Rect(Text.defaultSize, Text.defaultSize).filled(colorBar.getColor(c))
     }
@@ -69,7 +70,7 @@ object LegendContext {
           // Otherwise round
           math.round(colorBar.colorValue(c))
       }
-      Text(value.toString)
+      Style(Text(value.toString), theme.colors.legendLabel)
     }
     LegendContext(
       elements = elements,

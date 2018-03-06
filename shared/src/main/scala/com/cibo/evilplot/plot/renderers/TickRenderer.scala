@@ -1,6 +1,7 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.geometry._
+import com.cibo.evilplot.plot.aesthetics.Theme
 
 trait TickRenderer {
   def render(label: String): Drawable
@@ -21,10 +22,11 @@ object TickRenderer {
     length: Double = defaultTickLength,
     thickness: Double = defaultTickThickness,
     rotateText: Double = 0
-  ): TickRenderer = new TickRenderer {
+  )(implicit theme: Theme): TickRenderer = new TickRenderer {
     def render(label: String): Drawable = {
       val line = Line(length, thickness).rotated(90)
-      Align.center(line, Text(label.toString).rotated(rotateText).padTop(2)).reduce(above)
+      Align.center(line, Style(Text(label.toString), theme.colors.tickLabel)
+        .rotated(rotateText).padTop(2)).reduce(above)
     }
   }
 
@@ -36,10 +38,11 @@ object TickRenderer {
   def yAxisTickRenderer(
     length: Double = defaultTickLength,
     thickness: Double = defaultTickThickness
-  ): TickRenderer = new TickRenderer {
+  )(implicit theme: Theme): TickRenderer = new TickRenderer {
     def render(label: String): Drawable = {
       val line = Line(length, thickness)
-      Align.middle(Text(label.toString).padRight(2).padBottom(2), line).reduce(beside)
+      Align.middle(Style(Text(label.toString), theme.colors.tickLabel)
+        .padRight(2).padBottom(2), line).reduce(beside)
     }
   }
 }

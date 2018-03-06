@@ -13,7 +13,7 @@ object Heatmap {
   private case class HeatmapRenderer(
     data: Seq[Seq[Double]],
     colorBar: ScaledColorBar
-  ) extends PlotRenderer {
+  )(implicit theme: Theme) extends PlotRenderer {
     override def legendContext: LegendContext = LegendContext.fromColorBar(colorBar)
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
@@ -39,7 +39,7 @@ object Heatmap {
   def apply(
     data: Seq[Seq[Double]],
     colorBar: ScaledColorBar
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     val xbounds = Bounds(0, data.maxBy(_.size).size)
     val ybounds = Bounds(0, data.size)
     Plot(
@@ -60,7 +60,7 @@ object Heatmap {
     data: Seq[Seq[Double]],
     colorCount: Int = defaultColorCount,
     colors: Seq[Color] = Color.stream
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     val minValue = data.minBy(_.min).min
     val maxValue = data.maxBy(_.max).max
     val colorBar = ScaledColorBar(colors.take(colorCount), minValue, maxValue)

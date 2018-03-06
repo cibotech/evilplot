@@ -34,10 +34,15 @@ object ContourPlot {
   val defaultNumContours: Int = 20
   val defaultGridDimensions: (Int, Int) = (100, 100)
 
+  def apply(data: Seq[Point])(implicit theme: Theme): Plot = {
+    val surfaceRenderer = SurfaceRenderer.densityColorContours(theme)(_)
+    apply(data, surfaceRenderer)
+  }
+
   def apply(
     data: Seq[Point],
+    surfaceRenderer: Seq[Seq[Point3]] => SurfaceRenderer,
     gridDimensions: (Int, Int) = defaultGridDimensions,
-    surfaceRenderer: Seq[Seq[Point3]] => SurfaceRenderer = SurfaceRenderer.densityColorContours(),
     contours: Int = defaultNumContours,
     boundBuffer: Double = defaultBoundBuffer
   ): Plot = {

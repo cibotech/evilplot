@@ -10,7 +10,12 @@ object PainfulTheme {
     fill: Color = HTMLNamedColors.white,
     path: Color = HTMLNamedColors.blue,
     gridLine: Color = HTMLNamedColors.red,
-    trendLine: Color = HTMLNamedColors.red
+    trendLine: Color = HTMLNamedColors.red,
+    title: Color = HTMLNamedColors.red,
+    label: Color = HTMLNamedColors.red,
+    annotation: Color = HTMLNamedColors.red,
+    legendLabel: Color = HTMLNamedColors.blue,
+    tickLabel: Color = HTMLNamedColors.blue
   ) extends Colors
 
   implicit val painfulTheme: Theme = DefaultTheme.DefaultTheme(

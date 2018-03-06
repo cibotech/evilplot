@@ -16,7 +16,12 @@ object DefaultTheme {
     fill: Color = HTMLNamedColors.white,
     path: Color = HSL(0, 0, 0),
     gridLine: Color = HTMLNamedColors.white,
-    trendLine: Color = HSL(0, 0, 35)
+    trendLine: Color = HSL(0, 0, 35),
+    title: Color = HTMLNamedColors.black,
+    label: Color = HTMLNamedColors.black,
+    annotation: Color = HTMLNamedColors.black,
+    legendLabel: Color = HTMLNamedColors.black,
+    tickLabel: Color = HTMLNamedColors.black
   ) extends Colors
 
   case class DefaultElements(
