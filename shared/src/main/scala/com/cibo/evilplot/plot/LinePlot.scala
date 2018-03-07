@@ -53,7 +53,7 @@ object LinePlot {
     data: Seq[Point],
     name: String,
     color: Color,
-    strokeWidth: Double = PathRenderer.defaultStrokeWidth,
+    strokeWidth: Option[Double] = None,
     xboundBuffer: Double = 0,
     yboundBuffer: Double = XyPlot.defaultBoundBuffer
   )(implicit theme: Theme): Plot = {

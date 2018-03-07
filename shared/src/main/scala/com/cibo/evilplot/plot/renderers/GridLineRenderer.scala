@@ -9,21 +9,15 @@ trait GridLineRenderer {
 
 object GridLineRenderer {
 
-  val defaultThickness: Double = 1.0
-
-  def xGridLineRenderer(
-    thickness: Double = defaultThickness
-  )(implicit theme: Theme): GridLineRenderer = new GridLineRenderer {
+  def xGridLineRenderer()(implicit theme: Theme): GridLineRenderer = new GridLineRenderer {
     def render(extent: Extent, label: String): Drawable = {
-      Line(extent.height, thickness).colored(theme.colors.gridLine).rotated(90)
+      Line(extent.height, theme.elements.gridLineSize).colored(theme.colors.gridLine).rotated(90)
     }
   }
 
-  def yGridLineRenderer(
-    thickness: Double = defaultThickness
-  )(implicit theme: Theme): GridLineRenderer = new GridLineRenderer {
+  def yGridLineRenderer()(implicit theme: Theme): GridLineRenderer = new GridLineRenderer {
     def render(extent: Extent, label: String): Drawable = {
-      Line(extent.width, thickness).colored(theme.colors.gridLine)
+      Line(extent.width, theme.elements.gridLineSize).colored(theme.colors.gridLine)
     }
   }
 }

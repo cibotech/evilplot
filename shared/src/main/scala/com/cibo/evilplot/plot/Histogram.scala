@@ -70,9 +70,9 @@ object Histogram {
     values: Seq[Double],
     bins: Int = defaultBinCount,
     barRenderer: BarRenderer = BarRenderer.default(),
-    spacing: Double = BarChart.defaultSpacing,
+    spacing: Option[Double] = None,
     boundBuffer: Double = BarChart.defaultBoundBuffer
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     require(bins > 0, "must have at least one bin")
     val xbounds = Bounds(values.min, values.max)
     val maxY = createBins(values, xbounds, bins).maxBy(_.y).y
@@ -80,7 +80,7 @@ object Histogram {
     Plot(
       xbounds = xbounds,
       ybounds = Bounds(0, maxY * (1.0 + boundBuffer)),
-      renderer = HistogramRenderer(values, barRenderer, bins, spacing, boundBuffer)
+      renderer = HistogramRenderer(values, barRenderer, bins, spacing.getOrElse(theme.elements.barSpacing), boundBuffer)
     )
   }
 }

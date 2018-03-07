@@ -10,7 +10,6 @@ trait BoxRenderer extends PlotElementRenderer[BoxPlotSummaryStatistics] {
 }
 
 object BoxRenderer {
-  private val defaultStrokeWidth: Double = 2
   def default()(implicit theme: Theme): BoxRenderer = new BoxRenderer {
     def render(
       plot: Plot,

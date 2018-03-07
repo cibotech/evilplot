@@ -13,16 +13,11 @@ trait SurfaceRenderer extends PlotElementRenderer[Seq[Point3]] {
 
 object SurfaceRenderer {
 
-  private val defaultStrokeWidth: Double = 2
-
-  def contours(
-    strokeWidth: Double = defaultStrokeWidth,
-    color: Color = DefaultColors.pathColor
-  ): SurfaceRenderer = new SurfaceRenderer {
+  def contours(color: Option[Color] = None)(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
     def render(plot: Plot, extent: Extent, surface: Seq[Point3])(implicit theme: Theme): Drawable = {
       surface.grouped(2).map { seg =>
-        Path(seg.map(p => Point(p.x, p.y)), strokeWidth)
-      }.toSeq.group colored color
+        Path(seg.map(p => Point(p.x, p.y)), theme.elements.strokeWidth)
+      }.toSeq.group colored color.getOrElse(theme.colors.path)
     }
   }
 
@@ -51,7 +46,7 @@ object SurfaceRenderer {
       val surfaceRenderer = getBySafe(points)(_.headOption.map(_.z)).map { bs =>
         val bar = ScaledColorBar(getColorSeq(points.length), bs.min, bs.max)
         densityColorContours(theme.elements.strokeWidth, bar)(points)
-      }.getOrElse(contours(theme.elements.strokeWidth))
+      }.getOrElse(contours())
       surfaceRenderer.render(plot, extent, surface)
     }
   }
@@ -61,7 +56,7 @@ object SurfaceRenderer {
     bar: ScaledColorBar
   )(points: Seq[Seq[Point3]]): SurfaceRenderer = new SurfaceRenderer {
     def render(plot: Plot, extent: Extent, points: Seq[Point3])(implicit theme: Theme): Drawable = {
-      points.headOption.map(p => contours(strokeWidth, bar.getColor(p.z))
+      points.headOption.map(p => contours(Some(bar.getColor(p.z)))
         .render(plot, extent, points)
       )
       .getOrElse(EmptyDrawable())

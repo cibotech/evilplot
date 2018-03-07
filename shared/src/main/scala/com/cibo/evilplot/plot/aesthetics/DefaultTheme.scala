@@ -7,7 +7,9 @@ object DefaultTheme {
   case class DefaultFonts(
     titleSize: Double = 22,
     labelSize: Double = 20,
-    annotationSize: Double = 20
+    annotationSize: Double = 10,
+    tickLabelSize: Double = 10,
+    legendLabelSize: Double = 10
   ) extends Fonts
 
   case class DefaultColors(
@@ -15,18 +17,23 @@ object DefaultTheme {
     bar: Color = HSL(0, 0, 35),
     fill: Color = HTMLNamedColors.white,
     path: Color = HSL(0, 0, 0),
+    point: Color = HSL(0, 0, 35),
     gridLine: Color = HTMLNamedColors.white,
     trendLine: Color = HSL(0, 0, 35),
     title: Color = HTMLNamedColors.black,
     label: Color = HTMLNamedColors.black,
     annotation: Color = HTMLNamedColors.black,
     legendLabel: Color = HTMLNamedColors.black,
-    tickLabel: Color = HTMLNamedColors.black
+    tickLabel: Color = HTMLNamedColors.black,
+    stream: Seq[Color] = Color.stream
   ) extends Colors
 
   case class DefaultElements(
     strokeWidth: Double = 2,
-    pointSize: Double = 2.5
+    pointSize: Double = 2.5,
+    gridLineSize: Double = 1,
+    barSpacing: Double = 1,
+    clusterSpacing: Double = 4
   ) extends Elements
 
   case class DefaultTheme(

@@ -15,7 +15,9 @@ object PainfulTheme {
     label: Color = HTMLNamedColors.red,
     annotation: Color = HTMLNamedColors.red,
     legendLabel: Color = HTMLNamedColors.blue,
-    tickLabel: Color = HTMLNamedColors.blue
+    tickLabel: Color = HTMLNamedColors.blue,
+    point: Color = HTMLNamedColors.red,
+    stream: Seq[Color] = Color.stream
   ) extends Colors
 
   implicit val painfulTheme: Theme = DefaultTheme.DefaultTheme(

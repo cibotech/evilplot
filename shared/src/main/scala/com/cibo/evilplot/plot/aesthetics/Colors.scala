@@ -7,6 +7,7 @@ trait Colors {
   val bar: Color
   val fill: Color
   val path: Color
+  val point: Color
   val gridLine: Color
   val trendLine: Color
 
@@ -15,4 +16,6 @@ trait Colors {
   val annotation: Color
   val legendLabel: Color
   val tickLabel: Color
+
+  val stream: Seq[Color]
 }

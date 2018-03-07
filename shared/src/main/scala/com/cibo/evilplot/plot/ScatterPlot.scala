@@ -1,7 +1,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, Text}
+import com.cibo.evilplot.geometry.{Drawable, Style, Text}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
@@ -9,16 +9,25 @@ import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 object ScatterPlot {
   /** Create a scatter plot from some data.
     * @param data The points to plot.
+    * @return A Plot representing a scatter plot.
+    */
+  def apply(data: Seq[Point])(implicit theme: Theme): Plot = {
+    val boundBuffer: Double = XyPlot.defaultBoundBuffer
+    val pointRenderer = PointRenderer.default()
+    val pathRenderer = PathRenderer.empty()
+    XyPlot(data, pointRenderer, pathRenderer, boundBuffer, boundBuffer)
+  }
+
+  /** Create a scatter plot from some data.
+    * @param data The points to plot.
     * @param pointRenderer A function to create a Drawable for each point to plot.
-    * @param boundBuffer Extra padding to add to bounds as a fraction.
     * @return A Plot representing a scatter plot.
     */
   def apply(
     data: Seq[Point],
-    pointRenderer: PointRenderer = PointRenderer.default(),
-    boundBuffer: Double = XyPlot.defaultBoundBuffer
+    pointRenderer: PointRenderer
   )(implicit theme: Theme): Plot = {
-    XyPlot(data, pointRenderer, pathRenderer = PathRenderer.empty(), boundBuffer, boundBuffer)
+    XyPlot(data, pointRenderer, pathRenderer = PathRenderer.empty(), XyPlot.defaultBoundBuffer, XyPlot.defaultBoundBuffer)
   }
 
   /** Create a scatter plot with the specified name and color.
@@ -32,9 +41,16 @@ object ScatterPlot {
     data: Seq[Point],
     name: String,
     color: Color,
-    pointSize: Double = PointRenderer.defaultPointSize,
+    pointSize: Option[Double] = None,
     boundBuffer: Double = XyPlot.defaultBoundBuffer
-  ): Plot = series(data, Text(name), color, pointSize, boundBuffer)
+  )(implicit theme: Theme): Plot =
+    series(
+      data,
+      Style(Text(name, theme.fonts.labelSize), theme.colors.legendLabel),
+      color,
+      pointSize,
+      boundBuffer
+    )
 
   /** Create a scatter plot with the specified name and color.
     * @param data The points to plot.
@@ -47,10 +63,10 @@ object ScatterPlot {
     data: Seq[Point],
     name: Drawable,
     color: Color,
-    pointSize: Double,
+    pointSize: Option[Double],
     boundBuffer: Double
-  ): Plot = {
-    val pointRenderer = PointRenderer.default(pointSize, color, name)
+  )(implicit theme: Theme): Plot = {
+    val pointRenderer = PointRenderer.default(Some(color), pointSize, name)
     val pathRenderer = PathRenderer.empty()
     XyPlot(data, pointRenderer, pathRenderer, boundBuffer, boundBuffer)
   }
