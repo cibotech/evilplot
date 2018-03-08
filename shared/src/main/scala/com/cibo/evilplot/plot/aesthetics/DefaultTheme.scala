@@ -33,7 +33,9 @@ object DefaultTheme {
     pointSize: Double = 2.5,
     gridLineSize: Double = 1,
     barSpacing: Double = 1,
-    clusterSpacing: Double = 4
+    clusterSpacing: Double = 4,
+    boundBuffer: Double = 0.1,
+    boxSpacing: Double = 20
   ) extends Elements
 
   case class DefaultTheme(

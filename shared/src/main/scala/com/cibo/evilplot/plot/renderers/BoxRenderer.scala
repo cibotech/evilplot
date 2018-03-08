@@ -6,7 +6,7 @@ import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
 
 trait BoxRenderer extends PlotElementRenderer[BoxPlotSummaryStatistics] {
-  def render(plot: Plot, extent: Extent, summary: BoxPlotSummaryStatistics)(implicit theme: Theme): Drawable
+  def render(plot: Plot, extent: Extent, summary: BoxPlotSummaryStatistics): Drawable
 }
 
 object BoxRenderer {
@@ -15,7 +15,7 @@ object BoxRenderer {
       plot: Plot,
       extent: Extent,
       summary: BoxPlotSummaryStatistics
-    )(implicit theme: Theme): Drawable = {
+    ): Drawable = {
       val scale = extent.height / (summary.upperWhisker - summary.lowerWhisker)
       val topWhisker = summary.upperWhisker - summary.upperQuantile
       val uppperToMiddle = summary.upperQuantile - summary.middleQuantile

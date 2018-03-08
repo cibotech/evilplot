@@ -7,8 +7,6 @@ import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRender
 
 object XyPlot {
 
-  val defaultBoundBuffer: Double = 0.1
-
   private case class XyPlotRenderer(
     data: Seq[Point],
     pointRenderer: PointRenderer,
@@ -44,13 +42,19 @@ object XyPlot {
     data: Seq[Point],
     pointRenderer: PointRenderer,
     pathRenderer: PathRenderer,
-    xboundBuffer: Double = defaultBoundBuffer,
-    yboundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
-    require(xboundBuffer >= 0.0)
-    require(yboundBuffer >= 0.0)
-    val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), xboundBuffer)
-    val ybounds = Plot.expandBounds(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y), yboundBuffer)
+    xboundBuffer: Option[Double] = None,
+    yboundBuffer: Option[Double] = None
+  )(implicit theme: Theme): Plot = {
+    require(xboundBuffer.getOrElse(0.0) >= 0.0)
+    require(yboundBuffer.getOrElse(0.0) >= 0.0)
+    val xbounds = Plot.expandBounds(
+      Bounds(data.minBy(_.x).x, data.maxBy(_.x).x),
+      xboundBuffer.getOrElse(theme.elements.boundBuffer)
+    )
+    val ybounds = Plot.expandBounds(
+      Bounds(data.minBy(_.y).y, data.maxBy(_.y).y),
+      yboundBuffer.getOrElse(theme.elements.boundBuffer)
+    )
     Plot(xbounds, ybounds, XyPlotRenderer(data, pointRenderer, pathRenderer))
   }
 }

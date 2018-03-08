@@ -59,11 +59,12 @@ object Heatmap {
   def apply(
     data: Seq[Seq[Double]],
     colorCount: Int = defaultColorCount,
-    colors: Seq[Color] = Color.stream
+    colors: Seq[Color] = Seq.empty
   )(implicit theme: Theme): Plot = {
+    val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
     val minValue = data.minBy(_.min).min
     val maxValue = data.maxBy(_.max).max
-    val colorBar = ScaledColorBar(colors.take(colorCount), minValue, maxValue)
+    val colorBar = ScaledColorBar(colorStream.take(colorCount), minValue, maxValue)
     apply(data, colorBar)
   }
 }

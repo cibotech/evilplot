@@ -15,12 +15,12 @@ object LinePlot {
     */
   def apply(
     data: Seq[Point],
-    xboundBuffer: Double = 0,
-    yboundBuffer: Double = XyPlot.defaultBoundBuffer
+    xboundBuffer: Option[Double] = None,
+    yboundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.empty()
     val pathRenderer = PathRenderer.default()
-    XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
+    XyPlot(data, pointRenderer, pathRenderer, xboundBuffer.orElse(Some(0)), yboundBuffer)
   }
 
   /** Create a line plot from some data.  Convenience method on top of XyPlot
@@ -38,7 +38,7 @@ object LinePlot {
     xboundBuffer: Double,
     yboundBuffer: Double
   )(implicit theme: Theme): Plot = {
-    XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
+    XyPlot(data, pointRenderer, pathRenderer, Some(xboundBuffer), Some(yboundBuffer))
   }
 
   /** Create a line plot with the specified name and color.
@@ -54,12 +54,18 @@ object LinePlot {
     name: String,
     color: Color,
     strokeWidth: Option[Double] = None,
-    xboundBuffer: Double = 0,
-    yboundBuffer: Double = XyPlot.defaultBoundBuffer
+    xboundBuffer: Option[Double] = None,
+    yboundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.empty()
     val pathRenderer = PathRenderer.named(name, color, strokeWidth)
-    XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
+    XyPlot(
+      data,
+      pointRenderer,
+      pathRenderer,
+      xboundBuffer,
+      yboundBuffer
+    )
   }
 
   /** Create a line plot with the specified name and color.
@@ -80,7 +86,7 @@ object LinePlot {
   )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.empty()
     val pathRenderer = PathRenderer.default(strokeWidth, color, label)
-    XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
+    XyPlot(data, pointRenderer, pathRenderer, Some(xboundBuffer), Some(yboundBuffer))
   }
 }
 

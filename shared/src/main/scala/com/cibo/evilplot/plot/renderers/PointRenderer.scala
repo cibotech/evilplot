@@ -7,7 +7,7 @@ import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
 trait PointRenderer extends PlotElementRenderer[Int] {
   def legendContext: LegendContext = LegendContext()
-  def render(plot: Plot, extent: Extent, index: Int)(implicit theme: Theme): Drawable
+  def render(plot: Plot, extent: Extent, index: Int): Drawable
 }
 
 object PointRenderer {
@@ -31,7 +31,7 @@ object PointRenderer {
           pointSize.getOrElse(theme.elements.pointSize)
         ).filled(color.getOrElse(theme.colors.point)), d)
     }
-    def render(plot: Plot, extent: Extent, index: Int)(implicit theme: Theme): Drawable =
+    def render(plot: Plot, extent: Extent, index: Int): Drawable =
       Disc(theme.elements.pointSize) filled color.getOrElse(theme.colors.point)
   }
 
@@ -39,8 +39,7 @@ object PointRenderer {
     * A no-op renderer for when you don't want to render points (such as on a line)
     */
   def empty(): PointRenderer = new PointRenderer {
-    def render(plot: Plot, extent: Extent, index: Int)(implicit theme: Theme): Drawable =
-      EmptyDrawable()
+    def render(plot: Plot, extent: Extent, index: Int): Drawable = EmptyDrawable()
   }
 
   /** Render points with colors based on depth.
@@ -82,7 +81,7 @@ object PointRenderer {
           defaultStyle = LegendStyle.Categorical
         )
       }
-      def render(plot: Plot, extent: Extent, index: Int)(implicit theme: Theme): Drawable = {
+      def render(plot: Plot, extent: Extent, index: Int): Drawable = {
         Disc(pointSize) filled bar.getColor(depths(index))
       }
     }

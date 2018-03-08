@@ -8,22 +8,20 @@ import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
 trait SurfaceRenderer extends PlotElementRenderer[Seq[Point3]] {
   def legendContext: LegendContext = LegendContext.empty
-  def render(plot: Plot, extent: Extent, surface: Seq[Point3])(implicit theme: Theme): Drawable
+  def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable
 }
 
 object SurfaceRenderer {
 
   def contours(color: Option[Color] = None)(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
-    def render(plot: Plot, extent: Extent, surface: Seq[Point3])(implicit theme: Theme): Drawable = {
+    def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable = {
       surface.grouped(2).map { seg =>
         Path(seg.map(p => Point(p.x, p.y)), theme.elements.strokeWidth)
       }.toSeq.group colored color.getOrElse(theme.colors.path)
     }
   }
 
-  def densityColorContours(
-    theme: Theme
-  )(points: Seq[Seq[Point3]]): SurfaceRenderer = new SurfaceRenderer {
+  def densityColorContours(points: Seq[Seq[Point3]])(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
     private def getColorSeq(numPoints: Int): Seq[Color] =
       if (numPoints <= DefaultColors.nicePalette.length) DefaultColors.nicePalette.take(numPoints)
       else Color.stream.take(numPoints)
@@ -42,7 +40,7 @@ object SurfaceRenderer {
       }.getOrElse(LegendContext.empty)
     }
 
-    def render(plot: Plot, extent: Extent, surface: Seq[Point3])(implicit theme: Theme): Drawable = {
+    def render(plot: Plot, extent: Extent, surface: Seq[Point3]): Drawable = {
       val surfaceRenderer = getBySafe(points)(_.headOption.map(_.z)).map { bs =>
         val bar = ScaledColorBar(getColorSeq(points.length), bs.min, bs.max)
         densityColorContours(theme.elements.strokeWidth, bar)(points)
@@ -54,8 +52,8 @@ object SurfaceRenderer {
   def densityColorContours(
     strokeWidth: Double,
     bar: ScaledColorBar
-  )(points: Seq[Seq[Point3]]): SurfaceRenderer = new SurfaceRenderer {
-    def render(plot: Plot, extent: Extent, points: Seq[Point3])(implicit theme: Theme): Drawable = {
+  )(points: Seq[Seq[Point3]])(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
+    def render(plot: Plot, extent: Extent, points: Seq[Point3]): Drawable = {
       points.headOption.map(p => contours(Some(bar.getColor(p.z)))
         .render(plot, extent, points)
       )

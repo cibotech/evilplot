@@ -9,5 +9,5 @@ import com.cibo.evilplot.plot.Plot
   */
 trait PlotElementRenderer[C] {
   /** Render a category within the extent. */
-  def render(plot: Plot, extent: Extent, context: C)(implicit theme: Theme): Drawable
+  def render(plot: Plot, extent: Extent, context: C): Drawable
 }

@@ -12,10 +12,9 @@ object ScatterPlot {
     * @return A Plot representing a scatter plot.
     */
   def apply(data: Seq[Point])(implicit theme: Theme): Plot = {
-    val boundBuffer: Double = XyPlot.defaultBoundBuffer
     val pointRenderer = PointRenderer.default()
     val pathRenderer = PathRenderer.empty()
-    XyPlot(data, pointRenderer, pathRenderer, boundBuffer, boundBuffer)
+    XyPlot(data, pointRenderer, pathRenderer)
   }
 
   /** Create a scatter plot from some data.
@@ -27,7 +26,7 @@ object ScatterPlot {
     data: Seq[Point],
     pointRenderer: PointRenderer
   )(implicit theme: Theme): Plot = {
-    XyPlot(data, pointRenderer, pathRenderer = PathRenderer.empty(), XyPlot.defaultBoundBuffer, XyPlot.defaultBoundBuffer)
+    XyPlot(data, pointRenderer, PathRenderer.empty())
   }
 
   /** Create a scatter plot with the specified name and color.
@@ -42,7 +41,7 @@ object ScatterPlot {
     name: String,
     color: Color,
     pointSize: Option[Double] = None,
-    boundBuffer: Double = XyPlot.defaultBoundBuffer
+    boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot =
     series(
       data,
@@ -64,7 +63,7 @@ object ScatterPlot {
     name: Drawable,
     color: Color,
     pointSize: Option[Double],
-    boundBuffer: Double
+    boundBuffer: Option[Double]
   )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.default(Some(color), pointSize, name)
     val pathRenderer = PathRenderer.empty()

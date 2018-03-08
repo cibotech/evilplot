@@ -35,7 +35,7 @@ object ContourPlot {
   val defaultGridDimensions: (Int, Int) = (100, 100)
 
   def apply(data: Seq[Point])(implicit theme: Theme): Plot = {
-    val surfaceRenderer = SurfaceRenderer.densityColorContours(theme)(_)
+    val surfaceRenderer = (ps: Seq[Seq[Point3]]) => SurfaceRenderer.densityColorContours(ps)
     apply(data, surfaceRenderer)
   }
 
@@ -45,7 +45,7 @@ object ContourPlot {
     gridDimensions: (Int, Int) = defaultGridDimensions,
     contours: Int = defaultNumContours,
     boundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     require(contours > 0, "Must use at least one contour.")
 
     val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), boundBuffer)

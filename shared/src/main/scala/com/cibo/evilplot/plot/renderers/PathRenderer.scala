@@ -1,6 +1,6 @@
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.{Color, DefaultColors}
+import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, Path, StrokeStyle, Style, Text}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -8,7 +8,7 @@ import com.cibo.evilplot.plot.{LegendContext, Plot}
 
 trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
   def legendContext: LegendContext = LegendContext.empty
-  def render(plot: Plot, extent: Extent, path: Seq[Point])(implicit theme: Theme): Drawable
+  def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable
 }
 
 object PathRenderer {
@@ -32,7 +32,7 @@ object PathRenderer {
       case _: EmptyDrawable => LegendContext.empty
       case d                => LegendContext.single(StrokeStyle(Line(legendStrokeLength, strokeWidth), color), d)
     }
-    def render(plot: Plot, extent: Extent, path: Seq[Point])(implicit theme: Theme): Drawable = {
+    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       StrokeStyle(Path(path, strokeWidth), color)
     }
   }
@@ -53,8 +53,8 @@ object PathRenderer {
       Style(Text(name, theme.fonts.legendLabelSize), theme.colors.legendLabel)
     )
 
-  def closed(color: Color): PathRenderer = new PathRenderer {
-    def render(plot: Plot, extent: Extent, path: Seq[Point])(implicit theme: Theme): Drawable = {
+  def closed(color: Color)(implicit theme: Theme): PathRenderer = new PathRenderer {
+    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       // better hope this is an indexedseq?
       path.headOption match {
         case Some(h) => StrokeStyle(Path(path :+ h, theme.elements.strokeWidth), color)
@@ -67,8 +67,7 @@ object PathRenderer {
     * A no-op renderer for when you don't want to render paths (such as on a scatter plot)
     */
   def empty(): PathRenderer = new PathRenderer {
-    def render(plot: Plot, extent: Extent, path: Seq[Point])(implicit theme: Theme): Drawable =
-      EmptyDrawable()
+    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = EmptyDrawable()
   }
 }
 
