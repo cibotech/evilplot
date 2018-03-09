@@ -141,7 +141,7 @@ object BorderRect {
 
   /** A rectangle that can be both filled and stroked. */
   def filled(width: Double, height: Double): Drawable = {
-    Seq(Rect(width, height), BorderRect(width, height)).group
+    Seq(BorderRect(width, height), Rect(width, height)).group
   }
 }
 
