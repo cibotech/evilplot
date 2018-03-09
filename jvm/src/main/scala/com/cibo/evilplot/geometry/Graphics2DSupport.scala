@@ -200,8 +200,8 @@ private[geometry] trait Graphics2DSupport {
     def asJava: java.awt.Color = c match {
       case hsla: HSLA =>
         val (r, g, b, a) = ColorUtils.hslaToRgba(hsla)
-        new java.awt.Color(r, g, b, a.toFloat)
-      case Clear => new java.awt.Color(0, 0, 0, 0.0f)
+        new java.awt.Color(r, g, b, math.round(255 * a).toInt)
+      case Clear => new java.awt.Color(0, 0, 0, 0)
     }
   }
 
