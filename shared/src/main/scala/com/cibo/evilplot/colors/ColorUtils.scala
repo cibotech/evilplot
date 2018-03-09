@@ -109,23 +109,26 @@ private[evilplot] object ColorUtils {
 
   // https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSL
   //scalastyle:off
-  def hslaToRgba(hsla: HSLA): (Double, Double, Double, Double) = {
+  def hslaToRgba(hsla: HSLA): (Int, Int, Int, Double) = {
     val l = hsla.lightness / 100.0
     val s = hsla.saturation / 100.0
-    val c = (1 - math.abs(2 * l - 1)) * s
-    val hPrime = hsla.hue / 60.0
-    val x = c * (1 - math.abs((hPrime % 2) - 1))
+    val c = (1d - math.abs(2d * l - 1d)) * s
+    val hPrime = hsla.hue / 60d
+    val x = c * (1d - math.abs((hPrime % 2) - 1d))
     val (r1, g1, b1): (Double, Double, Double) =
       if (hPrime.isNaN) (0, 0, 0)
-      else if (hPrime >= 0 && hPrime <= 1) (c, x, 0)
-      else if (hPrime >= 1 && hPrime <= 2) (x, c, 0)
-      else if (hPrime >= 2 && hPrime <= 3) (0, c, x)
-      else if (hPrime >= 3 && hPrime <= 4) (0, x, c)
-      else if (hPrime >= 4 && hPrime <= 5) (x, 0, c)
+      else if (hPrime >= 0 && hPrime < 1) (c, x, 0)
+      else if (hPrime >= 1 && hPrime < 2) (x, c, 0)
+      else if (hPrime >= 2 && hPrime < 3) (0, c, x)
+      else if (hPrime >= 3 && hPrime < 4) (0, x, c)
+      else if (hPrime >= 4 && hPrime < 5) (x, 0, c)
       else (c, 0, x)
 
     val m = l - .5 * c
-    (r1 + m, g1 + m, b1 + m, hsla.opacity)
+    (math.round(255 * (r1 + m)).toInt,
+      math.round(255 * (g1 + m)).toInt,
+      math.round(255 * (b1 + m)).toInt,
+      hsla.opacity)
   }
   // scalastyle:on
 

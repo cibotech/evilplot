@@ -3,7 +3,7 @@ package com.cibo.evilplot.geometry
 import java.awt.geom.GeneralPath
 import java.awt.{BasicStroke, Font, Graphics2D, RenderingHints}
 
-import com.cibo.evilplot.colors.{Clear, Color, ColorUtils, HSLA}
+import com.cibo.evilplot.colors._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -17,8 +17,7 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   private[this] val initialState = GraphicsState(graphics.getTransform,
                                                  graphics.getPaint,
                                                  graphics.getPaint,
-                                                 graphics.getStroke,
-                                                 ColorMode.Fill)
+                                                 graphics.getStroke)
 
   private val stateStack: mutable.ArrayStack[GraphicsState] =
     mutable.ArrayStack(initialState)
@@ -36,21 +35,17 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   // as both canvas and EvilPlot do.
   private[geometry] var fillColor: java.awt.Paint = initialState.fillColor
   private[geometry] var strokeColor: java.awt.Paint = initialState.strokeColor
-  private[geometry] var colorMode: ColorMode = initialState.colorMode
 
   enableAntialiasing()
 
   // Query graphics for state and store it.
-  // Graphics2D does not differentiate between "strokeColor" and "fillColor" --
-  // both are controlled via the `paint` and `fill` operations.
   private def save(): Unit = {
     stateStack.push(
       GraphicsState(
         graphics.getTransform,
         fillColor,
         strokeColor,
-        graphics.getStroke,
-        colorMode
+        graphics.getStroke
       ))
   }
 
@@ -60,13 +55,11 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     fillColor = restored.fillColor
     strokeColor = restored.strokeColor
     graphics.setStroke(restored.strokeWeight)
-    colorMode = restored.colorMode
     // Clear out the graphics color.
-    graphics.setColor(Clear.asJava)
+    graphics.setPaint(initialState.fillColor)
   }
 
-  def draw(line: Line): Unit = applyOp(this) {
-    colorMode = ColorMode.Stroke
+  def draw(line: Line): Unit = applyWithStrokeColor(this) {
     val stroke = line.strokeWidth.asStroke
     graphics.setStroke(stroke)
     val gpath = new GeneralPath()
@@ -76,8 +69,7 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     graphics.draw(gpath)
   }
 
-  def draw(path: Path): Unit = applyOp(this) {
-    colorMode = ColorMode.Stroke
+  def draw(path: Path): Unit = applyWithStrokeColor(this) {
     val correction = path.strokeWidth / 2
     val stroke = path.strokeWidth.asStroke
     graphics.setStroke(stroke)
@@ -91,26 +83,22 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     graphics.draw(gpath)
   }
 
-  def draw(rect: Rect): Unit = applyOp(this) {
-    colorMode = ColorMode.Fill
+  def draw(rect: Rect): Unit = applyWithFillColor(this) {
     graphics.fill(
       new java.awt.Rectangle(0, 0, rect.width.toInt, rect.height.toInt))
   }
 
-  def draw(rect: BorderRect): Unit = applyOp(this) {
-    colorMode = ColorMode.Stroke
+  def draw(rect: BorderRect): Unit = applyWithStrokeColor(this) {
     graphics.draw(
       new java.awt.Rectangle(0, 0, rect.width.toInt, rect.height.toInt))
   }
 
-  def draw(disc: Disc): Unit = applyOp(this) {
-    colorMode = ColorMode.Fill
+  def draw(disc: Disc): Unit = applyWithFillColor(this) {
     val diameter = (2 * disc.radius).toInt
     graphics.fillArc(disc.x.toInt, disc.y.toInt, diameter, diameter, 0, 360)
   }
 
-  def draw(wedge: Wedge): Unit = applyOp(this) {
-    colorMode = ColorMode.Fill
+  def draw(wedge: Wedge): Unit = applyWithFillColor(this) {
     graphics.translate(wedge.radius, wedge.radius)
     graphics.fillArc(0,
                      0,
@@ -143,13 +131,11 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   }
 
   def draw(style: Style): Unit = applyOp(this) {
-    colorMode = ColorMode.Fill
     fillColor = style.fill.asJava
     style.r.draw(this)
   }
 
   def draw(style: StrokeStyle): Unit = applyOp(this) {
-    colorMode = ColorMode.Stroke
     strokeColor = style.fill.asJava
     style.r.draw(this)
   }
@@ -160,7 +146,7 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     weight.r.draw(this)
   }
 
-  def draw(text: Text): Unit = applyOp(this) {
+  def draw(text: Text): Unit = applyWithStrokeColor(this) {
     val baseExtent = TextMetrics.measure(text)
     val scalex = text.extent.width / baseExtent.width
     val scaley = text.extent.height / baseExtent.height
@@ -175,12 +161,28 @@ object Graphics2DRenderContext {
   private[geometry] def applyOp(
       graphics2DRenderContext: Graphics2DRenderContext)(f: => Unit): Unit = {
     graphics2DRenderContext.save()
-    if (graphics2DRenderContext.colorMode == ColorMode.Fill)
-      graphics2DRenderContext.graphics.setPaint(graphics2DRenderContext.fillColor)
-    else
-      graphics2DRenderContext.graphics.setPaint(graphics2DRenderContext.strokeColor)
     f
     graphics2DRenderContext.restore()
+  }
+
+  private[geometry] def applyWithStrokeColor(
+      graphics2DRenderContext: Graphics2DRenderContext)(
+      f: => Unit
+  ): Unit = {
+    applyOp(graphics2DRenderContext) {
+      graphics2DRenderContext.graphics.setPaint(graphics2DRenderContext.strokeColor)
+      f
+    }
+  }
+
+  private[geometry] def applyWithFillColor(
+      graphics2DRenderContext: Graphics2DRenderContext)(
+      f: => Unit
+  ): Unit = {
+    applyOp(graphics2DRenderContext) {
+      graphics2DRenderContext.graphics.setPaint(graphics2DRenderContext.fillColor)
+      f
+    }
   }
 
   private val sansSerif = Font.decode(Font.SANS_SERIF)
@@ -190,8 +192,7 @@ private[geometry] final case class GraphicsState(
     affineTransform: java.awt.geom.AffineTransform,
     fillColor: java.awt.Paint,
     strokeColor: java.awt.Paint,
-    strokeWeight: java.awt.Stroke,
-    colorMode: ColorMode // Keep track of whether we are filling or stroking.
+    strokeWeight: java.awt.Stroke
 )
 
 private[geometry] trait Graphics2DSupport {
@@ -199,8 +200,8 @@ private[geometry] trait Graphics2DSupport {
     def asJava: java.awt.Color = c match {
       case hsla: HSLA =>
         val (r, g, b, a) = ColorUtils.hslaToRgba(hsla)
-        new java.awt.Color(r.toFloat, g.toFloat, b.toFloat, a.toFloat)
-      case Clear => new java.awt.Color(0.0f, 0.0f, 0.0f, 0.0f)
+        new java.awt.Color(r, g, b, a.toFloat)
+      case Clear => new java.awt.Color(0, 0, 0, 0.0f)
     }
   }
 
@@ -218,10 +219,4 @@ private[geometry] trait Graphics2DSupport {
   implicit class StrokeWeightConverters(strokeWeight: Double) {
     def asStroke: java.awt.Stroke = new BasicStroke(strokeWeight.toFloat)
   }
-}
-
-private[geometry] sealed trait ColorMode
-private[geometry] object ColorMode {
-  private[geometry] case object Fill extends ColorMode
-  private[geometry] case object Stroke extends ColorMode
 }
