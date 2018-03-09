@@ -112,3 +112,4 @@ class ColorsSpec extends FunSpec {
     }
   }
 }
+
