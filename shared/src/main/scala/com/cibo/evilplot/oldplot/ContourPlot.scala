@@ -16,25 +16,22 @@ case class ContourPlot(chartSize: Extent, data: ContourPlotDef) extends Chart wi
     Point((p.x - xBounds.min) * extent.width / xBounds.range, (yBounds.max - p.y) * extent.height / yBounds.range)
   }
 
-  private def toPixelCoords(seg: Segment, xBounds: Bounds, yBounds: Bounds, extent: Extent): Segment = {
-    Segment(toPixelCoords(seg.a, xBounds, yBounds, extent), toPixelCoords(seg.b, xBounds, yBounds, extent))
-  }
-
   def plottedData(extent: Extent): Drawable = {
     val colorBar = data.colorBar
     val binWidth = data.zBounds.range / numContours
     val levels = Seq.tabulate[Double](numContours - 1)(bin => grid.zBounds.min + (bin + 1) * binWidth)
-    val contours = for {z <- levels
-                        contourSegments = MarchingSquares.getContoursAt(z, grid)
-                        if contourSegments.nonEmpty
-    } yield contourSegments.map { seg =>
-      val color = colorBar match {
-        case SingletonColorBar(c)   => c
-        case colors: ScaledColorBar => colors.getColor(z)
+    val contours = MarchingSquares(levels, grid).zip(levels).flatMap { case (levelPoints, level) =>
+      levelPoints.map { path =>
+        val color = colorBar match {
+          case SingletonColorBar(c) => c
+          case colors: ScaledColorBar => colors.getColor(level)
+        }
+        StrokeStyle(
+          Path(path.map(p => toPixelCoords(p, xAxisDescriptor.axisBounds, yAxisDescriptor.axisBounds, extent)), 2),
+          color)
       }
-      StrokeStyle(Path(toPixelCoords(seg, xAxisDescriptor.axisBounds, yAxisDescriptor.axisBounds, extent), 2), color)
     }
-    contours.flatten.group
+    contours.group
   }
 }
 

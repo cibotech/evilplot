@@ -6,7 +6,7 @@ package com.cibo.evilplot.oldplot
 
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{AffineTransform, Disc, Drawable, EmptyDrawable, Extent, Path, StrokeStyle}
-import com.cibo.evilplot.numeric.{Bounds, MarchingSquares, Point, Segment}
+import com.cibo.evilplot.numeric.{Bounds, MarchingSquares, Point}
 import com.cibo.evilplot.plotdefs.XYPosteriorPlotDef
 
 case class PosteriorPlot(chartSize: Extent, data: XYPosteriorPlotDef) extends Chart with ContinuousAxes {
@@ -28,19 +28,16 @@ case class PosteriorPlot(chartSize: Extent, data: XYPosteriorPlotDef) extends Ch
     val levels = Seq.tabulate[Double](numContours - 1)(bin =>
       grid.zBounds.min + (bin + 1) * binWidth)
     val contours = {
-      (for {
-        z <- levels
-        contourSegments = MarchingSquares.getContoursAt(z, grid)
-        if contourSegments.nonEmpty
-      } yield
-        contourSegments.map { seg: Segment =>
+      MarchingSquares(levels, grid).zip(levels).flatMap { case (levelPoints, level) =>
+        levelPoints.map { path =>
           val color = colorBar match {
-            case SingletonColorBar(c)   => c
-            case colors: ScaledColorBar => colors.getColor(z)
+            case SingletonColorBar(c) => c
+            case colors: ScaledColorBar => colors.getColor(level)
           }
-          StrokeStyle(Path(Seq(affine(seg.a), affine(seg.b)), 2), color)
-        }).flatten.group
-    }
+          StrokeStyle(Path(path.map(p => affine(p)), 2), color)
+        }
+      }
+    }.group
     val priors = makePaths(data.priors, affine)
     val best = data.best.map(b => Disc(3, affine(b)) filled HTMLNamedColors.red).getOrElse(EmptyDrawable())
     priors.group behind contours behind best
