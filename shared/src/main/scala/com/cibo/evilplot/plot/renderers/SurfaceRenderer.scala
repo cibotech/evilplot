@@ -6,6 +6,7 @@ import com.cibo.evilplot.numeric.{Bounds, Point, Point3}
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
 trait SurfaceRenderer extends PlotElementRenderer[Seq[Seq[Point3]]] {
+  def legendContext: LegendContext = LegendContext.empty
   def render(plot: Plot, extent: Extent, surface: Seq[Seq[Point3]]): Drawable
 }
 
@@ -34,6 +35,14 @@ object SurfaceRenderer {
     def getBySafe[T](data: Seq[T])(f: T => Option[Double]): Option[Bounds] = {
       val mapped = data.map(f).filterNot(_.forall(_.isNaN)).flatten
       Bounds.get(mapped)
+    }
+
+    override def legendContext: LegendContext = {
+      val colors = getColorSeq(points.length)
+      getBySafe(points)(_.headOption.flatMap(_.headOption.map(_.z))).map { bs =>
+        val bar = ScaledColorBar(colors, bs.min, bs.max)
+        LegendContext.fromColorBar(bar)
+      }.getOrElse(LegendContext.empty)
     }
 
     def render(plot: Plot, extent: Extent, surface: Seq[Seq[Point3]]): Drawable = {

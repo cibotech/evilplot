@@ -11,6 +11,8 @@ object SurfacePlot {
     data: Seq[Seq[Seq[Point3]]],
     surfaceRenderer: SurfaceRenderer
   ) extends PlotRenderer {
+
+    override def legendContext: LegendContext = surfaceRenderer.legendContext
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
