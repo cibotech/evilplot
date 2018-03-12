@@ -8,6 +8,10 @@ import com.cibo.evilplot.colors._
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
+/**
+  * A RenderContext for java.awt.Graphics2D
+  * @param graphics the Graphics2D instance to render to.
+  */
 final case class Graphics2DRenderContext(graphics: Graphics2D)
     extends RenderContext
     with Graphics2DSupport {
@@ -15,8 +19,8 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
 
   // Initialize based on whatever state the passed in graphics has.
   private[this] val initialState = GraphicsState(graphics.getTransform,
-                                                 graphics.getPaint,
-                                                 graphics.getPaint,
+                                                 java.awt.Color.BLACK,
+                                                 java.awt.Color.BLACK,
                                                  graphics.getStroke)
 
   private val stateStack: mutable.ArrayStack[GraphicsState] =
@@ -32,7 +36,9 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   }
 
   // Graphics2D does not distinguish between "fill" and "stroke" colors,
-  // as both canvas and EvilPlot do.
+  // as both canvas and EvilPlot do, so we keep these locally as vars and
+  // only push the change to the Graphics2D instance when we are performing
+  // a fill/stroke operation.
   private[geometry] var fillColor: java.awt.Paint = initialState.fillColor
   private[geometry] var strokeColor: java.awt.Paint = initialState.strokeColor
 
@@ -94,8 +100,14 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   }
 
   def draw(disc: Disc): Unit = applyWithFillColor(this) {
+    // Position the disc at its center.
     val diameter = (2 * disc.radius).toInt
-    graphics.fillArc(disc.x.toInt, disc.y.toInt, diameter, diameter, 0, 360)
+    graphics.fillArc(disc.x.toInt - disc.radius.toInt,
+                     disc.y.toInt - disc.radius.toInt,
+                     diameter,
+                     diameter,
+                     0,
+                     360)
   }
 
   def draw(wedge: Wedge): Unit = applyWithFillColor(this) {
@@ -170,7 +182,8 @@ object Graphics2DRenderContext {
       f: => Unit
   ): Unit = {
     applyOp(graphics2DRenderContext) {
-      graphics2DRenderContext.graphics.setPaint(graphics2DRenderContext.strokeColor)
+      graphics2DRenderContext.graphics.setPaint(
+        graphics2DRenderContext.strokeColor)
       f
     }
   }
@@ -180,7 +193,8 @@ object Graphics2DRenderContext {
       f: => Unit
   ): Unit = {
     applyOp(graphics2DRenderContext) {
-      graphics2DRenderContext.graphics.setPaint(graphics2DRenderContext.fillColor)
+      graphics2DRenderContext.graphics.setPaint(
+        graphics2DRenderContext.fillColor)
       f
     }
   }

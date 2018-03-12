@@ -41,8 +41,7 @@ object Settings {
     "io.circe" %%% "circe-parser" % versions.circe,
     "io.circe" %%% "circe-generic-extras" % versions.circe,
     "org.scalactic" %%% "scalactic" % versions.scalactic,
-    "org.scalatest" %%% "scalatest" % versions.scalaTest % "test",
-    "org.scalacheck" %%% "scalacheck" % versions.scalacheck % "test",
+    "org.scalatest" %%% "scalatest" % versions.scalaTest % "it,test",
     compilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
   ))
 
