@@ -1,28 +1,28 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
+import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric._
-import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, SurfaceRenderer}
+import com.cibo.evilplot.plot.renderers.{PlotRenderer, SurfaceRenderer}
 
 object SurfacePlot {
   private[plot] val defaultBoundBuffer: Double = 0.2
 
   private[plot] case class SurfacePlotRenderer(
-    data: Seq[Seq[Point3]],
+    data: Seq[Seq[Seq[Point3]]],
     surfaceRenderer: SurfaceRenderer
   ) extends PlotRenderer {
+
     override def legendContext: LegendContext = surfaceRenderer.legendContext
     def render(plot: Plot, plotExtent: Extent): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
-
       data.map { level =>
-        val transformedLevel = level.withFilter { p =>
-          plot.xbounds.isInBounds(p.x) && plot.ybounds.isInBounds(p.y)
-        }.map { p => Point3(xtransformer(p.x), ytransformer(p.y), p.z) }
-        val path = surfaceRenderer.render(plot, plotExtent, transformedLevel)
-        if (path.extent.width < 1.0 && path.extent.height < 1.0) EmptyDrawable()
-        else path
+        val surface = level.map { path =>
+          path.withFilter { p =>
+            plot.xbounds.isInBounds(p.x) && plot.ybounds.isInBounds(p.y)
+          }.map(p => Point3(xtransformer(p.x), ytransformer(p.y), p.z))
+        }
+        surfaceRenderer.render(plot, plotExtent, surface)
       }.group
     }
   }
@@ -36,7 +36,7 @@ object ContourPlot {
   def apply(
     data: Seq[Point],
     gridDimensions: (Int, Int) = defaultGridDimensions,
-    surfaceRenderer: Seq[Seq[Point3]] => SurfaceRenderer = SurfaceRenderer.densityColorContours(),
+    surfaceRenderer: Seq[Seq[Seq[Point3]]] => SurfaceRenderer = SurfaceRenderer.densityColorContours(),
     contours: Int = defaultNumContours,
     boundBuffer: Double = defaultBoundBuffer
   ): Plot = {
@@ -52,25 +52,19 @@ object ContourPlot {
       gridData.zBounds.min + (bin + 1) * binWidth
     }
 
-    val contourPoints = levels.map { l =>
-      toPoint3(MarchingSquares.getContoursAt(l, gridData), l)
+    val contourPaths = MarchingSquares(levels, gridData).zip(levels).map {
+      case (levelPaths, level) => levelPaths.map { path =>
+        path.map { case Point(x, y) =>
+          Point3(x, y, level)
+        }
+      }
     }
 
-    val sr = surfaceRenderer(contourPoints)
+    val sr = surfaceRenderer(contourPaths)
     Plot(
       xbounds,
       ybounds,
-      SurfacePlotRenderer(contourPoints, sr)
+      SurfacePlotRenderer(contourPaths, sr)
     )
-  }
-
-  // MS implementation returns Seq[Segment], bridge to Seq[Point3] to avoid
-  // breaking old plots (for now...)
-  private def toPoint3(segments: Seq[Segment],
-                       level: Double): Vector[Point3] = {
-    segments
-      .flatMap(s =>
-        Vector(Point3(s.a.x, s.a.y, level), Point3(s.b.x, s.b.y, level)))
-      .toVector
   }
 }
