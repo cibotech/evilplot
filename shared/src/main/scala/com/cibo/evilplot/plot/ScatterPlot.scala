@@ -9,24 +9,16 @@ import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 object ScatterPlot {
   /** Create a scatter plot from some data.
     * @param data The points to plot.
-    * @return A Plot representing a scatter plot.
-    */
-  def apply(data: Seq[Point])(implicit theme: Theme): Plot = {
-    val pointRenderer = PointRenderer.default()
-    val pathRenderer = PathRenderer.empty()
-    XyPlot(data, pointRenderer, pathRenderer)
-  }
-
-  /** Create a scatter plot from some data.
-    * @param data The points to plot.
     * @param pointRenderer A function to create a Drawable for each point to plot.
+    * @param boundBuffer Extra padding to add to the bounds as a fraction.
     * @return A Plot representing a scatter plot.
     */
   def apply(
     data: Seq[Point],
-    pointRenderer: PointRenderer
+    pointRenderer: Option[PointRenderer] = None,
+    boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    XyPlot(data, pointRenderer, PathRenderer.empty())
+    XyPlot(data, pointRenderer.getOrElse(PointRenderer.default()), PathRenderer.empty(), boundBuffer, boundBuffer)
   }
 
   /** Create a scatter plot with the specified name and color.

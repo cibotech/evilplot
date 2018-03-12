@@ -32,14 +32,14 @@ class AxesSpec extends FunSpec with Matchers {
 
   describe("continuous X") {
     it("should set reasonable default bounds") {
-      val plot = ScatterPlot(Seq(Point(3, 4), Point(5, 6)), boundBuffer = 0).xAxis()
+      val plot = ScatterPlot(Seq(Point(3, 4), Point(5, 6)), boundBuffer = Some(0)).xAxis()
       plot.xbounds shouldBe Bounds(3, 5)
     }
   }
 
   describe("continuous Y") {
     it("should set reasonable default bounds") {
-      val plot = ScatterPlot(Seq(Point(3, 4), Point(5, 6)), boundBuffer = 0).yAxis()
+      val plot = ScatterPlot(Seq(Point(3, 4), Point(5, 6)), boundBuffer = Some(0)).yAxis()
       plot.ybounds shouldBe Bounds(4, 6)
     }
   }
