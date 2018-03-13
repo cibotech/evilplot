@@ -23,9 +23,9 @@ trait ContinuousAxes extends Chart {
   protected val defaultXAxisBounds: Bounds
   protected val defaultYAxisBounds: Bounds
   private lazy val xAxisDrawBounds: Bounds = options.xAxisBounds.getOrElse(defaultXAxisBounds)
-  lazy val xAxisDescriptor: ContinuousAxisDescriptor = ContinuousAxisDescriptor(xAxisDrawBounds, options.numXTicks.getOrElse(10))
+  lazy val xAxisDescriptor: ContinuousAxisDescriptor = ContinuousAxisDescriptor(xAxisDrawBounds, options.numXTicks.getOrElse(10), false)
   private lazy val yAxisDrawBounds: Bounds = options.yAxisBounds.getOrElse(defaultYAxisBounds)
-  lazy val yAxisDescriptor: ContinuousAxisDescriptor = ContinuousAxisDescriptor(yAxisDrawBounds, options.numYTicks.getOrElse(10))
+  lazy val yAxisDescriptor: ContinuousAxisDescriptor = ContinuousAxisDescriptor(yAxisDrawBounds, options.numYTicks.getOrElse(10), false)
 
   // Unideal, but if we're going to be making a plot of a *specific* size, then we have to measure the height and
   // width of the axes, tear these out of the main plot area, then recreate these objects. If we change from a top-down

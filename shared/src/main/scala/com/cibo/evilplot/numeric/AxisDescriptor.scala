@@ -22,7 +22,8 @@ case class DiscreteAxisDescriptor(_ticks: Seq[(String, Double)]) extends AxisDes
 
 case class ContinuousAxisDescriptor(
   bounds: Bounds,
-  numTicksRequested: Int
+  numTicksRequested: Int,
+  fixed: Boolean
 ) extends AxisDescriptor {
 
   /** Given a numeric range and the desired number of ticks, figure out where to put the ticks so the labels will
@@ -41,7 +42,9 @@ case class ContinuousAxisDescriptor(
 
   private val spacingGuess: Double = AxisDescriptor.nicenum(range / (numTicksRequested + 1), round = true)
   val (tickMin, tickMax, spacing) = {
-    if (!AxisDescriptor.arePracticallyEqual(minValue, maxValue) && !(minValue.isNaN && maxValue.isNaN)) {
+    if (fixed) {
+      (minValue, maxValue, spacingGuess)
+    } else if (!AxisDescriptor.arePracticallyEqual(minValue, maxValue) && !(minValue.isNaN && maxValue.isNaN)) {
       (math.floor(minValue / spacingGuess) * spacingGuess,
         math.ceil(maxValue / spacingGuess) * spacingGuess,
         spacingGuess)
