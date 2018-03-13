@@ -9,6 +9,7 @@ import com.cibo.evilplot.oldplot._
 import com.cibo.evilplot.plotdefs._
 
 /** If an extent is supplied to the PlotDefinitionInterpreter, the serialized plot extent is overridden. */
+//todo: get rid of with PlotDef's
 object PlotDefinitionInterpreter {
   val defaultSize = Extent(800, 400) // completely arbitrary, can change later.
   def apply(definition: String, extent: Option[Extent] = None): Drawable = {
