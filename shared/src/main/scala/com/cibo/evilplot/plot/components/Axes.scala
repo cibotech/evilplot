@@ -16,7 +16,7 @@ object Axes {
     val discrete: Boolean
     val tickRenderer: TickRenderer
 
-    def getDescriptor(plot: Plot): AxisDescriptor
+    def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor
 
     final protected def ticks(descriptor: AxisDescriptor): Seq[Drawable] = descriptor.labels.map(tickRenderer.render)
   }
@@ -25,23 +25,23 @@ object Axes {
     final val discrete: Boolean = false
     val tickCount: Int
     def bounds(plot: Plot): Bounds
-    def getDescriptor(plot: Plot): AxisDescriptor = ContinuousAxisDescriptor(bounds(plot), tickCount)
+    def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor = ContinuousAxisDescriptor(bounds(plot), tickCount, fixed)
   }
 
   private sealed trait DiscreteAxis {
     final val discrete: Boolean = true
     val labels: Seq[(String, Double)]
-    def getDescriptor(plot: Plot): AxisDescriptor = DiscreteAxisDescriptor(labels)
+    def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor = DiscreteAxisDescriptor(labels)
   }
 
   private sealed trait XAxisPlotComponent extends AxisPlotComponent {
     final val position: Position = Position.Bottom
-    override def size(plot: Plot): Extent = ticks(getDescriptor(plot)).maxBy(_.extent.height).extent
+    override def size(plot: Plot): Extent = ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.height).extent
 
     def bounds(plot: Plot): Bounds = plot.xbounds
 
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      val descriptor = getDescriptor(plot)
+      val descriptor = getDescriptor(plot, fixed = true)
       val scale = extent.width / descriptor.axisBounds.range
       // Move the tick to the center of the range for discrete axes.
       val offset = (if (discrete) scale / 2 else 0) - descriptor.axisBounds.min * scale
@@ -56,12 +56,12 @@ object Axes {
 
   private sealed trait YAxisPlotComponent extends AxisPlotComponent {
     final val position: Position = Position.Left
-    override def size(plot: Plot): Extent = ticks(getDescriptor(plot)).maxBy(_.extent.width).extent
+    override def size(plot: Plot): Extent = ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.width).extent
 
     def bounds(plot: Plot): Bounds = plot.ybounds
 
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      val descriptor = getDescriptor(plot)
+      val descriptor = getDescriptor(plot, fixed = true)
       val scale = extent.height / descriptor.axisBounds.range
       val ts = ticks(descriptor)
       val maxWidth = ts.maxBy(_.extent.width).extent.width
@@ -98,7 +98,7 @@ object Axes {
 
   private sealed trait GridComponent extends PlotComponent {
     val lineRenderer: GridLineRenderer
-    def getDescriptor(plot: Plot): AxisDescriptor
+    def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor
 
     final val position: Position = Position.Background
     override final val repeated: Boolean = true
@@ -110,7 +110,7 @@ object Axes {
   private trait XGridComponent extends GridComponent {
     def bounds(plot: Plot): Bounds = plot.xbounds
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      val descriptor = getDescriptor(plot)
+      val descriptor = getDescriptor(plot, fixed = true)
       val scale = extent.width / descriptor.axisBounds.range
       lines(descriptor, extent).zip(descriptor.values).map { case (line, value) =>
         line.translate(x = (value - descriptor.axisBounds.min) * scale + line.extent.width / 2.0)
@@ -121,7 +121,7 @@ object Axes {
   private trait YGridComponent extends GridComponent {
     def bounds(plot: Plot): Bounds = plot.ybounds
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      val descriptor = getDescriptor(plot)
+      val descriptor = getDescriptor(plot, fixed = true)
       val scale = extent.height / descriptor.axisBounds.range
       val ls = lines(descriptor, extent)
       val maxWidth = ls.maxBy(_.extent.width).extent.width
@@ -161,7 +161,7 @@ object Axes {
       tickRenderer: TickRenderer
     ): Plot = {
       val component = ContinuousXAxisPlotComponent(tickCount, tickRenderer)
-      component +: plot.xbounds(component.getDescriptor(plot).axisBounds)
+      component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
     /** Add an X axis to the plot
@@ -177,7 +177,7 @@ object Axes {
       require(labels.lengthCompare(values.length) == 0)
       val labelsAndValues = labels.zip(values)
       val component = DiscreteXAxisPlotComponent(labelsAndValues, TickRenderer.xAxisTickRenderer(rotateText = 90))
-      component +: plot.xbounds(component.getDescriptor(plot).axisBounds)
+      component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
     /** Add a Y axis to the plot. */
@@ -196,7 +196,7 @@ object Axes {
       tickRenderer: TickRenderer
     ): Plot = {
       val component = ContinuousYAxisPlotComponent(tickCount, tickRenderer)
-      component +: plot.ybounds(component.getDescriptor(plot).axisBounds)
+      component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
 
     /** Add a Y axis to the plot.
@@ -212,7 +212,7 @@ object Axes {
       require(labels.lengthCompare(values.length) == 0)
       val labelsAndValues = labels.zip(values)
       val component = DiscreteYAxisPlotComponent(labelsAndValues, TickRenderer.yAxisTickRenderer())
-      component +: plot.ybounds(component.getDescriptor(plot).axisBounds)
+      component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
 
     def xGrid()(implicit theme: Theme): Plot = {
@@ -226,7 +226,7 @@ object Axes {
       lineRenderer: GridLineRenderer
     ): Plot = {
       val component = ContinuousXGridComponent(lineCount, lineRenderer)
-      plot.xbounds(component.getDescriptor(plot).axisBounds) :+ component
+      plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds) :+ component
     }
 
     def yGrid()(implicit theme: Theme): Plot = {
@@ -240,7 +240,7 @@ object Axes {
       lineRenderer: GridLineRenderer
     ): Plot = {
       val component = ContinuousYGridComponent(lineCount, lineRenderer)
-      plot.ybounds(component.getDescriptor(plot).axisBounds) :+ component
+      plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds) :+ component
     }
   }
 }
