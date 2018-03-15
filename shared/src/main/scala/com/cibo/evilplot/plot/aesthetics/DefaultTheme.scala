@@ -35,7 +35,8 @@ object DefaultTheme {
     barSpacing: Double = 1,
     clusterSpacing: Double = 4,
     boundBuffer: Double = 0.1,
-    boxSpacing: Double = 20
+    boxSpacing: Double = 20,
+    contours: Int = 20
   ) extends Elements
 
   case class DefaultTheme(

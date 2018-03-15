@@ -10,17 +10,25 @@ object LinePlot {
   /** Create a line plot from some data.  Convenience method on top of XyPlot
     *
     * @param data          The points to plot.
+    * @param pointRenderer A function to create a Drawable for each point to plot.
+    * @param pathRenderer A function to create a Drawable for all the points (such as a path)
     * @param xboundBuffer Extra padding to add to x bounds as a fraction.
     * @param yboundBuffer Extra padding to add to y bounds as a fraction.
     */
   def apply(
     data: Seq[Point],
+    pointRenderer: Option[PointRenderer] = None,
+    pathRenderer: Option[PathRenderer] = None,
     xboundBuffer: Option[Double] = None,
     yboundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    val pointRenderer = PointRenderer.empty()
-    val pathRenderer = PathRenderer.default()
-    XyPlot(data, pointRenderer, pathRenderer, xboundBuffer.orElse(Some(0)), yboundBuffer)
+    XyPlot(
+      data,
+      pointRenderer = pointRenderer.getOrElse(PointRenderer.empty()),
+      pathRenderer = pathRenderer.getOrElse(PathRenderer.default()),
+      xboundBuffer.orElse(Some(0)),
+      yboundBuffer
+    )
   }
 
   /** Create a line plot from some data.  Convenience method on top of XyPlot
@@ -31,6 +39,7 @@ object LinePlot {
     * @param xboundBuffer Extra padding to add to x bounds as a fraction.
     * @param yboundBuffer Extra padding to add to y bounds as a fraction.
     */
+  @deprecated("Use apply", "2018-03-15")
   def custom(
     data: Seq[Point],
     pointRenderer: PointRenderer,
@@ -80,13 +89,13 @@ object LinePlot {
     data: Seq[Point],
     label: Drawable,
     color: Color,
-    strokeWidth: Double,
-    xboundBuffer: Double,
-    yboundBuffer: Double
+    strokeWidth: Option[Double],
+    xboundBuffer: Option[Double],
+    yboundBuffer: Option[Double]
   )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.empty()
-    val pathRenderer = PathRenderer.default(strokeWidth, color, label)
-    XyPlot(data, pointRenderer, pathRenderer, Some(xboundBuffer), Some(yboundBuffer))
+    val pathRenderer = PathRenderer.default(strokeWidth.getOrElse(theme.elements.strokeWidth), color, label)
+    XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
   }
 }
 

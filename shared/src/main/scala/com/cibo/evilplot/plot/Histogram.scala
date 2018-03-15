@@ -71,7 +71,7 @@ object Histogram {
     bins: Int = defaultBinCount,
     barRenderer: Option[BarRenderer] = None,
     spacing: Option[Double] = None,
-    boundBuffer: Double = BarChart.defaultBoundBuffer
+    boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
     require(bins > 0, "must have at least one bin")
     val xbounds = Bounds(values.min, values.max)
@@ -79,13 +79,13 @@ object Histogram {
     val binWidth = xbounds.range / bins
     Plot(
       xbounds = xbounds,
-      ybounds = Bounds(0, maxY * (1.0 + boundBuffer)),
+      ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
       renderer = HistogramRenderer(
         values,
         barRenderer.getOrElse(BarRenderer.default(theme.colors.bar)),
         bins,
         spacing.getOrElse(theme.elements.barSpacing),
-        boundBuffer
+        boundBuffer.getOrElse(theme.elements.boundBuffer)
       )
     )
   }

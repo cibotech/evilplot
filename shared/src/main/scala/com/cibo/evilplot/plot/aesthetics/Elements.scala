@@ -8,4 +8,5 @@ trait Elements {
   val barSpacing: Double
   val clusterSpacing: Double
   val boundBuffer: Double
+  val contours: Int
 }
