@@ -21,6 +21,7 @@ object JSONUtils {
       case "EmptyDrawable" => "E"
       case "Line" => "L"
       case "Path" => "P"
+      case "Polygon" => "p"
       case "Rect" => "R"
       case "BorderRect" => "B"
       case "Disc" => "D"

@@ -22,6 +22,12 @@ sealed trait Drawable {
   private[evilplot] def isEmpty: Boolean = false
 }
 
+// On the fragility of adding primitives:
+// Because of the way the JSON de/serialization works right now, no two field names
+// can start with the same character in any class extending Drawable.
+// Also you should register a shortened constructor name in JSONUtils#shortenedName
+
+/** A drawable that displays nothing when drawn. */
 final case class EmptyDrawable() extends Drawable {
   val extent: Extent = Extent(0, 0)
   def draw(context: RenderContext): Unit = ()
@@ -33,6 +39,10 @@ object EmptyDrawable {
   implicit val decoder: Decoder[EmptyDrawable] = deriveDecoder[EmptyDrawable]
 }
 
+/** A horizontal line.
+  * @param length the length of the line
+  * @param strokeWidth the thickness of the line
+  */
 final case class Line(length: Double, strokeWidth: Double) extends Drawable {
   lazy val extent = Extent(length, strokeWidth)
   def draw(context: RenderContext): Unit = context.draw(this)
@@ -42,6 +52,10 @@ object Line {
   implicit val decoder: Decoder[Line] = deriveDecoder[Line]
 }
 
+/** A path with a strokable outline.
+  * @param points The points in the path. The path will be drawn in the same
+  *               order as the provided sequence.
+  * @param strokeWidth The thickness of the line. */
 final case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
   private lazy val xS: Seq[Double] = points.map(_.x)
   private lazy val yS: Seq[Double] = points.map(_.y)
@@ -54,6 +68,24 @@ object Path {
   def apply(segment: Segment, strokeWidth: Double): Path = Path(Seq(segment.a, segment.b), strokeWidth)
 }
 
+/** A filled polygon.
+  * @param boundary the points on the boundary of the polygon.
+  */
+final case class Polygon(boundary: Seq[Point]) extends Drawable {
+  private lazy val xS: Seq[Double] = boundary.map(_.x)
+  private lazy val yS: Seq[Double] = boundary.map(_.y)
+  lazy val extent: Extent = if (boundary.nonEmpty) Extent(xS.max - xS.min, yS.max - yS.min) else Extent(0, 0)
+  def draw(context: RenderContext): Unit = if (boundary.nonEmpty) context.draw(this) else ()
+}
+object Polygon {
+  implicit val encoder: Encoder[Polygon] = deriveEncoder[Polygon]
+  implicit val decoder: Decoder[Polygon] = deriveDecoder[Polygon]
+}
+
+/** A filled rectangle.
+  * @param width the width of the rectangle
+  * @param height the height of the rectangle
+  */
 final case class Rect(width: Double, height: Double) extends Drawable {
   lazy val extent: Extent = Extent(width, height)
   def draw(context: RenderContext): Unit = context.draw(this)
@@ -66,6 +98,10 @@ object Rect {
   def apply(size: Extent): Rect = Rect(size.width, size.height)
 }
 
+/** A rectangle whose outline may be colored.
+  * @param width the width of the rectangle
+  * @param height the height of the rectangle
+  */
 final case class BorderRect(width: Double, height: Double) extends Drawable {
   lazy val extent: Extent = Extent(width, height)
   def draw(context: RenderContext): Unit = context.draw(this)
@@ -74,11 +110,13 @@ object BorderRect {
   implicit val encoder: Encoder[BorderRect] = deriveEncoder[BorderRect]
   implicit val decoder: Decoder[BorderRect] = deriveDecoder[BorderRect]
 
+  /** A rectangle that can be both filled and stroked. */
   def filled(width: Double, height: Double): Drawable = {
     Seq(Rect(width, height), BorderRect(width, height)).group
   }
 }
 
+/** A filled disc. */
 final case class Disc(radius: Double, x: Double = 0, y: Double = 0) extends Drawable {
   require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
   lazy val extent = Extent(x + radius, y + radius)
@@ -92,6 +130,7 @@ object Disc {
   def apply(radius: Double, p: Point): Disc = Disc(radius, p.x, p.y)
 }
 
+/** A piece piece of a circle. */
 final case class Wedge(degrees: Double, radius: Double) extends Drawable {
   lazy val extent: Extent = Extent(2 * radius, 2 * radius)
   def draw(context: RenderContext): Unit = context.draw(this)
@@ -101,6 +140,7 @@ object Wedge {
   implicit val decoder: Decoder[Wedge] = deriveDecoder[Wedge]
 }
 
+/** Translate the passed in Drawable. */
 final case class Translate(r: Drawable, x: Double = 0, y: Double = 0) extends Drawable {
   // TODO: is this correct with negative translations?
   lazy val extent: Extent = Extent(
@@ -115,6 +155,7 @@ object Translate {
   implicit val decoder: Decoder[Translate] = deriveDecoder[Translate]
 }
 
+/** Apply an affine transformation to the passed in Drawable. */
 final case class Affine(r: Drawable, affine: AffineTransform) extends Drawable {
   lazy val extent: Extent = {
     val pts = Seq(affine(0, 0),
@@ -134,6 +175,7 @@ object Affine {
   implicit val decoder: Decoder[Affine] = deriveDecoder[Affine]
 }
 
+/** Scale the passed in Drawable. */
 final case class Scale(r: Drawable, x: Double = 1, y: Double = 1) extends Drawable {
   lazy val extent: Extent = Extent(r.extent.width * x, r.extent.height * y)
   def draw(context: RenderContext): Unit = context.draw(this)
@@ -144,6 +186,7 @@ object Scale {
 }
 
 // Our rotate semantics are, rotate about your centroid, and shift back to all positive coordinates
+/** Rotate the passed in Drawable. */
 final case class Rotate(r: Drawable, degrees: Double) extends Drawable {
 
   lazy val radians: Double = math.toRadians(degrees)
@@ -176,6 +219,7 @@ object Rotate {
   implicit val decoder: Decoder[Rotate] = deriveDecoder[Rotate]
 }
 
+/** Combined a sequence of Drawables into a single Drawable. */
 final case class Group(items: Seq[Drawable]) extends Drawable {
   lazy val extent: Extent = {
     if (items.isEmpty) {
@@ -194,6 +238,9 @@ object Group {
 
 // Change the size of the bounding box without changing the contents.
 // This is used for padding below, for example.
+/** Change the size of the bounding box of a Drawable without changing the
+  * contents.
+  */
 final case class Resize(r: Drawable, extent: Extent) extends Drawable {
   def draw(context: RenderContext): Unit = r.draw(context)
 }
@@ -202,6 +249,7 @@ object Resize {
   implicit val decoder: Decoder[Resize] = deriveDecoder[Resize]
 }
 
+/** Apply a fill color to a fillable Drawable. */
 final case class Style(r: Drawable, fill: Color) extends Drawable {
   lazy val extent: Extent = r.extent
   def draw(context: RenderContext): Unit = context.draw(this)
@@ -211,9 +259,7 @@ object Style {
   implicit val decoder: Decoder[Style] = deriveDecoder[Style]
 }
 
-/* for styling lines.
- * TODO: patterned (e.g. dashed, dotted) lines
- */
+/** Apply a border color to a strokable Drawable. */
 final case class StrokeStyle(r: Drawable, fill: Color) extends Drawable {
   lazy val extent: Extent = r.extent
   def draw(context: RenderContext): Unit = context.draw(this)
@@ -223,6 +269,7 @@ object StrokeStyle {
   implicit val decoder: Decoder[StrokeStyle] = deriveDecoder[StrokeStyle]
 }
 
+/** Adjust the thickness of the border on a strokeable Drawable. */
 final case class StrokeWeight(r: Drawable, weight: Double) extends Drawable {
   lazy val extent: Extent = r.extent
   def draw(context: RenderContext): Unit = context.draw(this)
@@ -232,6 +279,10 @@ object StrokeWeight {
   implicit val decoder: Decoder[StrokeWeight] = deriveDecoder[StrokeWeight]
 }
 
+/** Some text.
+  * @param msg the string to render.
+  * @param size the font size of the text.
+  */
 final case class Text(
   msg: String,
   size: Double = Text.defaultSize,
