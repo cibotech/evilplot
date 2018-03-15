@@ -149,7 +149,7 @@ object Axes {
     def xAxis()(implicit theme: Theme): Plot = {
       val tickRenderer = TickRenderer.xAxisTickRenderer()
       val component = ContinuousXAxisPlotComponent(defaultTickCount, tickRenderer)
-      component +: plot.xbounds(component.getDescriptor(plot).axisBounds)
+      component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
     /** Add an X axis to the plot.
@@ -184,7 +184,7 @@ object Axes {
     def yAxis()(implicit theme: Theme): Plot = {
       val tickRenderer = TickRenderer.yAxisTickRenderer()
       val component = ContinuousYAxisPlotComponent(defaultTickCount, tickRenderer)
-      component +: plot.ybounds(component.getDescriptor(plot).axisBounds)
+      component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
 
     /** Add a Y axis to the plot.
@@ -218,7 +218,7 @@ object Axes {
     def xGrid()(implicit theme: Theme): Plot = {
       val lineRenderer: GridLineRenderer = GridLineRenderer.xGridLineRenderer()
       val component = ContinuousXGridComponent(defaultTickCount, lineRenderer)
-      plot.xbounds(component.getDescriptor(plot).axisBounds) :+ component
+      plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds) :+ component
     }
 
     def xGrid(
@@ -232,7 +232,7 @@ object Axes {
     def yGrid()(implicit theme: Theme): Plot = {
       val lineRenderer: GridLineRenderer = GridLineRenderer.yGridLineRenderer()
       val component = ContinuousYGridComponent(defaultTickCount, lineRenderer)
-      plot.ybounds(component.getDescriptor(plot).axisBounds) :+ component
+      plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds) :+ component
     }
 
     def yGrid(
