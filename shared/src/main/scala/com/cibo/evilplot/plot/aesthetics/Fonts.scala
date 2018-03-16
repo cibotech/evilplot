@@ -6,5 +6,6 @@ trait Fonts {
   val annotationSize: Double
   val legendLabelSize: Double
   val tickLabelSize: Double
+  val facetLabelSize: Double
 }
 

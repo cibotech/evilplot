@@ -37,7 +37,7 @@ object ScatterPlot {
   )(implicit theme: Theme): Plot =
     series(
       data,
-      Style(Text(name, theme.fonts.labelSize), theme.colors.legendLabel),
+      Style(Text(name, theme.fonts.legendLabelSize), theme.colors.legendLabel),
       color,
       pointSize,
       boundBuffer

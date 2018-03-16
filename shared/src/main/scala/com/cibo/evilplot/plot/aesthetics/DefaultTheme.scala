@@ -9,7 +9,8 @@ object DefaultTheme {
     labelSize: Double = 20,
     annotationSize: Double = 10,
     tickLabelSize: Double = 10,
-    legendLabelSize: Double = 10
+    legendLabelSize: Double = 10,
+    facetLabelSize: Double = 10
   ) extends Fonts
 
   case class DefaultColors(

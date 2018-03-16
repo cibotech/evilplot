@@ -60,7 +60,7 @@ trait FacetLabelImplicits {
   def topLabels(
     labels: Seq[String]
   )(implicit theme: Theme): Plot = {
-    val drawableLabels = labels.map(Text(_, theme.fonts.labelSize).padBottom(4))
+    val drawableLabels = labels.map(Text(_, theme.fonts.facetLabelSize).padBottom(4))
     val func = topBottomLabelFunc(drawableLabels, theme.colors.background)(_)
     topLabels(func, maxHeight(drawableLabels))
   }
@@ -80,7 +80,7 @@ trait FacetLabelImplicits {
   def bottomLabels(
     labels: Seq[String]
   )(implicit theme: Theme): Plot = {
-    val drawableLabels = labels.map(Text(_, theme.fonts.labelSize).padTop(4))
+    val drawableLabels = labels.map(Text(_, theme.fonts.facetLabelSize).padTop(4))
     val func = topBottomLabelFunc(drawableLabels, theme.colors.background)(_)
     bottomLabels(func, maxHeight(drawableLabels))
   }
@@ -98,7 +98,7 @@ trait FacetLabelImplicits {
   def rightLabels(
     labels: Seq[String]
   )(implicit theme: Theme): Plot = {
-    val drawableLabels = labels.map(Text(_, theme.fonts.labelSize).rotated(90).padLeft(4))
+    val drawableLabels = labels.map(Text(_, theme.fonts.facetLabelSize).rotated(90).padLeft(4))
     val func = leftRightLabelFunc(drawableLabels, theme.colors.background)(_)
     rightLabels(func, maxWidth(drawableLabels))
   }
@@ -116,7 +116,7 @@ trait FacetLabelImplicits {
   def leftLabels(
     labels: Seq[String]
   )(implicit theme: Theme): Plot = {
-    val drawableLabels = labels.map(Text(_, theme.fonts.labelSize).rotated(270).padRight(4))
+    val drawableLabels = labels.map(Text(_, theme.fonts.facetLabelSize).rotated(270).padRight(4))
     val func = leftRightLabelFunc(drawableLabels, theme.colors.background)(_)
     leftLabels(func, maxWidth(drawableLabels))
   }
