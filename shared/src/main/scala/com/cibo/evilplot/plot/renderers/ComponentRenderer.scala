@@ -1,6 +1,7 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
+import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.Plot
 
 /** Renderer for non-plot area components of a plot (labels, etc.). */
@@ -10,6 +11,9 @@ trait ComponentRenderer {
 
   /** Render components that go behind the plot area. */
   def renderBack(plot: Plot, extent: Extent): Drawable
+
+  /** Determine the offset of the plot area. */
+  def plotOffset(plot: Plot): Point
 }
 
 object ComponentRenderer {
@@ -74,6 +78,12 @@ object ComponentRenderer {
       plot.backgroundComponents.map { a =>
         a.render(plot, plotExtent, 0, 0).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
       }.group
+    }
+
+    def plotOffset(plot: Plot): Point = {
+      val xoffset = plot.leftComponents.map(_.size(plot).width).sum
+      val yoffset = plot.topComponents.map(_.size(plot).height).sum
+      Point(xoffset, yoffset)
     }
   }
 }

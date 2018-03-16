@@ -66,12 +66,13 @@ object Axes {
       val maxWidth = ts.maxBy(_.extent.width).extent.width
       // Move the tick to the center of the range for discrete axes.
       val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min
-      ts.zip(descriptor.values).map { case (tick, value) =>
+      val drawable = ts.zip(descriptor.values).map { case (tick, value) =>
         val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
         if (y <= extent.height) {
           tick.translate(x = maxWidth - tick.extent.width, y = y)
         } else EmptyDrawable()
       }.group
+      drawable.translate(x = extent.width - drawable.extent.width)
     }
   }
 

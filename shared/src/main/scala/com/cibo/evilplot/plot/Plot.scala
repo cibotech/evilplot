@@ -50,16 +50,7 @@ final case class Plot(
   lazy val overlayComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Overlay)
 
   // Get the offset of the plot area.
-  private[plot] lazy val plotOffset: Point = {
-
-    // y offset for sides due to the annotations at the top.
-    val yoffset = topComponents.map(_.size(this).height).sum
-
-    // x offset for top/bottom due to the annotations on the left.
-    val xoffset = leftComponents.map(_.size(this).width).sum
-
-    Point(xoffset, yoffset)
-  }
+  private[plot] lazy val plotOffset: Point = componentRenderer.plotOffset(this)
 
   // Get the size of the actual plot area.
   // Annotations on the left/right reduce the width of the plot area and
