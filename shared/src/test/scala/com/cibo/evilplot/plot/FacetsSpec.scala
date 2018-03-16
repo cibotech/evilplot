@@ -1,8 +1,9 @@
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Extent, Rect}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Rect}
 import com.cibo.evilplot.numeric.Point
 import org.scalatest.{FunSpec, Matchers}
+import com.cibo.evilplot.plot.components.{FacetedPlotComponent, Position}
 
 class FacetsSpec extends FunSpec with Matchers {
   describe("Facets") {
@@ -43,6 +44,23 @@ class FacetsSpec extends FunSpec with Matchers {
 
       val extent = Extent(600, 400)
       faceted.plotExtent(extent) shouldBe Extent(extent.width, extent.height - titleHeight)
+    }
+
+    it("has the right plotOffset.x") {
+
+      val inner1 = ScatterPlot(Seq(Point(1, 1), Point(2, 2)))
+      val inner2 = ScatterPlot(Seq(Point(1, 1), Point(2, 2)))
+
+      // Plot component that is larger for `inner2` than `inner1`.
+      object TestComponent extends FacetedPlotComponent {
+        val position: Position = Position.Left
+        override val repeated: Boolean = true
+        override def size(plot: Plot): Extent = if (plot == inner2) Extent(10, 10) else Extent(0, 0)
+        def render(plot: Plot, extent: Extent, row: Int, column: Int): Drawable = EmptyDrawable()
+      }
+
+      val faceted = Facets(Seq(Seq(inner1), Seq(inner2))) :+ TestComponent
+      faceted.plotOffset.x shouldBe 10
     }
   }
 }
