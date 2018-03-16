@@ -23,6 +23,15 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
     canvas.stroke()
   }
 
+  def draw(polygon: Polygon): Unit = CanvasOp(canvas) {
+    canvas.beginPath()
+    canvas.moveTo(polygon.boundary.head.x, polygon.boundary.head.y)
+    polygon.boundary.tail.foreach { point =>
+      canvas.lineTo(point.x, point.y)
+    }
+    canvas.fill()
+  }
+
   def draw(rect: Rect): Unit = canvas.fillRect(0, 0, rect.width, rect.height)
 
   def draw(rect: BorderRect): Unit = canvas.strokeRect(0, 0, rect.width, rect.height)

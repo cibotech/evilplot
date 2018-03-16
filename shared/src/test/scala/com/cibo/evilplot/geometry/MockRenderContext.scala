@@ -3,6 +3,7 @@ package com.cibo.evilplot.geometry
 class MockRenderContext extends RenderContext {
   def draw(line: Line): Unit = ???
   def draw(path: Path): Unit = ???
+  def draw(polygon: Polygon): Unit = ???
   def draw(rect: Rect): Unit = ???
   def draw(rect: BorderRect): Unit = ???
   def draw(disc: Disc): Unit = ???
