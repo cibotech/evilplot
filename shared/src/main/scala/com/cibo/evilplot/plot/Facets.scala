@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.components.Position
 import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
 
@@ -57,9 +58,9 @@ object Facets {
     )(implicit theme: Theme): Drawable = {
       plot.topComponents.reverse.foldLeft(empty) { (d, c) =>
         if (c.repeated) {
+          val componentHeight = subplots.head.map(subplot => c.size(subplot).height).max
           subplots.head.zipWithIndex.map { case (subplot, i) =>
-            val minExtent = c.size(subplot)
-            val componentExtent = subplot.plotExtent(innerExtent).copy(height = minExtent.height)
+            val componentExtent = subplot.plotExtent(innerExtent).copy(height = componentHeight)
             val x = i * innerExtent.width + subplot.plotOffset.x + plot.plotOffset.x
             val y = d.extent.height
             c.render(subplot, componentExtent, 0, i).translate(x = x, y = y)
@@ -84,9 +85,9 @@ object Facets {
       val bottomRowIndex = subplots.size - 1
       plot.bottomComponents.reverse.foldLeft((startY, empty)) { case ((prevY, d), c) =>
         if (c.repeated) {
+          val componentHeight = subplots.last.map(subplot => c.size(subplot).height).max
           val s = subplots.last.zipWithIndex.map { case (subplot, i) =>
-            val minExtent = c.size(subplot)
-            val componentExtent = subplot.plotExtent(innerExtent).copy(height = minExtent.height)
+            val componentExtent = subplot.plotExtent(innerExtent).copy(height = componentHeight)
             val rendered = c.render(subplot, componentExtent, bottomRowIndex, i)
             val x = i * innerExtent.width + subplot.plotOffset.x + plot.plotOffset.x
             val y = prevY - rendered.extent.height
@@ -110,12 +111,12 @@ object Facets {
       extent: Extent,
       innerExtent: Extent
     )(implicit theme: Theme): Drawable = {
-      val leftPlots = subplots.map(_.head)
+      lazy val leftPlots = subplots.map(_.head)
       plot.leftComponents.foldLeft(empty) { (d, c) =>
         if (c.repeated) {
+          val componentWidth = leftPlots.map(subplot => c.size(subplot).width).max
           leftPlots.zipWithIndex.map { case (subplot, i) =>
-            val minExtent = c.size(subplot)
-            val componentExtent = subplot.plotExtent(innerExtent).copy(width = minExtent.width)
+            val componentExtent = subplot.plotExtent(innerExtent).copy(width = componentWidth)
             val y = i * innerExtent.height + subplot.plotOffset.y + plot.plotOffset.y
             c.render(subplot, componentExtent, i, 0).translate(y = y)
           }.group beside d
@@ -138,9 +139,10 @@ object Facets {
       val startX = extent.width
       plot.rightComponents.reverse.foldLeft((startX, empty)) { case ((prevX, d), c) =>
         if (c.repeated) {
+          val componentWidth = rightPlots.map(subplot => c.size(subplot).width).max
           val s = rightPlots.zipWithIndex.map { case (subplot, i) =>
             val minExtent = c.size(subplot)
-            val componentExtent = subplot.plotExtent(innerExtent).copy(width = minExtent.width)
+            val componentExtent = subplot.plotExtent(innerExtent).copy(width = componentWidth)
             val rendered = c.render(subplot, componentExtent, i, subplots(i).size - 1)
             val x = prevX - rendered.extent.width
             val y = i * innerExtent.height + subplot.plotOffset.y + plot.plotOffset.y
@@ -199,6 +201,16 @@ object Facets {
       val innerExtent = computeSubplotExtent(plot, data, plotExtent)
       val paddedPlots = updatePlotsForFacet(plot, data, innerExtent)
       renderGrid(Position.Background, plot, paddedPlots, extent, innerExtent)
+    }
+
+    def plotOffset(plot: Plot): Point = {
+      val xoffset = data.map { ps =>
+        plot.leftComponents.map(_.size(ps.head).width).sum
+      }.foldLeft(0.0)(math.max)
+      val yoffset = data.head.map { p =>
+        plot.topComponents.map(_.size(p).height).sum
+      }.foldLeft(0.0)(math.max)
+      Point(xoffset, yoffset)
     }
   }
 
