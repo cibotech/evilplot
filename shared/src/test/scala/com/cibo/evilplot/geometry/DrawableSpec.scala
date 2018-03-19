@@ -38,4 +38,16 @@ class DrawableSpec extends FunSpec with Matchers {
       drawn shouldBe 1
     }
   }
+
+  describe("Disc") {
+    it("has the right extent") {
+      Disc(5).extent shouldBe Extent(10, 10)
+    }
+  }
+
+  describe("Wedge") {
+    it("has the right extent") {
+      Wedge(180, 5).extent shouldBe Extent(10, 10)
+    }
+  }
 }
