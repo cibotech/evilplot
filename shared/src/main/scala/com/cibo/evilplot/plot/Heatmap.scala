@@ -3,6 +3,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, ScaledColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Rect}
 import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object Heatmap {
@@ -12,9 +13,9 @@ object Heatmap {
   private case class HeatmapRenderer(
     data: Seq[Seq[Double]],
     colorBar: ScaledColorBar
-  ) extends PlotRenderer {
+  )(implicit theme: Theme) extends PlotRenderer {
     override def legendContext: LegendContext = LegendContext.fromColorBar(colorBar)
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
       val rowCount = data.size
@@ -38,7 +39,7 @@ object Heatmap {
   def apply(
     data: Seq[Seq[Double]],
     colorBar: ScaledColorBar
-  ): Plot = {
+  )(implicit theme: Theme): Plot = {
     val xbounds = Bounds(0, data.maxBy(_.size).size)
     val ybounds = Bounds(0, data.size)
     Plot(
@@ -58,11 +59,12 @@ object Heatmap {
   def apply(
     data: Seq[Seq[Double]],
     colorCount: Int = defaultColorCount,
-    colors: Seq[Color] = Color.stream
-  ): Plot = {
+    colors: Seq[Color] = Seq.empty
+  )(implicit theme: Theme): Plot = {
+    val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
     val minValue = data.minBy(_.min).min
     val maxValue = data.maxBy(_.max).max
-    val colorBar = ScaledColorBar(colors.take(colorCount), minValue, maxValue)
+    val colorBar = ScaledColorBar(colorStream.take(colorCount), minValue, maxValue)
     apply(data, colorBar)
   }
 }

@@ -1,6 +1,7 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry._
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.LegendRenderer
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
@@ -16,7 +17,7 @@ case class Legend(
 
   override def size(plot: Plot): Extent = drawable.extent
 
-  def render(plot: Plot, extent: Extent): Drawable = {
+  def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     drawable.translate(
       x = (extent.width - drawable.extent.width) * x,
       y = (extent.height - drawable.extent.height) * y
@@ -72,7 +73,7 @@ trait LegendImplicits {
   /** Get the legend as a drawable. */
   def renderLegend(
     renderer: LegendRenderer = LegendRenderer.vertical()
-  ): Option[Drawable] = if (plot.renderer.legendContext.nonEmpty) {
+  )(implicit theme: Theme): Option[Drawable] = if (plot.renderer.legendContext.nonEmpty) {
     val legend = Legend(Position.Right, plot.renderer.legendContext, renderer, 0, 0)
     Some(legend.render(plot, legend.size(plot)))
   } else None

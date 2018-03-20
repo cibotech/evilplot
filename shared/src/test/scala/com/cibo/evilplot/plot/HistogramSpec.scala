@@ -5,8 +5,11 @@ import com.cibo.evilplot.numeric.Bounds
 import org.scalatest.{FunSpec, Matchers}
 
 class HistogramSpec extends FunSpec with Matchers {
+
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
   describe("Histogram") {
-    val plot = Histogram(Seq(1.0, 1, 1, 2, 3, 4, 4, 5), boundBuffer = 0)
+    val plot = Histogram(Seq(1.0, 1, 1, 2, 3, 4, 4, 5), boundBuffer = Some(0))
 
     it("has the right bounds") {
       plot.xbounds shouldBe Bounds(1, 5)

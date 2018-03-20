@@ -8,6 +8,9 @@ import org.scalatest.Matchers._
 import org.scalatest._
 
 class ColorsSpec extends FunSpec {
+
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
   describe("ScaledColorBar") {
     it("should assign distinct colors to different years") {
       val z: Seq[Double] = Seq(2012, 2013, 2012, 2011)

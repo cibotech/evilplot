@@ -1,19 +1,16 @@
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.{Color, DefaultColors}
 import com.cibo.evilplot.geometry.{Align, BorderRect, Drawable, Extent, Line, StrokeStyle}
 import com.cibo.evilplot.numeric.BoxPlotSummaryStatistics
 import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.aesthetics.Theme
 
 trait BoxRenderer extends PlotElementRenderer[BoxPlotSummaryStatistics] {
   def render(plot: Plot, extent: Extent, summary: BoxPlotSummaryStatistics): Drawable
 }
 
 object BoxRenderer {
-  private val defaultStrokeWidth: Double = 2
-  def default(strokeWidth: Double = defaultStrokeWidth, pathColor: Color = DefaultColors.pathColor,
-              fillColor: Color = DefaultColors.fillColor
-  ): BoxRenderer = new BoxRenderer {
+  def default()(implicit theme: Theme): BoxRenderer = new BoxRenderer {
     def render(
       plot: Plot,
       extent: Extent,
@@ -26,10 +23,10 @@ object BoxRenderer {
       val bottomWhisker = summary.lowerQuantile - summary.lowerWhisker
 
       Align.center(
-        StrokeStyle(Line(scale * topWhisker, strokeWidth), pathColor).rotated(90),
-        BorderRect.filled(extent.width, scale * uppperToMiddle).colored(pathColor).filled(fillColor),
-        BorderRect.filled(extent.width, scale * middleToLower).colored(pathColor).filled(fillColor),
-        StrokeStyle(Line(scale * bottomWhisker, strokeWidth), pathColor).rotated(90)
+        StrokeStyle(Line(scale * topWhisker, theme.elements.strokeWidth), theme.colors.path).rotated(90),
+        BorderRect.filled(extent.width, scale * uppperToMiddle).colored(theme.colors.path).filled(theme.colors.fill),
+        BorderRect.filled(extent.width, scale * middleToLower).colored(theme.colors.path).filled(theme.colors.fill),
+        StrokeStyle(Line(scale * bottomWhisker, theme.elements.strokeWidth), theme.colors.path).rotated(90)
       ).reduce(_ above _)
     }
   }

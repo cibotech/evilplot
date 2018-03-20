@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object Overlay {
@@ -32,7 +33,7 @@ object Overlay {
 
   private case class OverlayPlotRenderer(subplots: Seq[Plot]) extends PlotRenderer {
     override def legendContext: LegendContext = LegendContext.combine(subplots.map(_.renderer.legendContext))
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val updatedPlots = updateSubplotBounds(
         subplots = Plot.padPlots(Seq(getTransformedSubplots(plot, subplots)), plotExtent, 0, 0).head,
         xbounds = plot.xbounds,

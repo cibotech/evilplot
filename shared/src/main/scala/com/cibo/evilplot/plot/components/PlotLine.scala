@@ -4,6 +4,7 @@ import com.cibo.evilplot.colors.{Color, DefaultColors}
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, Path}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.aesthetics.Theme
 
 import scala.annotation.tailrec
 
@@ -13,14 +14,14 @@ sealed trait PlotLine extends PlotComponent {
 }
 
 case class HorizontalPlotLine(y: Double, thickness: Double, color: Color) extends PlotLine {
-  def render(plot: Plot, extent: Extent): Drawable = {
+  def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val offset = plot.ytransform(plot, extent)(y)
     Line(extent.width, thickness).colored(color).translate(y = offset)
   }
 }
 
 case class VerticalPlotLine(x: Double, thickness: Double, color: Color) extends PlotLine {
-  def render(plot: Plot, extent: Extent): Drawable = {
+  def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val offset = plot.xtransform(plot, extent)(x)
     Line(extent.height, thickness).colored(color).rotated(90).translate(x = offset)
   }
@@ -48,7 +49,7 @@ case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickne
     }
   }
 
-  def render(plot: Plot, extent: Extent): Drawable = {
+  def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val xtransform = plot.xtransform(plot, extent)
     val ytransform = plot.ytransform(plot, extent)
     points(plot).map { ps =>
@@ -62,7 +63,7 @@ case class FunctionPlotLine(fn: Double => Double,
                             color: Color,
                             thickness: Double) extends PlotLine {
 
-  def render(plot: Plot, extent: Extent): Drawable = {
+  def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val xtransform = plot.xtransform(plot, extent)
     val ytransform = plot.ytransform(plot, extent)
 
@@ -108,28 +109,46 @@ trait PlotLineImplicits {
   val defaultNumPoints: Int = 100
 
   def hline(
+    y: Double
+  )(implicit theme: Theme): Plot = plot :+ HorizontalPlotLine(y, defaultThickness, theme.colors.trendLine)
+
+  def hline(
     y: Double,
-    color: Color = defaultColor,
+    color: Color,
     thickness: Double = defaultThickness
   ): Plot = plot :+ HorizontalPlotLine(y, thickness, color)
 
   def vline(
+    x: Double
+  )(implicit theme: Theme): Plot = plot :+ VerticalPlotLine(x, defaultThickness, theme.colors.trendLine)
+
+  def vline(
     x: Double,
-    color: Color = defaultColor,
+    color: Color,
     thickness: Double = defaultThickness
   ): Plot = plot :+ VerticalPlotLine(x, thickness, color)
 
   def trend(
     slope: Double,
+    intercept: Double
+  )(implicit theme: Theme): Plot =
+    plot :+ TrendPlotLine(slope, intercept, theme.colors.trendLine, defaultThickness)
+
+  def trend(
+    slope: Double,
     intercept: Double,
-    color: Color = defaultColor,
+    color: Color,
     thickness: Double = defaultThickness
   ): Plot = plot :+ TrendPlotLine(slope, intercept, color, thickness)
 
   /** Plot a function. For lines, `trend` is more efficient. */
+  def function(fn: Double => Double)(implicit theme: Theme): Plot =
+    plot :+ FunctionPlotLine(fn, theme.colors.trendLine, defaultThickness)
+
+  /** Plot a function. For lines, `trend` is more efficient. */
   def function(
-              fn: Double => Double,
-              color: Color = defaultColor,
-              thickness: Double = defaultThickness
-              ): Plot = plot :+ FunctionPlotLine(fn, color, thickness)
+    fn: Double => Double,
+    color: Color,
+    thickness: Double = defaultThickness
+  ): Plot = plot :+ FunctionPlotLine(fn, color, thickness)
 }

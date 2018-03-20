@@ -2,10 +2,14 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 import org.scalatest.{FunSpec, Matchers}
 
 class OverlaySpec extends FunSpec with Matchers {
+
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
   describe("Overlay") {
     it("it gets the bounds right for a single plot") {
       val inner = ScatterPlot(Seq(Point(1.0, 10.0), Point(2.0, 20.0)))
@@ -35,7 +39,7 @@ class OverlaySpec extends FunSpec with Matchers {
       var ybounds: Bounds = Bounds(0, 0)
 
       val testRenderer = new PlotRenderer {
-        def render(plot: Plot, plotExtent: Extent): Drawable = {
+        def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
           xbounds = plot.xbounds
           ybounds = plot.ybounds
           EmptyDrawable().resize(plotExtent)

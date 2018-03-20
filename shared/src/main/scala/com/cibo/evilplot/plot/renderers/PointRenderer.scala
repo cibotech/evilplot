@@ -1,8 +1,8 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors._
-import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Text}
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
 trait PointRenderer extends PlotElementRenderer[Int] {
@@ -12,29 +12,28 @@ trait PointRenderer extends PlotElementRenderer[Int] {
 
 object PointRenderer {
 
-  val defaultPointSize: Double = 2.5
   val defaultColorCount: Int = 10
 
-  /** Default function to create a label from a depth value. */
-  def defaultLabelFunction(depth: Double): Drawable = {
-    Text(math.ceil(depth).toString)
-  }
-
   /** The default point renderer to render a disc.
-    * @param size  The size of the point.
     * @param color The color of the point.
+    * @param pointSize The size of the point.
     * @param label Label to be shown in a legend.
     */
   def default(
-    size: Double = defaultPointSize,
-    color: Color = DefaultColors.barColor,
+    color: Option[Color] = None,
+    pointSize: Option[Double] = None,
     label: Drawable = EmptyDrawable()
-  ): PointRenderer = new PointRenderer {
+  )(implicit theme: Theme): PointRenderer = new PointRenderer {
     override def legendContext: LegendContext = label match {
       case _: EmptyDrawable => LegendContext.empty
-      case d => LegendContext.single(Disc(size).translate(-size, -size).filled(color), d)
+      case d =>
+        val size = pointSize.getOrElse(theme.elements.pointSize)
+        LegendContext.single(Disc(size).translate(-size, -size).filled(color.getOrElse(theme.colors.point)), d)
     }
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = Disc(size).translate(-size, -size) filled color
+    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+      val size = pointSize.getOrElse(theme.elements.pointSize)
+      Disc(size).translate(-size, -size) filled color.getOrElse(theme.colors.point)
+    }
   }
 
   /**
@@ -47,18 +46,16 @@ object PointRenderer {
   /** Render points with colors based on depth.
     * @param depths The depths.
     * @param colorCount The number of labels/colors to use.
-    * @param labelFunction Function to generate a label from a depth.
-    * @param size The size of the point.
     */
   def depthColor(
     depths: Seq[Double],
-    colorCount: Int = defaultColorCount,
-    labelFunction: Double => Drawable = defaultLabelFunction,
-    size: Double = defaultPointSize
-  ): PointRenderer = {
+    colorCount: Int = defaultColorCount
+  )(implicit theme: Theme): PointRenderer = {
     val bar = ScaledColorBar(Color.stream.take(colorCount), depths.min, depths.max)
-    val labels = (0 until colorCount).map { c => labelFunction(bar.colorValue(c)) }
-    depthColor(depths, labels, bar, size)
+    val labels = (0 until colorCount).map { c =>
+      Style(Text(math.ceil(bar.colorValue(c)).toString, theme.fonts.legendLabelSize), theme.colors.legendLabel)
+    }
+    depthColor(depths, labels, bar, None)
   }
 
   /** Render points with colors based on depth.
@@ -71,19 +68,22 @@ object PointRenderer {
     depths: Seq[Double],
     labels: Seq[Drawable],
     bar: ScaledColorBar,
-    size: Double
-  ): PointRenderer = {
+    size: Option[Double]
+  )(implicit theme: Theme): PointRenderer = {
     require(labels.lengthCompare(bar.nColors) == 0, "Number of labels does not match the number of categories")
+    val pointSize = size.getOrElse(theme.elements.pointSize)
     new PointRenderer {
       override def legendContext: LegendContext = {
         LegendContext(
-          elements = (0 until bar.nColors).map { c => Disc(size).filled(bar.getColor(c)) } ,
+          elements = (0 until bar.nColors).map { c =>
+            Disc(pointSize).filled(bar.getColor(c))
+          },
           labels = labels,
           defaultStyle = LegendStyle.Categorical
         )
       }
       def render(plot: Plot, extent: Extent, index: Int): Drawable = {
-        Disc(size).translate(-size, -size) filled bar.getColor(depths(index))
+        Disc(pointSize).translate(-pointSize, -pointSize) filled bar.getColor(depths(index))
       }
     }
   }
@@ -97,7 +97,7 @@ object PointRenderer {
     depths: Seq[Double],
     labels: Seq[Drawable],
     bar: ScaledColorBar
-  ): PointRenderer = depthColor(depths, labels, bar, defaultPointSize)
+  )(implicit theme: Theme): PointRenderer = depthColor(depths, labels, bar, None)
 
   /** Render points with colors based on depth.
     * @param depths The depths.
@@ -106,8 +106,10 @@ object PointRenderer {
   def depthColor(
     depths: Seq[Double],
     bar: ScaledColorBar
-  ): PointRenderer = {
-    val labels = (0 until bar.nColors).map(c => defaultLabelFunction(bar.colorValue(c)))
-    depthColor(depths, labels, bar, defaultPointSize)
+  )(implicit theme: Theme): PointRenderer = {
+    val labels = (0 until bar.nColors).map { c =>
+      Style(Text(math.ceil(bar.colorValue(c)).toString, theme.fonts.legendLabelSize), theme.colors.legendLabel)
+    }
+    depthColor(depths, labels, bar, None)
   }
 }

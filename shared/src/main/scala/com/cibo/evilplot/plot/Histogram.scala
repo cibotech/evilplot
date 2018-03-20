@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
 object Histogram {
@@ -28,7 +29,7 @@ object Histogram {
     spacing: Double,
     boundBuffer: Double
   ) extends PlotRenderer {
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 
@@ -68,18 +69,24 @@ object Histogram {
   def apply(
     values: Seq[Double],
     bins: Int = defaultBinCount,
-    barRenderer: BarRenderer = BarRenderer.default(),
-    spacing: Double = BarChart.defaultSpacing,
-    boundBuffer: Double = BarChart.defaultBoundBuffer
-  ): Plot = {
+    barRenderer: Option[BarRenderer] = None,
+    spacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None
+  )(implicit theme: Theme): Plot = {
     require(bins > 0, "must have at least one bin")
     val xbounds = Bounds(values.min, values.max)
     val maxY = createBins(values, xbounds, bins).maxBy(_.y).y
     val binWidth = xbounds.range / bins
     Plot(
       xbounds = xbounds,
-      ybounds = Bounds(0, maxY * (1.0 + boundBuffer)),
-      renderer = HistogramRenderer(values, barRenderer, bins, spacing, boundBuffer)
+      ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
+      renderer = HistogramRenderer(
+        values,
+        barRenderer.getOrElse(BarRenderer.default(theme.colors.bar)),
+        bins,
+        spacing.getOrElse(theme.elements.barSpacing),
+        boundBuffer.getOrElse(theme.elements.boundBuffer)
+      )
     )
   }
 }

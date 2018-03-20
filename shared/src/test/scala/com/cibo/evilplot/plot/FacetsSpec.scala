@@ -2,10 +2,14 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Rect}
 import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.plot.aesthetics.Theme
 import org.scalatest.{FunSpec, Matchers}
 import com.cibo.evilplot.plot.components.{FacetedPlotComponent, Position}
 
 class FacetsSpec extends FunSpec with Matchers {
+
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
   describe("Facets") {
     it("is the correct size with one facet") {
       val inner = ScatterPlot(Seq(Point(1, 1), Point(2, 2)))
@@ -56,7 +60,8 @@ class FacetsSpec extends FunSpec with Matchers {
         val position: Position = Position.Left
         override val repeated: Boolean = true
         override def size(plot: Plot): Extent = if (plot == inner2) Extent(10, 10) else Extent(0, 0)
-        def render(plot: Plot, extent: Extent, row: Int, column: Int): Drawable = EmptyDrawable()
+        def render(plot: Plot, extent: Extent, row: Int, column: Int)(implicit theme: Theme): Drawable =
+          EmptyDrawable()
       }
 
       val faceted = Facets(Seq(Seq(inner1), Seq(inner2))) :+ TestComponent

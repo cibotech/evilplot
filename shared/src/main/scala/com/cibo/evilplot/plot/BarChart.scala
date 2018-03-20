@@ -1,8 +1,9 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, DefaultColors}
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Rect, Text}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Rect, Style, Text}
 import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
 /** Data for a bar in a bar chart.
@@ -13,8 +14,8 @@ import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
   */
 final case class Bar(
   values: Seq[Double],
-  cluster: Int = 0,
-  colors: Seq[Color] = Color.stream,
+  cluster: Int,
+  colors: Seq[Color],
   labels: Seq[Drawable] = Seq.empty
 ) {
   lazy val height: Double = values.sum
@@ -29,15 +30,14 @@ final case class Bar(
 }
 
 object Bar {
-  def apply(value: Double): Bar = Bar(Seq(value))
-  def apply(value: Double, cluster: Int): Bar = Bar(Seq(value), cluster = cluster)
+  def apply(value: Double)(implicit theme: Theme): Bar = Bar(Seq(value), 0, theme.colors.stream)
+  def apply(value: Double, cluster: Int)(implicit theme: Theme): Bar =
+    Bar(Seq(value), cluster = cluster, theme.colors.stream)
 }
 
 object BarChart {
 
   val defaultBoundBuffer: Double = 0.1
-  val defaultSpacing: Double = 1.0
-  val defaultClusterSpacing: Double = 4.0
 
   case class BarChartRenderer(
     data: Seq[Bar],
@@ -48,7 +48,7 @@ object BarChart {
 
     override def legendContext: LegendContext = LegendContext.combine(data.map(_.legendContext))
 
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 
@@ -89,25 +89,26 @@ object BarChart {
     */
   def apply(
     values: Seq[Double],
-    color: Color = DefaultColors.barColor,
-    spacing: Double = defaultSpacing,
-    boundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
-    val barRenderer = BarRenderer.default(color)
+    color: Option[Color] = None,
+    spacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None
+  )(implicit theme: Theme): Plot = {
+    val barRenderer = BarRenderer.default(color.getOrElse(theme.colors.bar))
     val bars = values.map(Bar(_))
-    custom(bars, barRenderer, spacing, defaultClusterSpacing, boundBuffer)
+    custom(bars, Some(barRenderer), spacing, None, boundBuffer)
   }
 
   /** Create a bar chart where bars are divided into clusters. */
   def clustered(
     values: Seq[Seq[Double]],
     labels: Seq[String] = Seq.empty,
-    colors: Seq[Color] = Color.stream,
-    spacing: Double = defaultSpacing,
-    clusterSpacing: Double = defaultClusterSpacing,
-    boundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
+    colors: Seq[Color] = Seq.empty,
+    spacing: Option[Double] = None,
+    clusterSpacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None
+  )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.clustered()
+    val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
     val bars = values.zipWithIndex.flatMap { case (cluster, clusterIndex) =>
       cluster.zipWithIndex.map { case (value, index) =>
         val barLabel = if (clusterIndex == 0 && labels.lengthCompare(index) > 0) {
@@ -118,12 +119,12 @@ object BarChart {
         Bar(
           values = Seq(value),
           cluster = clusterIndex,
-          colors = Seq(colors(index)),
+          colors = Seq(colorStream(index)),
           labels = barLabel
         )
       }
     }
-    custom(bars, barRenderer, spacing, clusterSpacing, boundBuffer)
+    custom(bars, Some(barRenderer), spacing, clusterSpacing, boundBuffer)
   }
 
   /** Create a stacked bar chart.
@@ -135,18 +136,21 @@ object BarChart {
     */
   def stacked(
     values: Seq[Seq[Double]],
-    colors: Seq[Color] = Color.stream,
+    colors: Seq[Color] = Seq.empty,
     labels: Seq[String] = Seq.empty,
-    spacing: Double = defaultSpacing,
-    boundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
+    spacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None
+  )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.stacked()
-    val barLabels = labels.map(Text(_))
-    val bars = values.map { stack => Bar(stack, colors = colors, labels = barLabels) }
-    custom(bars, barRenderer, spacing, defaultClusterSpacing, boundBuffer)
+    val barLabels = labels.map(l => Style(Text(l, theme.fonts.legendLabelSize), theme.colors.legendLabel))
+    val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
+    val bars = values.map { stack =>
+      Bar(stack, colors = colorStream, labels = barLabels, cluster = 0)
+    }
+    custom(bars, Some(barRenderer), spacing, None, boundBuffer)
   }
 
-  /** Create a clusted bar chart of stacked bars.
+  /** Create a clustered bar chart of stacked bars.
     * @param values A sequence of clusters of bars where each bar is a sequence of values.
     * @param colors The color to use for each slice of a stacked bar.
     * @param labels Labels for each color in the stacked bar.
@@ -156,25 +160,26 @@ object BarChart {
     */
   def clusteredStacked(
     values: Seq[Seq[Seq[Double]]],
-    colors: Seq[Color] = Color.stream,
+    colors: Seq[Color] = Seq.empty,
     labels: Seq[String] = Seq.empty,
-    spacing: Double = defaultSpacing,
-    clusterSpacing: Double = defaultClusterSpacing,
-    boundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
+    spacing: Option[Double] = None,
+    clusterSpacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None
+  )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.stacked()
-    val barLabels = labels.map(Text(_))
+    val barLabels = labels.map(l => Style(Text(l, theme.fonts.legendLabelSize), theme.colors.legendLabel))
+    val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
     val bars = values.zipWithIndex.flatMap { case (cluster, clusterIndex) =>
       cluster.zipWithIndex.map { case (stack, barIndex) =>
         Bar(
           values = stack,
           cluster = clusterIndex,
-          colors = colors,
+          colors = colorStream,
           labels = barLabels
         )
       }
     }
-    custom(bars, barRenderer, spacing, clusterSpacing, boundBuffer)
+    custom(bars, Some(barRenderer), spacing, clusterSpacing, boundBuffer)
   }
 
   /** Create a custom bar chart.
@@ -186,13 +191,25 @@ object BarChart {
     */
   def custom(
     bars: Seq[Bar],
-    barRenderer: BarRenderer = BarRenderer.default(),
-    spacing: Double = defaultSpacing,
-    clusterSpacing: Double = defaultClusterSpacing,
-    boundBuffer: Double = defaultBoundBuffer,
-  ): Plot = {
+    barRenderer: Option[BarRenderer] = None,
+    spacing: Option[Double] = None,
+    clusterSpacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None,
+  )(implicit theme: Theme): Plot = {
     val xbounds = Bounds(0, bars.size)
-    val ybounds = Plot.expandBounds(Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height), boundBuffer)
-    Plot(xbounds, ybounds, BarChartRenderer(bars, barRenderer, spacing, clusterSpacing))
+    val ybounds = Plot.expandBounds(
+      Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height),
+      boundBuffer.getOrElse(theme.elements.boundBuffer)
+    )
+    Plot(
+      xbounds,
+      ybounds,
+      BarChartRenderer(
+        bars,
+        barRenderer.getOrElse(BarRenderer.default(theme.colors.bar)),
+        spacing.getOrElse(theme.elements.barSpacing),
+        clusterSpacing.getOrElse(theme.elements.clusterSpacing)
+      )
+    )
   }
 }

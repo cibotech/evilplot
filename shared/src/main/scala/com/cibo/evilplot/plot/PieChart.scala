@@ -3,6 +3,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Rect, Text, Wedge}
 import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object PieChart {
@@ -15,13 +16,15 @@ object PieChart {
     override def legendContext: LegendContext = {
       val labelColors = data.map(_._1).zip(colors)
       LegendContext(
-        elements = labelColors.map(lc => Rect(Text.defaultSize, Text.defaultSize).filled(lc._2)),
+        elements = labelColors.map { lc =>
+          Rect(Text.defaultSize, Text.defaultSize).filled(lc._2)
+        },
         labels = labelColors.map(_._1),
         defaultStyle = LegendStyle.Categorical
       )
     }
 
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
 
       val radius = math.min(plotExtent.width, plotExtent.height) / 2
 
@@ -47,15 +50,21 @@ object PieChart {
 
   def apply(
     data: Seq[(String, Double)],
-    colors: Seq[Color] = Color.stream,
-    textColor: Color = HTMLNamedColors.black,
-    textSize: Double = Text.defaultSize
-  ): Plot = {
-    val withLabels = data.map(v => Text(v._1, textSize).filled(textColor) -> v._2)
+    colors: Seq[Color] = Seq.empty,
+    textColor: Option[Color] = None,
+    textSize: Option[Double] = None
+  )(implicit theme: Theme): Plot = {
+    val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
+    val withLabels = data.map { v =>
+      Text(
+        v._1,
+        textSize.getOrElse(theme.fonts.legendLabelSize)
+      ).filled(textColor.getOrElse(theme.colors.legendLabel)) -> v._2
+    }
     Plot(
       xbounds = Bounds(0, 1),
       ybounds = Bounds(0, 1),
-      renderer = PieChartRenderer(withLabels, colors)
+      renderer = PieChartRenderer(withLabels, colorStream)
     )
   }
 

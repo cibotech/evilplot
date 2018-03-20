@@ -4,6 +4,9 @@ import com.cibo.evilplot.numeric.Point
 import org.scalatest.{FunSpec, Matchers}
 
 class ScatterPlotSpec extends FunSpec with Matchers {
+
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
   describe("ScatterPlot") {
     it("sets reasonable bounds") {
       val data = Seq(Point(-1, 10), Point(20, -5))
@@ -17,7 +20,7 @@ class ScatterPlotSpec extends FunSpec with Matchers {
 
     it("sets exact bounds without buffering") {
       val data = Seq(Point(-1, 10), Point(20, -5))
-      val plot = ScatterPlot(data, boundBuffer = 0)
+      val plot = ScatterPlot(data, boundBuffer = Some(0))
 
       plot.xbounds.min shouldBe -1.0
       plot.xbounds.max shouldBe 20.0

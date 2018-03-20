@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry.{Drawable, Extent, Text, above}
 import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.aesthetics.Theme
 
 case class Annotation(
   f: (Plot, Extent) => Drawable,
@@ -11,7 +12,7 @@ case class Annotation(
   require(x >= 0.0 && x <= 1.0, s"x must be between 0.0 and 1.0, got $x")
   require(y >= 0.0 && y <= 1.0, s"y must be between 0.0 and 1.0, got $y")
   val position: Position = Position.Overlay
-  def render(plot: Plot, extent: Extent): Drawable = {
+  def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val drawable = f(plot, extent)
     val xoffset = (extent.width - drawable.extent.width) * x
     val yoffset = (extent.height - drawable.extent.height) * y
@@ -51,9 +52,8 @@ trait AnnotationImplicits {
   def annotate(
     msg: String,
     x: Double = 1.0,
-    y: Double = 0.5,
-    textSize: Double = Text.defaultSize
-  ): Plot =
-    annotate(msg.split('\n').map(s => Text(s, textSize)).reduce(above), x, y)
+    y: Double = 0.5
+  )(implicit theme: Theme): Plot =
+    annotate(msg.split('\n').map(s => Text(s, theme.fonts.annotationSize)).reduce(above), x, y)
 
 }

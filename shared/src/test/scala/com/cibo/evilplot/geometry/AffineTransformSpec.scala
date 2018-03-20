@@ -4,6 +4,8 @@ import org.scalatest.{FunSpec, Matchers}
 
 class AffineTransformSpec extends FunSpec with Matchers {
 
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
   describe("The AffineTransform") {
     it("should translate a point") {
       AffineTransform.identity.translate(1.0, 0.0)(1.0, 1.0) should be ((2.0, 1.0))

@@ -2,11 +2,10 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 
 object XyPlot {
-
-  val defaultBoundBuffer: Double = 0.1
 
   private case class XyPlotRenderer(
     data: Seq[Point],
@@ -14,7 +13,7 @@ object XyPlot {
     pathRenderer: PathRenderer
   ) extends PlotRenderer {
     override def legendContext: LegendContext = pointRenderer.legendContext.combine(pathRenderer.legendContext)
-    def render(plot: Plot, plotExtent: Extent): Drawable = {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
       val xformedPoints = data.filter(plot.inBounds).zipWithIndex.map { case (point, index) =>
@@ -41,15 +40,21 @@ object XyPlot {
     */
   def apply(
     data: Seq[Point],
-    pointRenderer: PointRenderer = PointRenderer.default(),
-    pathRenderer: PathRenderer = PathRenderer.default(),
-    xboundBuffer: Double = defaultBoundBuffer,
-    yboundBuffer: Double = defaultBoundBuffer
-  ): Plot = {
-    require(xboundBuffer >= 0.0)
-    require(yboundBuffer >= 0.0)
-    val xbounds = Plot.expandBounds(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x), xboundBuffer)
-    val ybounds = Plot.expandBounds(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y), yboundBuffer)
+    pointRenderer: PointRenderer,
+    pathRenderer: PathRenderer,
+    xboundBuffer: Option[Double] = None,
+    yboundBuffer: Option[Double] = None
+  )(implicit theme: Theme): Plot = {
+    require(xboundBuffer.getOrElse(0.0) >= 0.0)
+    require(yboundBuffer.getOrElse(0.0) >= 0.0)
+    val xbounds = Plot.expandBounds(
+      Bounds(data.minBy(_.x).x, data.maxBy(_.x).x),
+      xboundBuffer.getOrElse(theme.elements.boundBuffer)
+    )
+    val ybounds = Plot.expandBounds(
+      Bounds(data.minBy(_.y).y, data.maxBy(_.y).y),
+      yboundBuffer.getOrElse(theme.elements.boundBuffer)
+    )
     Plot(xbounds, ybounds, XyPlotRenderer(data, pointRenderer, pathRenderer))
   }
 }

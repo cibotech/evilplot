@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.aesthetics.Theme
 
 /** A component that is aligned with the data of a plot. */
 trait FacetedPlotComponent {
@@ -23,5 +24,5 @@ trait FacetedPlotComponent {
     * @param row The facet row (or 0).
     * @param column The facet column (or 0).
     */
-  def render(plot: Plot, extent: Extent, row: Int, column: Int): Drawable
+  def render(plot: Plot, extent: Extent, row: Int, column: Int)(implicit theme: Theme): Drawable
 }

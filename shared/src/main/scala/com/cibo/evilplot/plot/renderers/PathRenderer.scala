@@ -1,8 +1,9 @@
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.{Color, DefaultColors}
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, Path, StrokeStyle, Text}
+import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, Path, StrokeStyle, Style, Text}
 import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
 trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
@@ -11,19 +12,22 @@ trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
 }
 
 object PathRenderer {
-  val defaultStrokeWidth: Double = 2.0
   private val legendStrokeLength: Double = 8.0
+
+  /** The default path renderer. */
+  def default()(implicit theme: Theme): PathRenderer =
+    default(theme.elements.strokeWidth, theme.colors.path, EmptyDrawable())
 
   /** The default path renderer.
     * @param strokeWidth The width of the path.
-    * @param color The color of the path.
+    * @param color Point color.
     * @param label A label for this path (for legends).
     */
   def default(
-    strokeWidth: Double = defaultStrokeWidth,
-    color: Color = DefaultColors.pathColor,
-    label: Drawable = EmptyDrawable()
-  ): PathRenderer = new PathRenderer {
+    strokeWidth: Double,
+    color: Color,
+    label: Drawable
+  )(implicit theme: Theme): PathRenderer = new PathRenderer {
     override def legendContext: LegendContext = label match {
       case _: EmptyDrawable => LegendContext.empty
       case d                => LegendContext.single(StrokeStyle(Line(legendStrokeLength, strokeWidth), color), d)
@@ -41,16 +45,19 @@ object PathRenderer {
   def named(
     name: String,
     color: Color,
-    strokeWidth: Double = defaultStrokeWidth
-  ): PathRenderer = default(strokeWidth, color, Text(name))
+    strokeWidth: Option[Double] = None
+  )(implicit theme: Theme): PathRenderer =
+    default(
+      strokeWidth.getOrElse(theme.elements.strokeWidth),
+      color,
+      Style(Text(name, theme.fonts.legendLabelSize), theme.colors.legendLabel)
+    )
 
-  def closed(strokeWidth: Double = defaultStrokeWidth,
-             color: Color = DefaultColors.pathColor
-            ): PathRenderer = new PathRenderer {
+  def closed(color: Color)(implicit theme: Theme): PathRenderer = new PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       // better hope this is an indexedseq?
       path.headOption match {
-        case Some(h) => StrokeStyle(Path(path :+ h, strokeWidth), color)
+        case Some(h) => StrokeStyle(Path(path :+ h, theme.elements.strokeWidth), color)
         case None    => EmptyDrawable()
       }
     }
@@ -59,7 +66,7 @@ object PathRenderer {
   /**
     * A no-op renderer for when you don't want to render paths (such as on a scatter plot)
     */
-  def empty[T](): PathRenderer = new PathRenderer {
+  def empty(): PathRenderer = new PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = EmptyDrawable()
   }
 }

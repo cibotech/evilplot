@@ -2,6 +2,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.{FacetedPlotComponent, Position}
 import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
 
@@ -69,7 +70,7 @@ final case class Plot(
     }
   }
 
-  def render(extent: Extent = Plot.defaultExtent): Drawable = {
+  def render(extent: Extent = Plot.defaultExtent)(implicit theme: Theme): Drawable = {
     val overlays = componentRenderer.renderFront(this, extent)
     val backgrounds = componentRenderer.renderBack(this, extent)
     val pextent = plotExtent(extent)
