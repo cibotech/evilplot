@@ -50,7 +50,7 @@ private[colors] object ColorUtils {
     val lightnessFraction = (max + min) / 2
 
     HSLA(
-      hue = Math.round(hueFraction * 360).toInt,
+      hue = Math.round(hueFraction * 360).toInt % 359,
       saturation = Math.round(saturationFraction * 100).toInt,
       lightness = Math.round(lightnessFraction * 100).toInt,
       opacity = a
