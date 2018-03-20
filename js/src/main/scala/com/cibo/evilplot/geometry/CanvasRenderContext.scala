@@ -38,7 +38,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
 
   def draw(disc: Disc): Unit = CanvasOp(canvas) {
     canvas.beginPath()
-    canvas.arc(disc.x, disc.y, disc.radius, 0, 2 * Math.PI)
+    canvas.arc(disc.x + disc.radius, disc.y + disc.radius, disc.radius, 0, 2 * Math.PI)
     canvas.closePath()
     canvas.fill()
   }

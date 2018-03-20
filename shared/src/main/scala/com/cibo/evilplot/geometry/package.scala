@@ -14,10 +14,12 @@ package object geometry {
     def behind(other: Drawable): Drawable = Seq(r, other).group
     def inFrontOf(other: Drawable): Drawable = Seq(other, r).group
 
-    def labeled(msgSize: (String, Double)): Drawable = Align.center(r, Text(msgSize._1, msgSize._2) padTop 5).group
+    def labeled(msgSize: (String, Double)): Drawable =
+      Align.middle(r, Text(msgSize._1, msgSize._2) padLeft 5).reduce(_ beside _)
     def labeled(msg: String): Drawable = labeled(msg -> Text.defaultSize)
 
-    def titled(msgSize: (String, Double)): Drawable = geometry.pad(Text(msgSize._1, msgSize._2), bottom = msgSize._2 / 2.0)
+    def titled(msgSize: (String, Double)): Drawable =
+      Align.center(geometry.pad(Text(msgSize._1, msgSize._2), bottom = msgSize._2 / 2.0), r).reduce(_ above _)
     def titled(msg: String): Drawable = titled(msg -> Text.defaultSize)
 
     def padRight(pad: Double): Drawable = geometry.pad(r, right = pad)

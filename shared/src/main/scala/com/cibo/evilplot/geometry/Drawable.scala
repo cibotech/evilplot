@@ -119,7 +119,7 @@ object BorderRect {
 /** A filled disc. */
 final case class Disc(radius: Double, x: Double = 0, y: Double = 0) extends Drawable {
   require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
-  lazy val extent = Extent(x + radius, y + radius)
+  lazy val extent = Extent(x + radius * 2, y + radius * 2)
 
   def draw(context: RenderContext): Unit = context.draw(this)
 }

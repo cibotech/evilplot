@@ -32,9 +32,9 @@ object PointRenderer {
   ): PointRenderer = new PointRenderer {
     override def legendContext: LegendContext = label match {
       case _: EmptyDrawable => LegendContext.empty
-      case d => LegendContext.single(Disc(size).filled(color), d)
+      case d => LegendContext.single(Disc(size).translate(-size, -size).filled(color), d)
     }
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = Disc(size) filled color
+    def render(plot: Plot, extent: Extent, index: Int): Drawable = Disc(size).translate(-size, -size) filled color
   }
 
   /**
@@ -77,13 +77,13 @@ object PointRenderer {
     new PointRenderer {
       override def legendContext: LegendContext = {
         LegendContext(
-          elements = (0 until bar.nColors).map { c => Disc(size, size, size).filled(bar.getColor(c)) } ,
+          elements = (0 until bar.nColors).map { c => Disc(size).filled(bar.getColor(c)) } ,
           labels = labels,
           defaultStyle = LegendStyle.Categorical
         )
       }
       def render(plot: Plot, extent: Extent, index: Int): Drawable = {
-        Disc(size) filled bar.getColor(depths(index))
+        Disc(size).translate(-size, -size) filled bar.getColor(depths(index))
       }
     }
   }
