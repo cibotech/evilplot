@@ -82,7 +82,7 @@ object Histogram {
       ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
       renderer = HistogramRenderer(
         values,
-        barRenderer.getOrElse(BarRenderer.default(theme.colors.bar)),
+        barRenderer.getOrElse(BarRenderer.default()),
         bins,
         spacing.getOrElse(theme.elements.barSpacing),
         boundBuffer.getOrElse(theme.elements.boundBuffer)
