@@ -72,7 +72,7 @@ class ColorsSpec extends FunSpec {
     }
 
     it("should not fail when rounding sends hue to 360") {
-      RGB(252, 0, 2) shouldBe HSLA(1, 100, 49, 1.0)
+      RGB(252, 0, 2) shouldBe HSLA(0, 100, 49, 1.0)
     }
 
     it("should throw exceptions with bad hexes"){
