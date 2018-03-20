@@ -14,26 +14,30 @@ trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
 object PathRenderer {
   private val legendStrokeLength: Double = 8.0
 
-  /** The default path renderer. */
-  def default()(implicit theme: Theme): PathRenderer =
-    default(theme.elements.strokeWidth, theme.colors.path, EmptyDrawable())
-
   /** The default path renderer.
     * @param strokeWidth The width of the path.
     * @param color Point color.
     * @param label A label for this path (for legends).
     */
   def default(
-    strokeWidth: Double,
-    color: Color,
-    label: Drawable
+    strokeWidth: Option[Double] = None,
+    color: Option[Color] = None,
+    label: Drawable = EmptyDrawable()
   )(implicit theme: Theme): PathRenderer = new PathRenderer {
     override def legendContext: LegendContext = label match {
       case _: EmptyDrawable => LegendContext.empty
-      case d                => LegendContext.single(StrokeStyle(Line(legendStrokeLength, strokeWidth), color), d)
+      case d                => LegendContext.single(
+        StrokeStyle(
+          Line(
+            legendStrokeLength, strokeWidth.getOrElse(theme.elements.strokeWidth)
+          ),
+          color.getOrElse(theme.colors.path)
+        ),
+        d
+      )
     }
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
-      StrokeStyle(Path(path, strokeWidth), color)
+      StrokeStyle(Path(path, strokeWidth.getOrElse(theme.elements.strokeWidth)), color.getOrElse(theme.colors.path))
     }
   }
 
@@ -48,8 +52,8 @@ object PathRenderer {
     strokeWidth: Option[Double] = None
   )(implicit theme: Theme): PathRenderer =
     default(
-      strokeWidth.getOrElse(theme.elements.strokeWidth),
-      color,
+      strokeWidth,
+      Some(color),
       Style(Text(name, theme.fonts.legendLabelSize), theme.colors.legendLabel)
     )
 
