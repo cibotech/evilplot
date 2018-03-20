@@ -24,8 +24,8 @@ object LinePlot {
   )(implicit theme: Theme): Plot = {
     XyPlot(
       data,
-      pointRenderer = pointRenderer.getOrElse(PointRenderer.empty()),
-      pathRenderer = pathRenderer.getOrElse(PathRenderer.default()),
+      pointRenderer = Some(pointRenderer.getOrElse(PointRenderer.empty())),
+      pathRenderer = Some(pathRenderer.getOrElse(PathRenderer.default())),
       xboundBuffer.orElse(Some(0)),
       yboundBuffer
     )
@@ -47,7 +47,7 @@ object LinePlot {
     xboundBuffer: Double,
     yboundBuffer: Double
   )(implicit theme: Theme): Plot = {
-    XyPlot(data, pointRenderer, pathRenderer, Some(xboundBuffer), Some(yboundBuffer))
+    XyPlot(data, Some(pointRenderer), Some(pathRenderer), Some(xboundBuffer), Some(yboundBuffer))
   }
 
   /** Create a line plot with the specified name and color.
@@ -70,8 +70,8 @@ object LinePlot {
     val pathRenderer = PathRenderer.named(name, color, strokeWidth)
     XyPlot(
       data,
-      pointRenderer,
-      pathRenderer,
+      Some(pointRenderer),
+      Some(pathRenderer),
       xboundBuffer,
       yboundBuffer
     )
@@ -95,7 +95,7 @@ object LinePlot {
   )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.empty()
     val pathRenderer = PathRenderer.default(strokeWidth, Some(color), label)
-    XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
+    XyPlot(data, Some(pointRenderer), Some(pathRenderer), xboundBuffer, yboundBuffer)
   }
 }
 
