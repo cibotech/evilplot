@@ -94,7 +94,7 @@ object LinePlot {
     yboundBuffer: Option[Double]
   )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.empty()
-    val pathRenderer = PathRenderer.default(strokeWidth.getOrElse(theme.elements.strokeWidth), color, label)
+    val pathRenderer = PathRenderer.default(strokeWidth, Some(color), label)
     XyPlot(data, pointRenderer, pathRenderer, xboundBuffer, yboundBuffer)
   }
 }
