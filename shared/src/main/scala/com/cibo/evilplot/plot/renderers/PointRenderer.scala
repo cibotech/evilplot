@@ -26,13 +26,14 @@ object PointRenderer {
   )(implicit theme: Theme): PointRenderer = new PointRenderer {
     override def legendContext: LegendContext = label match {
       case _: EmptyDrawable => LegendContext.empty
-      case d => LegendContext.single(
-        Disc(
-          pointSize.getOrElse(theme.elements.pointSize)
-        ).filled(color.getOrElse(theme.colors.point)), d)
+      case d =>
+        val size = pointSize.getOrElse(theme.elements.pointSize)
+        LegendContext.single(Disc(size).translate(-size, -size).filled(color.getOrElse(theme.colors.point)), d)
     }
-    def render(plot: Plot, extent: Extent, index: Int): Drawable =
-      Disc(theme.elements.pointSize) filled color.getOrElse(theme.colors.point)
+    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+      val size = pointSize.getOrElse(theme.elements.pointSize)
+      Disc(size).translate(-size, -size) filled color.getOrElse(theme.colors.point)
+    }
   }
 
   /**
@@ -75,14 +76,14 @@ object PointRenderer {
       override def legendContext: LegendContext = {
         LegendContext(
           elements = (0 until bar.nColors).map { c =>
-            Disc(pointSize, pointSize, pointSize).filled(bar.getColor(c))
+            Disc(pointSize).filled(bar.getColor(c))
           },
           labels = labels,
           defaultStyle = LegendStyle.Categorical
         )
       }
       def render(plot: Plot, extent: Extent, index: Int): Drawable = {
-        Disc(pointSize) filled bar.getColor(depths(index))
+        Disc(pointSize).translate(-pointSize, -pointSize) filled bar.getColor(depths(index))
       }
     }
   }
