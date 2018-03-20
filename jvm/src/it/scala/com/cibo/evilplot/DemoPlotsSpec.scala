@@ -22,42 +22,30 @@ class DemoPlotsSpec extends FunSpec with Matchers {
   val middleToLower = 30
   val bottomWhisker = 30
   val width = 50
-  val t = Align.center(
-    Line(topWhisker, strokeWidth).rotated(90).colored(pathColor),
-    BorderRect.filled(width, upperToMiddle).colored(pathColor).filled(fillColor),
-    BorderRect.filled(width, middleToLower).colored(pathColor).filled(fillColor),
-    Line(bottomWhisker, strokeWidth).rotated(90).colored(pathColor)
-  ).reduce(_ above _)
-  import scala.util.Random.nextDouble
-  val myData = Seq.fill(100)(Point(nextDouble(), nextDouble()))
-  val scatterPlot = ScatterPlot(myData, pointRenderer = PointRenderer.default(size = 3))
 
-  lazy val plots = Seq(t -> "name",
-    scatterPlot.render() -> "scatter",
-    scatterPlot.xAxis().yAxis().xGrid().yGrid().background().render() -> "withacc"
+  val plots = Seq(
+    DemoPlots.yieldScatterPlot -> "scatter",
+    DemoPlots.boxPlotRmResiduals -> "boxplot",
+    DemoPlots.contourPlot -> "contour",
+    DemoPlots.histogramPlot -> "histogram",
+    DemoPlots.crazyPlot -> "crazy",
+    DemoPlots.facetedPlot -> "faceted",
+    DemoPlots.heatmap -> "heatmap",
+    DemoPlots.marginalHistogram -> "marginalhistogram",
+    DemoPlots.pieChart -> "piechart",
+    DemoPlots.clusteredBarChart -> "clusteredbar",
+    DemoPlots.clusteredStackedBarChart -> "clusteredstackedbar",
+    DemoPlots.stackedBarChart -> "stackedbar",
+    DemoPlots.barChart -> "bar"
   )
-
-
-
-//    DemoPlots.yieldScatterPlot -> "scatter",
-//    DemoPlots.boxPlotRmResiduals -> "boxplot",
-//    DemoPlots.contourPlot -> "contour",
-//    DemoPlots.histogramPlot -> "histogram",
-//    DemoPlots.crazyPlot -> "crazy",
-//    DemoPlots.facetedPlot -> "faceted",
-//    DemoPlots.heatmap -> "heatmap",
-//    DemoPlots.marginalHistogram -> "marginalhistogram",
-//    DemoPlots.pieChart -> "piechart",
-//    DemoPlots.clusteredBarChart -> "clusteredbar",
-//    DemoPlots.clusteredStackedBarChart -> "clusteredstackedbar",
-//    DemoPlots.stackedBarChart -> "stackedbar",
-//    DemoPlots.barChart -> "bar"
 
   describe("Demo Plots") {
     it("is generated") {
       for { (plot, name) <- plots } {
         val bi = plot.asBufferedImage
-        ImageIO.write(bi, "png", new File(s"/Users/zgraziano/Desktop/its/$name.png"))
+        ImageIO.write(bi,
+                      "png",
+                      new File(s"/Users/zgraziano/Desktop/its/$name.png"))
       }
     }
   }

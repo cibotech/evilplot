@@ -1,7 +1,7 @@
 package com.cibo.evilplot.geometry
 
 import java.awt.geom.GeneralPath
-import java.awt.{BasicStroke, Font, Graphics2D, RenderingHints}
+import java.awt.{Color => _, _}
 
 import com.cibo.evilplot.colors._
 
@@ -75,6 +75,17 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     graphics.draw(gpath)
   }
 
+  def draw(polygon: Polygon): Unit = applyWithFillColor(this) {
+    val gpath = new GeneralPath()
+    gpath.moveTo(polygon.boundary.head.x, polygon.boundary.head.y)
+    polygon.boundary.tail.foreach { point =>
+      gpath.lineTo(point.x, point.y)
+    }
+    gpath.closePath()
+    graphics.fill(gpath)
+  }
+
+
   def draw(path: Path): Unit = applyWithStrokeColor(this) {
     val correction = path.strokeWidth / 2
     val stroke = path.strokeWidth.asStroke
@@ -102,8 +113,8 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   def draw(disc: Disc): Unit = applyWithFillColor(this) {
     // Position the disc at its center.
     val diameter = (2 * disc.radius).toInt
-    graphics.fillArc(disc.x.toInt - disc.radius.toInt,
-                     disc.y.toInt - disc.radius.toInt,
+    graphics.fillArc(disc.x.toInt,
+                     disc.y.toInt,
                      diameter,
                      diameter,
                      0,
