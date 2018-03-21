@@ -40,8 +40,8 @@ object XyPlot {
     */
   def apply(
     data: Seq[Point],
-    pointRenderer: PointRenderer,
-    pathRenderer: PathRenderer,
+    pointRenderer: Option[PointRenderer] = None,
+    pathRenderer: Option[PathRenderer] = None,
     xboundBuffer: Option[Double] = None,
     yboundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
@@ -55,7 +55,11 @@ object XyPlot {
       Bounds(data.minBy(_.y).y, data.maxBy(_.y).y),
       yboundBuffer.getOrElse(theme.elements.boundBuffer)
     )
-    Plot(xbounds, ybounds, XyPlotRenderer(data, pointRenderer, pathRenderer))
+    Plot(
+      xbounds,
+      ybounds,
+      XyPlotRenderer(data, pointRenderer.getOrElse(PointRenderer.default()), pathRenderer.getOrElse(PathRenderer.default()))
+    )
   }
 }
 

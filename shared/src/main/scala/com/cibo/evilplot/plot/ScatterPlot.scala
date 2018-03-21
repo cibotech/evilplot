@@ -18,7 +18,7 @@ object ScatterPlot {
     pointRenderer: Option[PointRenderer] = None,
     boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    XyPlot(data, pointRenderer.getOrElse(PointRenderer.default()), PathRenderer.empty(), boundBuffer, boundBuffer)
+    XyPlot(data, pointRenderer, Some(PathRenderer.empty()), boundBuffer, boundBuffer)
   }
 
   /** Create a scatter plot with the specified name and color.
@@ -59,7 +59,7 @@ object ScatterPlot {
   )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.default(Some(color), pointSize, name)
     val pathRenderer = PathRenderer.empty()
-    XyPlot(data, pointRenderer, pathRenderer, boundBuffer, boundBuffer)
+    XyPlot(data, Some(pointRenderer), Some(pathRenderer), boundBuffer, boundBuffer)
   }
 }
 

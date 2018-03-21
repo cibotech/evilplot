@@ -93,7 +93,7 @@ object BarChart {
     spacing: Option[Double] = None,
     boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    val barRenderer = BarRenderer.default(color.getOrElse(theme.colors.bar))
+    val barRenderer = BarRenderer.default(color)
     val bars = values.map(Bar(_))
     custom(bars, Some(barRenderer), spacing, None, boundBuffer)
   }
@@ -206,7 +206,7 @@ object BarChart {
       ybounds,
       BarChartRenderer(
         bars,
-        barRenderer.getOrElse(BarRenderer.default(theme.colors.bar)),
+        barRenderer.getOrElse(BarRenderer.default()),
         spacing.getOrElse(theme.elements.barSpacing),
         clusterSpacing.getOrElse(theme.elements.clusterSpacing)
       )

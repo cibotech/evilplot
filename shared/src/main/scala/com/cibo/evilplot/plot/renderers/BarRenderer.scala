@@ -12,9 +12,11 @@ trait BarRenderer extends PlotElementRenderer[Bar] {
 object BarRenderer {
 
   /** Default bar renderer. */
-  def default(color: Color): BarRenderer = new BarRenderer {
+  def default(
+    color: Option[Color] = None
+  )(implicit theme: Theme): BarRenderer = new BarRenderer {
     def render(plot: Plot, extent: Extent, bar: Bar): Drawable = {
-      Rect(extent.width, extent.height).filled(color)
+      Rect(extent.width, extent.height).filled(color.getOrElse(theme.colors.bar))
     }
   }
 
