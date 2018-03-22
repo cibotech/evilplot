@@ -65,11 +65,17 @@ object BarChart {
         val x = xtransformer(plot.xbounds.min + barx)
         val barWidth = xtransformer(plot.xbounds.min + barx + xscale) - x
 
-        // Y offset and bar height.
-        val y = ytransformer(math.abs(bar.height))
-        val barHeight = ytransformer(math.max(0, plot.ybounds.min)) - y
+        // Y bar translation and bar height.
+        val (transY, barHeight) =
+          if (plot.ybounds.isInBounds(0)) {
+            val y = ytransformer(math.abs(bar.height))
+            val height = ytransformer(math.max(0, plot.ybounds.min)) - y
+            (if (bar.height < 0) y + height else y, height)
+          } else {
+            val y = math.abs(ytransformer(plot.ybounds.max) - ytransformer(bar.height))
+            (if (plot.ybounds.min > 0) plotExtent.height - y else 0d, y)
+          }
 
-        val transY = if (bar.height < 0) y + barHeight else y
         val clusterPadding = if (numGroups > 1 && bar.cluster != lastCluster) clusterSpacing else 0
 
         // Extra X offset to account for the cluster and spacing.
