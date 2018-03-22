@@ -72,8 +72,13 @@ object BarChart {
             val height = ytransformer(math.max(0, plot.ybounds.min)) - y
             (if (bar.height < 0) y + height else y, height)
           } else {
-            val y = math.abs(ytransformer(plot.ybounds.max) - ytransformer(bar.height))
-            (if (plot.ybounds.min > 0) plotExtent.height - y else 0d, y)
+              if (plot.ybounds.min > 0) {
+                val y = math.abs(ytransformer(bar.height) - ytransformer(plot.ybounds.min))
+                (plotExtent.height - y, y)
+              } else {
+                val y = math.abs(ytransformer(plot.ybounds.max) - ytransformer(bar.height))
+                (0d, y)
+              }
           }
 
         val clusterPadding = if (numGroups > 1 && bar.cluster != lastCluster) clusterSpacing else 0
