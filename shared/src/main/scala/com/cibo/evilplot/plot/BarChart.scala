@@ -66,7 +66,7 @@ object BarChart {
         val barWidth = xtransformer(plot.xbounds.min + barx + xscale) - x
 
         // Y offset and bar height.
-        val y = ytransformer(math.min(math.abs(bar.height), plot.ybounds.max))
+        val y = ytransformer(math.abs(bar.height))
         val barHeight = ytransformer(math.max(0, plot.ybounds.min)) - y
 
         val transY = if (bar.height < 0) y + barHeight else y
