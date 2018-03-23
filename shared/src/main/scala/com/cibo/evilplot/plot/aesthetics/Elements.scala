@@ -9,4 +9,6 @@ trait Elements {
   val clusterSpacing: Double
   val boundBuffer: Double
   val contours: Int
+  val categoricalXAxisLabelOrientation: Double
+  val continuousXAxisLabelOrientation: Double
 }
