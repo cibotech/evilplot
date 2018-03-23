@@ -37,7 +37,9 @@ object DefaultTheme {
     clusterSpacing: Double = 4,
     boundBuffer: Double = 0.1,
     boxSpacing: Double = 20,
-    contours: Int = 20
+    contours: Int = 20,
+    categoricalXAxisLabelOrientation: Double = 90,
+    continuousXAxisLabelOrientation: Double = 0
   ) extends Elements
 
   case class DefaultTheme(

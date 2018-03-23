@@ -148,7 +148,8 @@ object Axes {
 
     /** Add an X axis to the plot. */
     def xAxis()(implicit theme: Theme): Plot = {
-      val tickRenderer = TickRenderer.xAxisTickRenderer()
+      val rotateText = theme.elements.continuousXAxisLabelOrientation
+      val tickRenderer = TickRenderer.xAxisTickRenderer(rotateText = rotateText)
       val component = ContinuousXAxisPlotComponent(defaultTickCount, tickRenderer)
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
@@ -176,8 +177,10 @@ object Axes {
       */
     def xAxis(labels: Seq[String], values: Seq[Double])(implicit theme: Theme): Plot = {
       require(labels.lengthCompare(values.length) == 0)
+      val rotateText = theme.elements.categoricalXAxisLabelOrientation
       val labelsAndValues = labels.zip(values)
-      val component = DiscreteXAxisPlotComponent(labelsAndValues, TickRenderer.xAxisTickRenderer(rotateText = 90))
+      val component = DiscreteXAxisPlotComponent(labelsAndValues,
+        TickRenderer.xAxisTickRenderer(rotateText = rotateText))
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
