@@ -8,8 +8,6 @@ import com.cibo.evilplot.plot.renderers.{GridLineRenderer, TickRenderer}
 
 object Axes {
 
-  val defaultTickCount: Int = 10
-
   private sealed trait AxisPlotComponent extends PlotComponent {
     final override val repeated: Boolean = true
 
@@ -146,23 +144,18 @@ object Axes {
   trait AxesImplicits {
     protected val plot: Plot
 
-    /** Add an X axis to the plot. */
-    def xAxis()(implicit theme: Theme): Plot = {
-      val rotateText = theme.elements.continuousXAxisLabelOrientation
-      val tickRenderer = TickRenderer.xAxisTickRenderer(rotateText = rotateText)
-      val component = ContinuousXAxisPlotComponent(defaultTickCount, tickRenderer)
-      component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
-    }
-
     /** Add an X axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
       */
     def xAxis(
-      tickCount: Int,
-      tickRenderer: TickRenderer
-    ): Plot = {
-      val component = ContinuousXAxisPlotComponent(tickCount, tickRenderer)
+      tickCount: Option[Int] = None,
+      tickRenderer: Option[TickRenderer] = None
+    )(implicit theme: Theme): Plot = {
+      val component = ContinuousXAxisPlotComponent(
+        tickCount.getOrElse(theme.elements.xTickCount),
+        tickRenderer.getOrElse(TickRenderer.xAxisTickRenderer())
+      )
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
@@ -184,22 +177,18 @@ object Axes {
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
-    /** Add a Y axis to the plot. */
-    def yAxis()(implicit theme: Theme): Plot = {
-      val tickRenderer = TickRenderer.yAxisTickRenderer()
-      val component = ContinuousYAxisPlotComponent(defaultTickCount, tickRenderer)
-      component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
-    }
-
     /** Add a Y axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
       */
     def yAxis(
-      tickCount: Int,
-      tickRenderer: TickRenderer
-    ): Plot = {
-      val component = ContinuousYAxisPlotComponent(tickCount, tickRenderer)
+      tickCount: Option[Int] = None,
+      tickRenderer: Option[TickRenderer] = None
+    )(implicit theme: Theme): Plot = {
+      val component = ContinuousYAxisPlotComponent(
+        tickCount.getOrElse(theme.elements.yTickCount),
+        tickRenderer.getOrElse(TickRenderer.yAxisTickRenderer())
+      )
       component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
 
@@ -219,31 +208,25 @@ object Axes {
       component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
 
-    def xGrid()(implicit theme: Theme): Plot = {
-      val lineRenderer: GridLineRenderer = GridLineRenderer.xGridLineRenderer()
-      val component = ContinuousXGridComponent(defaultTickCount, lineRenderer)
-      plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds) :+ component
-    }
-
     def xGrid(
-      lineCount: Int,
-      lineRenderer: GridLineRenderer
-    ): Plot = {
-      val component = ContinuousXGridComponent(lineCount, lineRenderer)
+      lineCount: Option[Int] = None,
+      lineRenderer: Option[GridLineRenderer] = None
+    )(implicit theme: Theme): Plot = {
+      val component = ContinuousXGridComponent(
+        lineCount.getOrElse(theme.elements.xGridLineCount),
+        lineRenderer.getOrElse(GridLineRenderer.xGridLineRenderer())
+      )
       plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds) :+ component
-    }
-
-    def yGrid()(implicit theme: Theme): Plot = {
-      val lineRenderer: GridLineRenderer = GridLineRenderer.yGridLineRenderer()
-      val component = ContinuousYGridComponent(defaultTickCount, lineRenderer)
-      plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds) :+ component
     }
 
     def yGrid(
-      lineCount: Int,
-      lineRenderer: GridLineRenderer
-    ): Plot = {
-      val component = ContinuousYGridComponent(lineCount, lineRenderer)
+      lineCount: Option[Int] = None,
+      lineRenderer: Option[GridLineRenderer] = None
+    )(implicit theme: Theme): Plot = {
+      val component = ContinuousYGridComponent(
+        lineCount.getOrElse(theme.elements.yGridLineCount),
+        lineRenderer.getOrElse(GridLineRenderer.yGridLineRenderer())
+      )
       plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds) :+ component
     }
   }

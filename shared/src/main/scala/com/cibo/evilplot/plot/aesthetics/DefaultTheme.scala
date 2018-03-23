@@ -39,7 +39,11 @@ object DefaultTheme {
     boxSpacing: Double = 20,
     contours: Int = 20,
     categoricalXAxisLabelOrientation: Double = 90,
-    continuousXAxisLabelOrientation: Double = 0
+    continuousXAxisLabelOrientation: Double = 0,
+    xTickCount: Int = 10,
+    yTickCount: Int = 10,
+    xGridLineCount: Int = 10,
+    yGridLineCount: Int = 10
   ) extends Elements
 
   case class DefaultTheme(
