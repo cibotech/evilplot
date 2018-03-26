@@ -39,6 +39,7 @@ sealed trait ColorBar {
 }
 
 // Use when one color is wanted but a ColorBar is needed.
+@deprecated("Use com.cibo.evilplot.colors.Coloring", since = "0.2.0")
 case class SingletonColorBar(color: Color) extends ColorBar {
   val nColors: Int = 1
   def getColor(z: Int): Color = {
@@ -48,6 +49,7 @@ case class SingletonColorBar(color: Color) extends ColorBar {
 }
 
 // Map a sequence of colors to a continuous variable z.
+@deprecated("Use com.cibo.evilplot.colors.Coloring", since = "0.2.0")
 case class ScaledColorBar(colorSeq: Seq[Color], zMin: Double, zMax: Double) extends ColorBar {
   val nColors: Int = colorSeq.length
 

@@ -30,7 +30,7 @@
 
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.colors.{Color, Coloring, ThemedCategorical}
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, Path, StrokeStyle, Style, Text}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -87,9 +87,29 @@ object PathRenderer {
       Style(Text(name, theme.fonts.legendLabelSize), theme.colors.legendLabel)
     )
 
+  /** Create multiple named path renderers, using a sequence of names and a
+    * Coloring.
+    * @param names The names of the paths.
+    * @param coloring The coloring to use.
+    * @param strokeWidth The width of the path.
+    */
+  def multi(
+    names: Seq[String],
+    coloring: Option[Coloring[String]] = None,
+    strokeWidth: Option[Double] = None
+  )(implicit theme: Theme): Seq[PathRenderer] = {
+    val colorFunc = coloring.getOrElse(ThemedCategorical[String]())(names)
+    names.map { name =>
+      named(
+        name,
+        colorFunc(name),
+        strokeWidth
+      )
+    }
+  }
+
   def closed(color: Color)(implicit theme: Theme): PathRenderer = new PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
-      // better hope this is an indexedseq?
       path.headOption match {
         case Some(h) => StrokeStyle(Path(path :+ h, theme.elements.strokeWidth), color)
         case None    => EmptyDrawable()

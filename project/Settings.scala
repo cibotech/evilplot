@@ -16,8 +16,7 @@ object Settings {
   val scalacOptions = Seq(
     "-deprecation",
     "-unchecked",
-    "-feature",
-    "-Xfatal-warnings"
+    "-feature"
   )
 
   /** Declare global dependency versions here to avoid mismatches in multi part dependencies */

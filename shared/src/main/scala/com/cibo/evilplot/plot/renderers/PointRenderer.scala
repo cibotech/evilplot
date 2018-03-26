@@ -77,6 +77,7 @@ object PointRenderer {
     * @param depths The depths.
     * @param colorCount The number of labels/colors to use.
     */
+  @deprecated("Use an overload taking a Coloring[Double]", since = "0.2")
   def depthColor(
     depths: Seq[Double],
     colorCount: Int = defaultColorCount
@@ -94,6 +95,7 @@ object PointRenderer {
     * @param bar The color bar to use
     * @param size The size of the point.
     */
+  @deprecated("Use an overload taking a Coloring[Double]", since = "0.2")
   def depthColor(
     depths: Seq[Double],
     labels: Seq[Drawable],
@@ -123,16 +125,43 @@ object PointRenderer {
     * @param labels The labels to use for categories.
     * @param bar The color bar to use
     */
+  @deprecated("Use an overload taking a Coloring[Double]", since = "0.2")
   def depthColor(
     depths: Seq[Double],
     labels: Seq[Drawable],
     bar: ScaledColorBar
   )(implicit theme: Theme): PointRenderer = depthColor(depths, labels, bar, None)
 
+  //TODO : Will need to wire up current functionality to colors.
+  /**
+    * Render points with colors based on a third dimension.
+    * @param colorDimension The third dimension.
+    * @param coloring The coloring to use. If not provided, one based on the
+    *                 color stream from the theme is used.
+    * @param size The size of the points.
+    */
+  def colorByCategory[A: Ordering](
+              colorDimension: Seq[A],
+              coloring: Option[Coloring[A]] = None,
+              size: Option[Double] = None
+              )(implicit theme: Theme): PointRenderer = new PointRenderer {
+    private val useColoring = coloring.getOrElse(ThemedCategorical())
+    private val colorFunc = useColoring(colorDimension)
+    private val radius = size.getOrElse(theme.elements.pointSize)
+    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+      Disc(radius)
+        .translate(-radius, -radius)
+        .filled(colorFunc(colorDimension(index)))
+    }
+
+    override def legendContext: LegendContext = useColoring.legendContext(colorDimension)
+  }
+
   /** Render points with colors based on depth.
     * @param depths The depths.
     * @param bar The color bar to use
     */
+  @deprecated("Use an overload taking a Coloring[Double]", since = "0.2")
   def depthColor(
     depths: Seq[Double],
     bar: ScaledColorBar
