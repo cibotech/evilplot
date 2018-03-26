@@ -30,9 +30,8 @@
 
 package com.cibo.evilplot.colors
 
-import com.cibo.evilplot.numeric.AxisDescriptor
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 sealed trait ColorBar {
   val nColors: Int

@@ -91,7 +91,6 @@ final case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable 
 object Path {
   implicit val encoder: Encoder[Path] = deriveEncoder[Path]
   implicit val decoder: Decoder[Path] = deriveDecoder[Path]
-  def apply(segment: Segment, strokeWidth: Double): Path = Path(Seq(segment.a, segment.b), strokeWidth)
 }
 
 /** A filled polygon.

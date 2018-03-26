@@ -33,10 +33,6 @@ package com.cibo.evilplot.numeric
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
 
-// TODO:  reporting draws all the points atop the box plot. For now, this definition includes all the points.
-// For general use, it doesn't make much sense to do this. (For the same reason it doesn't make sense to for the
-// histogram).
-
 case class BoxPlotSummaryStatistics(min: Double,
                                     max: Double,
                                     lowerWhisker: Double,
