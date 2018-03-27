@@ -32,7 +32,7 @@ package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.JSONUtils.minifyProperties
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.numeric.{Point, Segment}
+import com.cibo.evilplot.numeric.Point
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
 import io.circe.{Decoder, Encoder}
