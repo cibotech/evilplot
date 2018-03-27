@@ -67,6 +67,56 @@ object PointRenderer {
   }
 
   /**
+    * Render points with colors based on a third, continuous variable.
+    * @param depths The depths for each point.
+    * @param coloring The coloring to use.
+    * @param size The size of the point.
+    */
+  def depthColor(
+                depths: Seq[Double],
+                coloring: Option[Coloring[Double]],
+                size: Option[Double]
+                )(implicit theme: Theme): PointRenderer = new PointRenderer {
+    private val useColoring = coloring.getOrElse(theme.colors.gradient)
+    private val colorFunc = useColoring(depths)
+    private val radius = size.getOrElse(theme.elements.pointSize)
+
+    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+      Disc(radius)
+        .translate(-radius, -radius)
+        .filled(colorFunc(depths(index)))
+    }
+
+    override def legendContext: LegendContext =
+      useColoring.legendContext(depths)
+  }
+
+  /**
+    * Render points with colors based on a third, categorical variable.
+    * @param colorDimension Categories for each point.
+    * @param coloring The coloring to use. If not provided, one based on the
+    *                 color stream from the theme is used.
+    * @param size The size of the points.
+    * @tparam A the type of the categorical variable.
+    */
+  def colorByCategory[A: Ordering](
+                                    colorDimension: Seq[A],
+                                    coloring: Option[Coloring[A]] = None,
+                                    size: Option[Double] = None
+                                  )(implicit theme: Theme): PointRenderer = new PointRenderer {
+    private val useColoring = coloring.getOrElse(ThemedCategorical())
+    private val colorFunc = useColoring(colorDimension)
+    private val radius = size.getOrElse(theme.elements.pointSize)
+    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+      Disc(radius)
+        .translate(-radius, -radius)
+        .filled(colorFunc(colorDimension(index)))
+    }
+
+    override def legendContext: LegendContext = useColoring.legendContext(colorDimension)
+  }
+
+  /**
     * A no-op renderer for when you don't want to render points (such as on a line)
     */
   def empty(): PointRenderer = new PointRenderer {
@@ -131,31 +181,6 @@ object PointRenderer {
     labels: Seq[Drawable],
     bar: ScaledColorBar
   )(implicit theme: Theme): PointRenderer = depthColor(depths, labels, bar, None)
-
-  //TODO : Will need to wire up current functionality to colors.
-  /**
-    * Render points with colors based on a third dimension.
-    * @param colorDimension The third dimension.
-    * @param coloring The coloring to use. If not provided, one based on the
-    *                 color stream from the theme is used.
-    * @param size The size of the points.
-    */
-  def colorByCategory[A: Ordering](
-              colorDimension: Seq[A],
-              coloring: Option[Coloring[A]] = None,
-              size: Option[Double] = None
-              )(implicit theme: Theme): PointRenderer = new PointRenderer {
-    private val useColoring = coloring.getOrElse(ThemedCategorical())
-    private val colorFunc = useColoring(colorDimension)
-    private val radius = size.getOrElse(theme.elements.pointSize)
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
-      Disc(radius)
-        .translate(-radius, -radius)
-        .filled(colorFunc(colorDimension(index)))
-    }
-
-    override def legendContext: LegendContext = useColoring.legendContext(colorDimension)
-  }
 
   /** Render points with colors based on depth.
     * @param depths The depths.
