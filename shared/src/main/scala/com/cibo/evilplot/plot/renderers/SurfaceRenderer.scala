@@ -44,13 +44,13 @@ trait SurfaceRenderer extends PlotElementRenderer[SurfaceRenderContext] {
 
 object SurfaceRenderer {
   /** The element renderer context for surface renderers. */
-  case class SurfaceRenderContext(levels: Seq[Double], thisLevel: Seq[Seq[Double]])
+  case class SurfaceRenderContext(levels: Seq[Double], thisLevel: Seq[Seq[Point3]])
 
   def contours(
     color: Option[Color] = None
   )(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
-    def render(plot: Plot, extent: Extent, surface: Seq[Seq[Point3]]): Drawable = {
-      surface.map(pathpts => Path(pathpts.map(p => Point(p.x, p.y)), theme.elements.strokeWidth))
+    def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
+      surface.thisLevel.map(pathpts => Path(pathpts.map(p => Point(p.x, p.y)), theme.elements.strokeWidth))
         .group
         .colored(color.getOrElse(theme.colors.path))
     }
@@ -75,7 +75,7 @@ object SurfaceRenderer {
         }.getOrElse(LegendContext.empty)
       }
 
-      def render(plot: Plot, extent: Extent, surface: Seq[Seq[Point3]]): Drawable = {
+      def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
         val surfaceRenderer = getBySafe(points)(_.headOption.flatMap(_.headOption.map(_.z))).map { bs =>
           val bar = ScaledColorBar(getColorSeq(points.length), bs.min, bs.max)
           densityColorContours(bar)(points)
@@ -87,8 +87,8 @@ object SurfaceRenderer {
   def densityColorContours(
     bar: ScaledColorBar
   )(points: Seq[Seq[Seq[Point3]]])(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
-    def render(plot: Plot, extent: Extent, surface: Seq[Seq[Point3]]): Drawable = {
-      surface.headOption.map(pts =>
+    def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
+      surface.thisLevel.headOption.map(pts =>
         contours(Some(pts.headOption.fold(theme.colors.path)(p => bar.getColor(p.z))))
         .render(plot, extent, surface)
       )
@@ -102,7 +102,7 @@ object SurfaceRenderer {
     private val useColoring: Coloring[Double] = coloring.getOrElse(theme.colors.gradient)
     private val colorFunc = useColoring(points.flatMap(_.flatMap(_.headOption.map(_.z))))
 
-    def render(plot: Plot, extent: Extent, surface: Seq[Seq[Point3]]): Drawable = {
+    def render(plot: Plot, extent: Extent, surface: SurfaceRenderer): Drawable = {
       ???
     }
   }
