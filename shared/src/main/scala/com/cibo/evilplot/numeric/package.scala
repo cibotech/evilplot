@@ -1,3 +1,33 @@
+/*
+ * Copyright (c) 2018, CiBO Technologies, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.cibo.evilplot
 
 import scala.language.implicitConversions
@@ -17,7 +47,7 @@ package object numeric {
     implicit def toTuple(p: Point): (Double, Double) = (p.x, p.y)
   }
 
-  case class Point3(x: Double, y: Double, z: Double)
+  final case class Point3(x: Double, y: Double, z: Double)
 
   object Point3 {
     def tupled(t: (Double, Double, Double)): Point3 = Point3(t._1, t._2, t._3)
@@ -29,44 +59,6 @@ package object numeric {
                       zBounds: Bounds,
                       xSpacing: Double,
                       ySpacing: Double)
-
-  object GridData {
-
-    implicit val encoder: Encoder[GridData] = deriveEncoder[GridData]
-    implicit val decoder: Decoder[GridData] = deriveDecoder[GridData]
-
-    // make a grid data object out of a raw seq of points, assuming those points already lie in a grid.
-    // the caller is presumed to know these parameters if they know that their data is already on a grid
-    def apply(data: Seq[Point3],
-              xSpacing: Double,
-              ySpacing: Double,
-              xBounds: Bounds,
-              yBounds: Bounds): GridData = {
-      val zBounds = Bounds(data.minBy(_.z).z, data.maxBy(_.z).z)
-      val numCols: Int = (xBounds.range / xSpacing).toInt
-      val numRows: Int = (yBounds.range / ySpacing).toInt
-      val _grid: Array[Array[Double]] =
-        Array.fill(numRows)(Array.fill(numCols) {
-          0
-        })
-      for (Point3(x, y, z) <- data) {
-        val row: Int =
-          math.min(((y - yBounds.min) / ySpacing).toInt, numRows - 1)
-        val col: Int =
-          math.min(((x - xBounds.min) / xSpacing).toInt, numCols - 1)
-        _grid(row)(col) = z
-      }
-      val grid: Grid = _grid.map(_.toVector).toVector
-      GridData(grid, xBounds, yBounds, zBounds, xSpacing, ySpacing)
-    }
-  }
-
-  case class Segment(a: Point, b: Point)
-
-  object Segment {
-    implicit val encoder: Encoder[Segment] = deriveEncoder[Segment]
-    implicit val decoder: Decoder[Segment] = deriveDecoder[Segment]
-  }
 
   final case class Bounds(min: Double, max: Double) {
     lazy val range: Double = max - min
@@ -119,11 +111,11 @@ package object numeric {
   private val normalConstant = 1.0 / math.sqrt(2 * math.Pi)
 
   // with sigma = 1.0 and mu = 0, like R's dnorm.
-  def probabilityDensityInNormal(x: Double): Double =
+  private[numeric] def probabilityDensityInNormal(x: Double): Double =
     normalConstant * math.exp(-math.pow(x, 2) / 2)
 
   // quantiles using linear interpolation.
-  def quantile(data: Seq[Double], quantiles: Seq[Double]): Seq[Double] = {
+  private[numeric] def quantile(data: Seq[Double], quantiles: Seq[Double]): Seq[Double] = {
     if (data.isEmpty) Seq.fill(quantiles.length)(Double.NaN)
     else {
       val length = data.length
@@ -144,17 +136,13 @@ package object numeric {
     }
   }
 
-  def quantile(data: Seq[Double], quantileDesired: Double): Double =
-    quantile(data, Seq(quantileDesired)).head
+  private[numeric] def mean(data: Seq[Double]): Double = data.sum / data.length
 
-  // yes, these functions require multiple passes through the data.
-  def mean(data: Seq[Double]): Double = data.sum / data.length
-
-  def variance(data: Seq[Double]): Double = {
+  private[numeric] def variance(data: Seq[Double]): Double = {
     val _mean = mean(data)
     data.map(x => math.pow(x - _mean, 2)).sum / (data.length - 1)
   }
 
-  def standardDeviation(data: Seq[Double]): Double = math.sqrt(variance(data))
+  private[numeric] def standardDeviation(data: Seq[Double]): Double = math.sqrt(variance(data))
 
 }

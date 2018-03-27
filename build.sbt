@@ -1,3 +1,5 @@
+import sbt.Keys.resolvers
+
 enablePlugins(ScalaJSPlugin)
 
 crossScalaVersions in ThisBuild := Settings.versions.crossScalaVersions
@@ -8,7 +10,7 @@ lazy val root = project.in(file("."))
   .aggregate(evilplotJVM, evilplotJS, assetJVM, evilplotRunner)
   .settings(
     publishArtifact := false
-  )
+  ).disablePlugins(HeaderPlugin)
 
 lazy val commonSettings: Seq[Setting[_]] = Seq(
   version := Settings.version,
@@ -26,11 +28,20 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   }
 )
 
+lazy val licenseSettings = Seq(
+  homepage := Some(url("https://www.github.com/cibotech/evilplot")),
+  startYear := Some(2018),
+  description := "A Scala combinator-based visualization library.",
+  headerLicense := Some(HeaderLicense.BSD3Clause("2018", "CiBO Technologies, Inc."))
+)
+
 lazy val evilplotAsset = crossProject.in(file("asset"))
   .dependsOn(evilplot)
   .settings(commonSettings)
+  .settings(licenseSettings)
   .settings(
-    name := "evilplot-asset"
+    name := "evilplot-asset",
+    resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
   )
   .jvmSettings(
     resourceGenerators.in(Compile) += Def.task {
@@ -51,6 +62,7 @@ lazy val evilplot = crossProject.in(file("."))
     name := "evilplot",
     libraryDependencies ++= Settings.sharedDependencies.value
   )
+  .settings(licenseSettings)
   .jsSettings(
     libraryDependencies ++= Settings.scalajsDependencies.value,
     libraryDependencies ++= Settings.sharedDependencies.value,
@@ -77,5 +89,6 @@ lazy val evilplotRunner = project.in(file("runner"))
     publish := {},
     publishLocal := {}
   )
+  .settings(licenseSettings)
   .enablePlugins(WorkbenchPlugin)
 
