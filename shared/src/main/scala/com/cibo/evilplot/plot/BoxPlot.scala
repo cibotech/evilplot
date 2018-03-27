@@ -69,15 +69,17 @@ object BoxPlot {
     *                  defaults to 1st, 2nd, 3rd quartiles.
     * @param spacing spacing how much spacing to put between boxes
     * @param boundBuffer expand bounds by this factor
+    * @param boxRenderer the `BoxRenderer` to use to display each distribution
+    * @param pointRenderer the `PointRenderer` used to display outliers
     */
   def apply(
     data: Seq[Seq[Double]],
     quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
     spacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None
+    boundBuffer: Option[Double] = None,
+    boxRenderer: Option[BoxRenderer] = None,
+    pointRenderer: Option[PointRenderer] = None
   )(implicit theme: Theme): Plot = {
-    val boxRenderer = BoxRenderer.default()
-    val pointRenderer = PointRenderer.default()
     val summaries = data.map(dist => BoxPlotSummaryStatistics(dist, quantiles))
     val xbounds = Bounds(0, summaries.size - 1)
     val ybounds = Plot.expandBounds(
@@ -87,7 +89,12 @@ object BoxPlot {
     Plot(
       xbounds,
       ybounds,
-      BoxPlotRenderer(summaries, boxRenderer, pointRenderer, spacing.getOrElse(theme.elements.boxSpacing))
+      BoxPlotRenderer(
+        summaries,
+        boxRenderer.getOrElse(BoxRenderer.default()),
+        pointRenderer.getOrElse(PointRenderer.default()),
+        spacing.getOrElse(theme.elements.boxSpacing)
+      )
     )
   }
 
@@ -100,6 +107,7 @@ object BoxPlot {
     * @param spacing spacing how much spacing to put between boxes
     * @param boundBuffer expand bounds by this factor
     */
+  @deprecated("use apply", "2018-03-28")
   def custom(
     data: Seq[Seq[Double]],
     boxRenderer: BoxRenderer,
