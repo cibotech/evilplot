@@ -146,19 +146,12 @@ object BorderRect {
   * left corner. Call `Disc.centered` to create a `Disc` that can be positioned
   * from its vertex.
   */
-final case class Disc private (radius: Double, x: Double, y: Double) extends Drawable {
-  require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
-  lazy val extent = Extent(x + radius * 2, y + radius * 2)
+final case class Disc(radius: Double) extends Drawable {
+  lazy val extent = Extent(radius * 2, radius * 2)
 
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Disc {
-  def apply(radius: Double): Disc = new Disc(radius, 0, 0)
-  @deprecated("Call .translate() on a Disc", since = "0.2.0")
-  def apply(radius: Double, x: Double, y: Double): Disc = new Disc(radius, x, y)
-  @deprecated("Call .translate() on a Disc", since = "0.2.0")
-  def apply(radius: Double, p: Point): Disc = new Disc(radius, p.x, p.y)
-
   /** Create a disc that can be positioned from its vertex. */
   def centered(radius: Double): Drawable = Disc(radius).translate(-radius, -radius)
 

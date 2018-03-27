@@ -30,7 +30,7 @@
 
 package com.cibo.evilplot.plot.aesthetics
 
-import com.cibo.evilplot.colors.{Color, ContinuousGradient}
+import com.cibo.evilplot.colors.{Color, ContinuousColoring}
 
 trait Colors {
   val background: Color
@@ -48,5 +48,5 @@ trait Colors {
   val tickLabel: Color
 
   val stream: Seq[Color]
-  val gradient: ContinuousGradient
+  val continuousColoring: ContinuousColoring
 }

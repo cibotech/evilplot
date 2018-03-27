@@ -30,12 +30,12 @@
 
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.{Color, Coloring, DefaultColors, ScaledColorBar}
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Path, Rect, StrokeStyle, Text}
+import com.cibo.evilplot.colors._
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Path}
 import com.cibo.evilplot.numeric.{Bounds, Point, Point3}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext
-import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
+import com.cibo.evilplot.plot.{LegendContext, Plot}
 
 trait SurfaceRenderer extends PlotElementRenderer[SurfaceRenderContext] {
   def legendContext: LegendContext = LegendContext.empty
@@ -59,7 +59,7 @@ object SurfaceRenderer {
   def densityColorContours(points: Seq[Seq[Seq[Point3]]])(implicit theme: Theme): SurfaceRenderer =
     new SurfaceRenderer {
       private def getColorSeq(numPoints: Int): Seq[Color] =
-        if (numPoints <= DefaultColors.nicePalette.length) DefaultColors.nicePalette.take(numPoints)
+        if (numPoints <= DefaultColors.lightPalette.length) DefaultColors.lightPalette.take(numPoints)
         else Color.stream.take(numPoints)
 
       def getBySafe[T](data: Seq[T])(f: T => Option[Double]): Option[Bounds] = {
@@ -96,13 +96,12 @@ object SurfaceRenderer {
     }
   }
 
-  def densityColorContours(points: Seq[Seq[Seq[Point3]]],
-                           coloring: Option[Coloring[Double]] = None
+  def densityColorContours(coloring: Option[Coloring[Double]] = None
                           )(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
-    private val useColoring: Coloring[Double] = coloring.getOrElse(theme.colors.gradient)
+    private val useColoring: Coloring[Double] = coloring.getOrElse(theme.colors.continuousColoring)
     private val colorFunc = useColoring(points.flatMap(_.flatMap(_.headOption.map(_.z))))
 
-    def render(plot: Plot, extent: Extent, surface: SurfaceRenderer): Drawable = {
+    def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
       ???
     }
   }

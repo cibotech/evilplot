@@ -30,7 +30,7 @@
 
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.geometry.{Drawable, Extent}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PlotRenderer, SurfaceRenderer}
@@ -51,7 +51,8 @@ object SurfacePlot {
             plot.xbounds.isInBounds(p.x) && plot.ybounds.isInBounds(p.y)
           }.map(p => Point3(xtransformer(p.x), ytransformer(p.y), p.z))
         }
-        surfaceRenderer.render(plot, plotExtent, surface)
+//        surfaceRenderer.render(plot, plotExtent, surface)
+        EmptyDrawable()
       }.group
     }
   }
