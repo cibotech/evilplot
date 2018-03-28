@@ -79,29 +79,32 @@ object BarChart {
     override def legendContext: LegendContext = LegendContext.combine(data.map(_.legendContext))
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-      val xtransformer = plot.xtransform(plot, plotExtent)
-      val ytransformer = plot.ytransform(plot, plotExtent)
+      if (data.isEmpty) {
+        EmptyDrawable()
+      } else {
+        val xtransformer = plot.xtransform(plot, plotExtent)
+        val ytransformer = plot.ytransform(plot, plotExtent)
 
-      val numGroups = data.map(_.cluster).distinct.size
-      val barsPerGroup = if (numGroups > 1) data.groupBy(_.cluster).map(_._2.size).max else 1
+        val numGroups = data.map(_.cluster).distinct.size
+        val barsPerGroup = if (numGroups > 1) data.groupBy(_.cluster).map(_._2.size).max else 1
 
-      val sorted = data.sortBy(_.cluster)
-      val initial: (Double, Drawable) = (sorted.head.cluster, EmptyDrawable())
-      sorted.zipWithIndex.foldLeft(initial) { case ((lastCluster, d), (bar, barIndex)) =>
+        val sorted = data.sortBy(_.cluster)
+        val initial: (Double, Drawable) = (sorted.head.cluster, EmptyDrawable())
+        sorted.zipWithIndex.foldLeft(initial) { case ((lastCluster, d), (bar, barIndex)) =>
 
-        // X offset and bar width.
-        val xscale = 1.0 / barsPerGroup
-        val barx = barIndex * xscale
-        val x = xtransformer(plot.xbounds.min + barx)
-        val barWidth = xtransformer(plot.xbounds.min + barx + xscale) - x
+          // X offset and bar width.
+          val xscale = 1.0 / barsPerGroup
+          val barx = barIndex * xscale
+          val x = xtransformer(plot.xbounds.min + barx)
+          val barWidth = xtransformer(plot.xbounds.min + barx + xscale) - x
 
-        // Y bar translation and bar height.
-        val (transY, barHeight) =
-          if (plot.ybounds.isInBounds(0)) {
-            val y = ytransformer(math.abs(bar.height))
-            val height = ytransformer(math.max(0, plot.ybounds.min)) - y
-            (if (bar.height < 0) y + height else y, height)
-          } else {
+          // Y bar translation and bar height.
+          val (transY, barHeight) =
+            if (plot.ybounds.isInBounds(0)) {
+              val y = ytransformer(math.abs(bar.height))
+              val height = ytransformer(math.max(0, plot.ybounds.min)) - y
+              (if (bar.height < 0) y + height else y, height)
+            } else {
               if (plot.ybounds.min > 0) {
                 val y = math.abs(ytransformer(bar.height) - ytransformer(plot.ybounds.min))
                 (plotExtent.height - y, y)
@@ -109,16 +112,17 @@ object BarChart {
                 val y = math.abs(ytransformer(plot.ybounds.max) - ytransformer(bar.height))
                 (0d, y)
               }
-          }
+            }
 
-        val clusterPadding = if (numGroups > 1 && bar.cluster != lastCluster) clusterSpacing else 0
+          val clusterPadding = if (numGroups > 1 && bar.cluster != lastCluster) clusterSpacing else 0
 
-        // Extra X offset to account for the cluster and spacing.
-        val xPadding = if (barIndex == 0) (clusterPadding + spacing) / 2 else clusterPadding + spacing / 2
+          // Extra X offset to account for the cluster and spacing.
+          val xPadding = if (barIndex == 0) (clusterPadding + spacing) / 2 else clusterPadding + spacing / 2
 
-        val extent = Extent(barWidth - spacing - clusterPadding, barHeight)
-        (bar.cluster, d behind barRenderer.render(plot, extent, bar).translate(y = transY, x = x + xPadding))
-      }._2
+          val extent = Extent(barWidth - spacing - clusterPadding, barHeight)
+          (bar.cluster, d behind barRenderer.render(plot, extent, bar).translate(y = transY, x = x + xPadding))
+        }._2
+      }
     }
   }
 
@@ -238,8 +242,9 @@ object BarChart {
     boundBuffer: Option[Double] = None,
   )(implicit theme: Theme): Plot = {
     val xbounds = Bounds(0, bars.size)
+    val heights = bars.map(_.height)
     val ybounds = Plot.expandBounds(
-      Bounds(bars.minBy(_.height).height, bars.maxBy(_.height).height),
+      Bounds(heights.reduceOption[Double](math.min).getOrElse(0), heights.reduceOption[Double](math.max).getOrElse(0)),
       boundBuffer.getOrElse(theme.elements.boundBuffer)
     )
     Plot(

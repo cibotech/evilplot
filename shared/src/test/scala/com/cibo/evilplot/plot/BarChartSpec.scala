@@ -63,5 +63,11 @@ class BarChartSpec extends FunSpec with Matchers {
       val extent = Extent(200, 200)
       plot.render(extent).extent shouldBe extent
     }
+
+    it("should not explode if there is no data") {
+      val plot = BarChart(Seq.empty)
+      val extent = Extent(200, 300)
+      plot.render(extent).extent shouldBe extent
+    }
   }
 }
