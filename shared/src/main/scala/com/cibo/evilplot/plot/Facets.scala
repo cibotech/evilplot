@@ -245,6 +245,7 @@ object Facets {
   }
 
   def apply(plots: Seq[Seq[Plot]]): Plot = {
+    require(plots.nonEmpty, "Facets must include at least one plot")
 
     // X bounds for each column.
     val columnXBounds = plots.tail.foldLeft(plots.head.map(_.xbounds)) { (bounds, row) =>

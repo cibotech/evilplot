@@ -97,5 +97,9 @@ class FacetsSpec extends FunSpec with Matchers {
       val faceted = Facets(Seq(Seq(inner1), Seq(inner2))) :+ TestComponent
       faceted.plotOffset.x shouldBe 10
     }
+
+    it("throws an exception with no facets") {
+      an[IllegalArgumentException] should be thrownBy Facets(Seq.empty)
+    }
   }
 }
