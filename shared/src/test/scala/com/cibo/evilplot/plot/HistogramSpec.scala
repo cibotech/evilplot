@@ -51,5 +51,11 @@ class HistogramSpec extends FunSpec with Matchers {
       plot.render(extent).extent.width shouldBe extent.width +- 1e-6
       plot.render(extent).extent.height shouldBe extent.height +- 1e-6
     }
+
+    it("works with no data") {
+      val extent = Extent(100, 200)
+      val emptyPlot = Histogram(Seq.empty)
+      emptyPlot.render(extent).extent shouldBe extent
+    }
   }
 }
