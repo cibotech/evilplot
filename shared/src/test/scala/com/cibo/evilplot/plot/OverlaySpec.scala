@@ -89,5 +89,9 @@ class OverlaySpec extends FunSpec with Matchers {
       xbounds shouldBe Bounds(5, 6)
       ybounds shouldBe Bounds(7, 8)
     }
+
+    it("should throw an exception with no plots") {
+      an[IllegalArgumentException] should be thrownBy Overlay()
+    }
   }
 }

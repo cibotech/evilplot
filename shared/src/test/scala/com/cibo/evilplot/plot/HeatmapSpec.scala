@@ -34,28 +34,27 @@ import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric.Bounds
 import org.scalatest.{FunSpec, Matchers}
 
-class HistogramSpec extends FunSpec with Matchers {
+class HeatmapSpec extends FunSpec with Matchers {
 
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 
-  describe("Histogram") {
-    val plot = Histogram(Seq(1.0, 1, 1, 2, 3, 4, 4, 5), boundBuffer = Some(0))
-
+  describe("Heatmap") {
     it("has the right bounds") {
-      plot.xbounds shouldBe Bounds(1, 5)
-      plot.ybounds shouldBe Bounds(0, 3)
+      val plot = Heatmap(Seq(Seq(1), Seq(2)))
+      plot.xbounds shouldBe Bounds(0, 1)
+      plot.ybounds shouldBe Bounds(0, 2)
     }
 
-    it("has the right extents") {
-      val extent = Extent(300, 400)
-      plot.render(extent).extent.width shouldBe extent.width +- 1e-6
-      plot.render(extent).extent.height shouldBe extent.height +- 1e-6
-    }
-
-    it("works with no data") {
+    it("should work an empty row") {
+      val plot = Heatmap(Seq(Seq.empty))
       val extent = Extent(100, 200)
-      val emptyPlot = Histogram(Seq.empty)
-      emptyPlot.render(extent).extent shouldBe extent
+      plot.render(extent).extent shouldBe extent
+    }
+
+    it("should work with no data") {
+      val plot = Heatmap(Seq.empty)
+      val extent = Extent(100, 200)
+      plot.render(extent).extent shouldBe extent
     }
   }
 }

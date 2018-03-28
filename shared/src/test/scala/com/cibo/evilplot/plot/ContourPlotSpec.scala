@@ -31,31 +31,24 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.Extent
-import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.numeric.{Bounds, Point}
 import org.scalatest.{FunSpec, Matchers}
 
-class HistogramSpec extends FunSpec with Matchers {
+class ContourPlotSpec extends FunSpec with Matchers {
 
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 
-  describe("Histogram") {
-    val plot = Histogram(Seq(1.0, 1, 1, 2, 3, 4, 4, 5), boundBuffer = Some(0))
-
-    it("has the right bounds") {
-      plot.xbounds shouldBe Bounds(1, 5)
-      plot.ybounds shouldBe Bounds(0, 3)
-    }
-
-    it("has the right extents") {
-      val extent = Extent(300, 400)
-      plot.render(extent).extent.width shouldBe extent.width +- 1e-6
-      plot.render(extent).extent.height shouldBe extent.height +- 1e-6
+  describe("ContourPlot") {
+    it("it has the right bounds") {
+      val plot = ContourPlot(Seq(Point(1, 2), Point(3, 4)), boundBuffer = Some(0.0))
+      plot.xbounds shouldBe Bounds(1, 3)
+      plot.ybounds shouldBe Bounds(2, 4)
     }
 
     it("works with no data") {
+      val plot = ContourPlot(Seq.empty)
       val extent = Extent(100, 200)
-      val emptyPlot = Histogram(Seq.empty)
-      emptyPlot.render(extent).extent shouldBe extent
+      plot.render(extent).extent shouldBe extent
     }
   }
 }

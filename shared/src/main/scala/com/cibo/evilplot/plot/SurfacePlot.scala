@@ -61,14 +61,9 @@ object ContourPlot {
   import SurfacePlot._
   val defaultGridDimensions: (Int, Int) = (100, 100)
 
-  def apply(data: Seq[Point])(implicit theme: Theme): Plot = {
-    val surfaceRenderer = (ps: Seq[Seq[Seq[Point3]]]) => SurfaceRenderer.densityColorContours(ps)
-    apply(data, surfaceRenderer)
-  }
-
   def apply(
     data: Seq[Point],
-    surfaceRenderer: Seq[Seq[Seq[Point3]]] => SurfaceRenderer,
+    surfaceRenderer: Option[Seq[Seq[Seq[Point3]]] => SurfaceRenderer] = None,
     gridDimensions: (Int, Int) = defaultGridDimensions,
     contours: Option[Int] = None,
     boundBuffer: Option[Double] = None
@@ -77,12 +72,14 @@ object ContourPlot {
     val contourCount = contours.getOrElse(theme.elements.contours)
     require(contourCount > 0, "Must use at least one contour.")
 
+    val xs = data.map(_.x)
     val xbounds = Plot.expandBounds(
-      Bounds(data.minBy(_.x).x, data.maxBy(_.x).x),
+      Bounds(xs.reduceOption[Double](math.min).getOrElse(0.0), xs.reduceOption[Double](math.max).getOrElse(0.0)),
       boundBuffer.getOrElse(theme.elements.boundBuffer)
     )
+    val ys = data.map(_.y)
     val ybounds = Plot.expandBounds(
-      Bounds(data.minBy(_.y).y, data.maxBy(_.y).y),
+      Bounds(ys.reduceOption[Double](math.min).getOrElse(0.0), ys.reduceOption[Double](math.max).getOrElse(0.0)),
       boundBuffer.getOrElse(theme.elements.boundBuffer)
     )
 
@@ -101,7 +98,10 @@ object ContourPlot {
       }
     }
 
-    val sr = surfaceRenderer(contourPaths)
+    val srFunction = surfaceRenderer.getOrElse { ps: Seq[Seq[Seq[Point3]]] =>
+      SurfaceRenderer.densityColorContours(ps)
+    }
+    val sr = srFunction(contourPaths)
     Plot(
       xbounds,
       ybounds,

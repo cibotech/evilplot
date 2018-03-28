@@ -36,7 +36,7 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
 private final case class BoxPlotRenderer(
-  data: Seq[BoxPlotSummaryStatistics],
+  data: Seq[Option[BoxPlotSummaryStatistics]],
   boxRenderer: BoxRenderer,
   pointRenderer: PointRenderer,
   spacing: Double
@@ -45,19 +45,23 @@ private final case class BoxPlotRenderer(
     val xtransformer = plot.xtransform(plot, plotExtent)
     val ytransformer = plot.ytransform(plot, plotExtent)
 
-    data.zipWithIndex.foldLeft(EmptyDrawable(): Drawable) { case (d, (summary, index)) =>
-      val x = xtransformer(plot.xbounds.min + index) + spacing / 2
-      val y = ytransformer(summary.upperWhisker)
+    data.zipWithIndex.foldLeft(EmptyDrawable(): Drawable) { case (d, (summaryOpt, index)) =>
+      summaryOpt match {
+        case Some(summary) =>
+          val x = xtransformer(plot.xbounds.min + index) + spacing / 2
+          val y = ytransformer(summary.upperWhisker)
 
-      val boxHeight = ytransformer(summary.lowerWhisker) - ytransformer(summary.upperWhisker)
-      val boxWidth = xtransformer(plot.xbounds.min + index + 1) - x - spacing / 2
+          val boxHeight = ytransformer(summary.lowerWhisker) - ytransformer(summary.upperWhisker)
+          val boxWidth = xtransformer(plot.xbounds.min + index + 1) - x - spacing / 2
 
-      val box = boxRenderer.render(plot, Extent(boxWidth, boxHeight), summary)
+          val box = boxRenderer.render(plot, Extent(boxWidth, boxHeight), summary)
 
-      val points = summary.outliers.map { pt =>
-        pointRenderer.render(plot, plotExtent, index).translate(x = x + boxWidth / 2, y = ytransformer(pt))
+          val points = summary.outliers.map { pt =>
+            pointRenderer.render(plot, plotExtent, index).translate(x = x + boxWidth / 2, y = ytransformer(pt))
+          }
+          d behind (box.translate(x = x, y = y) behind points.group)
+        case None => d
       }
-      d behind (box.translate(x = x, y = y) behind points.group)
     }
   }
 }
@@ -80,10 +84,13 @@ object BoxPlot {
     boxRenderer: Option[BoxRenderer] = None,
     pointRenderer: Option[PointRenderer] = None
   )(implicit theme: Theme): Plot = {
-    val summaries = data.map(dist => BoxPlotSummaryStatistics(dist, quantiles))
+    val summaries = data.map(dist => if (dist.nonEmpty) Some(BoxPlotSummaryStatistics(dist, quantiles)) else None)
     val xbounds = Bounds(0, summaries.size - 1)
     val ybounds = Plot.expandBounds(
-      Bounds(summaries.minBy(_.min).min, summaries.maxBy(_.max).max),
+      Bounds(
+        data.flatten.reduceOption[Double](math.min).getOrElse(0),
+        data.flatten.reduceOption[Double](math.max).getOrElse(0)
+      ),
       boundBuffer.getOrElse(theme.elements.boundBuffer)
     )
     Plot(
@@ -115,17 +122,6 @@ object BoxPlot {
     quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
     spacing: Option[Double] = None,
     boundBuffer: Option[Double] = None
-  )(implicit theme: Theme): Plot = {
-    val summaries = data.map(dist => BoxPlotSummaryStatistics(dist, quantiles))
-    val xbounds = Bounds(0, summaries.size - 1)
-    val ybounds = Plot.expandBounds(
-      Bounds(summaries.minBy(_.min).min, summaries.maxBy(_.max).max),
-      boundBuffer.getOrElse(theme.elements.boundBuffer)
-    )
-    Plot(
-      xbounds,
-      ybounds,
-      BoxPlotRenderer(summaries, boxRenderer, pointRenderer, spacing.getOrElse(theme.elements.boxSpacing))
-    )
-  }
+  )(implicit theme: Theme): Plot =
+    apply(data, quantiles, spacing, boundBuffer, Some(boxRenderer), Some(pointRenderer))
 }

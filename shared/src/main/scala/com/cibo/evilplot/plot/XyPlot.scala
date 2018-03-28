@@ -77,12 +77,14 @@ object XyPlot {
   )(implicit theme: Theme): Plot = {
     require(xboundBuffer.getOrElse(0.0) >= 0.0)
     require(yboundBuffer.getOrElse(0.0) >= 0.0)
+    val xs = data.map(_.x)
     val xbounds = Plot.expandBounds(
-      Bounds(data.minBy(_.x).x, data.maxBy(_.x).x),
+      Bounds(xs.reduceOption[Double](math.min).getOrElse(0.0), xs.reduceOption[Double](math.max).getOrElse(0.0)),
       xboundBuffer.getOrElse(theme.elements.boundBuffer)
     )
+    val ys = data.map(_.y)
     val ybounds = Plot.expandBounds(
-      Bounds(data.minBy(_.y).y, data.maxBy(_.y).y),
+      Bounds(ys.reduceOption[Double](math.min).getOrElse(0.0), ys.reduceOption[Double](math.max).getOrElse(0.0)),
       yboundBuffer.getOrElse(theme.elements.boundBuffer)
     )
     Plot(
