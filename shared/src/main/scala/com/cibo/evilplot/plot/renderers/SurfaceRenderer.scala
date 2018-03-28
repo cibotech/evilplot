@@ -44,13 +44,15 @@ trait SurfaceRenderer extends PlotElementRenderer[SurfaceRenderContext] {
 
 object SurfaceRenderer {
   /** The element renderer context for surface renderers. */
-  case class SurfaceRenderContext(levels: Seq[Double], thisLevel: Seq[Seq[Point3]])
+  case class SurfaceRenderContext(levels: Seq[Double],
+  currentLevelPaths: Seq[Seq[Point]],
+                                  currentLevel: Double)
 
   def contours(
     color: Option[Color] = None
   )(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
     def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
-      surface.thisLevel.map(pathpts => Path(pathpts.map(p => Point(p.x, p.y)), theme.elements.strokeWidth))
+      surface.currentLevelPaths.map(pathpts => Path(pathpts.map(p => Point(p.x, p.y)), theme.elements.strokeWidth))
         .group
         .colored(color.getOrElse(theme.colors.path))
     }
@@ -88,8 +90,8 @@ object SurfaceRenderer {
     bar: ScaledColorBar
   )(points: Seq[Seq[Seq[Point3]]])(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
     def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
-      surface.thisLevel.headOption.map(pts =>
-        contours(Some(pts.headOption.fold(theme.colors.path)(p => bar.getColor(p.z))))
+      surface.currentLevelPaths.headOption.map(pts =>
+        contours(Some(pts.headOption.fold(theme.colors.path)(_ => bar.getColor(surface.currentLevel))))
         .render(plot, extent, surface)
       )
       .getOrElse(EmptyDrawable())
@@ -99,10 +101,12 @@ object SurfaceRenderer {
   def densityColorContours(coloring: Option[Coloring[Double]] = None
                           )(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
     private val useColoring: Coloring[Double] = coloring.getOrElse(theme.colors.continuousColoring)
-    private val colorFunc = useColoring(points.flatMap(_.flatMap(_.headOption.map(_.z))))
 
     def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
-      ???
+      val color = useColoring(surface.levels).apply(surface.currentLevel)
+      println(surface.levels)
+      surface.currentLevelPaths.map(pts => contours(Some(color))
+          .render(plot, extent, surface)).group
     }
   }
 }
