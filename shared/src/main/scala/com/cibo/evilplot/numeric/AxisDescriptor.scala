@@ -86,7 +86,7 @@ case class ContinuousAxisDescriptor(
 
   // Avoid bad number formatting resulting from NaNs.
   val numFrac: Int = {
-    if (!(tickMin.isNaN && tickMax.isNaN))
+    if (!(tickMin.isNaN && tickMax.isNaN) && spacing > 0)
       math.max(-math.floor(math.log10(spacing)), 0).toInt
     else 0
   }
