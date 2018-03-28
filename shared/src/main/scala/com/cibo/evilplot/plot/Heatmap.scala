@@ -70,7 +70,7 @@ object Heatmap {
     data: Seq[Seq[Double]],
     colorBar: ScaledColorBar
   )(implicit theme: Theme): Plot = {
-    val xbounds = Bounds(0, data.maxBy(_.size).size)
+    val xbounds = Bounds(0, data.foldLeft(0)((a, s) => math.max(a, s.size)))
     val ybounds = Bounds(0, data.size)
     Plot(
       xbounds = xbounds,
@@ -92,8 +92,9 @@ object Heatmap {
     colors: Seq[Color] = Seq.empty
   )(implicit theme: Theme): Plot = {
     val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
-    val minValue = data.minBy(_.min).min
-    val maxValue = data.maxBy(_.max).max
+    val flattenedData = data.flatten
+    val minValue = flattenedData.reduceOption[Double](math.min).getOrElse(0.0)
+    val maxValue = flattenedData.reduceOption[Double](math.max).getOrElse(0.0)
     val colorBar = ScaledColorBar(colorStream.take(colorCount), minValue, maxValue)
     apply(data, colorBar)
   }
