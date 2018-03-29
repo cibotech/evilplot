@@ -64,7 +64,7 @@ object DefaultColors {
   @deprecated("This palette contains two palettes, a light and dark. " +
     "Using it as a single palette can be misleading/confusing. Use DefaultColors#lightPalette " +
     "or DefaultColors#darkPalette instead.",
-    since = "0.2.0")
+    since = "29 March 2018")
   val nicePalette: Seq[HSLA] = lightPalette ++ darkPalette
 
 }

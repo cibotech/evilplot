@@ -41,14 +41,17 @@ object SurfacePlot {
     data: Seq[Seq[Seq[Point3]]],
     surfaceRenderer: SurfaceRenderer
   ) extends PlotRenderer {
+    // Throw away empty levels.
+    private val allLevels = data.flatMap(_.headOption.map(_.headOption.map(_.z).getOrElse(0d)))
 
-    override def legendContext: LegendContext = surfaceRenderer.legendContext
+    override def legendContext: LegendContext = {
+      surfaceRenderer.legendContext(allLevels)
+    }
+
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 
-      // Throw away empty levels.
-      val allLevels = data.flatMap(_.headOption.map(_.headOption.map(_.z).getOrElse(0d)))
       data.zipWithIndex.withFilter(_._1.nonEmpty).map { case (level, index) =>
         val transformedAndCulled = level.map { path =>
           path.withFilter { p =>
@@ -57,7 +60,7 @@ object SurfacePlot {
         }
         val levelContext = SurfaceRenderContext(allLevels, transformedAndCulled, allLevels(index))
         surfaceRenderer.render(plot, plotExtent, levelContext)
-     }.group
+      }.group
     }
   }
 }

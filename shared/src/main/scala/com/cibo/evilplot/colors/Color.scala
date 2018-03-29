@@ -142,7 +142,7 @@ object Color {
   }
 
   def getDefaultPaletteSeq(nColors: Int): Seq[Color] = {
-    val stream = Stream.continually(DefaultColors.nicePalette.toStream)
+    val stream = Stream.continually(DefaultColors.lightPalette.toStream)
     stream.flatten.take(nColors)
   }
 

@@ -38,7 +38,7 @@ import com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
 trait SurfaceRenderer extends PlotElementRenderer[SurfaceRenderContext] {
-  def legendContext: LegendContext = LegendContext.empty
+  def legendContext(levels: Seq[Double]): LegendContext = LegendContext.empty
   def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable
 }
 
@@ -69,7 +69,7 @@ object SurfaceRenderer {
         Bounds.get(mapped)
       }
 
-      override def legendContext: LegendContext = {
+      override def legendContext(levels: Seq[Double]): LegendContext = {
         val colors = getColorSeq(points.length)
         getBySafe(points)(_.headOption.flatMap(_.headOption.map(_.z))).map { bs =>
           val bar = ScaledColorBar(colors, bs.min, bs.max)
@@ -107,6 +107,10 @@ object SurfaceRenderer {
       println(surface.levels)
       surface.currentLevelPaths.map(pts => contours(Some(color))
           .render(plot, extent, surface)).group
+    }
+
+    override def legendContext(levels: Seq[Double]): LegendContext = {
+      useColoring.legendContext(levels)
     }
   }
 }

@@ -123,7 +123,7 @@ object PointRenderer {
     * @param depths The depths.
     * @param colorCount The number of labels/colors to use.
     */
-  @deprecated("Use an overload taking a Coloring[Double]", since = "0.2.0")
+  @deprecated("Use an overload taking a Coloring[Double]", since = "29 March 2018")
   def depthColor(
     depths: Seq[Double],
     colorCount: Int
@@ -141,7 +141,7 @@ object PointRenderer {
     * @param bar The color bar to use
     * @param size The size of the point.
     */
-  @deprecated("Use an overload taking a Coloring[Double]", since = "0.2.0")
+  @deprecated("Use an overload taking a Coloring[Double]", since = "29 March 2018")
   def depthColor(
     depths: Seq[Double],
     labels: Seq[Drawable],
@@ -156,7 +156,7 @@ object PointRenderer {
     * @param labels The labels to use for categories.
     * @param bar The color bar to use
     */
-  @deprecated("Use an overload taking a Coloring[Double]", since = "0.2.0")
+  @deprecated("Use an overload taking a Coloring[Double]", since = "29 March 2018")
   def depthColor(
     depths: Seq[Double],
     labels: Seq[Drawable],
@@ -167,7 +167,7 @@ object PointRenderer {
     * @param depths The depths.
     * @param bar The color bar to use
     */
-  @deprecated("Use an overload taking a Coloring[Double]", since = "0.2.0")
+  @deprecated("Use an overload taking a Coloring[Double]", since = "29 March 2018")
   def depthColor(
     depths: Seq[Double],
     bar: ScaledColorBar
