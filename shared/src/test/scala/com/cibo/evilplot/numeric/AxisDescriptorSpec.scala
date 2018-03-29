@@ -75,13 +75,18 @@ class AxisDescriptorSpec extends FunSpec {
       val ticks = ContinuousAxisDescriptor(Bounds(0.5, 0.5), 10, fixed = false)
       ticks.tickMin shouldBe 0.0 +- AxisDescriptor.machineEpsilonIEEE754Double
       ticks.tickMax shouldBe 1.0 +- AxisDescriptor.machineEpsilonIEEE754Double
-      println(ticks.numFrac)
+      ticks.numFrac shouldBe 1
     }
 
     it("does not fail when the axisBounds evaluate to Bounds(NaN, NaN)") {
       val ticks = ContinuousAxisDescriptor(Bounds(Double.NaN, Double.NaN), 10, fixed = false)
       ticks.tickMin.isNaN shouldBe true
       ticks.tickMax.isNaN shouldBe true
+      ticks.numFrac shouldBe 0
+    }
+
+    it("works with fixed bounds and an empty range") {
+      val ticks = ContinuousAxisDescriptor(Bounds(0.5, 0.5), 10, fixed = true)
       ticks.numFrac shouldBe 0
     }
   }
