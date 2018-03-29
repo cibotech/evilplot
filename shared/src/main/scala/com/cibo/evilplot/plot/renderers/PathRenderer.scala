@@ -89,7 +89,6 @@ object PathRenderer {
 
   def closed(color: Color)(implicit theme: Theme): PathRenderer = new PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
-      // better hope this is an indexedseq?
       path.headOption match {
         case Some(h) => StrokeStyle(Path(path :+ h, theme.elements.strokeWidth), color)
         case None    => EmptyDrawable()

@@ -33,6 +33,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext
 import com.cibo.evilplot.plot.renderers.{PlotRenderer, SurfaceRenderer}
 
 object SurfacePlot {
@@ -40,18 +41,25 @@ object SurfacePlot {
     data: Seq[Seq[Seq[Point3]]],
     surfaceRenderer: SurfaceRenderer
   ) extends PlotRenderer {
+    // Throw away empty levels.
+    private val allLevels = data.flatMap(_.headOption.map(_.headOption.map(_.z).getOrElse(0d)))
 
-    override def legendContext: LegendContext = surfaceRenderer.legendContext
+    override def legendContext: LegendContext = {
+      surfaceRenderer.legendContext(allLevels)
+    }
+
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
-      data.map { level =>
-        val surface = level.map { path =>
+
+      data.zipWithIndex.withFilter(_._1.nonEmpty).map { case (level, index) =>
+        val transformedAndCulled = level.map { path =>
           path.withFilter { p =>
             plot.xbounds.isInBounds(p.x) && plot.ybounds.isInBounds(p.y)
-          }.map(p => Point3(xtransformer(p.x), ytransformer(p.y), p.z))
+          }.map(p => Point(xtransformer(p.x), ytransformer(p.y)))
         }
-        surfaceRenderer.render(plot, plotExtent, surface)
+        val levelContext = SurfaceRenderContext(allLevels, transformedAndCulled, allLevels(index))
+        surfaceRenderer.render(plot, plotExtent, levelContext)
       }.group
     }
   }
@@ -63,7 +71,7 @@ object ContourPlot {
 
   def apply(
     data: Seq[Point],
-    surfaceRenderer: Option[Seq[Seq[Seq[Point3]]] => SurfaceRenderer] = None,
+    surfaceRenderer: Option[SurfaceRenderer] = None,
     gridDimensions: (Int, Int) = defaultGridDimensions,
     contours: Option[Int] = None,
     boundBuffer: Option[Double] = None
@@ -98,10 +106,7 @@ object ContourPlot {
       }
     }
 
-    val srFunction = surfaceRenderer.getOrElse { ps: Seq[Seq[Seq[Point3]]] =>
-      SurfaceRenderer.densityColorContours(ps)
-    }
-    val sr = srFunction(contourPaths)
+    val sr = surfaceRenderer.getOrElse(SurfaceRenderer.densityColorContours())
     Plot(
       xbounds,
       ybounds,

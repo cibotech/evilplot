@@ -106,5 +106,9 @@ class ColorsSpec extends FunSpec {
 
     }
 
+    it("should convert HSLA to RGBA") {
+      ColorUtils.hslaToRgba(HSLA(0, 100, 50, 0.5)) shouldBe (1.0, 0, 0, 0.5)
+      ColorUtils.hslaToRgba(HSL(25, 75, 47)) shouldBe (.8225, .41125, .1175, 1.0)
+    }
   }
 }

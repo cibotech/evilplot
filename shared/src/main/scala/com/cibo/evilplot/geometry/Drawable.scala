@@ -141,21 +141,25 @@ object BorderRect {
   }
 }
 
-/** A filled disc. */
-final case class Disc(radius: Double, x: Double = 0, y: Double = 0) extends Drawable {
-  require(x >= 0 && y >=0, s"x {$x} and y {$y} must both be positive")
-  lazy val extent = Extent(x + radius * 2, y + radius * 2)
+/** A filled disc.
+  * @note Like all `Drawable`s, `Disc`s are positioned from their upper
+  * left corner. Call `Disc.centered` to create a `Disc` that can be positioned
+  * from its vertex.
+  */
+final case class Disc(radius: Double) extends Drawable {
+  lazy val extent = Extent(radius * 2, radius * 2)
 
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Disc {
+  /** Create a disc that can be positioned from its vertex. */
+  def centered(radius: Double): Drawable = Disc(radius).translate(-radius, -radius)
+
   implicit val encoder: Encoder[Disc] = deriveEncoder[Disc]
   implicit val decoder: Decoder[Disc] = deriveDecoder[Disc]
-
-  def apply(radius: Double, p: Point): Disc = Disc(radius, p.x, p.y)
 }
 
-/** A piece piece of a circle. */
+/** A piece of a circle. */
 final case class Wedge(degrees: Double, radius: Double) extends Drawable {
   lazy val extent: Extent = Extent(2 * radius, 2 * radius)
   def draw(context: RenderContext): Unit = context.draw(this)
