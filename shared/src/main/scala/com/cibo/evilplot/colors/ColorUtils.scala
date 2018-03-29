@@ -110,7 +110,7 @@ private[colors] object ColorUtils {
     component1 * (1 - coefficient) + coefficient * component2
   }
 
-  //scalastyle:off
+  // scalastyle:off
   def hslaToRgba(hsla: HSLA): (Double, Double, Double, Double) = {
     val l = hsla.lightness / 100.0
     val s = hsla.saturation / 100.0
@@ -129,6 +129,7 @@ private[colors] object ColorUtils {
     val m = l - .5 * c
     (r1 + m, g1 + m, b1 + m, hsla.opacity)
   }
+  // scalastyle:on
 
   def rgba(c: Color): (Double, Double, Double, Double) = c match {
     case hsla: HSLA => hslaToRgba(hsla)

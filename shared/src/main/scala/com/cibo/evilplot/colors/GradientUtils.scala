@@ -49,7 +49,6 @@ private[colors] object GradientUtils {
     }
   }
 
-  //scalastyle:on
   // https://stackoverflow.com/questions/22607043/color-gradient-algorithm
   // This is the "wrong" way, simple linear interpolation.
   private[colors] def singleGradient(minValue: Double,

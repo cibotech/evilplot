@@ -98,13 +98,14 @@ object PointRenderer {
     * @tparam A the type of the categorical variable.
     */
   def colorByCategory[A: Ordering](
-                                    colorDimension: Seq[A],
-                                    coloring: Option[Coloring[A]] = None,
-                                    size: Option[Double] = None
-                                  )(implicit theme: Theme): PointRenderer = new PointRenderer {
+    colorDimension: Seq[A],
+    coloring: Option[Coloring[A]] = None,
+    size: Option[Double] = None
+  )(implicit theme: Theme): PointRenderer = new PointRenderer {
     private val useColoring = coloring.getOrElse(CategoricalColoring.themed[A])
     private val colorFunc = useColoring(colorDimension)
     private val radius = size.getOrElse(theme.elements.pointSize)
+
     def render(plot: Plot, extent: Extent, index: Int): Drawable = {
       Disc.centered(radius).filled(colorFunc(colorDimension(index)))
     }
@@ -181,11 +182,11 @@ object PointRenderer {
   // Old `depthColor` implementation, called to by all deprecated `depthColor`
   // methods.
   private[this] def oldDepthColor(
-                  depths: Seq[Double],
-                  labels: Seq[Drawable],
-                  bar: ScaledColorBar,
-                  size: Option[Double]
-                )(implicit theme: Theme): PointRenderer = {
+    depths: Seq[Double],
+    labels: Seq[Drawable],
+    bar: ScaledColorBar,
+    size: Option[Double]
+  )(implicit theme: Theme): PointRenderer = {
     require(labels.lengthCompare(bar.nColors) == 0, "Number of labels does not match the number of categories")
     val pointSize = size.getOrElse(theme.elements.pointSize)
     new PointRenderer {
@@ -198,6 +199,7 @@ object PointRenderer {
           defaultStyle = LegendStyle.Categorical
         )
       }
+
       def render(plot: Plot, extent: Extent, index: Int): Drawable = {
         Disc.centered(pointSize) filled bar.getColor(depths(index))
       }
