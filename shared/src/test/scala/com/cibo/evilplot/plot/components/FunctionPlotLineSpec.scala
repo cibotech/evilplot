@@ -30,13 +30,17 @@
 
 package com.cibo.evilplot.plot.components
 
+import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plot.EmptyPlot
 import org.scalatest.{FunSpec, Matchers}
 
 class FunctionPlotLineSpec extends FunSpec with Matchers {
-  describe("Plotting a function: plottablePoints") {
+  describe("plottablePoints") {
     val bounds = Bounds(0, 1)
+
     def inBounds(p: Point): Boolean = bounds.isInBounds(p.x) && bounds.isInBounds(p.y)
+
     val out = Vector(Point(.1, 1.5), Point(.5, -1.1), Point(.8, -2))
     val in = Vector(Point(.1, 0.4), Point(.4, .5), Point(.4, .4))
 
@@ -58,6 +62,17 @@ class FunctionPlotLineSpec extends FunSpec with Matchers {
       val actual = FunctionPlotLine.plottablePoints(in ++ out ++ in ++ out, inBounds)
       val expected = Vector(in, in)
       actual shouldBe expected
+    }
+  }
+
+  describe("Calculating the points for a function.") {
+    val empty = EmptyPlot()
+    it("should return the correct points") {
+      val pts = FunctionPlotLine.pointsForFunction(x => x * x, empty, Extent(5, 5))
+      pts.head.x shouldBe 0.0 +- math.ulp(1.0)
+      pts.head.y shouldBe 0.0 +- math.ulp(1.0)
+      pts.last.x shouldBe 0.8 +- math.ulp(1.0)
+      pts.last.y shouldBe .64 +- math.ulp(1.0)
     }
   }
 }

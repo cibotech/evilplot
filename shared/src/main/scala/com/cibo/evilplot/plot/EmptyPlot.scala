@@ -6,15 +6,18 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object EmptyPlot {
+
   // Renderer to do nothing.
   private[evilplot] case object EmptyPlotRenderer extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(
-        implicit theme: Theme): Drawable =
+      implicit theme: Theme): Drawable =
       EmptyDrawable().resize(plotExtent)
   }
+
+  /** A plot with no data. */
   def apply(xbounds: Option[Bounds] = None,
-            ybounds: Option[Bounds] = None): Plot =
+    ybounds: Option[Bounds] = None): Plot =
     Plot(xbounds.getOrElse(Bounds(0, 1)),
-         ybounds.getOrElse(Bounds(0, 1)),
-         EmptyPlotRenderer)
+      ybounds.getOrElse(Bounds(0, 1)),
+      EmptyPlotRenderer)
 }
