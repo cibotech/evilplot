@@ -30,9 +30,9 @@
 
 package com.cibo.evilplot.plot.components
 
-import com.cibo.evilplot.colors.{Color, DefaultColors}
+import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, Path}
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
 
@@ -99,8 +99,9 @@ case class FunctionPlotLine(
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val xtransform = plot.xtransform(plot, extent)
     val ytransform = plot.ytransform(plot, extent)
-
-    val points = pointsForFunction(fn, plot, extent)
+    // Try to get decent resolution.
+    val numPoints = extent.width.toInt
+    val points = pointsForFunction(fn, plot.xbounds, numPoints)
 
     val paths = if (all) Seq(points) else plottablePoints(points, plot.inBounds)
     paths.map { pts =>
@@ -129,14 +130,13 @@ object FunctionPlotLine {
 
   private[plot] def pointsForFunction(
     function: Double => Double,
-    plot: Plot,
-    extent: Extent
+    xbounds: Bounds,
+    numPoints: Int
   ): Vector[Point] = {
     // Should give decent resolution.
-    val numPoints = extent.width.toInt
-    val width = plot.xbounds.range / numPoints
+    val width = xbounds.range / numPoints
     Vector.tabulate(numPoints) { i =>
-      val x = plot.xbounds.min + width * i
+      val x = xbounds.min + width * i
       Point(x, function(x))
     }
   }
@@ -145,9 +145,7 @@ object FunctionPlotLine {
 trait PlotLineImplicits {
   protected val plot: Plot
 
-  val defaultColor: Color = DefaultColors.barColor
   val defaultThickness: Double = 2.0
-  val defaultNumPoints: Int = 100
 
   def hline(
     y: Double

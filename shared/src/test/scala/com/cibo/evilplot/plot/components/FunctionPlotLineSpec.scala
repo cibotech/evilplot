@@ -30,9 +30,7 @@
 
 package com.cibo.evilplot.plot.components
 
-import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plot.EmptyPlot
 import org.scalatest.{FunSpec, Matchers}
 
 class FunctionPlotLineSpec extends FunSpec with Matchers {
@@ -66,9 +64,8 @@ class FunctionPlotLineSpec extends FunSpec with Matchers {
   }
 
   describe("Calculating the points for a function.") {
-    val empty = EmptyPlot()
     it("should return the correct points") {
-      val pts = FunctionPlotLine.pointsForFunction(x => x * x, empty, Extent(5, 5))
+      val pts = FunctionPlotLine.pointsForFunction(x => x * x, Bounds(0, 1), 5)
       pts.head.x shouldBe 0.0 +- math.ulp(1.0)
       pts.head.y shouldBe 0.0 +- math.ulp(1.0)
       pts.last.x shouldBe 0.8 +- math.ulp(1.0)
