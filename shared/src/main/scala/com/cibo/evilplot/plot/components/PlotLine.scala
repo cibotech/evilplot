@@ -89,23 +89,20 @@ case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickne
   }
 }
 
-case class FunctionPlotLine(fn: Double => Double,
-                            color: Color,
-                            thickness: Double) extends PlotLine {
+case class FunctionPlotLine(
+  fn: Double => Double,
+  color: Color,
+  thickness: Double,
+  all: Boolean = false) extends PlotLine {
+  import FunctionPlotLine._
 
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val xtransform = plot.xtransform(plot, extent)
     val ytransform = plot.ytransform(plot, extent)
 
-    // Should give decent resolution.
-    val numPoints = extent.width.toInt
-    val width = plot.xbounds.range / numPoints
-    val points = Vector.tabulate(numPoints) { i =>
-      val x = plot.xbounds.min + width * i
-      Point(x, fn(x))
-    }
+    val points = pointsForFunction(fn, plot, extent)
 
-    val paths = FunctionPlotLine.plottablePoints(points, plot.inBounds)
+    val paths = if (all) Seq(points) else plottablePoints(points, plot.inBounds)
     paths.map { pts =>
       if (pts.nonEmpty) {
         Path(pts.map(p =>
@@ -117,10 +114,10 @@ case class FunctionPlotLine(fn: Double => Double,
 object FunctionPlotLine {
   // Split up the points into individual paths that are in bounds.
   private[plot] def plottablePoints(points: Vector[Point],
-                                    inBounds: Point => Boolean): Seq[Seq[Point]] = {
+    inBounds: Point => Boolean): Seq[Seq[Point]] = {
     @tailrec
     def go(remaining: Vector[Point],
-           acc: Vector[Vector[Point]]): Vector[Vector[Point]] = {
+      acc: Vector[Vector[Point]]): Vector[Vector[Point]] = {
       val dropOutOfBounds = remaining.dropWhile(p => !inBounds(p))
       if (dropOutOfBounds.nonEmpty) {
         val (toPlot, rest) = dropOutOfBounds.span(p => inBounds(p))
@@ -128,6 +125,20 @@ object FunctionPlotLine {
       } else acc
     }
     go(points, Vector.empty[Vector[Point]])
+  }
+
+  private[plot] def pointsForFunction(
+    function: Double => Double,
+    plot: Plot,
+    extent: Extent
+  ): Vector[Point] = {
+    // Should give decent resolution.
+    val numPoints = extent.width.toInt
+    val width = plot.xbounds.range / numPoints
+    Vector.tabulate(numPoints) { i =>
+      val x = plot.xbounds.min + width * i
+      Point(x, function(x))
+    }
   }
 }
 
