@@ -98,7 +98,6 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     path.points.tail.foreach { point =>
       gpath.lineTo(point.x - correction, point.y + correction)
     }
-    gpath.closePath()
     graphics.draw(gpath)
   }
 
