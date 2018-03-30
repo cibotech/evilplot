@@ -107,9 +107,13 @@ private[evilplot] object ColorUtils {
   }
 
 
+  def interpolate(component1: Double, component2: Double, coefficient: Double): Double = {
+    component1 * (1 - coefficient) + coefficient * component2
+  }
+
   // https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSL
-  //scalastyle:off
-  def hslaToRgba(hsla: HSLA): (Int, Int, Int, Double) = {
+  // scalastyle:off
+  def hslaToRgba(hsla: HSLA): (Double, Double, Double, Double) = {
     val l = hsla.lightness / 100.0
     val s = hsla.saturation / 100.0
     val c = (1d - math.abs(2d * l - 1d)) * s
@@ -125,10 +129,7 @@ private[evilplot] object ColorUtils {
       else (c, 0, x)
 
     val m = l - .5 * c
-    (math.round(255 * (r1 + m)).toInt,
-      math.round(255 * (g1 + m)).toInt,
-      math.round(255 * (b1 + m)).toInt,
-      hsla.opacity)
+    (r1 + m, g1 + m, b1 + m, hsla.opacity)
   }
   // scalastyle:on
 

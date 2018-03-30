@@ -10,18 +10,20 @@ import scala.collection.mutable
 
 /**
   * A RenderContext for java.awt.Graphics2D
+  *
   * @param graphics the Graphics2D instance to render to.
   */
 final case class Graphics2DRenderContext(graphics: Graphics2D)
-    extends RenderContext
+  extends RenderContext
     with Graphics2DSupport {
+
   import Graphics2DRenderContext._
 
   // Initialize based on whatever state the passed in graphics has.
   private[this] val initialState = GraphicsState(graphics.getTransform,
-                                                 java.awt.Color.BLACK,
-                                                 java.awt.Color.BLACK,
-                                                 graphics.getStroke)
+    java.awt.Color.BLACK,
+    java.awt.Color.BLACK,
+    graphics.getStroke)
 
   private val stateStack: mutable.ArrayStack[GraphicsState] =
     mutable.ArrayStack(initialState)
@@ -92,7 +94,7 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     graphics.setStroke(stroke)
     val gpath = new GeneralPath()
     gpath.moveTo(path.points.head.x - correction,
-                 path.points.head.y + correction)
+      path.points.head.y + correction)
     path.points.tail.foreach { point =>
       gpath.lineTo(point.x - correction, point.y + correction)
     }
@@ -111,24 +113,25 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   }
 
   def draw(disc: Disc): Unit = applyWithFillColor(this) {
-    // Position the disc at its center.
-    val diameter = (2 * disc.radius).toInt
-    graphics.fillArc(disc.x.toInt,
-                     disc.y.toInt,
-                     diameter,
-                     diameter,
-                     0,
-                     360)
+    // Note that unlike canvas, fillArc's x and y parameters refer to the top left corner.
+    graphics.fillArc(
+      0,
+      0,
+      disc.extent.width.toInt,
+      disc.extent.height.toInt,
+      0,
+      360)
   }
 
   def draw(wedge: Wedge): Unit = applyWithFillColor(this) {
     graphics.translate(wedge.radius, wedge.radius)
-    graphics.fillArc(0,
-                     0,
-                     wedge.extent.width.toInt,
-                     wedge.extent.height.toInt,
-                     0,
-                     360)
+    graphics.fillArc(
+      0,
+      0,
+      wedge.extent.width.toInt,
+      wedge.extent.height.toInt,
+      0,
+      360)
   }
 
   def draw(translate: Translate): Unit = applyOp(this) {
@@ -180,17 +183,18 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     graphics.drawString(text.msg, 0, baseExtent.height.toInt)
   }
 }
+
 object Graphics2DRenderContext {
   private[geometry] def applyOp(
-      graphics2DRenderContext: Graphics2DRenderContext)(f: => Unit): Unit = {
+    graphics2DRenderContext: Graphics2DRenderContext)(f: => Unit): Unit = {
     graphics2DRenderContext.save()
     f
     graphics2DRenderContext.restore()
   }
 
   private[geometry] def applyWithStrokeColor(
-      graphics2DRenderContext: Graphics2DRenderContext)(
-      f: => Unit
+    graphics2DRenderContext: Graphics2DRenderContext)(
+    f: => Unit
   ): Unit = {
     applyOp(graphics2DRenderContext) {
       graphics2DRenderContext.graphics.setPaint(
@@ -200,8 +204,8 @@ object Graphics2DRenderContext {
   }
 
   private[geometry] def applyWithFillColor(
-      graphics2DRenderContext: Graphics2DRenderContext)(
-      f: => Unit
+    graphics2DRenderContext: Graphics2DRenderContext)(
+    f: => Unit
   ): Unit = {
     applyOp(graphics2DRenderContext) {
       graphics2DRenderContext.graphics.setPaint(
@@ -214,18 +218,19 @@ object Graphics2DRenderContext {
 }
 
 private[geometry] final case class GraphicsState(
-    affineTransform: java.awt.geom.AffineTransform,
-    fillColor: java.awt.Paint,
-    strokeColor: java.awt.Paint,
-    strokeWeight: java.awt.Stroke
+  affineTransform: java.awt.geom.AffineTransform,
+  fillColor: java.awt.Paint,
+  strokeColor: java.awt.Paint,
+  strokeWeight: java.awt.Stroke
 )
 
 private[geometry] trait Graphics2DSupport {
+
   implicit class ColorConverters(c: Color) {
     def asJava: java.awt.Color = c match {
       case hsla: HSLA =>
         val (r, g, b, a) = ColorUtils.hslaToRgba(hsla)
-        new java.awt.Color(r, g, b, math.round(255 * a).toInt)
+        new java.awt.Color(r.toFloat, g.toFloat, b.toFloat, a.toFloat)
       case Clear => new java.awt.Color(0, 0, 0, 0)
     }
   }
@@ -233,15 +238,16 @@ private[geometry] trait Graphics2DSupport {
   implicit class TransformConverters(affine: AffineTransform) {
     def asJava: java.awt.geom.AffineTransform = {
       new java.awt.geom.AffineTransform(affine.scaleX,
-                                        affine.shearY,
-                                        affine.shearX,
-                                        affine.scaleY,
-                                        affine.shiftX,
-                                        affine.shiftY)
+        affine.shearY,
+        affine.shearX,
+        affine.scaleY,
+        affine.shiftX,
+        affine.shiftY)
     }
   }
 
   implicit class StrokeWeightConverters(strokeWeight: Double) {
     def asStroke: java.awt.Stroke = new BasicStroke(strokeWeight.toFloat)
   }
+
 }
