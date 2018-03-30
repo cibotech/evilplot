@@ -10,20 +10,18 @@ class Graphics2DRenderContextSpec
     with Matchers
     with Graphics2DSupport {
   describe("state stack operations") {
-    it("should leave the state of the Graphics2D unmodified") {
+    it("The state should be the same before and after a stack op.") {
       val graphics = Graphics2DTestUtils.graphics2D
       val ctx = Graphics2DRenderContext(graphics)
-      val initialTransform = ctx.graphics.getTransform
-      val initialFill = ctx.graphics.getPaint
-      val initialColor = ctx.graphics.getColor
-      val initialStroke = ctx.graphics.getStroke
+      val GraphicsState(initialTransform, initialFill, initialColor, initialStroke) = ctx.initialState
       Graphics2DRenderContext.applyOp(ctx) {
         ctx.graphics.translate(34, 20)
         ctx.graphics.setPaint(Color.BLUE)
         ctx.graphics.setStroke(new BasicStroke(3))
       }
       ctx.graphics.getTransform shouldBe initialTransform
-      ctx.graphics.getPaint shouldBe initialFill
+      ctx.fillColor shouldBe initialFill
+      ctx.strokeColor shouldBe initialColor
       ctx.graphics.getStroke shouldBe initialStroke
     }
   }
