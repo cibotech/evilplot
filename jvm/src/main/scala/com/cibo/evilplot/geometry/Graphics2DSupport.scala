@@ -8,9 +8,7 @@ import com.cibo.evilplot.colors._
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-/**
-  * A RenderContext for java.awt.Graphics2D
-  *
+/** A RenderContext for java.awt.Graphics2D
   * @param graphics the Graphics2D instance to render to.
   */
 final case class Graphics2DRenderContext(graphics: Graphics2D)
@@ -119,18 +117,20 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
       disc.extent.width.toInt,
       disc.extent.height.toInt,
       0,
-      360)
+      360
+    )
   }
 
   def draw(wedge: Wedge): Unit = applyWithFillColor(this) {
-    graphics.translate(wedge.radius, wedge.radius)
+    val wedgeDiam = 2 * wedge.radius.toInt
     graphics.fillArc(
       0,
       0,
-      wedge.extent.width.toInt,
-      wedge.extent.height.toInt,
+      wedgeDiam,
+      wedgeDiam,
       0,
-      360)
+      wedge.degrees.toInt
+    )
   }
 
   def draw(translate: Translate): Unit = applyOp(this) {
