@@ -34,6 +34,7 @@ import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 import com.cibo.evilplot.DOMInitializer
+import com.cibo.evilplot.plot.EmptyPlot.EmptyPlotRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
 import org.scalatest.{FunSpec, Matchers}
 
@@ -42,12 +43,6 @@ class PlotSpec extends FunSpec with Matchers {
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 
   DOMInitializer.init()
-
-  // Renderer to do nothing.
-  private case object EmptyPlotRenderer extends PlotRenderer {
-    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable =
-      EmptyDrawable().resize(plotExtent)
-  }
 
   // Renderer to get the plot extent.
   private case class PlotExtentPlotRenderer() extends PlotRenderer {
@@ -60,14 +55,13 @@ class PlotSpec extends FunSpec with Matchers {
   }
 
   private def newPlot(
-    value: Int = 0,
     xbounds: Bounds = Bounds(0, 1),
     ybounds: Bounds = Bounds(0, 1),
     renderer: PlotRenderer = EmptyPlotRenderer
   ): Plot = Plot(xbounds, ybounds, renderer)
 
   it("should have the right extent") {
-    val plot = newPlot()
+    val plot = EmptyPlot()
     val extent = Extent(300, 400)
     plot.render(extent).extent shouldBe extent
   }
