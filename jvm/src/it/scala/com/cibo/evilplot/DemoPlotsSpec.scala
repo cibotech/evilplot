@@ -45,7 +45,7 @@ class DemoPlotsSpec extends FunSpec with Matchers {
 
   describe("Demo Plots") {
     it("is generated") {
-      for { (plot, name) <- plots :+ also } {
+      for { (plot, name) <- Seq(DemoPlots.heatmap -> "heatmap")/*plots :+ also*/ } {
         val bi = plot.asBufferedImage
         ImageIO.write(bi,
                       "png",

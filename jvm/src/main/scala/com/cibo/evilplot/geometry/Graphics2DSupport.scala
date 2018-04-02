@@ -68,7 +68,12 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   // as both canvas and EvilPlot do, so we keep these locally as vars and
   // only push the change to the Graphics2D instance when we are performing
   // a fill/stroke operation.
-  private[geometry] var fillColor: java.awt.Paint = initialState.fillColor
+  private[geometry] var _fillColor: java.awt.Paint = initialState.fillColor
+
+  private[geometry] def fillColor_=(c: java.awt.Paint): Unit = {
+   _fillColor = c
+  }
+  private[geometry] def fillColor: java.awt.Paint = _fillColor
   private[geometry] var strokeColor: java.awt.Paint = initialState.strokeColor
 
   enableAntialiasing()
