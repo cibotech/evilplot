@@ -28,34 +28,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cibo.evilplot.geometry
+package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.JSONUtils
-import com.cibo.evilplot.numeric.Point
-import io.circe.generic.extras.Configuration
-import io.circe.{Decoder, Encoder}
+import org.scalatest.{FunSpec, Matchers}
 
-/**
-  * Extent defines an object's rectangular bounding box.
-  * As discussed in <a href="http://ozark.hendrix.edu/~yorgey/pub/monoid-pearl.pdf">
-  * "Monoids: Theme and Variations" by Yorgey</a>,
-  * rectangular bounding boxes don't play well with rotation.
-  * We'll eventually need something fancier like the convex hull.
-  *
-  * @param width bounding box width
-  * @param height bounding box height
-  */
-case class Extent(width: Double, height: Double) {
-  def *(scale: Double): Extent = Extent(scale * width, scale * height)
-  def -(w: Double = 0.0, h: Double = 0.0): Extent = Extent(width - w, height - h)
+class PathRendererSpec extends FunSpec with Matchers {
+  describe("Path renderer clipping") {
+    it("should use 0 when the transformed coordinate is less than 0.") {
+      PathRenderer.clip(-32, 800) shouldBe 0
+      PathRenderer.clip(-1, 800)
+    }
 
-  private[evilplot] def within(p: Point): Boolean = {
-    p.x >= 0 && p.x <= width && p.y >= 0 && p.y <= height
+    it("should not affect points that are in bounds") {
+      PathRenderer.clip(0, 1000) shouldBe 0
+      PathRenderer.clip(45, 1000) shouldBe 45
+    }
+
+    it("should use the max when the point is greater than it") {
+      PathRenderer.clip(1200, max = 1000) shouldBe 1000
+      PathRenderer.clip(900, max = 800) shouldBe 800
+    }
   }
-}
-
-object Extent {
-  private implicit val cfg: Configuration = JSONUtils.minifyProperties
-  implicit val extentEncoder: Encoder[Extent] = io.circe.generic.extras.semiauto.deriveEncoder[Extent]
-  implicit val extentDecoder: Decoder[Extent] = io.circe.generic.extras.semiauto.deriveDecoder[Extent]
 }

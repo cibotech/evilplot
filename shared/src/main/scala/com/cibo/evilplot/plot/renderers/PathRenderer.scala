@@ -34,6 +34,7 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, Path, StrokeStyle, Style, Text}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.components.FunctionPlotLine
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
 trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
@@ -66,8 +67,21 @@ object PathRenderer {
         d
       )
     }
+
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
-      StrokeStyle(Path(path, strokeWidth.getOrElse(theme.elements.strokeWidth)), color.getOrElse(theme.colors.path))
+      import FunctionPlotLine.plottablePoints
+      val plottable = plottablePoints(
+        path.sliding(2).flatMap { case Seq(p1, p2) => insertEdgePoint(p1, p2, extent) }.toVector,
+        extent.within
+      )
+
+      plottable.map(plottablePath =>
+        StrokeStyle(Path(
+          plottablePath,
+          strokeWidth.getOrElse(theme.elements.strokeWidth)),
+          color.getOrElse(theme.colors.path)
+        )
+      ).group
     }
   }
 
@@ -87,11 +101,25 @@ object PathRenderer {
       Style(Text(name, theme.fonts.legendLabelSize), theme.colors.legendLabel)
     )
 
-  def closed(color: Color)(implicit theme: Theme): PathRenderer = new PathRenderer {
+  /** Path renderer for closed paths. The first point is connected to the last point.
+    * @param color the color of this path.
+    */
+  @deprecated("Use the overload taking a strokeWidth, color, and label.", "2 April 2018")
+  def closed(color: Color)(implicit theme: Theme): PathRenderer = closed(color = Some(color))
+
+  /** Path renderer for closed paths. The first point is connected to the last point.
+    * @param strokeWidth the stroke width
+    * @param color the color of the path
+    * @param label the label for the legend
+    */
+  def closed(strokeWidth: Option[Double] = None,
+    color: Option[Color] = None,
+    label: Drawable = EmptyDrawable())(
+    implicit theme: Theme
+  ): PathRenderer = new PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
-      path.headOption match {
-        case Some(h) => StrokeStyle(Path(path :+ h, theme.elements.strokeWidth), color)
-        case None    => EmptyDrawable()
+      path.headOption.fold(EmptyDrawable(): Drawable) { head =>
+        default(strokeWidth, color, label).render(plot, extent, path :+ head)
       }
     }
   }
@@ -101,6 +129,25 @@ object PathRenderer {
     */
   def empty(): PathRenderer = new PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = EmptyDrawable()
+  }
+
+  private[plot] def clipToBoundary(point: Point, extent: Extent): Point = {
+    import math.{max, min}
+    Point(min(max(point.x, 0), extent.width), min(max(point.y, 0), extent.height))
+  }
+
+  // Insert boundary points where appropriate.
+  private[plot] def insertEdgePoint(point1: Point, point2: Point, extent: Extent): Seq[Point] = {
+    if (!(extent.within(point1) || extent.within(point2))) {
+      Seq.empty[Point]
+    } else if (extent.within(point1)) {
+      val insert = clipToBoundary(point2, extent)
+      Seq(point1, insert, point2)
+    } else {
+      val insert = clipToBoundary(point1, extent)
+      Seq(point1, insert, point2)
+    }
+
   }
 }
 
