@@ -63,9 +63,26 @@ final case class Plot(
   private[plot] def :+(component: FacetedPlotComponent): Plot = copy(components = components :+ component)
   private[plot] def +:(component: FacetedPlotComponent): Plot = copy(components = component +: components)
 
+  /** Create a copy of this plot with updated x bounds
+    * @param newBounds the new bounds.
+    */
   def xbounds(newBounds: Bounds): Plot = copy(xbounds = newBounds, xfixed = true)
+
+  /** Create a copy of this plot with updated x bounds
+    * @param lower the new minimum x
+    * @param upper the new maximum x
+    */
   def xbounds(lower: Double, upper: Double): Plot = xbounds(Bounds(lower, upper))
+
+  /** Create a copy of this plot with updated y bounds
+    * @param newBounds the new bounds.
+    */
   def ybounds(newBounds: Bounds): Plot = copy(ybounds = newBounds, yfixed = true)
+
+  /** Create a copy of this plot with updated y bounds
+    * @param lower the new minimum y
+    * @param upper the new maximum y
+    */
   def ybounds(lower: Double, upper: Double): Plot = ybounds(Bounds(lower, upper))
 
   private[plot] def updateBounds(xb: Bounds, yb: Bounds): Plot = copy(xbounds = xb, ybounds = yb)
@@ -100,6 +117,9 @@ final case class Plot(
     }
   }
 
+  /** Create a Drawable out of this Plot.
+    * @param extent the desired size of the resulting Drawable
+    */
   def render(extent: Extent = Plot.defaultExtent)(implicit theme: Theme): Drawable = {
     val overlays = componentRenderer.renderFront(this, extent)
     val backgrounds = componentRenderer.renderBack(this, extent)
