@@ -71,7 +71,9 @@ object PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       import FunctionPlotLine.plottablePoints
       val plottable = plottablePoints(
-        path.sliding(2).flatMap { case Seq(p1, p2) => insertEdgePoint(p1, p2, extent) }.toVector,
+        path.sliding(2).flatMap {
+          case Seq(p1, p2) => insertEdgePoint(p1, p2, extent)
+        }.toVector,
         extent.within
       )
 
@@ -140,14 +142,12 @@ object PathRenderer {
   private[plot] def insertEdgePoint(point1: Point, point2: Point, extent: Extent): Seq[Point] = {
     if (!(extent.within(point1) || extent.within(point2))) {
       Seq.empty[Point]
-    } else if (extent.within(point1)) {
-      val insert = clipToBoundary(point2, extent)
-      Seq(point1, insert, point2)
     } else {
-      val insert = clipToBoundary(point1, extent)
-      Seq(point1, insert, point2)
+      val insert =
+        if (extent.within(point1)) clipToBoundary(point2, extent)
+        else clipToBoundary(point1, extent)
+      Seq(point1, insert)
     }
-
   }
 }
 

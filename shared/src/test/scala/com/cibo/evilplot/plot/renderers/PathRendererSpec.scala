@@ -30,23 +30,24 @@
 
 package com.cibo.evilplot.plot.renderers
 
+import com.cibo.evilplot.geometry.Extent
+import com.cibo.evilplot.numeric.Point
 import org.scalatest.{FunSpec, Matchers}
 
 class PathRendererSpec extends FunSpec with Matchers {
   describe("Path renderer clipping") {
     it("should use 0 when the transformed coordinate is less than 0.") {
-      PathRenderer.clip(-32, 800) shouldBe 0
-      PathRenderer.clip(-1, 800)
+      PathRenderer.clipToBoundary(Point(-32, 24), Extent(800, 600)) shouldBe Point(0, 24)
+      PathRenderer.clipToBoundary(Point(500, -100), Extent(800, 600)) shouldBe Point(500, 0)
     }
 
     it("should not affect points that are in bounds") {
-      PathRenderer.clip(0, 1000) shouldBe 0
-      PathRenderer.clip(45, 1000) shouldBe 45
+      PathRenderer.clipToBoundary(Point(500, 100), Extent(800, 600)) shouldBe Point(500, 100)
     }
 
     it("should use the max when the point is greater than it") {
-      PathRenderer.clip(1200, max = 1000) shouldBe 1000
-      PathRenderer.clip(900, max = 800) shouldBe 800
+      PathRenderer.clipToBoundary(Point(500, 1000), Extent(800, 600)) shouldBe Point(500, 600)
+      PathRenderer.clipToBoundary(Point(1000, 1000), Extent(800, 600)) shouldBe Point(800, 600)
     }
   }
 }
