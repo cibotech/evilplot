@@ -104,7 +104,6 @@ object SurfaceRenderer {
 
     def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
       val color = useColoring(surface.levels).apply(surface.currentLevel)
-      println(surface.levels)
       surface.currentLevelPaths.map(pts => contours(Some(color))
           .render(plot, extent, surface)).group
     }

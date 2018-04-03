@@ -64,8 +64,23 @@ trait BorderPlotImplicits {
 
   val defaultSize: Double = 20
 
+  /** Render a plot at the top border of the plot.
+    * @param p The plot to render at top.
+    */
   def topPlot(p: Plot, size: Double = defaultSize): Plot = plot :+ BorderPlot(Position.Top, size, p)
+
+  /** Render a plot at the bottom border of the plot.
+    * @param p The plot to render at bottom.
+    */
   def bottomPlot(p: Plot, size: Double = defaultSize): Plot = plot :+ BorderPlot(Position.Bottom, size, p)
+
+  /** Render a plot at the bottom border of the plot.
+    * @param p The plot to render at bottom.
+    */
   def leftPlot(p: Plot, size: Double = defaultSize): Plot = plot :+ BorderPlot(Position.Left, size, p)
+
+  /** Render a plot at the right border of the plot.
+    * @param p The plot to render at right.
+    */
   def rightPlot(p: Plot, size: Double = defaultSize): Plot = plot :+ BorderPlot(Position.Right, size, p)
 }
