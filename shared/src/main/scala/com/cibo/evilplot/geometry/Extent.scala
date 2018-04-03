@@ -49,7 +49,7 @@ case class Extent(width: Double, height: Double) {
   def *(scale: Double): Extent = Extent(scale * width, scale * height)
   def -(w: Double = 0.0, h: Double = 0.0): Extent = Extent(width - w, height - h)
 
-  private[evilplot] def within(p: Point): Boolean = {
+  private[evilplot] def contains(p: Point): Boolean = {
     p.x >= 0 && p.x <= width && p.y >= 0 && p.y <= height
   }
 }

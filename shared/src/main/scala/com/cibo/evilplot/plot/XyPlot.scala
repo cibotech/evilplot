@@ -51,7 +51,7 @@ object XyPlot {
         val y = ytransformer(point.y)
         Point(x, y)
       }
-      val points = xformedPoints.zipWithIndex.withFilter(p => plotExtent.within(p._1))
+      val points = xformedPoints.zipWithIndex.withFilter(p => plotExtent.contains(p._1))
         .flatMap { case (point, index) =>
           val r = pointRenderer.render(plot, plotExtent, index)
           if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))

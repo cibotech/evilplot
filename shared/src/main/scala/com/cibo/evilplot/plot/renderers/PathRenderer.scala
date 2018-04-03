@@ -74,7 +74,7 @@ object PathRenderer {
         path.sliding(2).flatMap {
           case Seq(p1, p2) => insertEdgePoint(p1, p2, extent)
         }.toVector,
-        extent.within
+        extent.contains
       )
 
       plottable.map(plottablePath =>
@@ -140,9 +140,9 @@ object PathRenderer {
 
   // Insert boundary points where appropriate.
   private[plot] def insertEdgePoint(point1: Point, point2: Point, extent: Extent): Seq[Point] = {
-    if (!(extent.within(point1) || extent.within(point2))) {
+    if (!(extent.contains(point1) || extent.contains(point2))) {
       Seq.empty[Point]
-    } else if (extent.within(point1)) {
+    } else if (extent.contains(point1)) {
       val insert = clipToBoundary(point2, extent)
       Seq(point1, insert, point2)
     } else {
