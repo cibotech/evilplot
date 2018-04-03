@@ -42,6 +42,7 @@ object JSONUtils {
     transformConstructorNames = shortenedName
   )
 
+  // scalastyle:off
   private def shortenedName(s: String): String = {
     s match {
       case "EmptyDrawable" => "E"
@@ -66,6 +67,7 @@ object JSONUtils {
       case other => other
     }
   }
+  // scalastyle:on
 
   // Wrap the Circe JSON decode method and return just the desired type, not an Either.
   // If parsing returns an error, throw the error rather than returning it.

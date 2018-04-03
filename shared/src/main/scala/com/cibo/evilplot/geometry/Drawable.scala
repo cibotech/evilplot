@@ -36,6 +36,7 @@ import com.cibo.evilplot.numeric.Point
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
 import io.circe.{Decoder, Encoder}
+// scalastyle:off
 
 /**
   * All Drawable objects define a draw method that draws to a 2D canvas, and a bounding box (Extent).
@@ -345,3 +346,5 @@ object Drawable {
   implicit val drawableEncoder: Encoder[Drawable] = deriveEncoder[Drawable]
   implicit val drawableDecoder: Decoder[Drawable] = deriveDecoder[Drawable]
 }
+
+// scalastyle:on

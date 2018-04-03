@@ -14,8 +14,8 @@
 
     <check level="warning" class="org.scalastyle.file.FileLineLengthChecker" enabled="true">
         <parameters>
-            <parameter name="maxLineLength"><![CDATA[120]]></parameter>
-            <parameter name="tabSize"><![CDATA[4]]></parameter>
+            <parameter name="maxLineLength"><![CDATA[160]]></parameter>
+            <parameter name="tabSize"><![CDATA[2]]></parameter>
         </parameters>
     </check>
 
@@ -27,7 +27,7 @@
 
     <check level="warning" class="org.scalastyle.scalariform.ParameterNumberChecker" enabled="true">
         <parameters>
-            <parameter name="maxParameters"><![CDATA[16]]></parameter>
+            <parameter name="maxParameters"><![CDATA[10]]></parameter>
         </parameters>
     </check>
 
@@ -39,7 +39,7 @@
         </parameters>
     </check>
 
-    <check level="warning" class="org.scalastyle.scalariform.NumberOfMethodsInTypeChecker" enabled="true">
+    <check level="warning" class="org.scalastyle.scalariform.NumberOfMethodsInTypeChecker" enabled="false">
         <parameters>
             <parameter name="maxMethods"><![CDATA[30]]></parameter>
         </parameters>
@@ -58,9 +58,9 @@
         </parameters>
     </check>
 
-    <check level="warning" class="org.scalastyle.scalariform.MethodLengthChecker" enabled="true">
+    <check level="warning" class="org.scalastyle.scalariform.MethodLengthChecker" enabled="false">
         <parameters>
-            <parameter name="maxLength"><![CDATA[100]]></parameter>
+            <parameter name="maxLength"><![CDATA[50]]></parameter>
         </parameters>
     </check>
 
@@ -72,11 +72,11 @@
 
     <check level="warning" class="org.scalastyle.scalariform.PublicMethodsHaveTypeChecker" enabled="true"/>
 
-    <check level="warning" class="org.scalastyle.file.WhitespaceEndOfLineChecker" enabled="true"/>
+    <check level="warning" class="org.scalastyle.file.WhitespaceEndOfLineChecker" enabled="false"/>
 
-    <check level="warning" class="org.scalastyle.scalariform.NoWhitespaceBeforeLeftBracketChecker" enabled="true"/>
-
-    <check level="warning" class="org.scalastyle.scalariform.NoWhitespaceAfterLeftBracketChecker" enabled="true"/>
+    <check level="warning" class="org.scalastyle.scalariform.NoWhitespaceAfterLeftBracketChecker" enabled="false"/>
+	
+	<check level="warning" class="org.scalastyle.scalariform.NoWhitespaceBeforeLeftBracketChecker" enabled="true"/>
 
     <check level="warning" class="org.scalastyle.file.NewLineAtEofChecker" enabled="true"/>
 
@@ -86,21 +86,28 @@
 
     <check level="warning" class="org.scalastyle.scalariform.SpacesBeforePlusChecker" enabled="true"/>
 
-    <check enabled="true" class="org.scalastyle.scalariform.DisallowSpaceBeforeTokenChecker" level="warning">
+    <check level="warning" class="org.scalastyle.scalariform.DisallowSpaceBeforeTokenChecker" enabled="false">
         <parameters>
             <!-- https://github.com/scala-ide/scalariform/blob/master/scalariform/src/main/scala/scalariform/lexer/Tokens.scala -->
             <parameter name="tokens">COLON, COMMA, RPAREN</parameter>
         </parameters>
     </check>
 
-    <check enabled="true" class="org.scalastyle.scalariform.DisallowSpaceAfterTokenChecker" level="warning">
+    <check level="warning" class="org.scalastyle.scalariform.DisallowSpaceAfterTokenChecker" enabled="false">
         <parameters>
             <!-- https://github.com/scala-ide/scalariform/blob/master/scalariform/src/main/scala/scalariform/lexer/Tokens.scala -->
             <parameter name="tokens">LPAREN</parameter>
         </parameters>
     </check>
 
-    <check level="warning" class="org.scalastyle.scalariform.EnsureSingleSpaceAfterTokenChecker" enabled="true">
+    <check level="warning" class="org.scalastyle.scalariform.EnsureSingleSpaceBeforeTokenChecker" enabled="false">
+        <parameters>
+            <!-- https://github.com/scala-ide/scalariform/blob/master/scalariform/src/main/scala/scalariform/lexer/Tokens.scala -->
+            <parameter name="tokens">ELSE, FINALLY, LINE_COMMENT, MATCH</parameter>
+        </parameters>
+    </check>
+
+    <check level="warning" class="org.scalastyle.scalariform.EnsureSingleSpaceAfterTokenChecker" enabled="false">
         <parameters>
             <!-- https://github.com/scala-ide/scalariform/blob/master/scalariform/src/main/scala/scalariform/lexer/Tokens.scala -->
             <parameter name="tokens">ARROW, COLON, COMMA, ELSE, EQUALS, FINALLY, FOR, IF, MATCH, TRY, WHILE, YIELD</parameter>
@@ -129,7 +136,7 @@
         </parameters>
     </check>
 
-    <check level="warning" class="org.scalastyle.scalariform.MethodNamesChecker" enabled="true">
+    <check level="warning" class="org.scalastyle.scalariform.MethodNamesChecker" enabled="false">
         <parameters>
             <parameter name="regex"><![CDATA[^[a-z][A-Za-z0-9]*$]]></parameter>
         </parameters>
@@ -152,6 +159,12 @@
     <check level="warning" class="org.scalastyle.scalariform.MagicNumberChecker" enabled="false">
         <parameters>
             <parameter name="ignore"><![CDATA[-1,0,1,2,3]]></parameter>
+        </parameters>
+    </check>
+
+    <check level="warning" class="org.scalastyle.scalariform.TodoCommentChecker" enabled="true">
+        <parameters>
+            <parameter name="words">TODO|FIXME</parameter>
         </parameters>
     </check>
 

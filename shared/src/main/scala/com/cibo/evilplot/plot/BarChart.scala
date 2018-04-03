@@ -239,7 +239,7 @@ object BarChart {
     barRenderer: Option[BarRenderer] = None,
     spacing: Option[Double] = None,
     clusterSpacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None,
+    boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
     val xbounds = Bounds(0, bars.size)
     val heights = bars.map(_.height)
