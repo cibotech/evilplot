@@ -58,7 +58,7 @@ object PointRenderer {
       case _: EmptyDrawable => LegendContext.empty
       case d =>
         val size = pointSize.getOrElse(theme.elements.pointSize)
-        LegendContext.single(Disc(size).translate(-size, -size).filled(color.getOrElse(theme.colors.point)), d)
+        LegendContext.single(Disc.centered(size).filled(color.getOrElse(theme.colors.point)), d)
     }
     def render(plot: Plot, extent: Extent, index: Int): Drawable = {
       val size = pointSize.getOrElse(theme.elements.pointSize)

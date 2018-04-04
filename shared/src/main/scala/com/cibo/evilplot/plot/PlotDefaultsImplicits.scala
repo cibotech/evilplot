@@ -34,6 +34,10 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 
 trait PlotDefaultsImplicits {
   protected val plot: Plot
+  /** Add axes, grid lines and a background to the plot.
+    * @param xLabels categorical labels for x axis
+    * @param yLabels categorical labels for y axis
+    */
   def standard(xLabels: Seq[String] = Seq.empty,
                yLabels: Seq[String] = Seq.empty)(implicit theme: Theme): Plot = {
     // Use the right xAxis / yAxis overload.

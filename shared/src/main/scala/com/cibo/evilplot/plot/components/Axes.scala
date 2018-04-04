@@ -238,6 +238,10 @@ object Axes {
       component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
 
+    /** Add x grid lines to the plot.
+      * @param lineCount the number of grid lines to use
+      * @param lineRenderer the grid line renderer
+      */
     def xGrid(
       lineCount: Option[Int] = None,
       lineRenderer: Option[GridLineRenderer] = None
@@ -249,6 +253,11 @@ object Axes {
       plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds) :+ component
     }
 
+
+    /** Add y grid lines to the plot.
+      * @param lineCount the number of grid lines to use
+      * @param lineRenderer the grid line renderer
+      */
     def yGrid(
       lineCount: Option[Int] = None,
       lineRenderer: Option[GridLineRenderer] = None
