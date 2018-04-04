@@ -142,7 +142,7 @@ object Axes {
       val descriptor = getDescriptor(plot, fixed = true)
       val scale = extent.width / descriptor.axisBounds.range
       lines(descriptor, extent).zip(descriptor.values).map { case (line, value) =>
-        line.translate(x = (value - descriptor.axisBounds.min) * scale + line.extent.width / 2.0)
+        line.translate(x = (value - descriptor.axisBounds.min) * scale - line.extent.width / 2.0)
       }.group
     }
   }
