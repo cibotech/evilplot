@@ -48,9 +48,7 @@ private[colors] object GradientUtils {
       gradients.reduce(_ orElse _)
     }
   }
-
   // https://stackoverflow.com/questions/22607043/color-gradient-algorithm
-  // This is the "wrong" way, simple linear interpolation.
   private[colors] def singleGradient(minValue: Double,
                                   maxValue: Double,
                                   startColor: Color,
@@ -60,10 +58,19 @@ private[colors] object GradientUtils {
       val (r2, g2, b2, a2) = rgba(endColor)
       val range = maxValue - minValue
       val interpolationCoefficient = (d - minValue) / range
-      val r = (255 * interpolate(r1, r2, interpolationCoefficient)).toInt
-      val g = (255 * interpolate(g1, g2, interpolationCoefficient)).toInt
-      val b = (255 * interpolate(b1, b2, interpolationCoefficient)).toInt
+      val r = interpolate(inverseTransfer(r1), inverseTransfer(r2), interpolationCoefficient)
+      val g = interpolate(inverseTransfer(g1), inverseTransfer(g2), interpolationCoefficient)
+      val b = interpolate(inverseTransfer(b1), inverseTransfer(b2), interpolationCoefficient)
       val a = interpolate(a1, a2, interpolationCoefficient)
-      RGBA(r, g, b, a)
+      RGBA(
+        (255 * componentTransfer(r)).toInt,
+        (255 * componentTransfer(g)).toInt,
+        (255 * componentTransfer(b)).toInt,
+        a)
   }
+  // https://www.w3.org/Graphics/Color/srgb
+  private[colors] def inverseTransfer(d: Double): Double =
+    if (d <= 0.04045) d / 12.92  else math.pow((d + 0.055) / 1.055, 2.4)
+  private[colors] def componentTransfer(d: Double): Double =
+    if (d <= 0.0031308) d * 12.92 else 1.055 * math.pow(d, 1.0 / 2.4) - 0.055
 }
