@@ -105,6 +105,10 @@ final case class Polygon(boundary: Seq[Point]) extends Drawable {
 object Polygon {
   implicit val encoder: Encoder[Polygon] = deriveEncoder[Polygon]
   implicit val decoder: Decoder[Polygon] = deriveDecoder[Polygon]
+
+  def clipped(boundary: Seq[Point], extent: Extent): Drawable = {
+    Polygon(Clipping(boundary, extent))
+  }
 }
 
 /** A filled rectangle.
