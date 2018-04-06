@@ -67,6 +67,7 @@ private[geometry] object Clipping {
     (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
   }
 
+  // https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
   private[evilplot] def apply(points: Seq[Point], extent: Extent): Seq[Point] = {
     val boundEdges = Seq(
       Edge(Point(extent.width, 0), Point(0, 0)),
@@ -74,26 +75,25 @@ private[geometry] object Clipping {
       Edge(Point(0, extent.height), Point(extent.width, extent.height)),
       Edge(Point(extent.width, extent.height), Point(extent.width, 0))
     )
-    var outputList = points.toVector
-    for (clipEdge <- boundEdges) {
-      val inputList = outputList
-      outputList = Vector.empty[Point]
-      if (inputList.isEmpty) return inputList // scalastyle:ignore
-      var s = inputList.last
-      for (point <- inputList) {
-        if (clipEdge.contains(point)) {
-          if (!clipEdge.contains(s)) {
-            val intersection = clipEdge.intersection(Edge(s, point))
-            outputList ++= intersection
+    boundEdges.foldLeft(points.toVector) { (inputList, clipEdge) =>
+      if (inputList.nonEmpty) {
+        val init = (inputList.last, Vector.empty[Point])
+        inputList.foldLeft(init) { case ((s, outputList), point) =>
+          if (clipEdge.contains(point)) {
+            if (!clipEdge.contains(s)) {
+              (point, outputList ++ clipEdge.intersection(Edge(s, point)).toSeq :+ point)
+            } else {
+              (point, outputList :+ point)
+            }
+          } else if (clipEdge.contains(s)) {
+            (point, outputList ++ clipEdge.intersection(Edge(s, point)).toSeq)
+          } else {
+            (point, outputList)
           }
-          outputList :+= point
-        } else if (clipEdge.contains(s)) {
-          outputList ++= clipEdge.intersection(Edge(s, point))
-        }
-        s = point
+        }._2
+      } else {
+        Vector.empty
       }
     }
-
-    outputList
   }
 }
