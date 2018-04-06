@@ -34,7 +34,12 @@ private[colors] object GradientUtils {
   import ColorUtils.{interpolate, rgba}
 
   // Create a gradient of an arbitrary number of colors.
-  private[colors] def multiGradient(colors: Seq[Color], min: Double, max: Double): Double => Color = {
+  private[colors] def multiGradient(
+    colors: Seq[Color],
+    min: Double,
+    max: Double,
+    mode: GradientMode
+  ): Double => Color = {
     require(colors.nonEmpty, "A gradient cannot be constructed on an empty sequence of colors.")
     val numGradients = colors.length - 1
 
@@ -43,34 +48,37 @@ private[colors] object GradientUtils {
       val singleGradientExtent = (max - min) / numGradients
       val gradients: Seq[PartialFunction[Double, HSLA]] = Seq.tabulate(numGradients) { i =>
         val lower = min + i * singleGradientExtent
-        singleGradient(lower - 1e-5, lower + singleGradientExtent + 1e-5, colors(i), colors(i + 1))
+        singleGradient(lower - 1e-5,
+          lower + singleGradientExtent + 1e-5,
+          colors(i),
+          colors(i + 1),
+          mode
+        )
       }
       gradients.reduce(_ orElse _)
     }
   }
-  // https://stackoverflow.com/questions/22607043/color-gradient-algorithm
-  private[colors] def singleGradient(minValue: Double,
-                                  maxValue: Double,
-                                  startColor: Color,
-                                  endColor: Color): PartialFunction[Double, HSLA] = {
+  private[colors] def singleGradient(
+    minValue: Double,
+    maxValue: Double,
+    startColor: Color,
+    endColor: Color,
+    mode: GradientMode
+  ): PartialFunction[Double, HSLA] = {
     case d if d >= minValue && d <= maxValue =>
+      import mode._
       val (r1, g1, b1, a1) = rgba(startColor)
       val (r2, g2, b2, a2) = rgba(endColor)
       val range = maxValue - minValue
       val interpolationCoefficient = (d - minValue) / range
-      val r = interpolate(inverseTransfer(r1), inverseTransfer(r2), interpolationCoefficient)
-      val g = interpolate(inverseTransfer(g1), inverseTransfer(g2), interpolationCoefficient)
-      val b = interpolate(inverseTransfer(b1), inverseTransfer(b2), interpolationCoefficient)
+      val r = interpolate(inverse(r1), inverse(r2), interpolationCoefficient)
+      val g = interpolate(inverse(g1), inverse(g2), interpolationCoefficient)
+      val b = interpolate(inverse(b1), inverse(b2), interpolationCoefficient)
       val a = interpolate(a1, a2, interpolationCoefficient)
       RGBA(
-        (255 * componentTransfer(r)).toInt,
-        (255 * componentTransfer(g)).toInt,
-        (255 * componentTransfer(b)).toInt,
+        (255 * forward(r)).toInt,
+        (255 * forward(g)).toInt,
+        (255 * forward(b)).toInt,
         a)
   }
-  // https://www.w3.org/Graphics/Color/srgb
-  private[colors] def inverseTransfer(d: Double): Double =
-    if (d <= 0.04045) d / 12.92  else math.pow((d + 0.055) / 1.055, 2.4)
-  private[colors] def componentTransfer(d: Double): Double =
-    if (d <= 0.0031308) d * 12.92 else 1.055 * math.pow(d, 1.0 / 2.4) - 0.055
 }
