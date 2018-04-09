@@ -10,7 +10,8 @@ object Settings {
 
   /** The version of your application */
   lazy val buildVersion: String = sys.env.getOrElse("TRAVIS_BUILD_NUMBER", (System.currentTimeMillis / 1000).toString)
-  val version = s"0.1.$buildVersion"
+  // val version = s"0.1.$buildVersion"
+  val version = "0.2"
 
   /** Options for the scala compiler */
   val scalacOptions = Seq(
