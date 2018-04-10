@@ -47,7 +47,7 @@ class BoxPlotSpec extends FunSpec with Matchers {
 
     it("should have the right bounds") {
       val plot = BoxPlot(Seq(Seq(1.0, 2.0)), boundBuffer = Some(0))
-      plot.xbounds shouldBe Bounds(0, 0)
+      plot.xbounds shouldBe Bounds(0, 1)
       plot.ybounds shouldBe Bounds(1, 2)
     }
 
