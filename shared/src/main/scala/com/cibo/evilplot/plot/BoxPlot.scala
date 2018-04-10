@@ -85,7 +85,7 @@ object BoxPlot {
     pointRenderer: Option[PointRenderer] = None
   )(implicit theme: Theme): Plot = {
     val summaries = data.map(dist => if (dist.nonEmpty) Some(BoxPlotSummaryStatistics(dist, quantiles)) else None)
-    val xbounds = Bounds(0, summaries.size - 1)
+    val xbounds = Bounds(0, summaries.size)
     val ybounds = Plot.expandBounds(
       Bounds(
         data.flatten.reduceOption[Double](math.min).getOrElse(0),
