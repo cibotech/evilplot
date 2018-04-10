@@ -45,6 +45,12 @@ class XyPlotSpec extends FunSpec with Matchers {
       plot.ybounds shouldBe Bounds(2, 4)
     }
 
+    it("works with a single point") {
+      val plot = XyPlot(Seq(Point(1, 2)))
+      val extent = Extent(100, 200)
+      plot.render(extent).extent shouldBe Extent(100, 200)
+    }
+
     it("works with no data") {
       val plot = XyPlot(Seq.empty)
       val extent = Extent(100, 200)

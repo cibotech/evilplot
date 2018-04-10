@@ -73,6 +73,7 @@ object PathRenderer {
       val plottable = plottablePoints(
         path.sliding(2).flatMap {
           case Seq(p1, p2) => insertEdgePoint(p1, p2, extent)
+          case Seq(p1)     => Seq.empty
         }.toVector,
         extent.contains
       )
