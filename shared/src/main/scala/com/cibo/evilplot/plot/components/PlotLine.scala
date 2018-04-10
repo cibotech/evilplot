@@ -46,14 +46,14 @@ sealed trait PlotLine extends PlotComponent {
 case class HorizontalPlotLine(y: Double, thickness: Double, color: Color) extends PlotLine {
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val offset = plot.ytransform(plot, extent)(y)
-    Line(extent.width, thickness).colored(color).translate(y = offset)
+    Line(extent.width, thickness).colored(color).middle().translate(y = offset)
   }
 }
 
 case class VerticalPlotLine(x: Double, thickness: Double, color: Color) extends PlotLine {
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val offset = plot.xtransform(plot, extent)(x)
-    Line(extent.height, thickness).colored(color).rotated(90).translate(x = offset)
+    Line(extent.height, thickness).colored(color).rotated(90).center().translate(x = offset)
   }
 }
 
