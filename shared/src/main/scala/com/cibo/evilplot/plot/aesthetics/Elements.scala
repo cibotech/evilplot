@@ -45,4 +45,6 @@ trait Elements {
   val yTickCount: Int
   val xGridLineCount: Int
   val yGridLineCount: Int
+  val tickThickness: Double
+  val tickLength: Double
 }

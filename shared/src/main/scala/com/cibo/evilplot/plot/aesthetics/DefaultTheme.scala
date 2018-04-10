@@ -75,7 +75,9 @@ object DefaultTheme {
     xTickCount: Int = 10,
     yTickCount: Int = 10,
     xGridLineCount: Int = 10,
-    yGridLineCount: Int = 10
+    yGridLineCount: Int = 10,
+    tickThickness: Double = 1,
+    tickLength: Double = 5
   ) extends Elements
 
   case class DefaultTheme(
