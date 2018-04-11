@@ -184,7 +184,11 @@ object Axes {
     )(implicit theme: Theme): Plot = {
       val component = ContinuousXAxisPlotComponent(
         tickCount.getOrElse(theme.elements.xTickCount),
-        tickRenderer.getOrElse(TickRenderer.xAxisTickRenderer())
+        tickRenderer.getOrElse(TickRenderer.xAxisTickRenderer(
+          length = theme.elements.tickLength,
+          thickness = theme.elements.tickThickness,
+          rotateText = theme.elements.continuousXAxisLabelOrientation
+        ))
       )
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
@@ -200,10 +204,13 @@ object Axes {
       */
     def xAxis(labels: Seq[String], values: Seq[Double])(implicit theme: Theme): Plot = {
       require(labels.lengthCompare(values.length) == 0)
-      val rotateText = theme.elements.categoricalXAxisLabelOrientation
       val labelsAndValues = labels.zip(values)
       val component = DiscreteXAxisPlotComponent(labelsAndValues,
-        TickRenderer.xAxisTickRenderer(rotateText = rotateText))
+        TickRenderer.xAxisTickRenderer(
+          length = theme.elements.tickLength,
+          thickness = theme.elements.tickThickness,
+          rotateText = theme.elements.categoricalXAxisLabelOrientation)
+      )
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
@@ -217,7 +224,10 @@ object Axes {
     )(implicit theme: Theme): Plot = {
       val component = ContinuousYAxisPlotComponent(
         tickCount.getOrElse(theme.elements.yTickCount),
-        tickRenderer.getOrElse(TickRenderer.yAxisTickRenderer())
+        tickRenderer.getOrElse(TickRenderer.yAxisTickRenderer(
+          length = theme.elements.tickLength,
+          thickness = theme.elements.tickThickness
+        ))
       )
       component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
@@ -234,7 +244,12 @@ object Axes {
     def yAxis(labels: Seq[String], values: Seq[Double])(implicit theme: Theme): Plot = {
       require(labels.lengthCompare(values.length) == 0)
       val labelsAndValues = labels.zip(values)
-      val component = DiscreteYAxisPlotComponent(labelsAndValues, TickRenderer.yAxisTickRenderer())
+      val component = DiscreteYAxisPlotComponent(
+        labelsAndValues,
+        TickRenderer.yAxisTickRenderer(
+          length = theme.elements.tickLength,
+          thickness = theme.elements.tickThickness
+        ))
       component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
 

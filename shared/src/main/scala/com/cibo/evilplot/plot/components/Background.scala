@@ -31,11 +31,11 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, Extent, Rect}
+import com.cibo.evilplot.geometry.{Drawable, Extent, Line, Rect}
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
 
-case class Background(
+final case class Background(
   f: (Plot, Extent) => Drawable
 ) extends PlotComponent {
   val position: Position = Position.Background
@@ -64,4 +64,15 @@ trait BackgroundImplicits {
   /** Add a solid background. */
   def background()(implicit theme: Theme): Plot =
     background((_, e) => Rect(e).filled(theme.colors.background))
+
+  /** Add a border frame around the plot. */
+  def frame()(implicit theme: Theme): Plot =
+    frame(theme.colors.path, theme.elements.tickThickness)
+
+  /** Add a border frame around the plot. */
+  def frame(color: Color, strokeWidth: Double): Plot = {
+    background((_, e: Extent) =>
+      Line(e.height, strokeWidth).rotated(90).center() above Line(e.width, strokeWidth).middle()
+    )
+  }
 }
