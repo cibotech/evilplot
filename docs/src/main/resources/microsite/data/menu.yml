@@ -1,3 +1,21 @@
 options:
+  - title: Getting Started
+    url: docs/index.html
+
+  - title: Plotting
+    url: docs/plots.html
+
   - title: Drawing API
-  - url: docs/drawing-api.html
+    url: docs/drawing-api.html
+
+  - title: Custom Renderers
+    url: docs/custom-renderers.html
+
+  - title: Colors
+    url: docs/colors.html
+
+  - title: RenderContext
+    url: docs/render-context.html
+
+  - title: Plot Catalog
+    url: docs/plot-catalog.html

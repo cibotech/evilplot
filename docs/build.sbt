@@ -19,13 +19,18 @@ organizationName := "CiBO Technologies"
 organizationHomepage := Some(new java.net.URL("http://www.cibotechnologies.com"))
 micrositeGithubOwner := "cibotech"
 micrositeGithubRepo := "evilplot"
-micrositeGitterChannel := false
 micrositeFooterText := None
+micrositeDocumentationUrl := "/docs"
+micrositeShareOnSocial := false
+// Can turn these off depending on what we want to do...
+// micrositeGithubLinks := false
+micrositeGitterChannel := false
 
 micrositePalette := Map(
+  //"brand-primary" -> "#2B7699",
   "brand-primary" -> "#008080",
-  "brand-secondary" -> "#485155",
-  "brand-tertiary"    -> "#2B7699",
+  "brand-secondary" -> "#606C71",
+  "brand-tertiary"    -> "#485155",
   "gray-dark"         -> "#453E46",
   "gray"              -> "#837F84",
   "gray-light"        -> "#E3E2E3",

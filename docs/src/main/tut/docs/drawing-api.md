@@ -10,53 +10,166 @@ In EvilPlot, we represent everything that can be drawn to the screen as a `Drawa
 
 A `Drawable` is simply a _description_ of the scene, and constructing one does not actually render anything. There are only a handful of drawing primitives that exist within EvilPlot, and they can be divided into three categories: drawing, positioning, and style.
 
-_Drawing_:
-* EmptyDrawable
-* Line
-* Path
-* Rect
-* BorderRect
-* Disc
-* Wedge
-* Text
-_Positioning_:
-* Translate
-* Affine
-* Scale
-* Rotate
-* Group
-* Resize
+The drawing primitives are the "leaves" of a scene. They represent concrete things like shapes and text. They are: 
+<div class="container">
+<img src="/img/docs/drawing-api/drawingprimitives.png" class="img-responsive"/>
+</div>
+
+Positioning primitives alter where other `Drawable`s are placed. Notably, `Drawable` scenes do not expose a notion of absolute coordinates.
+
+<div class="container">
+<img src="/img/docs/drawing-api/positioningprimitives.png" class="img-responsive"/>
+</div>
+
+Lastly, styling primitives allow us to modify the appearance of scenes. `Style` applies a fill color to a `Drawable`, while `StrokeStyle` applies a color to the outlines of `Drawable`s. 
+
 _Styling_:
 * Style
 * StrokeStyle
 * StrokeWeight
 
 
-Creating scenes is simply a matter of using these primitives. For example, to place a blue rectangle next to a red circle, you might write:
+Creating scenes is simply a matter of composing these primitives. For example, to place a blue rectangle next to a red circle, you might write:
+<div class="row">
+<div class="col-md-6" markdown="1">
 ```scala
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.color.HTMLNamedColors
+import com.cibo.evilplot.colors.HTMLNamedColors
 val rect = Style(Rect(40, 40), HTMLNamedColors.blue)
-Group(Style(Translate(Disc(20), x = rect.extent.width), HTMLNamedColors.red), rect)
+Group(Seq(Style(Translate(Disc(20), x = rect.extent.width), HTMLNamedColors.red), rect))
 ```
+</div>
+<div class="col-md-6">
+<img src="/img/docs/drawing-api/initialexample.png" class="img-responsive">
+</div>
+</div>
 
 The `geometry` package also provides convenient syntax for dealing with positioning and styling primitives. So, instead of nesting constructors like we did up there, we can write:
 
+<div class="row">
+<div class="col-md-6" markdown="1">
 ```scala
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.color.HTMLNamedColors
+import com.cibo.evilplot.colors.HTMLNamedColors
 
 val rect = Rect(40, 40) filled HTMLNamedColors.blue
 Disc(20) transX rect.extent.width filled HTMLNamedColors.red behind rect
 ```
+</div>
+<div class="col-md-6">
+<img src="/img/docs/drawing-api/infixexample.png" class="img-responsive">
+</div>
+</div>
 
+The drawing API gives us the power to describe all of the scenes involved in the plots that EvilPlot can create; at no point do plot implementations reach below it and onto the rendering target. To illustrate this, let's take a look at creating a part of a plot using the drawing primitives:
+
+<div class="row">
+<div class="col-md-6" markdown="1">
+```scala
+
+```
+</div>
+<div class="col-md-6">
+<img src="/img/docs/drawing-api/box1.png" class="img-responsive"/>
+</div>
+</div>
+
+That wasn't great. You can see a lot of repeated logic in the translations of elements to align them and put them on top of each other.
 ## Positional Combinators
 
 EvilPlot is all about giving a higher-level vocabulary to refer to common geometric manipulations. In fact, above we just wrote a positional combinator called `beside`. It turns out that the `geometry` package is full of similar combinators, so most of the time you'll never have to manually think about shifting objects by their widths like we did above.
 
+<div class="row">
+<div class="col-md-4">
+<img src="/img/docs/drawing-api/beside.png" class="img-responsive"/>
+</div>
+<div class="col-md-4">
+<img src="/img/docs/drawing-api/behind.png" class="img-responsive"/>
+</div>
+</div>
 
 
+### Alignment
+
+Additionally, you can align an entire sequence of `Drawable`s by calling one of the `Align` methods, which produce new sequence with all elements aligned. Combining alignment with reducing using a binary position operator is especially helpful:
 
 
+```scala
+import com.cibo.evilplot.geometry._
+import com.cibo.evilplot.colors.HTMLNamedColors._
 
+val aligned: Seq[Drawable] = Align.right(
+	Rect(40, 60) filled blue,
+	Disc(70) filled red,
+	Polygon(Seq(Point(20, 60), Point(40, 20), Point(30, 30)) filled green)
+)
+
+aligned.reduce(_ below _)
+```
+
+The available alignment functions are:[^1].
+
+
+<!-- ugh fix this alignment -->
+<div class="container">
+<div class="row">
+<div class="col-md-3">
+<div class="center-block">
+<code>Align.bottom</code>
+<img src="/img/docs/drawing-api/alignbottom.png" class="img-responsive"/>
+</div>
+</div>
+<div class="col-md-3">
+<code>Align.right</code>
+<img src="/img/docs/drawing-api/alignright.png" class="img-responsive"/>
+</div>
+<div class="col-md-3">
+<code>Align.middle</code>
+<img src="/img/docs/drawing-api/alignmiddle.png" class="img-responsive"/>
+</div>
+<div class="col-md-3">
+<code>Align.center</code>
+<img src="/img/docs/drawing-api/aligncenter.png" class="img-responsive"/>
+</div>
+</div>
+</div>
+
+## Revisiting the box plot example.
+
+With EvilPlot's drawing combinators on our side, we're well equipped to recreate the box example from above that we made using only primitives--except it will be far easier to reason about. Recall, first we created our elements: two lines and two boxes, then centered them vertically and placed them on top of each other.
+
+
+<div class="row">
+<div class="col-md-8" markdown="1">
+```scala
+import com.cibo.evilplot.geometry._
+import com.cibo.evilplot.colors.HTMLNamedColors.{blue, white}
+
+// Some values from the outside:
+val width = 10
+val topWhisker = 50
+val bottomWhisker = 30
+val upperToMiddle = 40
+val middleToLower = 35
+val strokeWidth = 2
+
+
+Align.center(
+  Line(topWhisker, strokeWidth).rotated(90),
+  BorderRect.filled(width, upperToMiddle),
+  BorderRect.filled(width, middleToLower),
+  Line(bottomWhisker, strokeWidth).rotated(90) 
+).reduce(_ above _)
+ .colored(blue)
+ .filled(white)
+```
+</div>
+<div class="col-md-4">
+<img src="/img/docs/drawing-api/box2.png" class="img-responsive"/>
+</div>
+</div>
+
+And in fact, if you were to look at the source code for EvilPlot's default box plot, it would be almost identical. 
+
+[^1]: A `.reduce(_ above _)` or `.reduce(_ beside _)` was applied to each of these so the examples didn't stomp all over each other.
 
