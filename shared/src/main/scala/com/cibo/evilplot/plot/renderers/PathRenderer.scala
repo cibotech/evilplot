@@ -101,7 +101,7 @@ object PathRenderer {
     default(
       strokeWidth,
       Some(color),
-      Style(Text(name, theme.fonts.legendLabelSize), theme.colors.legendLabel)
+      Style(Text(name, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel)
     )
 
   /** Path renderer for closed paths. The first point is connected to the last point.

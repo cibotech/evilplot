@@ -58,7 +58,7 @@ object TickRenderer {
 
     def render(label: String): Drawable = {
       val line = Line(length, thickness).rotated(90)
-      align(line, Style(Text(label.toString), theme.colors.tickLabel)
+      align(line, Style(Text(label.toString, fontFace = theme.fonts.fontFace), theme.colors.tickLabel)
         .rotated(rotateText).padTop(2)).reduce(above)
     }
   }
@@ -74,7 +74,7 @@ object TickRenderer {
   )(implicit theme: Theme): TickRenderer = new TickRenderer {
     def render(label: String): Drawable = {
       val line = Line(length, thickness)
-      Align.middle(Style(Text(label.toString), theme.colors.tickLabel)
+      Align.middle(Style(Text(label.toString, fontFace = theme.fonts.fontFace), theme.colors.tickLabel)
         .padRight(2).padBottom(2), line).reduce(beside)
     }
   }

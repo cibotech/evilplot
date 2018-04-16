@@ -319,6 +319,7 @@ object StrokeWeight {
 final case class Text(
   msg: String,
   size: Double = Text.defaultSize,
+  fontFace: String = Text.defaultFontFace,
   extentOpt: Option[Extent] = None
 ) extends Drawable {
   require(size >= 0.5, s"Cannot use $size, canvas will not draw text initially sized < 0.5px even when scaling")
@@ -336,6 +337,7 @@ object Text {
   implicit val decoder: Decoder[Text] = deriveDecoder[Text]
 
   val defaultSize: Double = 10
+  val defaultFontFace: String = "sans-serif"
 }
 
 object Drawable {

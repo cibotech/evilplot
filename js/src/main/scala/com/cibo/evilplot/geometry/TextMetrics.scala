@@ -38,8 +38,6 @@ object TextMetrics extends TextMetricsInterface {
     Utils.getCanvasFromElementId("measureBuffer")
   }
 
-  private lazy val replaceSize = """\d+px""".r
-
   // TODO: Text this regex esp on 1px 1.0px 1.px .1px, what is valid in CSS?
   private lazy val fontSize = """[^\d]*([\d(?:\.\d*)]+)px.*""".r
 
@@ -48,21 +46,17 @@ object TextMetrics extends TextMetricsInterface {
     size.toDouble
   }
 
-  private def swapFont(canvas: CanvasRenderingContext2D, size: Double) = {
-    replaceSize.replaceFirstIn(canvas.font, size.toString + "px")
-  }
-
-  private[geometry] def withStyle[T](size: Double)(
+  private[geometry] def withStyle[T](size: Double, fontFace: String)(
     f: CanvasRenderingContext2D => T
   ): CanvasRenderingContext2D => T = {
     c =>
       c.textBaseline = "top"
-      c.font = swapFont(c, size)
+      c.font = size.toString + "px" + " " + fontFace
       f(c)
   }
 
   def measure(text: Text): Extent = {
-    withStyle(text.size) { c =>
+    withStyle(text.size, text.fontFace) { c =>
       Extent(c.measureText(text.msg).width, extractHeight)
     }(offscreenBuffer)
   }
