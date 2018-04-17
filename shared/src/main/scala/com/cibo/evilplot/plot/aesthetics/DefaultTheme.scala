@@ -31,6 +31,7 @@
 package com.cibo.evilplot.plot.aesthetics
 
 import com.cibo.evilplot.colors._
+import com.cibo.evilplot.colors.ContinuousColoring.gradient
 
 object DefaultTheme {
 
@@ -57,8 +58,7 @@ object DefaultTheme {
     legendLabel: Color = HTMLNamedColors.black,
     tickLabel: Color = HTMLNamedColors.black,
     stream: Seq[Color] = Color.stream,
-    continuousColoring: ContinuousColoring =
-      ContinuousColoring.gradient(HTMLNamedColors.green, HTMLNamedColors.red)
+    continuousColoring: ContinuousColoring = gradient(HTMLNamedColors.blue, HTMLNamedColors.orange)
   ) extends Colors
 
   case class DefaultElements(

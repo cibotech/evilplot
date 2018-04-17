@@ -34,7 +34,12 @@ private[colors] object GradientUtils {
   import ColorUtils.{interpolate, rgba}
 
   // Create a gradient of an arbitrary number of colors.
-  private[colors] def multiGradient(colors: Seq[Color], min: Double, max: Double): Double => Color = {
+  private[colors] def multiGradient(
+    colors: Seq[Color],
+    min: Double,
+    max: Double,
+    mode: GradientMode
+  ): Double => Color = {
     require(colors.nonEmpty, "A gradient cannot be constructed on an empty sequence of colors.")
     val numGradients = colors.length - 1
 
@@ -43,27 +48,37 @@ private[colors] object GradientUtils {
       val singleGradientExtent = (max - min) / numGradients
       val gradients: Seq[PartialFunction[Double, HSLA]] = Seq.tabulate(numGradients) { i =>
         val lower = min + i * singleGradientExtent
-        singleGradient(lower - 1e-5, lower + singleGradientExtent + 1e-5, colors(i), colors(i + 1))
+        singleGradient(lower - 1e-5,
+          lower + singleGradientExtent + 1e-5,
+          colors(i),
+          colors(i + 1),
+          mode
+        )
       }
       gradients.reduce(_ orElse _)
     }
   }
-
-  // https://stackoverflow.com/questions/22607043/color-gradient-algorithm
-  // This is the "wrong" way, simple linear interpolation.
-  private[colors] def singleGradient(minValue: Double,
-                                  maxValue: Double,
-                                  startColor: Color,
-                                  endColor: Color): PartialFunction[Double, HSLA] = {
+  private[colors] def singleGradient(
+    minValue: Double,
+    maxValue: Double,
+    startColor: Color,
+    endColor: Color,
+    mode: GradientMode
+  ): PartialFunction[Double, HSLA] = {
     case d if d >= minValue && d <= maxValue =>
+      import mode._
       val (r1, g1, b1, a1) = rgba(startColor)
       val (r2, g2, b2, a2) = rgba(endColor)
       val range = maxValue - minValue
       val interpolationCoefficient = (d - minValue) / range
-      val r = (255 * interpolate(r1, r2, interpolationCoefficient)).toInt
-      val g = (255 * interpolate(g1, g2, interpolationCoefficient)).toInt
-      val b = (255 * interpolate(b1, b2, interpolationCoefficient)).toInt
+      val r = interpolate(inverse(r1), inverse(r2), interpolationCoefficient)
+      val g = interpolate(inverse(g1), inverse(g2), interpolationCoefficient)
+      val b = interpolate(inverse(b1), inverse(b2), interpolationCoefficient)
       val a = interpolate(a1, a2, interpolationCoefficient)
-      RGBA(r, g, b, a)
+      RGBA(
+        (255 * forward(r)).toInt,
+        (255 * forward(g)).toInt,
+        (255 * forward(b)).toInt,
+        a)
   }
 }

@@ -95,63 +95,80 @@ object CategoricalColoring {
   /** Create a categorical coloring out of a gradient.
     * @param colors Colors to use as endpoints in the gradient.
     */
-  def gradient[A: Ordering](colors: Seq[Color]): CategoricalColoring[A] =
+  def gradient[A: Ordering](
+    colors: Seq[Color],
+    gradientMode: GradientMode
+  ): CategoricalColoring[A] =
     new CategoricalColoring[A] {
       require(colors.nonEmpty, "Cannot make a gradient out of zero colors.")
       protected def distinctElemsAndColorFunction(dataToColor: Seq[A])(
           implicit theme: Theme): (Seq[A], A => Color) = {
         val distinctElems: Seq[A] = dataToColor.distinct.sorted
-        val f = GradientUtils.multiGradient(colors, 0, distinctElems.length - 1)
+        val f = GradientUtils.multiGradient(colors, 0, distinctElems.length - 1, gradientMode)
         (distinctElems, (a: A) => f(distinctElems.indexOf(a).toDouble))
       }
     }
+
+  def gradient[A: Ordering](
+    start: Color,
+    end: Color,
+    gradientMode: GradientMode = GradientMode.Linear
+  ): CategoricalColoring[A] =
+    gradient(Seq(start, end), gradientMode)
 }
 
 trait ContinuousColoring extends Coloring[Double]
 object ContinuousColoring {
-  /** Color using an RGB gradient.
+  /** Color using a 2-stop gradient.
     * @param start the left endpoint for interpolation
     * @param end the right endpoint for interpolation
     * @param min min override for the data
     * @param max max override for the data
     */
-  def gradient(start: Color,
-               end: Color,
-               min: Option[Double] = None,
-               max: Option[Double] = None): ContinuousColoring = {
-    gradient(Seq(start, end), min, max)
+  def gradient(
+    start: Color,
+    end: Color,
+    min: Option[Double] = None,
+    max: Option[Double] = None,
+    gradientMode: GradientMode = GradientMode.Linear
+  ): ContinuousColoring = {
+    gradient(Seq(start, end), min, max, gradientMode)
   }
 
-  /** Color using an RGB gradient.
-    * @param start the left endpoint for interpolation
-    * @param middle the midpoint for interpolation
-    * @param end the right endpoint for interpolation
+  /** Color using 3 stop gradient.
+    * @param start the left stop for interpolation
+    * @param middle the middle stop for interpolation
+    * @param end the right stop for interpolation
     * @param min min override for the data
     * @param max max override for the data
     */
   def gradient3(start: Color,
-                middle: Color,
-                end: Color,
-                min: Option[Double] = None,
-                max: Option[Double] = None): ContinuousColoring = {
-    gradient(Seq(start, middle, end), min, max)
+    middle: Color,
+    end: Color,
+    min: Option[Double] = None,
+    max: Option[Double] = None,
+    gradientMode: GradientMode = GradientMode.Linear
+  ): ContinuousColoring = {
+    gradient(Seq(start, middle, end), min, max, gradientMode)
   }
 
-  /** Color using an RGB gradient interpolated between an arbitrary number of colors
+  /** Color using a multi-stop gradient.
     * @param colors the colors to use as interpolation points
     * @param min min override for the data
     * @param max max override for the data
     */
   def gradient(colors: Seq[Color],
-               min: Option[Double],
-               max: Option[Double]): ContinuousColoring =
+    min: Option[Double],
+    max: Option[Double],
+    gradientMode: GradientMode
+  ): ContinuousColoring =
     new ContinuousColoring {
       require(colors.nonEmpty, "Cannot make a gradient out of zero colors.")
       def apply(dataToColor: Seq[Double])(
         implicit theme: Theme): Double => Color = {
         val xmin = min.getOrElse(dataToColor.min)
         val xmax = max.getOrElse(dataToColor.max)
-        GradientUtils.multiGradient(colors, xmin, xmax)
+        GradientUtils.multiGradient(colors, xmin, xmax, gradientMode)
       }
 
       def legendContext(coloringDimension: Seq[Double])(
