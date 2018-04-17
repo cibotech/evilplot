@@ -130,7 +130,7 @@ object ContinuousColoring {
     end: Color,
     min: Option[Double] = None,
     max: Option[Double] = None,
-    gradientMode: GradientMode = GradientMode.Natural
+    gradientMode: GradientMode = GradientMode.Linear
   ): ContinuousColoring = {
     gradient(Seq(start, end), min, max, gradientMode)
   }
@@ -147,7 +147,7 @@ object ContinuousColoring {
     end: Color,
     min: Option[Double] = None,
     max: Option[Double] = None,
-    gradientMode: GradientMode = GradientMode.Natural
+    gradientMode: GradientMode = GradientMode.Linear
   ): ContinuousColoring = {
     gradient(Seq(start, middle, end), min, max, gradientMode)
   }
