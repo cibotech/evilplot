@@ -32,9 +32,7 @@ package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.numeric.Point
 
-import scala.collection.mutable
-
-private[geometry] object Clipping {
+private[evilplot] object Clipping {
 
   final case class Edge(p1: Point, p2: Point) {
     lazy val vertical: Boolean = p1.x == p2.x
@@ -67,15 +65,55 @@ private[geometry] object Clipping {
     (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
   }
 
-  // https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
-  private[evilplot] def apply(points: Seq[Point], extent: Extent): Seq[Point] = {
-    val boundEdges = Seq(
+  private def boundEdges(extent: Extent): Seq[Edge] = {
+    Seq(
       Edge(Point(extent.width, 0), Point(0, 0)),
       Edge(Point(0, 0), Point(0, extent.height)),
       Edge(Point(0, extent.height), Point(extent.width, extent.height)),
       Edge(Point(extent.width, extent.height), Point(extent.width, 0))
     )
-    boundEdges.foldLeft(points.toVector) { (inputList, clipEdge) =>
+  }
+
+  private def segmentPathByEdge(path: Seq[Point], clipEdge: Edge): Vector[Vector[Point]] = {
+    if (path.nonEmpty) {
+      val init = (
+        path.head,
+        Vector.empty[Vector[Point]],
+        if (clipEdge.contains(path.head)) Vector(path.head) else Vector.empty[Point]
+      )
+
+      val (_, segmented, remainder) = path.tail.foldLeft(init) { case ((s, allSegments, currentSegment), point) =>
+        if (clipEdge.contains(point)) {
+          if (!clipEdge.contains(s)) {
+            (point, allSegments, currentSegment ++ clipEdge.intersection(Edge(s, point)).toSeq :+ point)
+          } else {
+            (point, allSegments, currentSegment :+ point)
+          }
+        } else if (clipEdge.contains(s)) {
+          (point, allSegments :+ (currentSegment ++ clipEdge.intersection(Edge(s, point)).toSeq), Vector.empty[Point])
+        } else {
+          (point, allSegments, currentSegment)
+        }
+      }
+
+      if (remainder.nonEmpty) segmented :+ remainder else segmented
+    } else {
+      Vector.empty[Vector[Point]]
+    }
+  }
+
+  private[evilplot] def clipPath(points: Seq[Point], extent: Extent): Seq[Seq[Point]] = {
+    boundEdges(extent).foldLeft(Seq(points.toVector)) { (segments, clipEdge) =>
+      segments.foldLeft(Vector.empty[Vector[Point]]) { (acc, segment) =>
+        val segments = segmentPathByEdge(segment, clipEdge)
+        if (segments.nonEmpty) acc ++ segments else acc
+      }
+    }
+  }
+
+  // https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
+  private[evilplot] def clipPolygon(points: Seq[Point], extent: Extent): Seq[Point] = {
+    boundEdges(extent).foldLeft(points.toVector) { (inputList, clipEdge) =>
       if (inputList.nonEmpty) {
         val init = (inputList.last, Vector.empty[Point])
         inputList.foldLeft(init) { case ((s, outputList), point) =>

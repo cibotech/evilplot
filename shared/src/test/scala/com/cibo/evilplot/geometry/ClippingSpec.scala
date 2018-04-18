@@ -32,24 +32,89 @@ package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.geometry.Clipping.Edge
 import com.cibo.evilplot.numeric.Point
-import org.scalactic.{Equality, Equivalence}
+import org.scalactic.Equality
 import org.scalatest.{FunSpec, Matchers}
 
 class ClippingSpec extends FunSpec with Matchers {
-  describe("Polygon clipping") {
-    implicit object PointEquivalence extends Equality[Point] {
-      import math.{abs, ulp}
-      def areEqual(a: Point, b: Any): Boolean = b match {
-        case Point(x, y) =>
-          val tol = 1e-7
-          abs(a.x - x) < tol && abs(a.y - y) < tol
-        case _ => false
-      }
+
+  implicit object PointEquivalence extends Equality[Point] {
+    import math.{abs}
+    def areEqual(a: Point, b: Any): Boolean = b match {
+      case Point(x, y) =>
+        val tol = 1e-7
+        abs(a.x - x) < tol && abs(a.y - y) < tol
+      case _ => false
+    }
+  }
+
+  implicit object SeqPointEquivalence extends Equality[Seq[Point]] {
+    val eq = implicitly[Equality[Point]]
+    def areEqual(a: Seq[Point], b: Any): Boolean = b match {
+      case bx: Seq[_] => a.corresponds(bx)((i, j) => eq.areEqual(i, j))
+      case _ => false
+    }
+  }
+
+  describe("Edge") {
+    it("vertical edge intersections are calculated correctly") {
+      Edge(Point(2, 2), Point(2, 0)).intersection(Edge(Point(1.5, 3), Point(2.1, 1))) should contain (Point(2, 4/3d))
     }
 
+    it("vertical line intersections are calculated correctly") {
+      Edge(Point(1.5, 3), Point(2.1, 1)).intersection(Edge(Point(2, 2), Point(2, 0))) should contain (Point(2, 4/3d))
+    }
+  }
+
+  describe("Path clipping") {
+    it("handles an empty path") {
+      Clipping.clipPath(Seq.empty, Extent(2, 2)) shouldBe Seq.empty[Seq[Point]]
+    }
+
+    it("removes segments entirely outside bounds") {
+      Clipping.clipPath(Seq(Point(0, 4), Point(1.5, 6)), Extent(2, 2)) shouldBe Seq.empty[Seq[Point]]
+    }
+
+    it("should properly clip a line across a bound") {
+      Clipping.clipPath(Seq(Point(0, 1), Point(1.5, 3)), Extent(2, 2)) shouldBe Seq(Seq(Point(0, 1), Point(0.75, 2)))
+    }
+
+    it("should properly clip a line with both points outside the bounds") {
+      Clipping.clipPath(
+        Seq(Point(-3, -3), Point(1.5, 3)), Extent(2, 2)
+      ) shouldBe Seq(Seq(Point(0, 1), Point(0.75, 2)))
+    }
+
+    it("segments a path that crosses bounds multiple times") {
+      val path = Seq(
+        Point(0, 1),
+        Point(1.5, 3),
+        Point(2.1, 1),
+        Point(1.5, 0.5),
+        Point(1, 1)
+      )
+      val expected = Seq(
+        Seq(
+          Point(0, 1),
+          Point(0.75, 2)
+        ),
+        Seq(
+          Point(1.8, 2),
+          Point(2, 4/3d)
+        ),
+        Seq(
+          Point(2, 5.5/6d),
+          Point(1.5, 0.5),
+          Point(1, 1)
+        )
+      )
+      Clipping.clipPath(path, Extent(2, 2)) should contain theSameElementsAs expected
+    }
+  }
+
+  describe("Polygon clipping") {
     it("clips a line segment") {
       val expected = Seq(Point(0, 1), Point(0.75, 2))
-      Clipping(Seq(Point(0, 1), Point(1.5, 3)), Extent(2, 2)) should contain allElementsOf expected
+      Clipping.clipPolygon(Seq(Point(0, 1), Point(1.5, 3)), Extent(2, 2)) should contain allElementsOf expected
     }
 
     it("clips a triangle") {
@@ -60,7 +125,7 @@ class ClippingSpec extends FunSpec with Matchers {
         Point(0, 1), Point(0.75, 2), Point(1.7, 2), Point(2, 0.5)
       )
 
-      val clipped = Clipping(triangle, Extent(2, 2))
+      val clipped = Clipping.clipPolygon(triangle, Extent(2, 2))
       clipped shouldBe expected
       clipped should have length expected.length
     }
@@ -69,21 +134,21 @@ class ClippingSpec extends FunSpec with Matchers {
       val polygon = Seq(Point(5, 5), Point(5, -5),
         Point(15, -5), Point(15, 5))
       val expected = Seq(Point(5, 5), Point(5, 0), Point(10, 0), Point(10, 5))
-      val clipped = Clipping(polygon, Extent(10, 10))
+      val clipped = Clipping.clipPolygon(polygon, Extent(10, 10))
       clipped should contain theSameElementsAs expected
       clipped should have length polygon.length
     }
 
     it("should return the polygon when it is entirely inside the clipping region") {
       val polygon = Seq(Point(5, 5), Point(5, 0), Point(10, 0), Point(10, 5))
-      val clipped = Clipping(polygon, Extent(10, 10))
+      val clipped = Clipping.clipPolygon(polygon, Extent(10, 10))
       clipped should contain theSameElementsAs polygon
       clipped should have length polygon.length
     }
 
     it("should return the clipping region when the polygon entirely encloses it") {
       val polygon = Seq(Point(0, 5), Point(0, 0), Point(5, 0), Point(5, 5))
-      val clipped = Clipping(polygon, Extent(2, 2))
+      val clipped = Clipping.clipPolygon(polygon, Extent(2, 2))
       clipped should have length polygon.length
       clipped should contain theSameElementsAs
         Seq(Point(0, 2), Point(0, 0), Point(2, 0), Point(2, 2))
@@ -91,7 +156,7 @@ class ClippingSpec extends FunSpec with Matchers {
 
     it("should return an empty Seq for a polygon completely outside the clipping region") {
       val polygon = Seq(Point(15, 250), Point(200, 300), Point(230, 150), Point(50, 220))
-      Clipping(polygon, Extent(10, 10)) shouldBe empty
+      Clipping.clipPolygon(polygon, Extent(10, 10)) shouldBe empty
     }
 
     it("should properly clip a polygon when all of its points are outside the clipping region" +
@@ -100,7 +165,7 @@ class ClippingSpec extends FunSpec with Matchers {
       val expected = Seq(
         Point(1, 0), Point(1.75, 0), Point(1, 2), Point(2, 1d / 3d), Point(2, 5d / 3d), Point(1.75, 2)
       )
-      val clipped = Clipping(polygon, Extent(2, 2))
+      val clipped = Clipping.clipPolygon(polygon, Extent(2, 2))
       clipped should contain allElementsOf expected
       clipped should have length expected.length
     }

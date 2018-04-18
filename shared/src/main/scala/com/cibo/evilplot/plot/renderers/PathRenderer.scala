@@ -31,10 +31,9 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, Path, StrokeStyle, Style, Text}
+import com.cibo.evilplot.geometry.{Clipping, Drawable, EmptyDrawable, Extent, Line, Path, StrokeStyle, Style, Text}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.components.FunctionPlotLine
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
 trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
@@ -69,18 +68,9 @@ object PathRenderer {
     }
 
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
-      import FunctionPlotLine.plottablePoints
-      val plottable = plottablePoints(
-        path.sliding(2).flatMap {
-          case Seq(p1, p2) => insertEdgePoint(p1, p2, extent)
-          case Seq(p1)     => Seq.empty
-        }.toVector,
-        extent.contains
-      )
-
-      plottable.map(plottablePath =>
+      Clipping.clipPath(path, extent).map(segment =>
         StrokeStyle(Path(
-          plottablePath,
+          segment,
           strokeWidth.getOrElse(theme.elements.strokeWidth)),
           color.getOrElse(theme.colors.path)
         )
@@ -137,19 +127,6 @@ object PathRenderer {
   private[plot] def clipToBoundary(point: Point, extent: Extent): Point = {
     import math.{max, min}
     Point(min(max(point.x, 0), extent.width), min(max(point.y, 0), extent.height))
-  }
-
-  // Insert boundary points where appropriate.
-  private[plot] def insertEdgePoint(point1: Point, point2: Point, extent: Extent): Seq[Point] = {
-    if (!(extent.contains(point1) || extent.contains(point2))) {
-      Seq.empty[Point]
-    } else if (extent.contains(point1)) {
-      val insert = clipToBoundary(point2, extent)
-      Seq(point1, insert, point2)
-    } else {
-      val insert = clipToBoundary(point1, extent)
-      Seq(point2, insert, point1)
-    }
   }
 }
 

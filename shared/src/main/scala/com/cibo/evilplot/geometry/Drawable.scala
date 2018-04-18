@@ -107,7 +107,7 @@ object Polygon {
   implicit val decoder: Decoder[Polygon] = deriveDecoder[Polygon]
 
   def clipped(boundary: Seq[Point], extent: Extent): Drawable = {
-    Polygon(Clipping(boundary, extent))
+    Polygon(Clipping.clipPolygon(boundary, extent))
   }
 }
 
