@@ -131,7 +131,7 @@ object PointRenderer {
   )(implicit theme: Theme): PointRenderer = {
     val bar = ScaledColorBar(Color.stream.take(colorCount), depths.min, depths.max)
     val labels = (0 until colorCount).map { c =>
-      Style(Text(math.ceil(bar.colorValue(c)).toString, theme.fonts.legendLabelSize), theme.colors.legendLabel)
+      Style(Text(math.ceil(bar.colorValue(c)).toString, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel)
     }
     oldDepthColor(depths, labels, bar, None)
   }
@@ -174,7 +174,7 @@ object PointRenderer {
     bar: ScaledColorBar
   )(implicit theme: Theme): PointRenderer = {
     val labels = (0 until bar.nColors).map { c =>
-      Style(Text(math.ceil(bar.colorValue(c)).toString, theme.fonts.legendLabelSize), theme.colors.legendLabel)
+      Style(Text(math.ceil(bar.colorValue(c)).toString, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel)
     }
     oldDepthColor(depths, labels, bar, None)
   }

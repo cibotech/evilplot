@@ -79,7 +79,7 @@ object LegendContext {
   def single(
     element: Drawable,
     label: String
-  )(implicit theme: Theme): LegendContext = single(element, Style(Text(label), theme.colors.legendLabel))
+  )(implicit theme: Theme): LegendContext = single(element, Style(Text(label, fontFace = theme.fonts.fontFace), theme.colors.legendLabel))
 
   def fromColorBar(
     colorBar: ScaledColorBar,
@@ -100,7 +100,7 @@ object LegendContext {
           // Otherwise round
           math.round(colorBar.colorValue(c))
       }
-      Style(Text(value.toString), theme.colors.legendLabel)
+      Style(Text(value.toString, fontFace = theme.fonts.fontFace), theme.colors.legendLabel)
     }
     LegendContext(
       elements = elements,

@@ -138,7 +138,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
 
     CanvasOp(canvas) {
       canvas.scale(scalex, scaley)
-      TextMetrics.withStyle(text.size) { c =>
+      TextMetrics.withStyle(text.size, text.fontFace) { c =>
         c.fillText(text.msg, 0, 0)
       }(canvas)
     }

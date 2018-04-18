@@ -37,5 +37,6 @@ trait Fonts {
   val legendLabelSize: Double
   val tickLabelSize: Double
   val facetLabelSize: Double
+  val fontFace: String
 }
 

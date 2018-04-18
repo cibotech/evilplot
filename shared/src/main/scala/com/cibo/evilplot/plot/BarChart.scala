@@ -157,7 +157,7 @@ object BarChart {
     val bars = values.zipWithIndex.flatMap { case (cluster, clusterIndex) =>
       cluster.zipWithIndex.map { case (value, index) =>
         val barLabel = if (clusterIndex == 0 && labels.lengthCompare(index) > 0) {
-          Seq(Text(labels(index)))
+          Seq(Text(labels(index), fontFace = theme.fonts.fontFace))
         } else {
           Seq.empty[Drawable]
         }
@@ -187,7 +187,7 @@ object BarChart {
     boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.stacked()
-    val barLabels = labels.map(l => Style(Text(l, theme.fonts.legendLabelSize), theme.colors.legendLabel))
+    val barLabels = labels.map(l => Style(Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel))
     val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
     val bars = values.map { stack =>
       Bar(stack, colors = colorStream, labels = barLabels, cluster = 0)
@@ -212,7 +212,7 @@ object BarChart {
     boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.stacked()
-    val barLabels = labels.map(l => Style(Text(l, theme.fonts.legendLabelSize), theme.colors.legendLabel))
+    val barLabels = labels.map(l => Style(Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel))
     val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
     val bars = values.zipWithIndex.flatMap { case (cluster, clusterIndex) =>
       cluster.zipWithIndex.map { case (stack, barIndex) =>

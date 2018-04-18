@@ -53,7 +53,7 @@ trait CategoricalColoring[A] extends Coloring[A] {
     LegendContext(
       elements =
         distinct.map(v => Disc(theme.elements.pointSize) filled coloring(v)),
-      labels = distinct.map(a => Text(a.toString, theme.fonts.legendLabelSize)),
+      labels = distinct.map(a => Text(a.toString, theme.fonts.legendLabelSize, theme.fonts.fontFace)),
       defaultStyle = LegendStyle.Categorical
     )
   }
@@ -181,7 +181,7 @@ object ContinuousColoring {
             Rect(theme.fonts.legendLabelSize, theme.fonts.legendLabelSize) filled coloring(
               v)),
           labels = axisDescriptor.labels.map(l =>
-            Text(l, theme.fonts.legendLabelSize)),
+            Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace)),
           defaultStyle = LegendStyle.Gradient
         )
       }

@@ -70,7 +70,7 @@ trait LabelImplicits {
   )(implicit theme: Theme): Plot = {
     val titleSize = size.getOrElse(theme.fonts.titleSize)
     val titleColor = color.getOrElse(theme.colors.title)
-    title(Style(Text(label, titleSize), titleColor).padBottom(titleSize / 2))
+    title(Style(Text(label, titleSize, theme.fonts.fontFace), titleColor).padBottom(titleSize / 2))
   }
 
   def leftLabel(f: Extent => Drawable, width: Double): Plot = plot :+ Label(Position.Left, f, Extent(width, 0))
@@ -82,7 +82,7 @@ trait LabelImplicits {
   )(implicit theme: Theme): Plot = {
     val labelSize = size.getOrElse(theme.fonts.labelSize)
     val labelColor = color.getOrElse(theme.colors.label)
-    leftLabel(Style(Text(label, labelSize), labelColor).rotated(270).padRight(labelSize / 2))
+    leftLabel(Style(Text(label, labelSize, theme.fonts.fontFace), labelColor).rotated(270).padRight(labelSize / 2))
   }
 
   def rightLabel(f: Extent => Drawable, width: Double): Plot = plot :+ Label(Position.Right, f, Extent(width, 0))
@@ -94,7 +94,7 @@ trait LabelImplicits {
   )(implicit theme: Theme): Plot = {
     val labelSize = size.getOrElse(theme.fonts.labelSize)
     val labelColor = color.getOrElse(theme.colors.label)
-    rightLabel(Style(Text(label, labelSize), labelColor).rotated(90).padLeft(labelSize / 2))
+    rightLabel(Style(Text(label, labelSize, theme.fonts.fontFace), labelColor).rotated(90).padLeft(labelSize / 2))
   }
 
   def topLabel(f: Extent => Drawable, height: Double): Plot = plot :+ Label(Position.Top, f, Extent(0, height))
@@ -106,7 +106,7 @@ trait LabelImplicits {
   )(implicit theme: Theme): Plot = {
     val labelSize = size.getOrElse(theme.fonts.labelSize)
     val labelColor = color.getOrElse(theme.colors.label)
-    topLabel(Style(Text(label, labelSize), labelColor).padBottom(labelSize / 2))
+    topLabel(Style(Text(label, labelSize, theme.fonts.fontFace), labelColor).padBottom(labelSize / 2))
   }
 
   def bottomLabel(f: Extent => Drawable, height: Double): Plot = plot :+ Label(Position.Bottom, f, Extent(0, height))
@@ -118,7 +118,7 @@ trait LabelImplicits {
   )(implicit theme: Theme): Plot = {
     val labelSize = size.getOrElse(theme.fonts.labelSize)
     val labelColor = color.getOrElse(theme.colors.label)
-    bottomLabel(Style(Text(label, labelSize), labelColor).padTop(labelSize / 2))
+    bottomLabel(Style(Text(label, labelSize, theme.fonts.fontFace), labelColor).padTop(labelSize / 2))
   }
 
   def xLabel(d: Drawable): Plot = bottomLabel(d)
