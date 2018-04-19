@@ -211,7 +211,7 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     val scalex = text.extent.width / baseExtent.width
     val scaley = text.extent.height / baseExtent.height
     graphics.scale(scalex, scaley)
-    graphics.setFont(sansSerif.deriveFont(text.size.toFloat))
+    graphics.setFont(Font.decode(text.fontFace).deriveFont(text.size.toFloat))
     // EvilPlot assumes all objects start at upper left,
     // but baselines for java.awt.Font do not refer to the top.
     graphics.drawString(text.msg, 0, baseExtent.height.toInt)

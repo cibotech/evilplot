@@ -13,26 +13,19 @@ import org.scalatest.{FunSpec, Matchers}
 
 class DemoPlotsSpec extends FunSpec with Matchers {
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme.defaultTheme
-  val pathColor = HTMLNamedColors.blue
-  val fillColor = HTMLNamedColors.white
-  val strokeWidth = 4
-  val topWhisker = 100
-  val upperToMiddle = 40
-  val middleToLower = 30
-  val bottomWhisker = 30
-  val width = 50
-
-  val plots = Seq(
-    DemoPlots.crazyPlot -> "crazy",
-    DemoPlots.facetedPlot -> "faceted",
-    DemoPlots.heatmap -> "heatmap",
-    DemoPlots.marginalHistogram -> "marginalhistogram",
-    DemoPlots.pieChart -> "piechart",
-    DemoPlots.clusteredBarChart -> "clusteredbar",
-    DemoPlots.clusteredStackedBarChart -> "clusteredstackedbar",
-    DemoPlots.stackedBarChart -> "stackedbar",
-    DemoPlots.barChart -> "bar"
-  )
+  import scala.reflect.runtime.{universe => ru}
+  val plots = {
+    val tag = ru.typeOf[DemoPlots.type]
+    val current = ru.runtimeMirror(getClass.getClassLoader)
+    val examplesMirror = current reflect DemoPlots
+    val desired: ru.Type = ru.typeOf[Drawable]
+    tag.decls.withFilter { field =>
+      field.typeSignature.toString.contains("Drawable")
+    }.map { x =>
+      // TODO: Figure out how to call the lazy vals.
+      examplesMirror.reflectField(tag.decl(x.name).asTerm).get.asInstanceOf[Drawable] -> x.name
+    }.toSeq
+  }
   private val desktop = s"${System.getenv("HOME")}/Desktop"
   private def procln(s: String): Point = s.split(",").map(_.trim) match {
     case Array(x, y) => Point(x.toDouble, y.toDouble)
@@ -45,7 +38,7 @@ class DemoPlotsSpec extends FunSpec with Matchers {
 
   describe("Demo Plots") {
     it("is generated") {
-      for { (plot, name) <- Seq(DemoPlots.heatmap -> "heatmap")/*plots :+ also*/ } {
+      for { (plot, name) <- plots :+ also } {
         val bi = plot.asBufferedImage
         ImageIO.write(bi,
                       "png",
