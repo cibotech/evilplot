@@ -58,9 +58,11 @@ lazy val assetJVM = evilplotAsset.jvm
 
 lazy val evilplot = crossProject.in(file("."))
   .settings(commonSettings)
+  .configs(IntegrationTest)
   .settings(
     name := "evilplot",
-    libraryDependencies ++= Settings.sharedDependencies.value
+    libraryDependencies ++= Settings.sharedDependencies.value,
+    Defaults.itSettings
   )
   .settings(licenseSettings)
   .jsSettings(
@@ -75,6 +77,7 @@ lazy val evilplot = crossProject.in(file("."))
   )
   .jvmSettings(
     libraryDependencies ++= Settings.jvmDependencies.value
+
   )
 
 lazy val evilplotJVM = evilplot.jvm

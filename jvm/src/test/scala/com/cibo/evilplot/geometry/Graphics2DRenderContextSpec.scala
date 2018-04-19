@@ -30,19 +30,36 @@
 
 package com.cibo.evilplot.geometry
 
-import java.awt.font.FontRenderContext
-import java.awt.Font
+import java.awt.image.BufferedImage
+import java.awt.{BasicStroke, Color, Graphics2D}
 
-object TextMetrics extends TextMetricsInterface {
+import org.scalatest.{FunSpec, Matchers}
 
-  private lazy val transform = new java.awt.geom.AffineTransform()
-  private lazy val frc = new FontRenderContext(transform, true, true)
-  private lazy val font = Font.decode(Font.SANS_SERIF)
+class Graphics2DRenderContextSpec
+    extends FunSpec
+    with Matchers
+    with Graphics2DSupport {
+  describe("state stack operations") {
+    it("The state should be the same before and after a stack op.") {
+      val graphics = Graphics2DTestUtils.graphics2D
+      val ctx = Graphics2DRenderContext(graphics)
+      val GraphicsState(initialTransform, initialFill, initialColor, initialStroke) = ctx.initialState
+      Graphics2DRenderContext.applyOp(ctx) {
+        ctx.graphics.translate(34, 20)
+        ctx.graphics.setPaint(Color.BLUE)
+        ctx.graphics.setStroke(new BasicStroke(3))
+      }
+      ctx.graphics.getTransform shouldBe initialTransform
+      ctx.fillColor shouldBe initialFill
+      ctx.strokeColor shouldBe initialColor
+      ctx.graphics.getStroke shouldBe initialStroke
+    }
+  }
+}
 
-  def measure(text: Text): Extent = {
-    val fontWithSize = Font.decode(text.fontFace).deriveFont(text.size.toFloat)
-    val width = fontWithSize.getStringBounds(text.msg, frc).getWidth
-    val height = fontWithSize.getSize2D
-    Extent(width, height)
+object Graphics2DTestUtils {
+  def graphics2D: Graphics2D = {
+    val bi = new BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB)
+    bi.createGraphics()
   }
 }

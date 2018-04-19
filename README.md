@@ -21,7 +21,8 @@ Evil Plot is about combinators for graphics.
 ## Low-Level Drawing API
 The low-level drawing API exists in the `com.cibo.evilplot.geometry` package.  Drawing primitives
 extend the `Drawable` trait.  Once constructed, these can then be rendered using a `RenderContext`
-(such as `CanvasRenderContext`, used for rendering to a JavaScript canvas).
+(such as `CanvasRenderContext`, used for rendering to a JavaScript canvas or `Graphics2DRenderContext`,
+used for rendering to `java.awt.Graphics2D`).
 
 Drawing primitives can be divided into three categories: drawing, positioning, and style.
 The following primitives for drawing are available:

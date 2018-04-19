@@ -28,21 +28,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cibo.evilplot.geometry
+package com.cibo
 
-import java.awt.font.FontRenderContext
-import java.awt.Font
+import java.awt.image.BufferedImage
 
-object TextMetrics extends TextMetricsInterface {
+import com.cibo.evilplot.geometry._
+import javax.imageio.ImageIO
+package object evilplot {
+  implicit class AwtDrawableOps(r: Drawable) {
+    /** Return a BufferedImage containing the contents of this Drawable. */
+    def asBufferedImage: BufferedImage = {
+      val scale = 4.0
+      val paddingHack = 20
+      val bi = new BufferedImage((r.extent.width * scale.toInt).toInt,
+        (r.extent.height * scale).toInt,
+        BufferedImage.TYPE_INT_ARGB)
+      val gfx = bi.createGraphics()
+      gfx.scale(scale, scale)
+      val padded = r.padAll(paddingHack / 2)
+      fit(padded, r.extent).draw(Graphics2DRenderContext(gfx))
+      gfx.dispose()
+      bi
+    }
 
-  private lazy val transform = new java.awt.geom.AffineTransform()
-  private lazy val frc = new FontRenderContext(transform, true, true)
-  private lazy val font = Font.decode(Font.SANS_SERIF)
-
-  def measure(text: Text): Extent = {
-    val fontWithSize = Font.decode(text.fontFace).deriveFont(text.size.toFloat)
-    val width = fontWithSize.getStringBounds(text.msg, frc).getWidth
-    val height = fontWithSize.getSize2D
-    Extent(width, height)
+    /** Write a Drawable to a file as a PNG. */
+    def write(file: java.io.File): Unit = {
+      ImageIO.write(asBufferedImage, "png", file)
+    }
   }
 }
