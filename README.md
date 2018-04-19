@@ -1,5 +1,4 @@
 # Evil Plot
-
 Evil Plot is about combinators for graphics.
 
 ### Table of Contents
