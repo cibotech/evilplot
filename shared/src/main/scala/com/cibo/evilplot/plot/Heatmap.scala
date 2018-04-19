@@ -55,8 +55,8 @@ object Heatmap {
           val y = ytransformer(yIndex)
           val x = xtransformer(xIndex)
           val width = xtransformer(xIndex + 1) - x
-          val height = ytransformer(yIndex + 1) - y
-          Rect(width, height).filled(colorBar.getColor(value)).translate(x, y)
+          val height = -(ytransformer(yIndex + 1) - y)
+          Rect(width, height).filled(colorBar.getColor(value)).translate(x, y - height)
         }.group
       }.group
     }
