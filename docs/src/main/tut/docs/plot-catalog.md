@@ -49,3 +49,40 @@ BoxPlot(data, boxRenderer = Some(tufteLikeBoxRenderer))
 <img src="/img/docs/plot-catalog/tufte_box_plot.png" class="img-responsive"/>
 </div>
 </div>
+
+## Pairs Plot
+A pairs plot can be built by combining `ScatterPlot` and `Histogram` plots with `Facet`.
+
+<div class="row">
+<div class="col-md-6" markdown="1">
+```scala
+import com.cibo.evilplot.plot._
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+import scala.util.Random
+
+val labels = Vector("a", "b", "c", "d")
+val data = for (i <- 1 to 4) yield {
+  (labels(i - 1), Seq.fill(10) { Random.nextDouble() * 10 })
+}
+val plots = for ((xlabel, xdata) <- data) yield {
+  for ((ylabel, ydata) <- data) yield {
+    val points = (xdata, ydata).zipped.map { (a, b) => Point(a, b) }
+    if (ylabel == xlabel) {
+      Histogram(xdata, bins = 4)
+    } else {
+      ScatterPlot(points)
+    }
+  }
+}
+Facets(plots)
+  .standard()
+  .title("Pairs Plot with Histograms")
+  .topLabels(data.map { _._1 })
+  .rightLabels(data.map { _._1 })
+  .render()
+```
+</div>
+<div class="col-md-6">
+<img src="/img/docs/plot-catalog/custom_pairs_plot.png" class="img-responsive"/>
+</div>
+</div>
