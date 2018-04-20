@@ -38,8 +38,10 @@ object TextMetrics extends TextMetricsInterface {
     Utils.getCanvasFromElementId("measureBuffer")
   }
 
+  // scalastyle:off
   // TODO: Text this regex esp on 1px 1.0px 1.px .1px, what is valid in CSS?
   private lazy val fontSize = """[^\d]*([\d(?:\.\d*)]+)px.*""".r
+  // scalastyle:on
 
   private def extractHeight: Double = {
     val fontSize(size) = offscreenBuffer.font

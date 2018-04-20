@@ -112,7 +112,9 @@ object Color {
 
       import math._
       def log2(x: Double) = log(x) / log(2)
+      // scalastyle:off
       val magicFactor = log2(hueSpan) // TODO: this may or may not be correct for other hueSpan's
+      // scalastyle:on
       val epoch = if (i < hueSpan) 0 else ceil(log2(((i + magicFactor) / hueSpan) + 1) - 1).toInt
 
       def endIndexOfThisEpoch(e: Int) = 8 * (pow(2, e + 1) - 1) - magicFactor
