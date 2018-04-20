@@ -52,12 +52,22 @@ object BoxRenderer {
       val middleToLower = summary.middleQuantile - summary.lowerQuantile
       val bottomWhisker = summary.lowerQuantile - summary.lowerWhisker
 
-      Align.center(
-        StrokeStyle(Line(scale * topWhisker, theme.elements.strokeWidth), theme.colors.path).rotated(90),
-        BorderRect.filled(extent.width, scale * uppperToMiddle).colored(theme.colors.path).filled(theme.colors.fill),
-        BorderRect.filled(extent.width, scale * middleToLower).colored(theme.colors.path).filled(theme.colors.fill),
-        StrokeStyle(Line(scale * bottomWhisker, theme.elements.strokeWidth), theme.colors.path).rotated(90)
-      ).reduce(_ above _)
+      Align
+        .center(
+          StrokeStyle(Line(scale * topWhisker, theme.elements.strokeWidth), theme.colors.path)
+            .rotated(90),
+          BorderRect
+            .filled(extent.width, scale * uppperToMiddle)
+            .colored(theme.colors.path)
+            .filled(theme.colors.fill),
+          BorderRect
+            .filled(extent.width, scale * middleToLower)
+            .colored(theme.colors.path)
+            .filled(theme.colors.fill),
+          StrokeStyle(Line(scale * bottomWhisker, theme.elements.strokeWidth), theme.colors.path)
+            .rotated(90)
+        )
+        .reduce(_ above _)
     }
   }
 }

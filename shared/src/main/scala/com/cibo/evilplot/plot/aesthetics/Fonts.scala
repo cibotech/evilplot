@@ -39,4 +39,3 @@ trait Fonts {
   val facetLabelSize: Double
   val fontFace: String
 }
-

@@ -50,7 +50,8 @@ final case class Bar(
 ) {
   lazy val height: Double = values.sum
 
-  def getColor(i: Int): Color = if (colors.lengthCompare(i) > 0) colors(i) else DefaultColors.barColor
+  def getColor(i: Int): Color =
+    if (colors.lengthCompare(i) > 0) colors(i) else DefaultColors.barColor
 
   def legendContext: LegendContext = LegendContext(
     elements = labels.zip(colors).map(lc => Rect(Text.defaultSize, Text.defaultSize).filled(lc._2)),
@@ -90,38 +91,46 @@ object BarChart {
 
         val sorted = data.sortBy(_.cluster)
         val initial: (Double, Drawable) = (sorted.head.cluster, EmptyDrawable())
-        sorted.zipWithIndex.foldLeft(initial) { case ((lastCluster, d), (bar, barIndex)) =>
+        sorted.zipWithIndex
+          .foldLeft(initial) {
+            case ((lastCluster, d), (bar, barIndex)) =>
+              // X offset and bar width.
+              val xscale = 1.0 / barsPerGroup
+              val barx = barIndex * xscale
+              val x = xtransformer(plot.xbounds.min + barx)
+              val barWidth = xtransformer(plot.xbounds.min + barx + xscale) - x
 
-          // X offset and bar width.
-          val xscale = 1.0 / barsPerGroup
-          val barx = barIndex * xscale
-          val x = xtransformer(plot.xbounds.min + barx)
-          val barWidth = xtransformer(plot.xbounds.min + barx + xscale) - x
+              // Y bar translation and bar height.
+              val (transY, barHeight) =
+                if (plot.ybounds.isInBounds(0)) {
+                  val y = ytransformer(math.abs(bar.height))
+                  val height = ytransformer(math.max(0, plot.ybounds.min)) - y
+                  (if (bar.height < 0) y + height else y, height)
+                } else {
+                  if (plot.ybounds.min > 0) {
+                    val y = math.abs(ytransformer(bar.height) - ytransformer(plot.ybounds.min))
+                    (plotExtent.height - y, y)
+                  } else {
+                    val y = math.abs(ytransformer(plot.ybounds.max) - ytransformer(bar.height))
+                    (0d, y)
+                  }
+                }
 
-          // Y bar translation and bar height.
-          val (transY, barHeight) =
-            if (plot.ybounds.isInBounds(0)) {
-              val y = ytransformer(math.abs(bar.height))
-              val height = ytransformer(math.max(0, plot.ybounds.min)) - y
-              (if (bar.height < 0) y + height else y, height)
-            } else {
-              if (plot.ybounds.min > 0) {
-                val y = math.abs(ytransformer(bar.height) - ytransformer(plot.ybounds.min))
-                (plotExtent.height - y, y)
-              } else {
-                val y = math.abs(ytransformer(plot.ybounds.max) - ytransformer(bar.height))
-                (0d, y)
-              }
-            }
+              val clusterPadding =
+                if (numGroups > 1 && bar.cluster != lastCluster) clusterSpacing else 0
 
-          val clusterPadding = if (numGroups > 1 && bar.cluster != lastCluster) clusterSpacing else 0
+              // Extra X offset to account for the cluster and spacing.
+              val xPadding =
+                if (barIndex == 0) (clusterPadding + spacing) / 2 else clusterPadding + spacing / 2
 
-          // Extra X offset to account for the cluster and spacing.
-          val xPadding = if (barIndex == 0) (clusterPadding + spacing) / 2 else clusterPadding + spacing / 2
-
-          val extent = Extent(barWidth - spacing - clusterPadding, barHeight)
-          (bar.cluster, d behind barRenderer.render(plot, extent, bar).translate(y = transY, x = x + xPadding))
-        }._2
+              val extent = Extent(barWidth - spacing - clusterPadding, barHeight)
+              (
+                bar.cluster,
+                d behind barRenderer
+                  .render(plot, extent, bar)
+                  .translate(y = transY, x = x + xPadding))
+          }
+          ._2
       }
     }
   }
@@ -154,20 +163,22 @@ object BarChart {
   )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.clustered()
     val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
-    val bars = values.zipWithIndex.flatMap { case (cluster, clusterIndex) =>
-      cluster.zipWithIndex.map { case (value, index) =>
-        val barLabel = if (clusterIndex == 0 && labels.lengthCompare(index) > 0) {
-          Seq(Text(labels(index), fontFace = theme.fonts.fontFace))
-        } else {
-          Seq.empty[Drawable]
+    val bars = values.zipWithIndex.flatMap {
+      case (cluster, clusterIndex) =>
+        cluster.zipWithIndex.map {
+          case (value, index) =>
+            val barLabel = if (clusterIndex == 0 && labels.lengthCompare(index) > 0) {
+              Seq(Text(labels(index), fontFace = theme.fonts.fontFace))
+            } else {
+              Seq.empty[Drawable]
+            }
+            Bar(
+              values = Seq(value),
+              cluster = clusterIndex,
+              colors = Seq(colorStream(index)),
+              labels = barLabel
+            )
         }
-        Bar(
-          values = Seq(value),
-          cluster = clusterIndex,
-          colors = Seq(colorStream(index)),
-          labels = barLabel
-        )
-      }
     }
     custom(bars, Some(barRenderer), spacing, clusterSpacing, boundBuffer)
   }
@@ -187,7 +198,8 @@ object BarChart {
     boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.stacked()
-    val barLabels = labels.map(l => Style(Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel))
+    val barLabels = labels.map(l =>
+      Style(Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel))
     val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
     val bars = values.map { stack =>
       Bar(stack, colors = colorStream, labels = barLabels, cluster = 0)
@@ -212,17 +224,20 @@ object BarChart {
     boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
     val barRenderer = BarRenderer.stacked()
-    val barLabels = labels.map(l => Style(Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel))
+    val barLabels = labels.map(l =>
+      Style(Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel))
     val colorStream = if (colors.nonEmpty) colors else theme.colors.stream
-    val bars = values.zipWithIndex.flatMap { case (cluster, clusterIndex) =>
-      cluster.zipWithIndex.map { case (stack, barIndex) =>
-        Bar(
-          values = stack,
-          cluster = clusterIndex,
-          colors = colorStream,
-          labels = barLabels
-        )
-      }
+    val bars = values.zipWithIndex.flatMap {
+      case (cluster, clusterIndex) =>
+        cluster.zipWithIndex.map {
+          case (stack, barIndex) =>
+            Bar(
+              values = stack,
+              cluster = clusterIndex,
+              colors = colorStream,
+              labels = barLabels
+            )
+        }
     }
     custom(bars, Some(barRenderer), spacing, clusterSpacing, boundBuffer)
   }
@@ -244,7 +259,9 @@ object BarChart {
     val xbounds = Bounds(0, bars.size)
     val heights = bars.map(_.height)
     val ybounds = Plot.expandBounds(
-      Bounds(heights.reduceOption[Double](math.min).getOrElse(0), heights.reduceOption[Double](math.max).getOrElse(0)),
+      Bounds(
+        heights.reduceOption[Double](math.min).getOrElse(0),
+        heights.reduceOption[Double](math.max).getOrElse(0)),
       boundBuffer.getOrElse(theme.elements.boundBuffer)
     )
     Plot(

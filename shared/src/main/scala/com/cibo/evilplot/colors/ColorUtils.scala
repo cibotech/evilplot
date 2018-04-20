@@ -35,16 +35,21 @@ private[evilplot] object ColorUtils {
   //https://en.wikipedia.org/wiki/Hue
   //https://en.wikipedia.org/wiki/HSL_and_HSV
 
-  private def calculateHueFromRGB(max: Double, min: Double, red: Double, green: Double, blue: Double): Double = {
+  private def calculateHueFromRGB(
+    max: Double,
+    min: Double,
+    red: Double,
+    green: Double,
+    blue: Double): Double = {
     if (max == min) {
       0.0
     } else {
       val chroma = max - min
 
       val hue = max match {
-        case redHue   if redHue == red     => (green - blue) / chroma + (if (green < blue) 6 else 0)
+        case redHue if redHue == red       => (green - blue) / chroma + (if (green < blue) 6 else 0)
         case greenHue if greenHue == green => (blue - red) / chroma + 2
-        case blueHue  if blueHue == blue   => (red - green) / chroma + 4
+        case blueHue if blueHue == blue    => (red - green) / chroma + 4
       }
 
       hue / 6
@@ -64,9 +69,9 @@ private[evilplot] object ColorUtils {
 
   def rgbaToHsla(r: Int, g: Int, b: Int, a: Double): HSLA = {
 
-    require(g >= 0 && g <  256, s"g must be within [0, 256) {was $g}")
-    require(g >= 0 && g <  256, s"g must be within [0, 256) {was $g}")
-    require(b >= 0 && b <  256, s"b must be within [0, 256) {was $b}")
+    require(g >= 0 && g < 256, s"g must be within [0, 256) {was $g}")
+    require(g >= 0 && g < 256, s"g must be within [0, 256) {was $g}")
+    require(b >= 0 && b < 256, s"b must be within [0, 256) {was $b}")
 
     val red = r / 255.0
     val green = g / 255.0
@@ -97,7 +102,7 @@ private[evilplot] object ColorUtils {
 
     val split = hexValues.sliding(hexValues.length / 3, hexValues.length / 3)
 
-    val Seq(r, g, b) = if (hexValues.length == 3){
+    val Seq(r, g, b) = if (hexValues.length == 3) {
       split.map(Integer.parseInt(_, 16)).map(v => v + v * 16).toSeq
     } else {
       split.map(Integer.parseInt(_, 16)).toSeq
@@ -105,7 +110,6 @@ private[evilplot] object ColorUtils {
 
     rgbaToHsla(r, g, b, 1.0)
   }
-
 
   def interpolate(component1: Double, component2: Double, coefficient: Double): Double = {
     component1 * (1 - coefficient) + coefficient * component2

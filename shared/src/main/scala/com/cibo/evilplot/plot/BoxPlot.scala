@@ -45,28 +45,32 @@ private final case class BoxPlotRenderer(
     val xtransformer = plot.xtransform(plot, plotExtent)
     val ytransformer = plot.ytransform(plot, plotExtent)
 
-    data.zipWithIndex.foldLeft(EmptyDrawable(): Drawable) { case (d, (summaryOpt, index)) =>
-      summaryOpt match {
-        case Some(summary) =>
-          val x = xtransformer(plot.xbounds.min + index) + spacing / 2
-          val y = ytransformer(summary.upperWhisker)
+    data.zipWithIndex.foldLeft(EmptyDrawable(): Drawable) {
+      case (d, (summaryOpt, index)) =>
+        summaryOpt match {
+          case Some(summary) =>
+            val x = xtransformer(plot.xbounds.min + index) + spacing / 2
+            val y = ytransformer(summary.upperWhisker)
 
-          val boxHeight = ytransformer(summary.lowerWhisker) - ytransformer(summary.upperWhisker)
-          val boxWidth = xtransformer(plot.xbounds.min + index + 1) - x - spacing / 2
+            val boxHeight = ytransformer(summary.lowerWhisker) - ytransformer(summary.upperWhisker)
+            val boxWidth = xtransformer(plot.xbounds.min + index + 1) - x - spacing / 2
 
-          val box = boxRenderer.render(plot, Extent(boxWidth, boxHeight), summary)
+            val box = boxRenderer.render(plot, Extent(boxWidth, boxHeight), summary)
 
-          val points = summary.outliers.map { pt =>
-            pointRenderer.render(plot, plotExtent, index).translate(x = x + boxWidth / 2, y = ytransformer(pt))
-          }
-          d behind (box.translate(x = x, y = y) behind points.group)
-        case None => d
-      }
+            val points = summary.outliers.map { pt =>
+              pointRenderer
+                .render(plot, plotExtent, index)
+                .translate(x = x + boxWidth / 2, y = ytransformer(pt))
+            }
+            d behind (box.translate(x = x, y = y) behind points.group)
+          case None => d
+        }
     }
   }
 }
 
 object BoxPlot {
+
   /** Create a box plots for a sequence of distributions.
     * @param data the distributions to plot
     * @param quantiles quantiles to use for summary statistics.
@@ -84,7 +88,8 @@ object BoxPlot {
     boxRenderer: Option[BoxRenderer] = None,
     pointRenderer: Option[PointRenderer] = None
   )(implicit theme: Theme): Plot = {
-    val summaries = data.map(dist => if (dist.nonEmpty) Some(BoxPlotSummaryStatistics(dist, quantiles)) else None)
+    val summaries =
+      data.map(dist => if (dist.nonEmpty) Some(BoxPlotSummaryStatistics(dist, quantiles)) else None)
     val xbounds = Bounds(0, summaries.size)
     val ybounds = Plot.expandBounds(
       Bounds(

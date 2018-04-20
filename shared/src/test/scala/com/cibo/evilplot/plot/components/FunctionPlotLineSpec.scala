@@ -50,13 +50,15 @@ class FunctionPlotLineSpec extends FunSpec with Matchers {
       FunctionPlotLine.plottablePoints(in, inBounds) shouldBe Vector(in)
     }
 
-    it("should return separate paths for the points in bounds when the first few points are out of bounds") {
+    it(
+      "should return separate paths for the points in bounds when the first few points are out of bounds") {
       val actual = FunctionPlotLine.plottablePoints(out ++ in ++ out ++ in, inBounds)
       val expected = Vector(in, in)
       actual shouldBe expected
     }
 
-    it("should return separate paths for the points in bounds when the first few points are in bounds") {
+    it(
+      "should return separate paths for the points in bounds when the first few points are in bounds") {
       val actual = FunctionPlotLine.plottablePoints(in ++ out ++ in ++ out, inBounds)
       val expected = Vector(in, in)
       actual shouldBe expected

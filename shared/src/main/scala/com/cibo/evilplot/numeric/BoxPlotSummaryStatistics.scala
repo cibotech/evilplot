@@ -33,15 +33,16 @@ package com.cibo.evilplot.numeric
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
 
-case class BoxPlotSummaryStatistics(min: Double,
-                                    max: Double,
-                                    lowerWhisker: Double,
-                                    upperWhisker: Double,
-                                    lowerQuantile: Double,
-                                    middleQuantile: Double,
-                                    upperQuantile: Double,
-                                    outliers: Seq[Double],
-                                    allPoints: Seq[Double]) {
+case class BoxPlotSummaryStatistics(
+  min: Double,
+  max: Double,
+  lowerWhisker: Double,
+  upperWhisker: Double,
+  lowerQuantile: Double,
+  middleQuantile: Double,
+  upperQuantile: Double,
+  outliers: Seq[Double],
+  allPoints: Seq[Double]) {
   override def toString: String = {
     s"""lowerWhisker $lowerWhisker lowerQuantile $lowerQuantile middleQuantile
        |$middleQuantile upperQuantile $upperQuantile upperWhisker $upperWhisker
@@ -57,13 +58,15 @@ object BoxPlotSummaryStatistics {
   implicit val encoder: Encoder[BoxPlotSummaryStatistics] = deriveEncoder[BoxPlotSummaryStatistics]
   implicit val decoder: Decoder[BoxPlotSummaryStatistics] = deriveDecoder[BoxPlotSummaryStatistics]
 
-  def apply(data: Seq[Double],
-            quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
-            includeAllPoints: Boolean = false): BoxPlotSummaryStatistics = {
+  def apply(
+    data: Seq[Double],
+    quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
+    includeAllPoints: Boolean = false): BoxPlotSummaryStatistics = {
     val sorted = data.sorted
 
-    require(quantiles._1 < quantiles._2 && quantiles._2 < quantiles._3,
-            "Supplied quantiles must be strictly increasing")
+    require(
+      quantiles._1 < quantiles._2 && quantiles._2 < quantiles._3,
+      "Supplied quantiles must be strictly increasing")
     val (lowerQuantile, middleQuantile, upperQuantile) =
       quantile(data, quantiles match { case (l, m, u) => Seq(l, m, u) }) match {
         case Seq(l, m, u) => (l, m, u)
@@ -88,14 +91,15 @@ object BoxPlotSummaryStatistics {
     val lowerWhisker: Double = math.max(lowerWhiskerLimit, min)
     val upperWhisker: Double = math.min(upperWhiskerLimit, max)
 
-    BoxPlotSummaryStatistics(min,
-                             max,
-                             lowerWhisker,
-                             upperWhisker,
-                             lowerQuantile,
-                             middleQuantile,
-                             upperQuantile,
-                             outliers,
-                             data)
+    BoxPlotSummaryStatistics(
+      min,
+      max,
+      lowerWhisker,
+      upperWhisker,
+      lowerQuantile,
+      middleQuantile,
+      upperQuantile,
+      outliers,
+      data)
   }
 }

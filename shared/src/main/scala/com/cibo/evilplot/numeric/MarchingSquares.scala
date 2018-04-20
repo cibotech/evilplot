@@ -43,10 +43,10 @@ object MarchingSquares {
     *         second is for paths within levels, and inner is for points within paths.
     *         The paths are ordered such that they may be drawn without further manipulation.
     */
-  def apply(levels: Seq[Double],
-            gridData: GridData): Vector[Vector[Vector[Point]]] = {
+  def apply(levels: Seq[Double], gridData: GridData): Vector[Vector[Vector[Point]]] = {
     import gridData.grid
-    require(grid.length >= 2 && grid.head.length >= 2,
+    require(
+      grid.length >= 2 && grid.head.length >= 2,
       "A grid of at least dimensions 2 x 2 is required to perform contouring.")
     val blocks = for {
       cellRow <- grid.indices.init
@@ -58,9 +58,9 @@ object MarchingSquares {
 
   // Contour at level, given a function for transforming index space to Cartesian.
   private[numeric] def contourLevel(
-                                     level: Double,
-                                     blocks: Seq[GridBlock],
-                                     transform: Point => Point): Vector[Vector[Point]] = {
+    level: Double,
+    blocks: Seq[GridBlock],
+    transform: Point => Point): Vector[Vector[Point]] = {
     val blockPoints = blocks.map(b => pointsForBlock(level, b))
     mkPaths(blockPoints.flatten.grouped(2)).map(_.map(transform))
   }
@@ -74,10 +74,11 @@ object MarchingSquares {
     // Maintain lists of starting points of contours, endpoints, and current contours
     // at this level we know about.
     @tailrec
-    def mkPaths(startPoints: Map[Point, (Vector[Point], Int)],
-                endPoints: Map[Point, (Vector[Point], Int)],
-                contours: Map[Int, Vector[Point]],
-                index: Int): Vector[Vector[Point]] = {
+    def mkPaths(
+      startPoints: Map[Point, (Vector[Point], Int)],
+      endPoints: Map[Point, (Vector[Point], Int)],
+      contours: Map[Int, Vector[Point]],
+      index: Int): Vector[Vector[Point]] = {
       lazy val Seq(from, to) = grouped.next()
       if (grouped.isEmpty) contours.values.toVector
       else if (from == to) {
@@ -89,12 +90,15 @@ object MarchingSquares {
         if (tails.isDefined && heads.isDefined) {
           val (head, headIndex) = heads.get
           val (tail, tailIndex) = tails.get
-          if (head == tail) { /* close the contour */
-            mkPaths(startPoints - to,
+          if (head == tail) {
+            /* close the contour */
+            mkPaths(
+              startPoints - to,
               endPoints - from,
               contours.updated(headIndex, head :+ to),
               index)
-          } else if (tailIndex > headIndex) { /* "tail" comes before head in the contour */
+          } else if (tailIndex > headIndex) {
+            /* "tail" comes before head in the contour */
             val concat = head ++ tail
             mkPaths(
               startPoints - to,
@@ -102,7 +106,8 @@ object MarchingSquares {
               (contours - tailIndex).updated(headIndex, concat),
               index
             )
-          } else { /* "head" comes before tail in the contour */
+          } else {
+            /* "head" comes before tail in the contour */
             val concat = head ++ tail
             mkPaths(
               (startPoints - (head.head, to)).updated(concat.head, concat -> tailIndex),
@@ -111,7 +116,8 @@ object MarchingSquares {
               index
             )
           }
-        } else if (tails.isDefined && heads.isEmpty) { /* Add to the beginning of endpoints. */
+        } else if (tails.isDefined && heads.isEmpty) {
+          /* Add to the beginning of endpoints. */
           val (tail, tailIndex) = tails.get
           val concat = from +: tail
           mkPaths(
@@ -120,7 +126,8 @@ object MarchingSquares {
             contours.updated(tailIndex, concat),
             index
           )
-        } else if (tails.isEmpty && heads.isDefined) { /* Symmetric to previous case. */
+        } else if (tails.isEmpty && heads.isDefined) {
+          /* Symmetric to previous case. */
           val (head, headIndex) = heads.get
           val concat = head :+ to
           mkPaths(
@@ -129,7 +136,8 @@ object MarchingSquares {
             contours.updated(headIndex, concat),
             index
           )
-        } else { /* Append a new contour. */
+        } else {
+          /* Append a new contour. */
           val nextContourIndex = index + 1
           val contour = Vector(from, to)
 
@@ -149,10 +157,9 @@ object MarchingSquares {
   private[numeric] case class GridCell(row: Int, col: Int, value: Double)
 
   // Represents a 2 x 2 block of cells in the original grid.
-  private[numeric] case class GridBlock(grid: Grid,
-                                        cellRow: Int,
-                                        cellCol: Int) {
-    require(cellRow + 1 < grid.length && cellCol + 1 < grid.head.length,
+  private[numeric] case class GridBlock(grid: Grid, cellRow: Int, cellCol: Int) {
+    require(
+      cellRow + 1 < grid.length && cellCol + 1 < grid.head.length,
       "not enough room to make GridBlock here")
     val upLeft = GridCell(cellRow, cellCol, grid(cellRow)(cellCol))
     val upRight = GridCell(cellRow, cellCol + 1, grid(cellRow)(cellCol + 1))
@@ -182,12 +189,12 @@ object MarchingSquares {
     if (p == q) 0 else (target - p) / (q - p)
 
   private[numeric] def indicesToCartesian(gridData: GridData)(p: Point): Point =
-    Point(gridData.xSpacing * p.x + gridData.xBounds.min,
+    Point(
+      gridData.xSpacing * p.x + gridData.xBounds.min,
       gridData.ySpacing * p.y + gridData.yBounds.min)
 
   //scalastyle:off
-  private[numeric] def pointsForBlock(target: Double,
-                                      gb: GridBlock): Seq[Point] = {
+  private[numeric] def pointsForBlock(target: Double, gb: GridBlock): Seq[Point] = {
     import gb._
     val alpha = mkCalcAlpha(target) _
     lazy val top =
@@ -195,10 +202,10 @@ object MarchingSquares {
     lazy val bottom = Point(
       bottomLeft.row.toDouble,
       bottomLeft.col.toDouble + alpha(bottomLeft.value, bottomRight.value))
-    lazy val left = Point(upLeft.row.toDouble + alpha(upLeft.value, bottomLeft.value),
-      upLeft.col.toDouble)
-    lazy val right = Point(upRight.row.toDouble + alpha(upRight.value, bottomRight.value),
-      upRight.col.toDouble)
+    lazy val left =
+      Point(upLeft.row.toDouble + alpha(upLeft.value, bottomLeft.value), upLeft.col.toDouble)
+    lazy val right =
+      Point(upRight.row.toDouble + alpha(upRight.value, bottomRight.value), upRight.col.toDouble)
 
     gb.tag(target) match {
       case 0 | 15 => Vector.empty[Point]
@@ -217,8 +224,7 @@ object MarchingSquares {
       case 13     => Vector(top, right)
       case 14     => Vector(left, top)
       case x =>
-        throw new IllegalStateException(
-          s"Marching Squares: Block tag $x was not in [0, 16).")
+        throw new IllegalStateException(s"Marching Squares: Block tag $x was not in [0, 16).")
     }
   }
   //scalastyle:on

@@ -31,7 +31,12 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, ContinuousAxisDescriptor, DiscreteAxisDescriptor}
+import com.cibo.evilplot.numeric.{
+  AxisDescriptor,
+  Bounds,
+  ContinuousAxisDescriptor,
+  DiscreteAxisDescriptor
+}
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{GridLineRenderer, TickRenderer}
@@ -46,14 +51,16 @@ object Axes {
 
     def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor
 
-    final protected def ticks(descriptor: AxisDescriptor): Seq[Drawable] = descriptor.labels.map(tickRenderer.render)
+    final protected def ticks(descriptor: AxisDescriptor): Seq[Drawable] =
+      descriptor.labels.map(tickRenderer.render)
   }
 
   private sealed trait ContinuousAxis {
     final val discrete: Boolean = false
     val tickCount: Int
     def bounds(plot: Plot): Bounds
-    def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor = ContinuousAxisDescriptor(bounds(plot), tickCount, fixed)
+    def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor =
+      ContinuousAxisDescriptor(bounds(plot), tickCount, fixed)
   }
 
   private sealed trait DiscreteAxis {
@@ -64,7 +71,8 @@ object Axes {
 
   private sealed trait XAxisPlotComponent extends AxisPlotComponent {
     final val position: Position = Position.Bottom
-    override def size(plot: Plot): Extent = ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.height).extent
+    override def size(plot: Plot): Extent =
+      ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.height).extent
 
     def bounds(plot: Plot): Bounds = plot.xbounds
 
@@ -73,18 +81,23 @@ object Axes {
       val scale = extent.width / descriptor.axisBounds.range
       // Move the tick to the center of the range for discrete axes.
       val offset = (if (discrete) scale / 2 else 0) - descriptor.axisBounds.min * scale
-      ticks(descriptor).zip(descriptor.values).map { case (tick, value) =>
-        val x = offset + value * scale - tick.extent.width / 2
-        if (x <= extent.width) {
-          tick.translate(x = x)
-        } else EmptyDrawable()
-      }.group
+      ticks(descriptor)
+        .zip(descriptor.values)
+        .map {
+          case (tick, value) =>
+            val x = offset + value * scale - tick.extent.width / 2
+            if (x <= extent.width) {
+              tick.translate(x = x)
+            } else EmptyDrawable()
+        }
+        .group
     }
   }
 
   private sealed trait YAxisPlotComponent extends AxisPlotComponent {
     final val position: Position = Position.Left
-    override def size(plot: Plot): Extent = ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.width).extent
+    override def size(plot: Plot): Extent =
+      ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.width).extent
 
     def bounds(plot: Plot): Bounds = plot.ybounds
 
@@ -95,12 +108,16 @@ object Axes {
       val maxWidth = ts.maxBy(_.extent.width).extent.width
       // Move the tick to the center of the range for discrete axes.
       val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min
-      val drawable = ts.zip(descriptor.values).map { case (tick, value) =>
-        val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
-        if (y <= extent.height) {
-          tick.translate(x = maxWidth - tick.extent.width, y = y)
-        } else EmptyDrawable()
-      }.group
+      val drawable = ts
+        .zip(descriptor.values)
+        .map {
+          case (tick, value) =>
+            val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
+            if (y <= extent.height) {
+              tick.translate(x = maxWidth - tick.extent.width, y = y)
+            } else EmptyDrawable()
+        }
+        .group
       drawable.translate(x = extent.width - drawable.extent.width)
     }
   }
@@ -108,22 +125,26 @@ object Axes {
   private case class ContinuousXAxisPlotComponent(
     tickCount: Int,
     tickRenderer: TickRenderer
-  ) extends XAxisPlotComponent with ContinuousAxis
+  ) extends XAxisPlotComponent
+      with ContinuousAxis
 
   private case class DiscreteXAxisPlotComponent(
     labels: Seq[(String, Double)],
     tickRenderer: TickRenderer
-  ) extends XAxisPlotComponent with DiscreteAxis
+  ) extends XAxisPlotComponent
+      with DiscreteAxis
 
   private case class ContinuousYAxisPlotComponent(
     tickCount: Int,
     tickRenderer: TickRenderer
-  ) extends YAxisPlotComponent with ContinuousAxis
+  ) extends YAxisPlotComponent
+      with ContinuousAxis
 
   private case class DiscreteYAxisPlotComponent(
     labels: Seq[(String, Double)],
     tickRenderer: TickRenderer
-  ) extends YAxisPlotComponent with DiscreteAxis
+  ) extends YAxisPlotComponent
+      with DiscreteAxis
 
   private sealed trait GridComponent extends PlotComponent {
     val lineRenderer: GridLineRenderer
@@ -141,9 +162,14 @@ object Axes {
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val descriptor = getDescriptor(plot, fixed = true)
       val scale = extent.width / descriptor.axisBounds.range
-      lines(descriptor, extent).zip(descriptor.values).map { case (line, value) =>
-        line.translate(x = (value - descriptor.axisBounds.min) * scale - line.extent.width / 2.0)
-      }.group
+      lines(descriptor, extent)
+        .zip(descriptor.values)
+        .map {
+          case (line, value) =>
+            line.translate(
+              x = (value - descriptor.axisBounds.min) * scale - line.extent.width / 2.0)
+        }
+        .group
     }
   }
 
@@ -154,22 +180,27 @@ object Axes {
       val scale = extent.height / descriptor.axisBounds.range
       val ls = lines(descriptor, extent)
       val maxWidth = ls.maxBy(_.extent.width).extent.width
-      ls.zip(descriptor.values).map { case (line, value) =>
-        val y = (value - descriptor.axisBounds.min) * scale + line.extent.height / 2.0
-        line.translate(x = maxWidth - line.extent.width, y = extent.height - y)
-      }.group
+      ls.zip(descriptor.values)
+        .map {
+          case (line, value) =>
+            val y = (value - descriptor.axisBounds.min) * scale + line.extent.height / 2.0
+            line.translate(x = maxWidth - line.extent.width, y = extent.height - y)
+        }
+        .group
     }
   }
 
   private case class ContinuousXGridComponent(
     tickCount: Int,
     lineRenderer: GridLineRenderer
-  ) extends XGridComponent with ContinuousAxis
+  ) extends XGridComponent
+      with ContinuousAxis
 
   private case class ContinuousYGridComponent(
     tickCount: Int,
     lineRenderer: GridLineRenderer
-  ) extends YGridComponent with ContinuousAxis
+  ) extends YGridComponent
+      with ContinuousAxis
 
   trait AxesImplicits {
     protected val plot: Plot
@@ -184,11 +215,12 @@ object Axes {
     )(implicit theme: Theme): Plot = {
       val component = ContinuousXAxisPlotComponent(
         tickCount.getOrElse(theme.elements.xTickCount),
-        tickRenderer.getOrElse(TickRenderer.xAxisTickRenderer(
-          length = theme.elements.tickLength,
-          thickness = theme.elements.tickThickness,
-          rotateText = theme.elements.continuousXAxisLabelOrientation
-        ))
+        tickRenderer.getOrElse(
+          TickRenderer.xAxisTickRenderer(
+            length = theme.elements.tickLength,
+            thickness = theme.elements.tickThickness,
+            rotateText = theme.elements.continuousXAxisLabelOrientation
+          ))
       )
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
@@ -196,7 +228,8 @@ object Axes {
     /** Add an X axis to the plot
       * @param labels The labels. The x values are assumed to start at 0 and increment by one for each label.
       */
-    def xAxis(labels: Seq[String])(implicit theme: Theme): Plot = xAxis(labels, labels.indices.map(_.toDouble))
+    def xAxis(labels: Seq[String])(implicit theme: Theme): Plot =
+      xAxis(labels, labels.indices.map(_.toDouble))
 
     /** Add an X axis to the plot.
       * @param labels The labels.
@@ -205,7 +238,8 @@ object Axes {
     def xAxis(labels: Seq[String], values: Seq[Double])(implicit theme: Theme): Plot = {
       require(labels.lengthCompare(values.length) == 0)
       val labelsAndValues = labels.zip(values)
-      val component = DiscreteXAxisPlotComponent(labelsAndValues,
+      val component = DiscreteXAxisPlotComponent(
+        labelsAndValues,
         TickRenderer.xAxisTickRenderer(
           length = theme.elements.tickLength,
           thickness = theme.elements.tickThickness,
@@ -224,10 +258,11 @@ object Axes {
     )(implicit theme: Theme): Plot = {
       val component = ContinuousYAxisPlotComponent(
         tickCount.getOrElse(theme.elements.yTickCount),
-        tickRenderer.getOrElse(TickRenderer.yAxisTickRenderer(
-          length = theme.elements.tickLength,
-          thickness = theme.elements.tickThickness
-        ))
+        tickRenderer.getOrElse(
+          TickRenderer.yAxisTickRenderer(
+            length = theme.elements.tickLength,
+            thickness = theme.elements.tickThickness
+          ))
       )
       component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
@@ -235,7 +270,8 @@ object Axes {
     /** Add a Y axis to the plot.
       * @param labels The label. The y values are assumed to start at 0 and increment by one for each label.
       */
-    def yAxis(labels: Seq[String])(implicit theme: Theme): Plot = yAxis(labels, labels.indices.map(_.toDouble))
+    def yAxis(labels: Seq[String])(implicit theme: Theme): Plot =
+      yAxis(labels, labels.indices.map(_.toDouble))
 
     /** Add a Y axis to the plot.
       * @param labels The labels.
@@ -267,7 +303,6 @@ object Axes {
       )
       plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds) :+ component
     }
-
 
     /** Add y grid lines to the plot.
       * @param lineCount the number of grid lines to use

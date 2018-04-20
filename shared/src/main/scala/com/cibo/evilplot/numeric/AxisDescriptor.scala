@@ -67,12 +67,14 @@ case class ContinuousAxisDescriptor(
   private[numeric] def calcSpacing(aRange: Double) =
     AxisDescriptor.nicenum(aRange / (numTicksRequested + 1), round = true)
 
-  private val spacingGuess: Double = AxisDescriptor.nicenum(range / (numTicksRequested + 1), round = true)
+  private val spacingGuess: Double =
+    AxisDescriptor.nicenum(range / (numTicksRequested + 1), round = true)
   val (tickMin, tickMax, spacing) = {
     if (fixed) {
       (minValue, maxValue, spacingGuess)
     } else if (!AxisDescriptor.arePracticallyEqual(minValue, maxValue) && !(minValue.isNaN && maxValue.isNaN)) {
-      (math.floor(minValue / spacingGuess) * spacingGuess,
+      (
+        math.floor(minValue / spacingGuess) * spacingGuess,
         math.ceil(maxValue / spacingGuess) * spacingGuess,
         spacingGuess)
     } else {
@@ -112,15 +114,14 @@ object AxisDescriptor {
   /** Find a "nice" number approximately equal to x. Round the number if round == 1, take ceiling if round == 0. */
   private[numeric] def nicenum(x: Double, round: Boolean): Double = {
     val expv = math.floor(math.log10(x))
-    val f = x / math.pow(10, expv)                // between 1 and 10
+    val f = x / math.pow(10, expv) // between 1 and 10
     val nf =
       if (round) {
         if (f < 1.5) 1
         else if (f < 3) 2
         else if (f < 7) 5
         else 10.0
-      }
-      else {
+      } else {
         if (f <= 1) 1
         else if (f <= 2) 2
         else if (f <= 5) 5
@@ -131,11 +132,11 @@ object AxisDescriptor {
   }
 
   def createNumericLabel(num: Double, numFrac: Int): String = {
-    require(numFrac >= 0 && numFrac <= 20, "Formatting fewer than 0 " +
-      s"or more than 20 decimal places is unsupported, but you attempted to format with $numFrac")
+    require(
+      numFrac >= 0 && numFrac <= 20,
+      "Formatting fewer than 0 " +
+        s"or more than 20 decimal places is unsupported, but you attempted to format with $numFrac")
     val fmtString = "%%.%df".format(numFrac)
     fmtString.format(num)
   }
 }
-
-

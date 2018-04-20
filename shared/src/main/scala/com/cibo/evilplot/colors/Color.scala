@@ -41,10 +41,12 @@ case object Clear extends Color {
 }
 
 case class HSLA(hue: Int, saturation: Int, lightness: Int, opacity: Double) extends Color {
-  require(hue        >= 0 && hue        <  360, s"hue must be within [0, 360) {was $hue}")
-  require(saturation >= 0 && saturation <= 100, s"saturation must be within [0, 100] {was $saturation}")
-  require(lightness  >= 0 && lightness  <= 100, s"lightness must be within [0, 100] {was $lightness}")
-  require(opacity  >= 0 && opacity  <= 1.0, s"transparency must be within [0, 1.0] {was $opacity}")
+  require(hue >= 0 && hue < 360, s"hue must be within [0, 360) {was $hue}")
+  require(
+    saturation >= 0 && saturation <= 100,
+    s"saturation must be within [0, 100] {was $saturation}")
+  require(lightness >= 0 && lightness <= 100, s"lightness must be within [0, 100] {was $lightness}")
+  require(opacity >= 0 && opacity <= 1.0, s"transparency must be within [0, 1.0] {was $opacity}")
 
   private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue > 360) hue - 360 else hue
 
@@ -96,7 +98,7 @@ object Color {
 
   def stream: Seq[Color] = {
     val hueSpan = 7
-    Stream.from(0).map{ i =>
+    Stream.from(0).map { i =>
       // if hueSpan = 8, for instance:
       // Epoch 0 ->  8 equally spaced  0 -  7
       // Epoch 1 -> 16 equally spaced  8 - 21
@@ -126,7 +128,7 @@ object Color {
 
       val saturationDropoff = 2
       def saturationLevel(e: Int) = 100 * 1.0 / pow(saturationDropoff, epoch + 1)
-      val saturationBase = 50//100 - saturationLevel(0)
+      val saturationBase = 50 //100 - saturationLevel(0)
       HSL(
         abs(round(initialRotate + 360.0 / slicesThisEpoch * zeroBasedIndexInThisEpoch).toInt % 360),
         (saturationBase + saturationLevel(epoch)).round.toInt,

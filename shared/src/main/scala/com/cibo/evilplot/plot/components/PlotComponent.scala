@@ -42,6 +42,7 @@ trait PlotComponent extends FacetedPlotComponent {
 
   // Render the component for a particular facet.
   // This this calls the implementation that ignores facet information.
-  final def render(plot: Plot, extent: Extent, row: Int, column: Int)(implicit theme: Theme): Drawable =
+  final def render(plot: Plot, extent: Extent, row: Int, column: Int)(
+    implicit theme: Theme): Drawable =
     render(plot, extent)
 }

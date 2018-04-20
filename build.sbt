@@ -6,11 +6,13 @@ crossScalaVersions in ThisBuild := Settings.versions.crossScalaVersions
 scalaVersion in ThisBuild := crossScalaVersions.value.head
 scalacOptions in ThisBuild ++= Settings.scalacOptions
 
-lazy val root = project.in(file("."))
+lazy val root = project
+  .in(file("."))
   .aggregate(evilplotJVM, evilplotJS, assetJVM, evilplotRunner)
   .settings(
     publishArtifact := false
-  ).disablePlugins(HeaderPlugin)
+  )
+  .disablePlugins(HeaderPlugin)
 
 lazy val commonSettings: Seq[Setting[_]] = Seq(
   version := Settings.version,
@@ -35,7 +37,8 @@ lazy val licenseSettings = Seq(
   headerLicense := Some(HeaderLicense.BSD3Clause("2018", "CiBO Technologies, Inc."))
 )
 
-lazy val evilplotAsset = crossProject.in(file("asset"))
+lazy val evilplotAsset = crossProject
+  .in(file("asset"))
   .dependsOn(evilplot)
   .settings(commonSettings)
   .settings(licenseSettings)
@@ -56,7 +59,8 @@ lazy val evilplotAsset = crossProject.in(file("asset"))
 lazy val assetJS = evilplotAsset.js
 lazy val assetJVM = evilplotAsset.jvm
 
-lazy val evilplot = crossProject.in(file("."))
+lazy val evilplot = crossProject
+  .in(file("."))
   .settings(commonSettings)
   .configs(IntegrationTest)
   .settings(
@@ -77,14 +81,14 @@ lazy val evilplot = crossProject.in(file("."))
   )
   .jvmSettings(
     libraryDependencies ++= Settings.jvmDependencies.value
-
   )
 
 lazy val evilplotJVM = evilplot.jvm
 lazy val evilplotJS = evilplot.js
 
 // For the workbench plugin
-lazy val evilplotRunner = project.in(file("runner"))
+lazy val evilplotRunner = project
+  .in(file("runner"))
   .aggregate(evilplotJS)
   .dependsOn(evilplotJS)
   .settings(
@@ -94,4 +98,3 @@ lazy val evilplotRunner = project.in(file("runner"))
   )
   .settings(licenseSettings)
   .enablePlugins(WorkbenchPlugin)
-

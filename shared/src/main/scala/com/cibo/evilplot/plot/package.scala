@@ -37,14 +37,14 @@ package object plot {
   implicit class RichPlot(
     protected val plot: Plot
   ) extends Axes.AxesImplicits
-    with PlotLineImplicits
-    with AnnotationImplicits
-    with BackgroundImplicits
-    with BorderPlotImplicits
-    with FacetLabelImplicits
-    with LabelImplicits
-    with LegendImplicits
-    with PadImplicits
-    with PlotDefaultsImplicits
-    with OverlayImplicits
+      with PlotLineImplicits
+      with AnnotationImplicits
+      with BackgroundImplicits
+      with BorderPlotImplicits
+      with FacetLabelImplicits
+      with LabelImplicits
+      with LegendImplicits
+      with PadImplicits
+      with PlotDefaultsImplicits
+      with OverlayImplicits
 }

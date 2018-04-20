@@ -37,7 +37,8 @@ import scala.annotation.implicitNotFound
   * A theme is defined implicitly and passed into plots.
   * @see [[DefaultTheme]] for an easy default.
   **/
-@implicitNotFound("No implicit Theme found. You may wish to import com.cibo.evilplot.plot.aesthetics.DefaultTheme._")
+@implicitNotFound(
+  "No implicit Theme found. You may wish to import com.cibo.evilplot.plot.aesthetics.DefaultTheme._")
 trait Theme {
   val fonts: Fonts
   val colors: Colors

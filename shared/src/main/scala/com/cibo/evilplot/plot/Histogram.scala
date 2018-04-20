@@ -42,7 +42,9 @@ object Histogram {
   // Create binCount bins from the given data and xbounds.
   private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] = {
     val binWidth = xbounds.range / binCount
-    val grouped = values.groupBy { value => math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1) }
+    val grouped = values.groupBy { value =>
+      math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
+    }
     (0 until binCount).flatMap { i =>
       grouped.get(i).map { vs =>
         val y = vs.size
@@ -112,7 +114,8 @@ object Histogram {
       values.reduceOption[Double](math.min).getOrElse(0.0),
       values.reduceOption[Double](math.max).getOrElse(0.0)
     )
-    val maxY = createBins(values, xbounds, bins).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
+    val maxY =
+      createBins(values, xbounds, bins).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
     val binWidth = xbounds.range / bins
     Plot(
       xbounds = xbounds,

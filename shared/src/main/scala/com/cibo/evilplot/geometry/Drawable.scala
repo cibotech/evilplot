@@ -86,7 +86,8 @@ object Line {
 final case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable {
   private lazy val xS: Seq[Double] = points.map(_.x)
   private lazy val yS: Seq[Double] = points.map(_.y)
-  lazy val extent: Extent = if (points.nonEmpty) Extent(xS.max - xS.min, yS.max - yS.min) else Extent(0, 0)
+  lazy val extent: Extent =
+    if (points.nonEmpty) Extent(xS.max - xS.min, yS.max - yS.min) else Extent(0, 0)
   def draw(context: RenderContext): Unit = if (points.nonEmpty) context.draw(this) else ()
 }
 object Path {
@@ -100,7 +101,8 @@ object Path {
 final case class Polygon(boundary: Seq[Point]) extends Drawable {
   private lazy val xS: Seq[Double] = boundary.map(_.x)
   private lazy val yS: Seq[Double] = boundary.map(_.y)
-  lazy val extent: Extent = if (boundary.nonEmpty) Extent(xS.max - xS.min, yS.max - yS.min) else Extent(0, 0)
+  lazy val extent: Extent =
+    if (boundary.nonEmpty) Extent(xS.max - xS.min, yS.max - yS.min) else Extent(0, 0)
   def draw(context: RenderContext): Unit = if (boundary.nonEmpty) context.draw(this) else ()
 }
 object Polygon {
@@ -157,6 +159,7 @@ final case class Disc(radius: Double) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Disc {
+
   /** Create a disc that can be positioned from its vertex. */
   def centered(radius: Double): Drawable = Disc(radius).translate(-radius, -radius)
 
@@ -192,7 +195,8 @@ object Translate {
 /** Apply an affine transformation to the passed in Drawable. */
 final case class Affine(r: Drawable, affine: AffineTransform) extends Drawable {
   lazy val extent: Extent = {
-    val pts = Seq(affine(0, 0),
+    val pts = Seq(
+      affine(0, 0),
       affine(r.extent.width, 0),
       affine(r.extent.width, r.extent.height),
       affine(0, r.extent.height))
@@ -323,7 +327,9 @@ final case class Text(
   fontFace: String = Text.defaultFontFace,
   extentOpt: Option[Extent] = None
 ) extends Drawable {
-  require(size >= 0.5, s"Cannot use $size, canvas will not draw text initially sized < 0.5px even when scaling")
+  require(
+    size >= 0.5,
+    s"Cannot use $size, canvas will not draw text initially sized < 0.5px even when scaling")
 
   lazy val extent: Extent = extentOpt.getOrElse(TextMetrics.measure(this))
   def draw(context: RenderContext): Unit = context.draw(this)

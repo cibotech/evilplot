@@ -48,12 +48,12 @@ private[colors] object GradientUtils {
       val singleGradientExtent = (max - min) / numGradients
       val gradients: Seq[PartialFunction[Double, HSLA]] = Seq.tabulate(numGradients) { i =>
         val lower = min + i * singleGradientExtent
-        singleGradient(lower - 1e-5,
+        singleGradient(
+          lower - 1e-5,
           lower + singleGradientExtent + 1e-5,
           colors(i),
           colors(i + 1),
-          mode
-        )
+          mode)
       }
       gradients.reduce(_ orElse _)
     }
@@ -75,10 +75,6 @@ private[colors] object GradientUtils {
       val g = interpolate(inverse(g1), inverse(g2), interpolationCoefficient)
       val b = interpolate(inverse(b1), inverse(b2), interpolationCoefficient)
       val a = interpolate(a1, a2, interpolationCoefficient)
-      RGBA(
-        (255 * forward(r)).toInt,
-        (255 * forward(g)).toInt,
-        (255 * forward(b)).toInt,
-        a)
+      RGBA((255 * forward(r)).toInt, (255 * forward(g)).toInt, (255 * forward(b)).toInt, a)
   }
 }

@@ -38,6 +38,7 @@ import com.cibo.evilplot.plot.Plot
   * @tparam C Type of context used to identify categories.
   */
 trait PlotElementRenderer[C] {
+
   /** Render a category within the extent. */
   def render(plot: Plot, extent: Extent, context: C): Drawable
 }

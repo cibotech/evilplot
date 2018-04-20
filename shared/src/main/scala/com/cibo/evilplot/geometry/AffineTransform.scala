@@ -42,9 +42,11 @@ final case class AffineTransform(
   shiftY: Double = 0
 ) {
 
-  def scale(x: Double = 1, y: Double = 1): AffineTransform = this.compose(AffineTransform.scale(x, y))
+  def scale(x: Double = 1, y: Double = 1): AffineTransform =
+    this.compose(AffineTransform.scale(x, y))
 
-  def translate(dx: Double, dy: Double): AffineTransform = this.compose(AffineTransform.translate(dx, dy))
+  def translate(dx: Double, dy: Double): AffineTransform =
+    this.compose(AffineTransform.translate(dx, dy))
 
   /** Rotates the transformation by `theta` radians.  */
   def rotate(theta: Double): AffineTransform = this.compose(AffineTransform.rotate(theta))
@@ -82,16 +84,23 @@ final case class AffineTransform(
 
 object AffineTransform {
 
-  implicit val encoder: Encoder[AffineTransform] = io.circe.generic.semiauto.deriveEncoder[AffineTransform]
-  implicit val decoder: Decoder[AffineTransform] = io.circe.generic.semiauto.deriveDecoder[AffineTransform]
+  implicit val encoder: Encoder[AffineTransform] =
+    io.circe.generic.semiauto.deriveEncoder[AffineTransform]
+  implicit val decoder: Decoder[AffineTransform] =
+    io.circe.generic.semiauto.deriveDecoder[AffineTransform]
 
   def identity: AffineTransform = AffineTransform()
 
-  private def scale(sx: Double, sy: Double): AffineTransform = AffineTransform(scaleX = sx, scaleY = sy)
+  private def scale(sx: Double, sy: Double): AffineTransform =
+    AffineTransform(scaleX = sx, scaleY = sy)
 
-  private def translate(dx: Double, dy: Double): AffineTransform = AffineTransform(shiftX = dx, shiftY = dy)
+  private def translate(dx: Double, dy: Double): AffineTransform =
+    AffineTransform(shiftX = dx, shiftY = dy)
 
   private def rotate(theta: Double): AffineTransform =
-    AffineTransform(scaleX = Math.cos(theta), shearX = -Math.sin(theta),
-                    shearY = Math.sin(theta), scaleY = Math.cos(theta) )
+    AffineTransform(
+      scaleX = Math.cos(theta),
+      shearX = -Math.sin(theta),
+      shearY = Math.sin(theta),
+      scaleY = Math.cos(theta))
 }

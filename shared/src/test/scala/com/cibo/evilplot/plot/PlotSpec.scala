@@ -45,8 +45,7 @@ class PlotSpec extends FunSpec with Matchers {
 
   // Renderer to do nothing.
   private[evilplot] case object EmptyPlotRenderer extends PlotRenderer {
-    def render(plot: Plot, plotExtent: Extent)(
-      implicit theme: Theme): Drawable =
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable =
       EmptyDrawable().resize(plotExtent)
   }
 

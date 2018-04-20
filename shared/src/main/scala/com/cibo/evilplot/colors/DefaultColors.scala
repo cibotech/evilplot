@@ -38,7 +38,6 @@ object DefaultColors {
   val fillColor: Color = HTMLNamedColors.white
   val pathColor = HSL(0, 0, 0)
 
-
   val lightPalette: Seq[HSLA] = Seq(
     RGB(26, 188, 156),
     RGB(46, 204, 113),
@@ -61,10 +60,12 @@ object DefaultColors {
     RGB(192, 57, 43)
   )
 
-  @deprecated("This palette contains two palettes, a light and dark. " +
-    "Using it as a single palette can be misleading/confusing. Use DefaultColors#lightPalette " +
-    "or DefaultColors#darkPalette instead.",
-    since = "29 March 2018")
+  @deprecated(
+    "This palette contains two palettes, a light and dark. " +
+      "Using it as a single palette can be misleading/confusing. Use DefaultColors#lightPalette " +
+      "or DefaultColors#darkPalette instead.",
+    since = "29 March 2018"
+  )
   val nicePalette: Seq[HSLA] = lightPalette ++ darkPalette
 
 }

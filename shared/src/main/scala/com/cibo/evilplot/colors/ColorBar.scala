@@ -56,7 +56,8 @@ case class ScaledColorBar(colorSeq: Seq[Color], zMin: Double, zMax: Double) exte
   def getColor(i: Int): Color = colorSeq(i)
   def getColor(z: Double): Color = getColor(colorIndex(z))
 
-  def colorIndex(z: Double): Int = math.min(math.round(math.floor((z - zMin) / zWidth)).toInt, nColors - 1)
+  def colorIndex(z: Double): Int =
+    math.min(math.round(math.floor((z - zMin) / zWidth)).toInt, nColors - 1)
   def colorValue(i: Int): Double = i * zWidth + zMin
 }
 
@@ -64,4 +65,3 @@ object ColorBar {
   implicit val encoder: Encoder[ColorBar] = deriveEncoder[ColorBar]
   implicit val decoder: Decoder[ColorBar] = deriveDecoder[ColorBar]
 }
-

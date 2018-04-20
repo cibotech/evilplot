@@ -39,11 +39,11 @@ object Utils {
 
   def getCanvasFromElementId(id: String): CanvasRenderingContext2D = {
     // Muuuuuwahahahaha
-    dom.window.document.getElementById(id)
+    dom.window.document
+      .getElementById(id)
       .asInstanceOf[dom.html.Canvas]
       .getContext("2d")
       .asInstanceOf[dom.CanvasRenderingContext2D]
   }
 
 }
-

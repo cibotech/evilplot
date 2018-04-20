@@ -37,8 +37,8 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 sealed trait LegendStyle
 
 object LegendStyle {
-  case object Gradient extends LegendStyle  // A legend of levels represented using a gradient.
-  case object Categorical extends LegendStyle  // A legend with distinct categories.
+  case object Gradient extends LegendStyle // A legend of levels represented using a gradient.
+  case object Categorical extends LegendStyle // A legend with distinct categories.
 }
 
 /** Context information used to render a legend for a plot.
@@ -79,7 +79,8 @@ object LegendContext {
   def single(
     element: Drawable,
     label: String
-  )(implicit theme: Theme): LegendContext = single(element, Style(Text(label, fontFace = theme.fonts.fontFace), theme.colors.legendLabel))
+  )(implicit theme: Theme): LegendContext =
+    single(element, Style(Text(label, fontFace = theme.fonts.fontFace), theme.colors.legendLabel))
 
   def fromColorBar(
     colorBar: ScaledColorBar,
@@ -92,10 +93,10 @@ object LegendContext {
       val value = style match {
         case LegendStyle.Gradient if c == 0 =>
           // Floor if labeling the first value in a gradient.
-          math.floor(colorBar.colorValue (c))
+          math.floor(colorBar.colorValue(c))
         case LegendStyle.Gradient =>
           // Ceiling if labeling the last value in a gradient.
-          math.ceil(colorBar.colorValue (c))
+          math.ceil(colorBar.colorValue(c))
         case LegendStyle.Categorical =>
           // Otherwise round
           math.round(colorBar.colorValue(c))

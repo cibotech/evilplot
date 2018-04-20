@@ -53,12 +53,13 @@ package object numeric {
     def tupled(t: (Double, Double, Double)): Point3 = Point3(t._1, t._2, t._3)
   }
 
-  final case class GridData(grid: Grid,
-                      xBounds: Bounds,
-                      yBounds: Bounds,
-                      zBounds: Bounds,
-                      xSpacing: Double,
-                      ySpacing: Double)
+  final case class GridData(
+    grid: Grid,
+    xBounds: Bounds,
+    yBounds: Bounds,
+    zBounds: Bounds,
+    xSpacing: Double,
+    ySpacing: Double)
 
   final case class Bounds(min: Double, max: Double) {
     lazy val range: Double = max - min
@@ -78,7 +79,6 @@ package object numeric {
         case _: Exception => None
       }
     }
-
 
     def getBy[T](data: Seq[T])(f: T => Double): Option[Bounds] = {
       val mapped = data.map(f).filterNot(_.isNaN)
@@ -102,9 +102,7 @@ package object numeric {
       bounds.flatten.foldLeft(None: Option[Bounds]) { (acc, curr) =>
         if (acc.isEmpty) Some(curr)
         else
-          Some(
-            Bounds(math.min(acc.get.min, curr.min),
-                   math.max(acc.get.max, curr.max)))
+          Some(Bounds(math.min(acc.get.min, curr.min), math.max(acc.get.max, curr.max)))
       }
   }
 

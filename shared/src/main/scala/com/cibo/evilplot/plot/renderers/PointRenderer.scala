@@ -73,10 +73,10 @@ object PointRenderer {
     * @param size The size of the point.
     */
   def depthColor(
-                depths: Seq[Double],
-                coloring: Option[Coloring[Double]] = None,
-                size: Option[Double] = None
-                )(implicit theme: Theme): PointRenderer = new PointRenderer {
+    depths: Seq[Double],
+    coloring: Option[Coloring[Double]] = None,
+    size: Option[Double] = None
+  )(implicit theme: Theme): PointRenderer = new PointRenderer {
     private val useColoring = coloring.getOrElse(theme.colors.continuousColoring)
     private val colorFunc = useColoring(depths)
     private val radius = size.getOrElse(theme.elements.pointSize)
@@ -131,7 +131,12 @@ object PointRenderer {
   )(implicit theme: Theme): PointRenderer = {
     val bar = ScaledColorBar(Color.stream.take(colorCount), depths.min, depths.max)
     val labels = (0 until colorCount).map { c =>
-      Style(Text(math.ceil(bar.colorValue(c)).toString, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel)
+      Style(
+        Text(
+          math.ceil(bar.colorValue(c)).toString,
+          theme.fonts.legendLabelSize,
+          theme.fonts.fontFace),
+        theme.colors.legendLabel)
     }
     oldDepthColor(depths, labels, bar, None)
   }
@@ -174,7 +179,12 @@ object PointRenderer {
     bar: ScaledColorBar
   )(implicit theme: Theme): PointRenderer = {
     val labels = (0 until bar.nColors).map { c =>
-      Style(Text(math.ceil(bar.colorValue(c)).toString, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel)
+      Style(
+        Text(
+          math.ceil(bar.colorValue(c)).toString,
+          theme.fonts.legendLabelSize,
+          theme.fonts.fontFace),
+        theme.colors.legendLabel)
     }
     oldDepthColor(depths, labels, bar, None)
   }
@@ -187,7 +197,9 @@ object PointRenderer {
     bar: ScaledColorBar,
     size: Option[Double]
   )(implicit theme: Theme): PointRenderer = {
-    require(labels.lengthCompare(bar.nColors) == 0, "Number of labels does not match the number of categories")
+    require(
+      labels.lengthCompare(bar.nColors) == 0,
+      "Number of labels does not match the number of categories")
     val pointSize = size.getOrElse(theme.elements.pointSize)
     new PointRenderer {
       override def legendContext: LegendContext = {

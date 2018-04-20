@@ -40,12 +40,14 @@ class ColoringSpec extends FunSpec with Matchers {
     it("should return a function when Colors has only one element") {
       val min: Double = 0
       val max: Double = 100
-      val coloring = GradientUtils.multiGradient(Seq(HTMLNamedColors.blue), min, max, GradientMode.Linear)
+      val coloring =
+        GradientUtils.multiGradient(Seq(HTMLNamedColors.blue), min, max, GradientMode.Linear)
       (min to max by 1.0).foreach(datum => coloring(datum) shouldBe HTMLNamedColors.blue)
     }
 
     it("should throw an exception when Colors is empty") {
-      an[IllegalArgumentException] shouldBe thrownBy(GradientUtils.multiGradient(Seq(), 0, 100, GradientMode.Linear))
+      an[IllegalArgumentException] shouldBe thrownBy(
+        GradientUtils.multiGradient(Seq(), 0, 100, GradientMode.Linear))
     }
 
     it("should return a function that works between min and max") {

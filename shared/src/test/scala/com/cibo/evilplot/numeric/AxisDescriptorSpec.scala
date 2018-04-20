@@ -33,7 +33,6 @@ package com.cibo.evilplot.numeric
 import org.scalatest.Matchers._
 import org.scalatest._
 
-
 class AxisDescriptorSpec extends FunSpec {
 
   describe("Ticks") {
