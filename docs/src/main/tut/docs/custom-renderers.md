@@ -3,7 +3,7 @@ layout: docs
 title: Custom Renderers
 ---
 
-## Custom Renderers
+# Custom Renderers
 
 In the introduction to plotting with EvilPlot, we gave `ScatterPlot` `PointRenderer.colorByCategory` as an argument. We also mentioned that there are a bunch of `PointRenderer`s available by default. If you took a look at the plot catalog, you might have also seen that there were some other types of renderers, like `BoxRenderer`, `PathRenderer`, and `BarRenderer` that we can use to customize the base plots.
 
@@ -44,23 +44,23 @@ Let's implement a few custom renderers as examples:
 You might be familiar with adding random "jitter" to points in a scatter plot from other plotting libraries. We can implement that in EvilPlot as a custom point renderer. This adds a bit of jitter in the x dimension.
 
 ```scala
- def jitter(range: Double)(implicit theme: Theme): PointRenderer = new PointRenderer {
-    def render(plot: Plot, extent: Extent, context: Int): Drawable = {
-      import scala.util.Random
-      val yTransform = (y: Double) => plot.xtransform(plot, extent)(y) + plot.xbounds.min
-      Disc.centered(theme.elements.pointSize)
-        .transY(yTransform(range * Random.nextDouble() - .5))
-    }
+def jitter(range: Double)(implicit theme: Theme): PointRenderer = new PointRenderer {
+  def render(plot: Plot, extent: Extent, context: Int): Drawable = {
+    import scala.util.Random
+    val yTransform = (y: Double) => plot.xtransform(plot, extent)(y) + plot.xbounds.min
+    Disc.centered(theme.elements.pointSize)
+      .transY(yTransform(range * Random.nextDouble() - .5))
   }
+}
 ```
 
 A plot using the default `PointRenderer` at left and the `jitter` renderer at right:
 <div class="row">
 <div class="col-md-6">
-<img src="/img/docs/custom-renderers/nojitter.png" class="img-responsive">
+<img src="/cibotech/evilplot/img/docs/custom-renderers/nojitter.png" class="img-responsive">
 </div>
 <div class="col-md-6">
-<img src="/img/docs/custom-renderers/jitter.png" class="img-responsive">
+<img src="/cibotech/evilplot/img/docs/custom-renderers/jitter.png" class="img-responsive">
 </div>
 </div>
 
@@ -83,8 +83,7 @@ For a stacked bar chart, things might get a bit more complicated. But, we can us
 ```scala
 import com.cibo.evilplot.colors.HTMLNamedColors.{crimson, dodgerBlue}
 val coloring: Double => Color = (d: Double) =>
-	if (d <= 0) crimson
-    	else dodgerBlue
+ if (d <= 0) crimson else dodgerBlue
 BarChart.custom(Seq(-15, 22, -5).map(Bar(_)), Some(colorBy(coloring)))
   .xAxis(Seq("one", "two", "three"))
   .yAxis()
@@ -94,6 +93,6 @@ BarChart.custom(Seq(-15, 22, -5).map(Bar(_)), Some(colorBy(coloring)))
 ```
 </div>
 <div class="col-md-6">
-<img src="/img/docs/custom-renderers/colorby.png" class="img-responsive">
+<img src="/cibotech/evilplot/img/docs/custom-renderers/colorby.png" class="img-responsive">
 </div>
 </div>

@@ -6,13 +6,6 @@ lazy val scalaFiddleUrl = {
 	else "http://localhost:8880/"
 }
 
-micrositeConfigYaml := microsites.ConfigYml(yamlInline =
-s"""
-  |scalafiddle:
-  |  dependency: com.cibo %%% evilplot % 0.1.883
-  |  scalaFiddleUrl: $scalaFiddleUrl
-""".stripMargin)
-
 name := "EvilPlot"
 description := "Combinators for graphics"
 organizationName := "CiBO Technologies"
@@ -20,7 +13,8 @@ organizationHomepage := Some(new java.net.URL("http://www.cibotechnologies.com")
 micrositeGithubOwner := "cibotech"
 micrositeGithubRepo := "evilplot"
 micrositeFooterText := None
-micrositeDocumentationUrl := "/docs"
+micrositeDocumentationUrl := "/cibotech/evilplot/docs/"
+micrositeBaseUrl := "/cibotech/evilplot/"
 micrositeShareOnSocial := false
 // Can turn these off depending on what we want to do...
 // micrositeGithubLinks := false

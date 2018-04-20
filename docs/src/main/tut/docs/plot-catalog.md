@@ -2,13 +2,14 @@
 layout: docs
 title: Plot Catalog
 ---
+# Plot Catalog
 
 This is the Plot Catalog, where we've assembled some interesting EvilPlots along with the code to produce them.
 
 ## Using Emoji
 
 ## Tufte style box plot
-Inspired by Edward Tufte's _The Visual Display of Quantitative Information_. We define a custom `BoxRenderer`:
+<!-- Inspired by Edward Tufte's _The Visual Display of Quantitative Information_. We define a custom `BoxRenderer`:
 ```scala
 def tufteLikeBoxRenderer(implicit theme: Theme) = new BoxRenderer {
 	def render(plot: Plot, extent: Extent, summary: BoxPlotSummaryStatistics): Drawable = {
@@ -46,10 +47,10 @@ BoxPlot(data, boxRenderer = Some(tufteLikeBoxRenderer))
 ```
 </div>
 <div class="col-md-6">
-<img src="/img/docs/plot-catalog/tufte_box_plot.png" class="img-responsive"/>
+<img src="/cibotech/evilplot/img/docs/plot-catalog/tufte_box_plot.png" class="img-responsive"/>
 </div>
 </div>
-
+ -->
 ## Pairs Plot
 A pairs plot can be built by combining `ScatterPlot` and `Histogram` plots with `Facet`.
 
@@ -83,6 +84,6 @@ Facets(plots)
 ```
 </div>
 <div class="col-md-6">
-<img src="/img/docs/plot-catalog/custom_pairs_plot.png" class="img-responsive"/>
+<img src="/cibotech/evilplot/img/docs/plot-catalog/custom_pairs_plot.png" class="img-responsive"/>
 </div>
 </div>

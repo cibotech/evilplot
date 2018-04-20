@@ -7,7 +7,7 @@ title: Getting Started
 To get going with EvilPlot, you'll need to add it to your build.
 ```scala
 resolvers += Seq(Resolver.bintrayRepo("cibotech", "public"))
-libraryDependencies += "com.cibo" %%% "evilplot" % "0.2.0"
+libraryDependencies += "com.cibo" %% "evilplot" % "0.2.0" // %%% for ScalaJS
 ```
 
 ## Our first plot
@@ -19,18 +19,18 @@ our first plot, a simple scatter plot with sequential x-values and random y-valu
 <div class="row">
   <div class="col-md-6" markdown="1">
 ```scala
-   import com.cibo.evilplot.plot._
-    import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-    import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.plot._
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+import com.cibo.evilplot.numeric.Point
 
-    val data = Seq.tabulate(100) { i =>
-      Point(i.toDouble, scala.util.Random.nextDouble())
-    }
-    ScatterPlot(data).render()
+val data = Seq.tabulate(100) { i =>
+  Point(i.toDouble, scala.util.Random.nextDouble())
+}
+ScatterPlot(data).render()
 ```
 </div>
 <div class="col-md-6">
-  <img src="/img/docs/getting-started/scatter1.png" class="img-responsive"/>
+  <img src="/cibotech/evilplot/img/docs/getting-started/scatter1.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -61,7 +61,7 @@ ScatterPlot(data)
 ```
 </div>
 <div class="col-md-6">
-<img src="/img/docs/getting-started/scatter2.png" class="img-responsive"/>
+<img src="/cibotech/evilplot/img/docs/getting-started/scatter2.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -90,4 +90,3 @@ The rest of this tutorial is split up as follows:
 + How to use plot element renderers, which allow you to fully customize your plots.
 + Plot themes
 + The `Plot` data type itself, and implementing completely custom plots.
-

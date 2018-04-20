@@ -29,39 +29,31 @@ A `PointRenderer` tells your plot how to draw the data. When we don't pass one i
 	<div class="col-md-6" markdown="1">
 
 ```scala
-   import com.cibo.evilplot.plot._
-      import com.cibo.evilplot.plot.renderers.PointRenderer
-      import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-      import scala.util.Random
+  import com.cibo.evilplot.plot._
+  import com.cibo.evilplot.plot.renderers.PointRenderer
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+  import scala.util.Random
 
-      sealed trait Quality
-      case object Good extends Quality
-      case object Bad extends Quality
-      val qualities = Seq(Good, Bad)
+  val qualities = Seq("good", "bad")
 
-      implicit object qualOrdering extends Ordering[Quality] {
-        def compare(x: Quality, y: Quality): Int = x.toString.compare(y.toString)
-      }
+  final case class MyFancyData(x: Double, y: Double, quality: String)
+  val data: Seq[MyFancyData] = Seq.fill(100) {
+    MyFancyData(Random.nextDouble(), Random.nextDouble(), qualities(Random.nextInt(2)))
+  }
+  val points = data.map(d => Point(d.x, d.y))
 
-      final case class MyFancyData(x: Double, y: Double, quality: Quality)
-      val data: Seq[MyFancyData] = Seq.fill(100) {
-        MyFancyData(Random.nextDouble(), Random.nextDouble(), qualities(Random.nextInt(2)))
-      }
-      val points = data.map(d => Point(d.x, d.y))
-
-      ScatterPlot(
-        points,
-        pointRenderer = Some(PointRenderer.colorByCategory(data.map(_.quality)))
-      ).xAxis()
-        .yAxis()
-        .frame()
-        .rightLegend()
-        .render()
-    }
+  ScatterPlot(
+    points,
+    pointRenderer = Some(PointRenderer.colorByCategory(data.map(_.quality)))
+  ).xAxis()
+   .yAxis()
+   .frame()
+   .rightLegend()
+   .render()
 ```
 </div>
 <div class="col-md-6">
-	<img src="/img/docs/plots/pointrenderer.png" class="img-responsive"/>
+	<img src="/cibotech/evilplot/img/docs/plots/pointrenderer.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -75,34 +67,53 @@ Let's look at two equally meaningful plots. The first is a [Ramachandran plot](h
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-  ContourPlot(AlanineData.data, contours = Some(8))
-    .xLabel("phi")
-    .yLabel("psi")
-    // For reference, fix the bounds over the allowed phi/psi ranges.
-    .xbounds(-180, 180)
-    .ybounds(-180, 180)
-    .xAxis()
-    .yAxis()
-    .frame()
+import com.cibo.evilplot.colors.HTMLNamedColors._
+ContourPlot(
+  AlanineData.data,
+  surfaceRenderer = Some(SurfaceRenderer.contours(Some(dodgerBlue)))
+)
+  .xLabel("phi")
+  .yLabel("psi")
+  // For reference, fix the bounds over the allowed phi/psi ranges.
+  .xbounds(-180, 180)
+  .ybounds(-180, 180)
+  .xAxis()
+  .yAxis()
+  .frame()
 ```
 </div>
 <div class="col-md-6">
-	<img src="/img/docs/plots/contour.png" class="img-responsive"/>
+	<img src="/cibotech/evilplot/img/docs/plots/contour.png" class="img-responsive"/>
 </div>
 </div>
 
-We might wonder what configuration the peptide was in at the started of the simulation. Let's put a point on
+We might wonder what configuration the peptide was in at the beginning of the simulation. Let's put a point on
 the chart that shows the initial configuration.
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-ScatterPlot(
-  AlanineData.head,
-  pointRenderer = Some(PointRenderer.default(color = Some(crimson))))
+val initial = ScatterPlot(
+  AlanineData.data.head,
+  pointRenderer = Some(PointRenderer.default(color = Some(crimson)))
+)
+
+val contours = ContourPlot(
+  AlanineData.data,
+  surfaceRenderer = Some(SurfaceRenderer.contours(Some(dodgerBlue)))
+)
+
+Overlay(contours, initial)
+  .xLabel("phi")
+  .yLabel("psi")
+  .xbounds(-180, 180)
+  .ybounds(-180, 180)
+  .xAxis()
+  .yAxis()
+  .frame()
 ```
 </div>
 <div class="col-md-6">
-<img src="/img/docs/plots/ramarefpoints.png" class="img-responsive"/>
+<img src="/cibotech/evilplot/img/docs/plots/withinitialpoint.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -123,13 +134,16 @@ But we don't have to stop at plotting these separately. EvilPlot will let us pla
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-		overlayed
-			.topPlot(phiHistogram)
-			.rightPlot(psiHistogram)
+Overlay(contours, initial)
+  .topPlot(phiHistogram)
+  .rightPlot(psiHistogram)
+  .xLabel("phi")
+  .yLabel("psi")
+  .frame()
 ```
 </div>
 <div class="col-md-6">
-	<img src="/img/docs/plots/sideplots.png" class="img-responsive"/>
+	<img src="/cibotech/evilplot/img/docs/plots/sideplots.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -142,14 +156,35 @@ Imagine that after you made the visualization above, it turned out that you want
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-REAL CODE HERE
+
+Facets(
+  AlanineData.allDihedrals.map(
+    _.map(ps =>
+      ContourPlot(ps,
+       surfaceRenderer = Some(SurfaceRenderer.contours(Some(dodgerBlue))))
+        .overlay(ScatterPlot(ps.head,
+           pointRenderer = Some(PointRenderer.default(Some(crimson)))))
+        .topPlot(Histogram(ps.map(_.x)))
+        .rightPlot(Histogram(ps.map(_.y)))
+        .frame()
+    )
+  )
+).topLabels(AlanineData.temps.map(k => s"$k K"))
+ .rightLabels(Seq("params1", "params2"))
+ .xbounds(-180, 180)
+ .ybounds(-180, 180)
+ .xAxis(tickCount = Some(6))
+ .yAxis(tickCount = Some(6))
+ .xLabel("phi")
+ .yLabel("psi")
+ .render()
 ```
 </div>
 <div class="col-md-6">
-  <img src="/img/docs/plots/facetedcontours.png" class="img-responsive"/>
+  <img src="/cibotech/evilplot/img/docs/plots/facetedcontours.png" class="img-responsive"/>
 </div>
 </div>
 
 Hopefully, this example convinces you that it's easy to start with a simple visual and compose more and more complexity on top of it using plot combinators. We first saw that the base plot can be customized using `PlotRenderers`. After that we saw how simple `Plot => Plot` combinators can add additional features piece-by-piece. Next, we saw that "multilayer plots" are expressed in EvilPlot simply by applying `Overlay`, a function from `Seq[Plot] => Plot`. Finally, we saw how we can build a multivariate, faceted display out of other plots easily, regardless of how complicated the individual plots are.
 
-But, we're just getting started. Check out the [Plot Catalog](plot-catalog.html) for awesome examples of what you can do with EvilPlot. Or, read about the drawing API for some background before venturing into writing your own renderers, which is an easy way to make EvilPlot even more customizable. 
+But, we're just getting started. Check out the [Plot Catalog](plot-catalog.html) for awesome examples of what you can do with EvilPlot. Or, read about the [drawing API](drawing-api.html) for some background before venturing into writing your own renderers, which is an easy way to make EvilPlot even more customizable. 
