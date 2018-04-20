@@ -43,7 +43,7 @@ class DrawableSpec extends FunSpec with Matchers {
 
     it("does nothing") {
       val context = new MockRenderContext
-      EmptyDrawable().draw(context)   // This should not throw an exception
+      EmptyDrawable().draw(context) // This should not throw an exception
     }
 
     it("can be serialized") {

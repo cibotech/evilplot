@@ -43,16 +43,19 @@ trait SurfaceRenderer extends PlotElementRenderer[SurfaceRenderContext] {
 }
 
 object SurfaceRenderer {
+
   /** The element renderer context for surface renderers. */
-  case class SurfaceRenderContext(levels: Seq[Double],
-  currentLevelPaths: Seq[Seq[Point]],
-                                  currentLevel: Double)
+  case class SurfaceRenderContext(
+    levels: Seq[Double],
+    currentLevelPaths: Seq[Seq[Point]],
+    currentLevel: Double)
 
   def contours(
     color: Option[Color] = None
   )(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
     def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
-      surface.currentLevelPaths.map(pathpts => Path(pathpts.map(p => Point(p.x, p.y)), theme.elements.strokeWidth))
+      surface.currentLevelPaths
+        .map(pathpts => Path(pathpts.map(p => Point(p.x, p.y)), theme.elements.strokeWidth))
         .group
         .colored(color.getOrElse(theme.colors.path))
     }
@@ -61,7 +64,8 @@ object SurfaceRenderer {
   def densityColorContours(points: Seq[Seq[Seq[Point3]]])(implicit theme: Theme): SurfaceRenderer =
     new SurfaceRenderer {
       private def getColorSeq(numPoints: Int): Seq[Color] =
-        if (numPoints <= DefaultColors.lightPalette.length) DefaultColors.lightPalette.take(numPoints)
+        if (numPoints <= DefaultColors.lightPalette.length)
+          DefaultColors.lightPalette.take(numPoints)
         else Color.stream.take(numPoints)
 
       def getBySafe[T](data: Seq[T])(f: T => Option[Double]): Option[Bounds] = {
@@ -71,17 +75,21 @@ object SurfaceRenderer {
 
       override def legendContext(levels: Seq[Double]): LegendContext = {
         val colors = getColorSeq(points.length)
-        getBySafe(points)(_.headOption.flatMap(_.headOption.map(_.z))).map { bs =>
-          val bar = ScaledColorBar(colors, bs.min, bs.max)
-          LegendContext.fromColorBar(bar)(theme)
-        }.getOrElse(LegendContext.empty)
+        getBySafe(points)(_.headOption.flatMap(_.headOption.map(_.z)))
+          .map { bs =>
+            val bar = ScaledColorBar(colors, bs.min, bs.max)
+            LegendContext.fromColorBar(bar)(theme)
+          }
+          .getOrElse(LegendContext.empty)
       }
 
       def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
-        val surfaceRenderer = getBySafe(points)(_.headOption.flatMap(_.headOption.map(_.z))).map { bs =>
-          val bar = ScaledColorBar(getColorSeq(points.length), bs.min, bs.max)
-          densityColorContours(bar)(points)
-        }.getOrElse(contours())
+        val surfaceRenderer = getBySafe(points)(_.headOption.flatMap(_.headOption.map(_.z)))
+          .map { bs =>
+            val bar = ScaledColorBar(getColorSeq(points.length), bs.min, bs.max)
+            densityColorContours(bar)(points)
+          }
+          .getOrElse(contours())
         surfaceRenderer.render(plot, extent, surface)
       }
     }
@@ -90,22 +98,27 @@ object SurfaceRenderer {
     bar: ScaledColorBar
   )(points: Seq[Seq[Seq[Point3]]])(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
     def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
-      surface.currentLevelPaths.headOption.map(pts =>
-        contours(Some(pts.headOption.fold(theme.colors.path)(_ => bar.getColor(surface.currentLevel))))
-        .render(plot, extent, surface)
-      )
-      .getOrElse(EmptyDrawable())
+      surface.currentLevelPaths.headOption
+        .map(pts =>
+          contours(Some(pts.headOption.fold(theme.colors.path)(_ =>
+            bar.getColor(surface.currentLevel))))
+            .render(plot, extent, surface))
+        .getOrElse(EmptyDrawable())
     }
   }
 
-  def densityColorContours(coloring: Option[Coloring[Double]] = None
-                          )(implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
+  def densityColorContours(coloring: Option[Coloring[Double]] = None)(
+    implicit theme: Theme): SurfaceRenderer = new SurfaceRenderer {
     private val useColoring: Coloring[Double] = coloring.getOrElse(theme.colors.continuousColoring)
 
     def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
       val color = useColoring(surface.levels).apply(surface.currentLevel)
-      surface.currentLevelPaths.map(pts => contours(Some(color))
-          .render(plot, extent, surface)).group
+      surface.currentLevelPaths
+        .map(
+          pts =>
+            contours(Some(color))
+              .render(plot, extent, surface))
+        .group
     }
 
     override def legendContext(levels: Seq[Double]): LegendContext = {

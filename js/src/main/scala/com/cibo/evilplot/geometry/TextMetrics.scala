@@ -50,11 +50,10 @@ object TextMetrics extends TextMetricsInterface {
 
   private[geometry] def withStyle[T](size: Double, fontFace: String)(
     f: CanvasRenderingContext2D => T
-  ): CanvasRenderingContext2D => T = {
-    c =>
-      c.textBaseline = "top"
-      c.font = size.toString + "px" + " " + fontFace
-      f(c)
+  ): CanvasRenderingContext2D => T = { c =>
+    c.textBaseline = "top"
+    c.font = size.toString + "px" + " " + fontFace
+    f(c)
   }
 
   def measure(text: Text): Extent = {

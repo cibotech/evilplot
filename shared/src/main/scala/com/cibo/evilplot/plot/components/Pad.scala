@@ -39,7 +39,8 @@ case class Pad(
   pad: Double
 ) extends PlotComponent {
   override def size(plot: Plot): Extent = Extent(pad, pad)
-  def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = EmptyDrawable().resize(size(plot))
+  def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable =
+    EmptyDrawable().resize(size(plot))
 }
 
 trait PadImplicits {

@@ -40,7 +40,8 @@ class XyPlotSpec extends FunSpec with Matchers {
 
   describe("XyPlot") {
     it("has the right bounds") {
-      val plot = XyPlot(Seq(Point(1, 2), Point(3, 4)), xboundBuffer = Some(0), yboundBuffer = Some(0))
+      val plot =
+        XyPlot(Seq(Point(1, 2), Point(3, 4)), xboundBuffer = Some(0), yboundBuffer = Some(0))
       plot.xbounds shouldBe Bounds(1, 3)
       plot.ybounds shouldBe Bounds(2, 4)
     }

@@ -43,21 +43,24 @@ object Heatmap {
   private case class HeatmapRenderer(
     data: Seq[Seq[Double]],
     colorBar: ScaledColorBar
-  )(implicit theme: Theme) extends PlotRenderer {
+  )(implicit theme: Theme)
+      extends PlotRenderer {
     override def legendContext: LegendContext = LegendContext.fromColorBar(colorBar)
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
       val rowCount = data.size
 
-      data.zipWithIndex.map { case (row, yIndex) =>
-        row.zipWithIndex.map { case (value, xIndex) =>
-          val y = ytransformer(yIndex)
-          val x = xtransformer(xIndex)
-          val width = xtransformer(xIndex + 1) - x
-          val height = -(ytransformer(yIndex + 1) - y)
-          Rect(width, height).filled(colorBar.getColor(value)).translate(x, y - height)
-        }.group
+      data.zipWithIndex.map {
+        case (row, yIndex) =>
+          row.zipWithIndex.map {
+            case (value, xIndex) =>
+              val y = ytransformer(yIndex)
+              val x = xtransformer(xIndex)
+              val width = xtransformer(xIndex + 1) - x
+              val height = -(ytransformer(yIndex + 1) - y)
+              Rect(width, height).filled(colorBar.getColor(value)).translate(x, y - height)
+          }.group
       }.group
     }
   }

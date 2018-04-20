@@ -36,11 +36,13 @@ import com.cibo.evilplot.geometry._
 import javax.imageio.ImageIO
 package object evilplot {
   implicit class AwtDrawableOps(r: Drawable) {
+
     /** Return a BufferedImage containing the contents of this Drawable. */
     def asBufferedImage: BufferedImage = {
       val scale = 4.0
       val paddingHack = 20
-      val bi = new BufferedImage((r.extent.width * scale.toInt).toInt,
+      val bi = new BufferedImage(
+        (r.extent.width * scale.toInt).toInt,
         (r.extent.height * scale).toInt,
         BufferedImage.TYPE_INT_ARGB)
       val gfx = bi.createGraphics()

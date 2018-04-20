@@ -82,18 +82,25 @@ private[evilplot] object Clipping {
         if (clipEdge.contains(path.head)) Vector(path.head) else Vector.empty[Point]
       )
 
-      val (_, segmented, remainder) = path.tail.foldLeft(init) { case ((s, allSegments, currentSegment), point) =>
-        if (clipEdge.contains(point)) {
-          if (!clipEdge.contains(s)) {
-            (point, allSegments, currentSegment ++ clipEdge.intersection(Edge(s, point)).toSeq :+ point)
+      val (_, segmented, remainder) = path.tail.foldLeft(init) {
+        case ((s, allSegments, currentSegment), point) =>
+          if (clipEdge.contains(point)) {
+            if (!clipEdge.contains(s)) {
+              (
+                point,
+                allSegments,
+                currentSegment ++ clipEdge.intersection(Edge(s, point)).toSeq :+ point)
+            } else {
+              (point, allSegments, currentSegment :+ point)
+            }
+          } else if (clipEdge.contains(s)) {
+            (
+              point,
+              allSegments :+ (currentSegment ++ clipEdge.intersection(Edge(s, point)).toSeq),
+              Vector.empty[Point])
           } else {
-            (point, allSegments, currentSegment :+ point)
+            (point, allSegments, currentSegment)
           }
-        } else if (clipEdge.contains(s)) {
-          (point, allSegments :+ (currentSegment ++ clipEdge.intersection(Edge(s, point)).toSeq), Vector.empty[Point])
-        } else {
-          (point, allSegments, currentSegment)
-        }
       }
 
       if (remainder.nonEmpty) segmented :+ remainder else segmented
@@ -116,19 +123,22 @@ private[evilplot] object Clipping {
     boundEdges(extent).foldLeft(points.toVector) { (inputList, clipEdge) =>
       if (inputList.nonEmpty) {
         val init = (inputList.last, Vector.empty[Point])
-        inputList.foldLeft(init) { case ((s, outputList), point) =>
-          if (clipEdge.contains(point)) {
-            if (!clipEdge.contains(s)) {
-              (point, outputList ++ clipEdge.intersection(Edge(s, point)).toSeq :+ point)
-            } else {
-              (point, outputList :+ point)
-            }
-          } else if (clipEdge.contains(s)) {
-            (point, outputList ++ clipEdge.intersection(Edge(s, point)).toSeq)
-          } else {
-            (point, outputList)
+        inputList
+          .foldLeft(init) {
+            case ((s, outputList), point) =>
+              if (clipEdge.contains(point)) {
+                if (!clipEdge.contains(s)) {
+                  (point, outputList ++ clipEdge.intersection(Edge(s, point)).toSeq :+ point)
+                } else {
+                  (point, outputList :+ point)
+                }
+              } else if (clipEdge.contains(s)) {
+                (point, outputList ++ clipEdge.intersection(Edge(s, point)).toSeq)
+              } else {
+                (point, outputList)
+              }
           }
-        }._2
+          ._2
       } else {
         Vector.empty
       }

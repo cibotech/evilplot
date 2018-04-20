@@ -37,6 +37,7 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
 object LinePlot {
+
   /** Create a line plot from some data.  Convenience method on top of XyPlot
     *
     * @param data          The points to plot.
@@ -128,4 +129,3 @@ object LinePlot {
     XyPlot(data, Some(pointRenderer), Some(pathRenderer), xboundBuffer, yboundBuffer)
   }
 }
-

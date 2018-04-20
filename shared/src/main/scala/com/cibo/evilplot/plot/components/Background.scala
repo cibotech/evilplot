@@ -72,7 +72,6 @@ trait BackgroundImplicits {
   /** Add a border frame around the plot. */
   def frame(color: Color, strokeWidth: Double): Plot = {
     background((_, e: Extent) =>
-      Line(e.height, strokeWidth).rotated(90).center() above Line(e.width, strokeWidth).middle()
-    )
+      Line(e.height, strokeWidth).rotated(90).center() above Line(e.width, strokeWidth).middle())
   }
 }

@@ -58,10 +58,13 @@ final case class Plot(
   private[plot] val yfixed: Boolean = false,
   private[plot] val components: Seq[FacetedPlotComponent] = Seq.empty
 ) {
-  private[plot] def inBounds(point: Point): Boolean = xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
+  private[plot] def inBounds(point: Point): Boolean =
+    xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 
-  private[plot] def :+(component: FacetedPlotComponent): Plot = copy(components = components :+ component)
-  private[plot] def +:(component: FacetedPlotComponent): Plot = copy(components = component +: components)
+  private[plot] def :+(component: FacetedPlotComponent): Plot =
+    copy(components = components :+ component)
+  private[plot] def +:(component: FacetedPlotComponent): Plot =
+    copy(components = component +: components)
 
   /** Create a copy of this plot with updated x bounds
     * @param newBounds the new bounds.
@@ -87,15 +90,22 @@ final case class Plot(
 
   private[plot] def updateBounds(xb: Bounds, yb: Bounds): Plot = copy(xbounds = xb, ybounds = yb)
 
-  def setXTransform(xt: Plot.Transformer, fixed: Boolean): Plot = copy(xtransform = xt, xfixed = fixed)
-  def setYTransform(yt: Plot.Transformer, fixed: Boolean): Plot = copy(ytransform = yt, yfixed = fixed)
+  def setXTransform(xt: Plot.Transformer, fixed: Boolean): Plot =
+    copy(xtransform = xt, xfixed = fixed)
+  def setYTransform(yt: Plot.Transformer, fixed: Boolean): Plot =
+    copy(ytransform = yt, yfixed = fixed)
 
   lazy val topComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Top)
-  lazy val bottomComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Bottom)
-  lazy val leftComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Left)
-  lazy val rightComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Right)
-  lazy val backgroundComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Background)
-  lazy val overlayComponents: Seq[FacetedPlotComponent] = components.filter(_.position == Position.Overlay)
+  lazy val bottomComponents: Seq[FacetedPlotComponent] =
+    components.filter(_.position == Position.Bottom)
+  lazy val leftComponents: Seq[FacetedPlotComponent] =
+    components.filter(_.position == Position.Left)
+  lazy val rightComponents: Seq[FacetedPlotComponent] =
+    components.filter(_.position == Position.Right)
+  lazy val backgroundComponents: Seq[FacetedPlotComponent] =
+    components.filter(_.position == Position.Background)
+  lazy val overlayComponents: Seq[FacetedPlotComponent] =
+    components.filter(_.position == Position.Overlay)
 
   // Get the offset of the plot area.
   private[plot] lazy val plotOffset: Point = componentRenderer.plotOffset(this)
@@ -124,7 +134,8 @@ final case class Plot(
     val overlays = componentRenderer.renderFront(this, extent)
     val backgrounds = componentRenderer.renderBack(this, extent)
     val pextent = plotExtent(extent)
-    val renderedPlot = renderer.render(this, pextent).resize(pextent).translate(x = plotOffset.x, y = plotOffset.y)
+    val renderedPlot =
+      renderer.render(this, pextent).resize(pextent).translate(x = plotOffset.x, y = plotOffset.y)
     backgrounds behind renderedPlot behind overlays
   }
 }
@@ -140,14 +151,16 @@ object Plot {
   private[plot] case class DefaultXTransformer() extends Transformer {
     def apply(plot: Plot, plotExtent: Extent): Double => Double = {
       val scale = plotExtent.width / plot.xbounds.range
-      (x: Double) => (x - plot.xbounds.min) * scale
+      (x: Double) =>
+        (x - plot.xbounds.min) * scale
     }
   }
 
   private[plot] case class DefaultYTransformer() extends Transformer {
     def apply(plot: Plot, plotExtent: Extent): Double => Double = {
       val scale = plotExtent.height / plot.ybounds.range
-      (y: Double) => plotExtent.height - (y - plot.ybounds.min) * scale
+      (y: Double) =>
+        plotExtent.height - (y - plot.ybounds.min) * scale
     }
   }
 
@@ -181,17 +194,19 @@ object Plot {
       common ++ extraXs ++ rowExtra
     }
     val xoffsetPlots = plots.map { row =>
-      row.zip(xoffsets).map { case (subplot, xoffset) =>
-        subplot.padLeft(xoffset - subplot.plotOffset.x)
+      row.zip(xoffsets).map {
+        case (subplot, xoffset) =>
+          subplot.padLeft(xoffset - subplot.plotOffset.x)
       }
     }
 
     // Pad all plots in each row to start at the same y offset.
     val yoffsets = plotOffsets.map(_.maxBy(_.y).y)
-    val offsetPlots = xoffsetPlots.zip(yoffsets).map { case (row, yoffset) =>
-      row.map { subplot =>
-        subplot.padTop(yoffset - subplot.plotOffset.y)
-      }
+    val offsetPlots = xoffsetPlots.zip(yoffsets).map {
+      case (row, yoffset) =>
+        row.map { subplot =>
+          subplot.padTop(yoffset - subplot.plotOffset.y)
+        }
     }
 
     // Now the subplots all start at the same place, so we need to ensure they all
@@ -202,15 +217,17 @@ object Plot {
     val minHeight = plotAreas.minBy(_.height).height
     val rowCount = offsetPlots.length
     val columnCount = offsetPlots.maxBy(_.length).length
-    offsetPlots.zipWithIndex.map { case (row, rowIndex) =>
-      row.zipWithIndex.map { case (subplot, columnIndex) =>
-        val extraRight = if (columnIndex + 1 < columnCount) padRight else 0
-        val extraBottom = if (rowIndex + 1 < rowCount) padBottom else 0
-        val pe = subplot.plotExtent(extent)
-        val fillx = pe.width - minWidth + extraRight
-        val filly = pe.height - minHeight + extraBottom
-        subplot.padRight(fillx).padBottom(filly)
-      }
+    offsetPlots.zipWithIndex.map {
+      case (row, rowIndex) =>
+        row.zipWithIndex.map {
+          case (subplot, columnIndex) =>
+            val extraRight = if (columnIndex + 1 < columnCount) padRight else 0
+            val extraBottom = if (rowIndex + 1 < rowCount) padBottom else 0
+            val pe = subplot.plotExtent(extent)
+            val fillx = pe.width - minWidth + extraRight
+            val filly = pe.height - minHeight + extraBottom
+            subplot.padRight(fillx).padBottom(filly)
+        }
     }
   }
 }

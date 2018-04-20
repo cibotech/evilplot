@@ -71,9 +71,11 @@ trait FacetLabelImplicits {
     drawables.map(d => bg behind d.middle(extent.height))
   }
 
-  private def maxHeight(drawables: Seq[Drawable]): Double = drawables.maxBy(_.extent.height).extent.height
+  private def maxHeight(drawables: Seq[Drawable]): Double =
+    drawables.maxBy(_.extent.height).extent.height
 
-  private def maxWidth(drawables: Seq[Drawable]): Double = drawables.maxBy(_.extent.width).extent.width
+  private def maxWidth(drawables: Seq[Drawable]): Double =
+    drawables.maxBy(_.extent.width).extent.width
 
   /** Add a label above each facet.
     * @param labels A function to return the labels of the given size.
@@ -90,7 +92,8 @@ trait FacetLabelImplicits {
   def topLabels(
     labels: Seq[String]
   )(implicit theme: Theme): Plot = {
-    val drawableLabels = labels.map(Text(_, theme.fonts.facetLabelSize, theme.fonts.fontFace).padBottom(4))
+    val drawableLabels =
+      labels.map(Text(_, theme.fonts.facetLabelSize, theme.fonts.fontFace).padBottom(4))
     val func = topBottomLabelFunc(drawableLabels, theme.colors.background)(_)
     topLabels(func, maxHeight(drawableLabels))
   }
@@ -110,7 +113,8 @@ trait FacetLabelImplicits {
   def bottomLabels(
     labels: Seq[String]
   )(implicit theme: Theme): Plot = {
-    val drawableLabels = labels.map(Text(_, theme.fonts.facetLabelSize, theme.fonts.fontFace).padTop(4))
+    val drawableLabels =
+      labels.map(Text(_, theme.fonts.facetLabelSize, theme.fonts.fontFace).padTop(4))
     val func = topBottomLabelFunc(drawableLabels, theme.colors.background)(_)
     bottomLabels(func, maxHeight(drawableLabels))
   }
@@ -128,7 +132,8 @@ trait FacetLabelImplicits {
   def rightLabels(
     labels: Seq[String]
   )(implicit theme: Theme): Plot = {
-    val drawableLabels = labels.map(Text(_, theme.fonts.facetLabelSize, theme.fonts.fontFace).rotated(90).padLeft(4))
+    val drawableLabels =
+      labels.map(Text(_, theme.fonts.facetLabelSize, theme.fonts.fontFace).rotated(90).padLeft(4))
     val func = leftRightLabelFunc(drawableLabels, theme.colors.background)(_)
     rightLabels(func, maxWidth(drawableLabels))
   }
@@ -146,7 +151,8 @@ trait FacetLabelImplicits {
   def leftLabels(
     labels: Seq[String]
   )(implicit theme: Theme): Plot = {
-    val drawableLabels = labels.map(Text(_, theme.fonts.facetLabelSize, theme.fonts.fontFace).rotated(270).padRight(4))
+    val drawableLabels =
+      labels.map(Text(_, theme.fonts.facetLabelSize, theme.fonts.fontFace).rotated(270).padRight(4))
     val func = leftRightLabelFunc(drawableLabels, theme.colors.background)(_)
     leftLabels(func, maxWidth(drawableLabels))
   }

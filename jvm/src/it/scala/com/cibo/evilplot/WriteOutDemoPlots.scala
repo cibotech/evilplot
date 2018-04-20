@@ -36,9 +36,7 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
     it("is generated") {
       for { (plot, name) <- plots } {
         val bi = plot.asBufferedImage
-        ImageIO.write(bi,
-                      "png",
-                      new File(s"${tmpPath.toAbsolutePath.toString}/$name.png"))
+        ImageIO.write(bi, "png", new File(s"${tmpPath.toAbsolutePath.toString}/$name.png"))
       }
     }
   }

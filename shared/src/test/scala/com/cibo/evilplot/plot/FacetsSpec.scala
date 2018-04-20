@@ -90,7 +90,8 @@ class FacetsSpec extends FunSpec with Matchers {
         val position: Position = Position.Left
         override val repeated: Boolean = true
         override def size(plot: Plot): Extent = if (plot == inner2) Extent(10, 10) else Extent(0, 0)
-        def render(plot: Plot, extent: Extent, row: Int, column: Int)(implicit theme: Theme): Drawable =
+        def render(plot: Plot, extent: Extent, row: Int, column: Int)(
+          implicit theme: Theme): Drawable =
           EmptyDrawable()
       }
 

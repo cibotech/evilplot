@@ -42,18 +42,17 @@ sealed trait Coloring[A] {
 
 trait CategoricalColoring[A] extends Coloring[A] {
   protected def distinctElemsAndColorFunction(dataToColor: Seq[A])(
-      implicit theme: Theme): (Seq[A], A => Color)
+    implicit theme: Theme): (Seq[A], A => Color)
   def apply(dataToColor: Seq[A])(implicit theme: Theme): A => Color = {
     distinctElemsAndColorFunction(dataToColor)._2
   }
 
-  def legendContext(dataToColor: Seq[A])(
-      implicit theme: Theme): LegendContext = {
+  def legendContext(dataToColor: Seq[A])(implicit theme: Theme): LegendContext = {
     val (distinct, coloring) = distinctElemsAndColorFunction(dataToColor)
     LegendContext(
-      elements =
-        distinct.map(v => Disc(theme.elements.pointSize) filled coloring(v)),
-      labels = distinct.map(a => Text(a.toString, theme.fonts.legendLabelSize, theme.fonts.fontFace)),
+      elements = distinct.map(v => Disc(theme.elements.pointSize) filled coloring(v)),
+      labels =
+        distinct.map(a => Text(a.toString, theme.fonts.legendLabelSize, theme.fonts.fontFace)),
       defaultStyle = LegendStyle.Categorical
     )
   }
@@ -68,7 +67,7 @@ object CategoricalColoring {
     **/
   def themed[A: Ordering]: CategoricalColoring[A] = new CategoricalColoring[A] {
     protected def distinctElemsAndColorFunction(dataToColor: Seq[A])(
-        implicit theme: Theme): (Seq[A], A => Color) = {
+      implicit theme: Theme): (Seq[A], A => Color) = {
       val distinctElems = dataToColor.distinct.sorted
       val colors = theme.colors.stream.take(distinctElems.length).toVector
       require(
@@ -83,11 +82,10 @@ object CategoricalColoring {
     *                   in the legend.
     * @param function how to color a value of type A.
     */
-  def fromFunction[A](enumerated: Seq[A],
-                      function: A => Color): CategoricalColoring[A] =
+  def fromFunction[A](enumerated: Seq[A], function: A => Color): CategoricalColoring[A] =
     new CategoricalColoring[A] {
       protected def distinctElemsAndColorFunction(dataToColor: Seq[A])(
-          implicit theme: Theme): (Seq[A], A => Color) = {
+        implicit theme: Theme): (Seq[A], A => Color) = {
         (enumerated, function)
       }
     }
@@ -102,7 +100,7 @@ object CategoricalColoring {
     new CategoricalColoring[A] {
       require(colors.nonEmpty, "Cannot make a gradient out of zero colors.")
       protected def distinctElemsAndColorFunction(dataToColor: Seq[A])(
-          implicit theme: Theme): (Seq[A], A => Color) = {
+        implicit theme: Theme): (Seq[A], A => Color) = {
         val distinctElems: Seq[A] = dataToColor.distinct.sorted
         val f = GradientUtils.multiGradient(colors, 0, distinctElems.length - 1, gradientMode)
         (distinctElems, (a: A) => f(distinctElems.indexOf(a).toDouble))
@@ -119,6 +117,7 @@ object CategoricalColoring {
 
 trait ContinuousColoring extends Coloring[Double]
 object ContinuousColoring {
+
   /** Color using a 2-stop gradient.
     * @param start the left endpoint for interpolation
     * @param end the right endpoint for interpolation
@@ -142,13 +141,13 @@ object ContinuousColoring {
     * @param min min override for the data
     * @param max max override for the data
     */
-  def gradient3(start: Color,
+  def gradient3(
+    start: Color,
     middle: Color,
     end: Color,
     min: Option[Double] = None,
     max: Option[Double] = None,
-    gradientMode: GradientMode = GradientMode.Linear
-  ): ContinuousColoring = {
+    gradientMode: GradientMode = GradientMode.Linear): ContinuousColoring = {
     gradient(Seq(start, middle, end), min, max, gradientMode)
   }
 
@@ -157,29 +156,26 @@ object ContinuousColoring {
     * @param min min override for the data
     * @param max max override for the data
     */
-  def gradient(colors: Seq[Color],
+  def gradient(
+    colors: Seq[Color],
     min: Option[Double],
     max: Option[Double],
-    gradientMode: GradientMode
-  ): ContinuousColoring =
+    gradientMode: GradientMode): ContinuousColoring =
     new ContinuousColoring {
       require(colors.nonEmpty, "Cannot make a gradient out of zero colors.")
-      def apply(dataToColor: Seq[Double])(
-        implicit theme: Theme): Double => Color = {
+      def apply(dataToColor: Seq[Double])(implicit theme: Theme): Double => Color = {
         val xmin = min.getOrElse(dataToColor.min)
         val xmax = max.getOrElse(dataToColor.max)
         GradientUtils.multiGradient(colors, xmin, xmax, gradientMode)
       }
 
-      def legendContext(coloringDimension: Seq[Double])(
-        implicit theme: Theme): LegendContext = {
+      def legendContext(coloringDimension: Seq[Double])(implicit theme: Theme): LegendContext = {
         val bounds = Bounds.get(coloringDimension).get
         val axisDescriptor = ContinuousAxisDescriptor(bounds, 10, fixed = true)
         val coloring = apply(coloringDimension)
         LegendContext(
           elements = axisDescriptor.values.map(v =>
-            Rect(theme.fonts.legendLabelSize, theme.fonts.legendLabelSize) filled coloring(
-              v)),
+            Rect(theme.fonts.legendLabelSize, theme.fonts.legendLabelSize) filled coloring(v)),
           labels = axisDescriptor.labels.map(l =>
             Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace)),
           defaultStyle = LegendStyle.Gradient

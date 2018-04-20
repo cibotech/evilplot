@@ -42,7 +42,8 @@ object XyPlot {
     pointRenderer: PointRenderer,
     pathRenderer: PathRenderer
   ) extends PlotRenderer {
-    override def legendContext: LegendContext = pointRenderer.legendContext.combine(pathRenderer.legendContext)
+    override def legendContext: LegendContext =
+      pointRenderer.legendContext.combine(pathRenderer.legendContext)
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
@@ -51,11 +52,14 @@ object XyPlot {
         val y = ytransformer(point.y)
         Point(x, y)
       }
-      val points = xformedPoints.zipWithIndex.withFilter(p => plotExtent.contains(p._1))
-        .flatMap { case (point, index) =>
-          val r = pointRenderer.render(plot, plotExtent, index)
-          if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
-        }.group
+      val points = xformedPoints.zipWithIndex
+        .withFilter(p => plotExtent.contains(p._1))
+        .flatMap {
+          case (point, index) =>
+            val r = pointRenderer.render(plot, plotExtent, index)
+            if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
+        }
+        .group
 
       pathRenderer.render(plot, plotExtent, xformedPoints) inFrontOf points
     }
@@ -81,21 +85,25 @@ object XyPlot {
     require(yboundBuffer.getOrElse(0.0) >= 0.0)
     val xs = data.map(_.x)
     val xbounds = Plot.expandBounds(
-      Bounds(xs.reduceOption[Double](math.min).getOrElse(0.0), xs.reduceOption[Double](math.max).getOrElse(0.0)),
+      Bounds(
+        xs.reduceOption[Double](math.min).getOrElse(0.0),
+        xs.reduceOption[Double](math.max).getOrElse(0.0)),
       xboundBuffer.getOrElse(theme.elements.boundBuffer)
     )
     val ys = data.map(_.y)
     val ybounds = Plot.expandBounds(
-      Bounds(ys.reduceOption[Double](math.min).getOrElse(0.0), ys.reduceOption[Double](math.max).getOrElse(0.0)),
+      Bounds(
+        ys.reduceOption[Double](math.min).getOrElse(0.0),
+        ys.reduceOption[Double](math.max).getOrElse(0.0)),
       yboundBuffer.getOrElse(theme.elements.boundBuffer)
     )
     Plot(
       xbounds,
       ybounds,
-      XyPlotRenderer(data, pointRenderer.getOrElse(PointRenderer.default()), pathRenderer.getOrElse(PathRenderer.default()))
+      XyPlotRenderer(
+        data,
+        pointRenderer.getOrElse(PointRenderer.default()),
+        pathRenderer.getOrElse(PathRenderer.default()))
     )
   }
 }
-
-
-

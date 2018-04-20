@@ -56,13 +56,15 @@ object Overlay {
   // Update subplots to have the same transform (if not fixed).
   private def getTransformedSubplots(plot: Plot, subplots: Seq[Plot]): Seq[Plot] = {
     subplots.map { subplot =>
-      val withX = if (subplot.xfixed) subplot else subplot.setXTransform(plot.xtransform, fixed = false)
+      val withX =
+        if (subplot.xfixed) subplot else subplot.setXTransform(plot.xtransform, fixed = false)
       if (withX.yfixed) withX else withX.setYTransform(plot.ytransform, fixed = false)
     }
   }
 
   private case class OverlayPlotRenderer(subplots: Seq[Plot]) extends PlotRenderer {
-    override def legendContext: LegendContext = LegendContext.combine(subplots.map(_.renderer.legendContext))
+    override def legendContext: LegendContext =
+      LegendContext.combine(subplots.map(_.renderer.legendContext))
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       val updatedPlots = updateSubplotBounds(
         subplots = Plot.padPlots(Seq(getTransformedSubplots(plot, subplots)), plotExtent, 0, 0).head,

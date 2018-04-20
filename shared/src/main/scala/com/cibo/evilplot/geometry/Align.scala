@@ -55,4 +55,3 @@ object Align {
   }
   def middle(items: Drawable*): Seq[Drawable] = middleSeq(items)
 }
-

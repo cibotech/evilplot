@@ -31,7 +31,17 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Clipping, Drawable, EmptyDrawable, Extent, Line, Path, StrokeStyle, Style, Text}
+import com.cibo.evilplot.geometry.{
+  Clipping,
+  Drawable,
+  EmptyDrawable,
+  Extent,
+  Line,
+  Path,
+  StrokeStyle,
+  Style,
+  Text
+}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, Plot}
@@ -56,25 +66,28 @@ object PathRenderer {
   )(implicit theme: Theme): PathRenderer = new PathRenderer {
     override def legendContext: LegendContext = label match {
       case _: EmptyDrawable => LegendContext.empty
-      case d                => LegendContext.single(
-        StrokeStyle(
-          Line(
-            legendStrokeLength, strokeWidth.getOrElse(theme.elements.strokeWidth)
+      case d =>
+        LegendContext.single(
+          StrokeStyle(
+            Line(
+              legendStrokeLength,
+              strokeWidth.getOrElse(theme.elements.strokeWidth)
+            ),
+            color.getOrElse(theme.colors.path)
           ),
-          color.getOrElse(theme.colors.path)
-        ),
-        d
-      )
+          d
+        )
     }
 
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
-      Clipping.clipPath(path, extent).map(segment =>
-        StrokeStyle(Path(
-          segment,
-          strokeWidth.getOrElse(theme.elements.strokeWidth)),
-          color.getOrElse(theme.colors.path)
-        )
-      ).group
+      Clipping
+        .clipPath(path, extent)
+        .map(
+          segment =>
+            StrokeStyle(
+              Path(segment, strokeWidth.getOrElse(theme.elements.strokeWidth)),
+              color.getOrElse(theme.colors.path)))
+        .group
     }
   }
 
@@ -105,7 +118,8 @@ object PathRenderer {
     * @param color the color of the path
     * @param label the label for the legend
     */
-  def closed(strokeWidth: Option[Double] = None,
+  def closed(
+    strokeWidth: Option[Double] = None,
     color: Option[Color] = None,
     label: Drawable = EmptyDrawable())(
     implicit theme: Theme
@@ -129,4 +143,3 @@ object PathRenderer {
     Point(min(max(point.x, 0), extent.width), min(max(point.y, 0), extent.height))
   }
 }
-

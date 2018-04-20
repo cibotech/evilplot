@@ -55,14 +55,14 @@ object FunctionPlot {
     pointRenderer: Option[PointRenderer] = None,
     xBoundBuffer: Option[Double] = None,
     yBoundBuffer: Option[Double] = None)(implicit theme: Theme): Plot = {
-    require(numPoints.forall(_ != 0),
-      "Cannot make a function plot using zero points.")
+    require(numPoints.forall(_ != 0), "Cannot make a function plot using zero points.")
     val pts = FunctionPlotLine.pointsForFunction(
       function,
       xbounds.getOrElse(defaultBounds),
       numPoints.getOrElse(defaultNumPoints))
 
-    XyPlot(pts,
+    XyPlot(
+      pts,
       pointRenderer.orElse(Some(PointRenderer.empty())),
       pathRenderer,
       xBoundBuffer,
@@ -86,13 +86,7 @@ object FunctionPlot {
     yBoundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
     val renderer = Some(PathRenderer.named(name, color, strokeWidth))
-    apply(function,
-      xbounds,
-      numPoints,
-      renderer,
-      None,
-      xBoundBuffer,
-      yBoundBuffer)
+    apply(function, xbounds, numPoints, renderer, None, xBoundBuffer, yBoundBuffer)
   }
 
   /** Plot a function using a name for the legend.
@@ -101,7 +95,8 @@ object FunctionPlot {
     * @param xbounds   the bounds to plot the function over
     * @param numPoints the number of points to evaluate `function` at
     */
-  def series(function: Double => Double,
+  def series(
+    function: Double => Double,
     label: Drawable,
     color: Color,
     xbounds: Option[Bounds],
@@ -110,12 +105,6 @@ object FunctionPlot {
     xBoundBuffer: Option[Double],
     yBoundBuffer: Option[Double])(implicit theme: Theme): Plot = {
     val renderer = Some(PathRenderer.default(strokeWidth, Some(color), label))
-    apply(function,
-      xbounds,
-      numPoints,
-      renderer,
-      None,
-      xBoundBuffer,
-      yBoundBuffer)
+    apply(function, xbounds, numPoints, renderer, None, xBoundBuffer, yBoundBuffer)
   }
 }

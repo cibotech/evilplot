@@ -53,13 +53,17 @@ object LegendRenderer {
       val labels = context.labels
       val elementSize = labels.maxBy(_.extent.height).extent.height
       val elementExtent = Extent(elementSize, elementSize)
-      context.elements.zip(labels).map { case (element, label) =>
-        // The indicator will render itself centered on the origin, so we need to translate.
-        val offsetx = (elementSize - element.extent.width) / 2
-        val offsety = (elementSize - element.extent.height) / 2
-        val indicator = element.translate(x = offsetx, y = offsety).resize(elementExtent)
-        indicator.beside(label.padLeft(leftPadding)).padAll(spacing / 2)
-      }.reduce(reduction)
+      context.elements
+        .zip(labels)
+        .map {
+          case (element, label) =>
+            // The indicator will render itself centered on the origin, so we need to translate.
+            val offsetx = (elementSize - element.extent.width) / 2
+            val offsety = (elementSize - element.extent.height) / 2
+            val indicator = element.translate(x = offsetx, y = offsety).resize(elementExtent)
+            indicator.beside(label.padLeft(leftPadding)).padAll(spacing / 2)
+        }
+        .reduce(reduction)
     }
   }
 
@@ -73,11 +77,13 @@ object LegendRenderer {
       val (startLabel, stopLabel) = (context.labels.head, context.labels.last)
       val elementSize = math.max(startLabel.extent.height, stopLabel.extent.height)
       val elementExtent = Extent(elementSize, elementSize)
-      val inner = context.elements.map { element =>
-        val offsetx = (elementSize - element.extent.width) / 2
-        val offsety = (elementSize - element.extent.height) / 2
-        element.translate(x = offsetx, y = offsety).resize(elementExtent)
-      }.reduce(reduction)
+      val inner = context.elements
+        .map { element =>
+          val offsetx = (elementSize - element.extent.width) / 2
+          val offsety = (elementSize - element.extent.height) / 2
+          element.translate(x = offsetx, y = offsety).resize(elementExtent)
+        }
+        .reduce(reduction)
       Seq(startLabel.padAll(spacing / 2), inner, stopLabel.padAll(spacing / 2)).reduce(reduction)
     }
   }

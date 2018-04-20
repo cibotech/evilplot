@@ -46,25 +46,25 @@ object JSONUtils {
   private def shortenedName(s: String): String = {
     s match {
       case "EmptyDrawable" => "E"
-      case "Line" => "L"
-      case "Path" => "P"
-      case "Polygon" => "p"
-      case "Rect" => "R"
-      case "BorderRect" => "B"
-      case "Disc" => "D"
-      case "Wedge" => "W"
-      case "Translate" => "T"
-      case "Affine" => "A"
-      case "Scale" => "C"
-      case "Rotate" => "O"
-      case "Group" => "G"
-      case "Resize" => "Re"
-      case "Style" => "S"
-      case "StrokeStyle" => "Y"
-      case "StrokeWeight" => "H"
-      case "Text" => "X"
-      case "HSLA" => "c"
-      case other => other
+      case "Line"          => "L"
+      case "Path"          => "P"
+      case "Polygon"       => "p"
+      case "Rect"          => "R"
+      case "BorderRect"    => "B"
+      case "Disc"          => "D"
+      case "Wedge"         => "W"
+      case "Translate"     => "T"
+      case "Affine"        => "A"
+      case "Scale"         => "C"
+      case "Rotate"        => "O"
+      case "Group"         => "G"
+      case "Resize"        => "Re"
+      case "Style"         => "S"
+      case "StrokeStyle"   => "Y"
+      case "StrokeWeight"  => "H"
+      case "Text"          => "X"
+      case "HSLA"          => "c"
+      case other           => other
     }
   }
   // scalastyle:on
@@ -74,7 +74,7 @@ object JSONUtils {
   def decodeStr[A: Decoder](input: String): A = {
     val a: Either[Error, A] = decode[A](input)
     a match {
-      case Left(error) => throw error
+      case Left(error)   => throw error
       case Right(result) => result
     }
   }

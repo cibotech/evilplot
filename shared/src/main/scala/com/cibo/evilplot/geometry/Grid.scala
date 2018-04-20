@@ -30,7 +30,12 @@
 
 package com.cibo.evilplot.geometry
 
-case class Grid(numRows: Int, numCols: Int, rs: Seq[Drawable], bottomPadding: Double = 0, rightPadding: Double = 0) {
+case class Grid(
+  numRows: Int,
+  numCols: Int,
+  rs: Seq[Drawable],
+  bottomPadding: Double = 0,
+  rightPadding: Double = 0) {
   // I don't think this is true.
 //  require(rs.length == numRows * numCols, s"must supply a list of ${numRows * numCols} elements")
 
@@ -39,12 +44,14 @@ case class Grid(numRows: Int, numCols: Int, rs: Seq[Drawable], bottomPadding: Do
   private def index(row: Int, col: Int): Int = row * numCols + col
 
   def drawable: Drawable = {
-    rs.grouped(numCols).map { row =>
-      row.reduce { (a: Drawable, b: Drawable) =>
-        a padRight rightPadding beside b
+    rs.grouped(numCols)
+      .map { row =>
+        row.reduce { (a: Drawable, b: Drawable) =>
+          a padRight rightPadding beside b
+        }
       }
-    }.reduce { (a: Drawable, b: Drawable) =>
-      a padBottom bottomPadding above b
-    }
+      .reduce { (a: Drawable, b: Drawable) =>
+        a padBottom bottomPadding above b
+      }
   }
 }

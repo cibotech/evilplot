@@ -42,9 +42,9 @@ class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
       val colorBar = ScaledColorBar(Color.getGradientSeq(3), z.min, z.max)
       val colorsFromData = z.map(colorBar.getColor)
 
-      colorsFromData.head should === (colorsFromData(2))
-      colorsFromData.head should !== (colorsFromData(1))
-      colorsFromData.head should !== (colorsFromData(3))
+      colorsFromData.head should ===(colorsFromData(2))
+      colorsFromData.head should !==(colorsFromData(1))
+      colorsFromData.head should !==(colorsFromData(3))
     }
   }
 
@@ -59,8 +59,8 @@ class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
     }
   }
 
-  describe("Color Utils"){
-    it("should convert rgba to hsla correctly"){
+  describe("Color Utils") {
+    it("should convert rgba to hsla correctly") {
       RGB(50, 50, 50) shouldEqual HSLA(0, 0, 20, 1.0)
       RGB(50, 50, 32) shouldEqual HSLA(60, 22, 16, 1.0)
       RGB(255, 255, 255) shouldEqual HSLA(0, 0, 100, 1.0)
@@ -68,13 +68,13 @@ class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
 
     }
 
-    it("should throw exceptions with bad rgba"){
+    it("should throw exceptions with bad rgba") {
       an[IllegalArgumentException] should be thrownBy RGBA(0, 500, 0, 1.0)
       an[IllegalArgumentException] should be thrownBy RGBA(0, 0, 0, 2.0)
 
     }
 
-    it("should convert hex to hsla correctly"){
+    it("should convert hex to hsla correctly") {
       HEX("#e58080") shouldEqual HSLA(0, 66, 70, 1.0)
       HEX("#ff0000") shouldEqual HSLA(0, 100, 50, 1.0)
       HEX("#00ff00") shouldEqual HSLA(120, 100, 50, 1.0)
@@ -99,7 +99,7 @@ class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
       RGB(252, 0, 2) shouldBe HSLA(0, 100, 49, 1.0)
     }
 
-    it("should throw exceptions with bad hexes"){
+    it("should throw exceptions with bad hexes") {
       an[IllegalArgumentException] should be thrownBy HEX("")
       an[IllegalArgumentException] should be thrownBy HEX("FFFFFFF")
       an[IllegalArgumentException] should be thrownBy HEX("FFFFFFFFF")
@@ -111,4 +111,3 @@ class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
     }
   }
 }
-

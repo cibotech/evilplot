@@ -67,7 +67,9 @@ class AxesSpec extends FunSpec with Matchers {
     }
 
     it("should not update the bounds multiple times") {
-      val plot = ScatterPlot(Seq(Point(0, 0), Point(1.007, 2)), boundBuffer = Some(0)).xbounds(0, 1.1).xAxis()
+      val plot = ScatterPlot(Seq(Point(0, 0), Point(1.007, 2)), boundBuffer = Some(0))
+        .xbounds(0, 1.1)
+        .xAxis()
       plot.xbounds.min shouldBe 0.0 +- 1e-6
       plot.xbounds.max shouldBe 1.1 +- 1e-6
     }

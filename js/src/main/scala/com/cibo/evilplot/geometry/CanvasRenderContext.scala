@@ -144,4 +144,3 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
     }
   }
 }
-

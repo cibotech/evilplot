@@ -42,12 +42,13 @@ import scala.collection.mutable
   * @param graphics the Graphics2D instance to render to.
   */
 final case class Graphics2DRenderContext(graphics: Graphics2D)
-  extends RenderContext
+    extends RenderContext
     with Graphics2DSupport {
 
   import Graphics2DRenderContext._
 
-  private[geometry] val initialState = GraphicsState(graphics.getTransform,
+  private[geometry] val initialState = GraphicsState(
+    graphics.getTransform,
     java.awt.Color.BLACK,
     java.awt.Color.BLACK,
     graphics.getStroke)
@@ -71,7 +72,7 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   private[geometry] var _fillColor: java.awt.Paint = initialState.fillColor
 
   private[geometry] def fillColor_=(c: java.awt.Paint): Unit = {
-   _fillColor = c
+    _fillColor = c
   }
   private[geometry] def fillColor: java.awt.Paint = _fillColor
   private[geometry] var strokeColor: java.awt.Paint = initialState.strokeColor
@@ -120,14 +121,12 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     graphics.fill(gpath)
   }
 
-
   def draw(path: Path): Unit = applyWithStrokeColor(this) {
     val correction = path.strokeWidth / 2
     val stroke = path.strokeWidth.asStroke
     graphics.setStroke(stroke)
     val gpath = new GeneralPath()
-    gpath.moveTo(path.points.head.x - correction,
-      path.points.head.y + correction)
+    gpath.moveTo(path.points.head.x - correction, path.points.head.y + correction)
     path.points.tail.foreach { point =>
       gpath.lineTo(point.x - correction, point.y + correction)
     }
@@ -135,13 +134,11 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   }
 
   def draw(rect: Rect): Unit = applyWithFillColor(this) {
-    graphics.fill(
-      new java.awt.Rectangle(0, 0, rect.width.toInt, rect.height.toInt))
+    graphics.fill(new java.awt.Rectangle(0, 0, rect.width.toInt, rect.height.toInt))
   }
 
   def draw(rect: BorderRect): Unit = applyWithStrokeColor(this) {
-    graphics.draw(
-      new java.awt.Rectangle(0, 0, rect.width.toInt, rect.height.toInt))
+    graphics.draw(new java.awt.Rectangle(0, 0, rect.width.toInt, rect.height.toInt))
   }
 
   def draw(disc: Disc): Unit = applyWithFillColor(this) {
@@ -219,31 +216,27 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
 }
 
 object Graphics2DRenderContext {
-  private[geometry] def applyOp(
-    graphics2DRenderContext: Graphics2DRenderContext)(f: => Unit): Unit = {
+  private[geometry] def applyOp(graphics2DRenderContext: Graphics2DRenderContext)(
+    f: => Unit): Unit = {
     graphics2DRenderContext.save()
     f
     graphics2DRenderContext.restore()
   }
 
-  private[geometry] def applyWithStrokeColor(
-    graphics2DRenderContext: Graphics2DRenderContext)(
+  private[geometry] def applyWithStrokeColor(graphics2DRenderContext: Graphics2DRenderContext)(
     f: => Unit
   ): Unit = {
     applyOp(graphics2DRenderContext) {
-      graphics2DRenderContext.graphics.setPaint(
-        graphics2DRenderContext.strokeColor)
+      graphics2DRenderContext.graphics.setPaint(graphics2DRenderContext.strokeColor)
       f
     }
   }
 
-  private[geometry] def applyWithFillColor(
-    graphics2DRenderContext: Graphics2DRenderContext)(
+  private[geometry] def applyWithFillColor(graphics2DRenderContext: Graphics2DRenderContext)(
     f: => Unit
   ): Unit = {
     applyOp(graphics2DRenderContext) {
-      graphics2DRenderContext.graphics.setPaint(
-        graphics2DRenderContext.fillColor)
+      graphics2DRenderContext.graphics.setPaint(graphics2DRenderContext.fillColor)
       f
     }
   }
@@ -271,7 +264,8 @@ private[geometry] trait Graphics2DSupport {
 
   implicit class TransformConverters(affine: AffineTransform) {
     def asJava: java.awt.geom.AffineTransform = {
-      new java.awt.geom.AffineTransform(affine.scaleX,
+      new java.awt.geom.AffineTransform(
+        affine.scaleX,
         affine.shearY,
         affine.shearX,
         affine.scaleY,

@@ -37,6 +37,7 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
 object ScatterPlot {
+
   /** Create a scatter plot from some data.
     * @param data The points to plot.
     * @param pointRenderer A function to create a Drawable for each point to plot.
@@ -67,7 +68,9 @@ object ScatterPlot {
   )(implicit theme: Theme): Plot =
     series(
       data,
-      Style(Text(name, theme.fonts.legendLabelSize, theme.fonts.fontFace), theme.colors.legendLabel),
+      Style(
+        Text(name, theme.fonts.legendLabelSize, theme.fonts.fontFace),
+        theme.colors.legendLabel),
       color,
       pointSize,
       boundBuffer
@@ -92,4 +95,3 @@ object ScatterPlot {
     XyPlot(data, Some(pointRenderer), Some(pathRenderer), boundBuffer, boundBuffer)
   }
 }
-

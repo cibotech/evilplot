@@ -52,15 +52,22 @@ object SurfacePlot {
       val xtransformer = plot.xtransform(plot, plotExtent)
       val ytransformer = plot.ytransform(plot, plotExtent)
 
-      data.zipWithIndex.withFilter(_._1.nonEmpty).map { case (level, index) =>
-        val transformedAndCulled = level.map { path =>
-          path.withFilter { p =>
-            plot.xbounds.isInBounds(p.x) && plot.ybounds.isInBounds(p.y)
-          }.map(p => Point(xtransformer(p.x), ytransformer(p.y)))
+      data.zipWithIndex
+        .withFilter(_._1.nonEmpty)
+        .map {
+          case (level, index) =>
+            val transformedAndCulled = level.map { path =>
+              path
+                .withFilter { p =>
+                  plot.xbounds.isInBounds(p.x) && plot.ybounds.isInBounds(p.y)
+                }
+                .map(p => Point(xtransformer(p.x), ytransformer(p.y)))
+            }
+            val levelContext =
+              SurfaceRenderContext(allLevels, transformedAndCulled, allLevels(index))
+            surfaceRenderer.render(plot, plotExtent, levelContext)
         }
-        val levelContext = SurfaceRenderContext(allLevels, transformedAndCulled, allLevels(index))
-        surfaceRenderer.render(plot, plotExtent, levelContext)
-      }.group
+        .group
     }
   }
 }
@@ -82,16 +89,21 @@ object ContourPlot {
 
     val xs = data.map(_.x)
     val xbounds = Plot.expandBounds(
-      Bounds(xs.reduceOption[Double](math.min).getOrElse(0.0), xs.reduceOption[Double](math.max).getOrElse(0.0)),
+      Bounds(
+        xs.reduceOption[Double](math.min).getOrElse(0.0),
+        xs.reduceOption[Double](math.max).getOrElse(0.0)),
       boundBuffer.getOrElse(theme.elements.boundBuffer)
     )
     val ys = data.map(_.y)
     val ybounds = Plot.expandBounds(
-      Bounds(ys.reduceOption[Double](math.min).getOrElse(0.0), ys.reduceOption[Double](math.max).getOrElse(0.0)),
+      Bounds(
+        ys.reduceOption[Double](math.min).getOrElse(0.0),
+        ys.reduceOption[Double](math.max).getOrElse(0.0)),
       boundBuffer.getOrElse(theme.elements.boundBuffer)
     )
 
-    val gridData = KernelDensityEstimation.densityEstimate2D(data, gridDimensions, Some(xbounds), Some(ybounds))
+    val gridData =
+      KernelDensityEstimation.densityEstimate2D(data, gridDimensions, Some(xbounds), Some(ybounds))
 
     val binWidth = gridData.zBounds.range / contourCount
     val levels = Seq.tabulate(contourCount - 1) { bin =>
@@ -99,11 +111,13 @@ object ContourPlot {
     }
 
     val contourPaths = MarchingSquares(levels, gridData).zip(levels).map {
-      case (levelPaths, level) => levelPaths.map { path =>
-        path.map { case Point(x, y) =>
-          Point3(x, y, level)
+      case (levelPaths, level) =>
+        levelPaths.map { path =>
+          path.map {
+            case Point(x, y) =>
+              Point3(x, y, level)
+          }
         }
-      }
     }
 
     val sr = surfaceRenderer.getOrElse(SurfaceRenderer.densityColorContours())

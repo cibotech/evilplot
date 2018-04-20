@@ -57,7 +57,8 @@ case class VerticalPlotLine(x: Double, thickness: Double, color: Color) extends 
   }
 }
 
-case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickness: Double) extends PlotLine {
+case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickness: Double)
+    extends PlotLine {
   private def solveForX(y: Double): Double = (y - intercept) / slope
   private def valueAt(x: Double): Double = x * slope + intercept
 
@@ -82,10 +83,12 @@ case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickne
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val xtransform = plot.xtransform(plot, extent)
     val ytransform = plot.ytransform(plot, extent)
-    points(plot).map { ps =>
-      val transformedPoints = ps.map(p => Point(xtransform(p.x), ytransform(p.y)))
-      Path(transformedPoints, thickness).colored(color)
-    }.getOrElse(EmptyDrawable())
+    points(plot)
+      .map { ps =>
+        val transformedPoints = ps.map(p => Point(xtransform(p.x), ytransform(p.y)))
+        Path(transformedPoints, thickness).colored(color)
+      }
+      .getOrElse(EmptyDrawable())
   }
 }
 
@@ -93,7 +96,8 @@ case class FunctionPlotLine(
   fn: Double => Double,
   color: Color,
   thickness: Double,
-  all: Boolean = false) extends PlotLine {
+  all: Boolean = false)
+    extends PlotLine {
   import FunctionPlotLine._
 
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
@@ -104,21 +108,23 @@ case class FunctionPlotLine(
     val points = pointsForFunction(fn, plot.xbounds, numPoints)
 
     val paths = if (all) Seq(points) else plottablePoints(points, plot.inBounds)
-    paths.map { pts =>
-      if (pts.nonEmpty) {
-        Path(pts.map(p =>
-          Point(xtransform(p.x), ytransform(p.y))), thickness)
-      } else EmptyDrawable()
-    }.group.colored(color)
+    paths
+      .map { pts =>
+        if (pts.nonEmpty) {
+          Path(pts.map(p => Point(xtransform(p.x), ytransform(p.y))), thickness)
+        } else EmptyDrawable()
+      }
+      .group
+      .colored(color)
   }
 }
 object FunctionPlotLine {
   // Split up the points into individual paths that are in bounds.
-  private[plot] def plottablePoints(points: Vector[Point],
+  private[plot] def plottablePoints(
+    points: Vector[Point],
     inBounds: Point => Boolean): Seq[Seq[Point]] = {
     @tailrec
-    def go(remaining: Vector[Point],
-      acc: Vector[Vector[Point]]): Vector[Vector[Point]] = {
+    def go(remaining: Vector[Point], acc: Vector[Vector[Point]]): Vector[Vector[Point]] = {
       val dropOutOfBounds = remaining.dropWhile(p => !inBounds(p))
       if (dropOutOfBounds.nonEmpty) {
         val (toPlot, rest) = dropOutOfBounds.span(p => inBounds(p))
@@ -149,7 +155,8 @@ trait PlotLineImplicits {
 
   def hline(
     y: Double
-  )(implicit theme: Theme): Plot = plot :+ HorizontalPlotLine(y, defaultThickness, theme.colors.trendLine)
+  )(implicit theme: Theme): Plot =
+    plot :+ HorizontalPlotLine(y, defaultThickness, theme.colors.trendLine)
 
   def hline(
     y: Double,
@@ -159,7 +166,8 @@ trait PlotLineImplicits {
 
   def vline(
     x: Double
-  )(implicit theme: Theme): Plot = plot :+ VerticalPlotLine(x, defaultThickness, theme.colors.trendLine)
+  )(implicit theme: Theme): Plot =
+    plot :+ VerticalPlotLine(x, defaultThickness, theme.colors.trendLine)
 
   def vline(
     x: Double,

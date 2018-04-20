@@ -45,11 +45,15 @@ package object geometry {
     def labeled(msg: String): Drawable = labeled(msg, Text.defaultSize, Text.defaultFontFace)
 
     def titled(msgSize: (String, Double, String)): Drawable =
-      Align.center(geometry.pad(Text(msgSize._1, msgSize._2, msgSize._3), bottom = msgSize._2 / 2.0), r).reduce(_ above _)
+      Align
+        .center(
+          geometry.pad(Text(msgSize._1, msgSize._2, msgSize._3), bottom = msgSize._2 / 2.0),
+          r)
+        .reduce(_ above _)
     def titled(msg: String): Drawable = titled(msg, Text.defaultSize, Text.defaultFontFace)
 
     def padRight(pad: Double): Drawable = geometry.pad(r, right = pad)
-    def padLeft(pad: Double): Drawable = geometry.pad(r, left  = pad)
+    def padLeft(pad: Double): Drawable = geometry.pad(r, left = pad)
     def padBottom(pad: Double): Drawable = geometry.pad(r, bottom = pad)
     def padTop(pad: Double): Drawable = geometry.pad(r, top = pad)
     def padAll(pad: Double): Drawable = geometry.padAll(r, pad)
@@ -57,10 +61,12 @@ package object geometry {
     def rotated(degrees: Double): Drawable = if (degrees == 0) r else Rotate(r, degrees)
     def scaled(x: Double = 1, y: Double = 1): Drawable = if (x == 1 && y == 1) r else Scale(r, x, y)
 
-    def flipY(height: Double): Drawable = r.scaled(1, -1).translate(y = height).resize(r.extent.copy(height = height))
+    def flipY(height: Double): Drawable =
+      r.scaled(1, -1).translate(y = height).resize(r.extent.copy(height = height))
     def flipY: Drawable = r.scaled(1, -1).translate(y = r.extent.height)
 
-    def flipX(width: Double): Drawable = r.scaled(-1, 1).translate(x = width).resize(r.extent.copy(width = width))
+    def flipX(width: Double): Drawable =
+      r.scaled(-1, 1).translate(x = width).resize(r.extent.copy(width = width))
     def flipX: Drawable = r.scaled(-1, 1).translate(x = r.extent.width)
 
     def colored(color: Color): Drawable = StrokeStyle(r, fill = color)
@@ -167,7 +173,12 @@ package object geometry {
     Seq(left, right.translate(x = left.extent.width)).group.resize(newExtent)
   }
 
-  def pad(item: Drawable, left: Double = 0, right: Double = 0, top: Double = 0, bottom: Double = 0): Drawable = {
+  def pad(
+    item: Drawable,
+    left: Double = 0,
+    right: Double = 0,
+    top: Double = 0,
+    bottom: Double = 0): Drawable = {
     val newExtent = Extent(
       item.extent.width + left + right,
       item.extent.height + top + bottom

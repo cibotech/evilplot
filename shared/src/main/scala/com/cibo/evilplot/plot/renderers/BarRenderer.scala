@@ -61,11 +61,14 @@ object BarRenderer {
   def stacked(): BarRenderer = new BarRenderer {
     def render(plot: Plot, extent: Extent, bar: Bar): Drawable = {
       val scale = if (bar.height == 0) 0.0 else extent.height / bar.height
-      bar.values.zipWithIndex.map { case (value, stackIndex) =>
-        val height = value * scale
-        val width = extent.width
-        Rect(width, height).filled(bar.getColor(stackIndex))
-      }.reduce(_ below _)
+      bar.values.zipWithIndex
+        .map {
+          case (value, stackIndex) =>
+            val height = value * scale
+            val width = extent.width
+            Rect(width, height).filled(bar.getColor(stackIndex))
+        }
+        .reduce(_ below _)
     }
   }
 }

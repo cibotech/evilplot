@@ -50,7 +50,6 @@ case class Annotation(
   }
 }
 
-
 trait AnnotationImplicits {
   protected val plot: Plot
 
@@ -84,6 +83,12 @@ trait AnnotationImplicits {
     x: Double = 1.0,
     y: Double = 0.5
   )(implicit theme: Theme): Plot =
-    annotate(msg.split('\n').map(s => Text(s, theme.fonts.annotationSize, theme.fonts.fontFace)).reduce(above), x, y)
+    annotate(
+      msg
+        .split('\n')
+        .map(s => Text(s, theme.fonts.annotationSize, theme.fonts.fontFace))
+        .reduce(above),
+      x,
+      y)
 
 }

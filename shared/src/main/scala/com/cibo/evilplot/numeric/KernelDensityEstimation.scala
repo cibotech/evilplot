@@ -41,8 +41,11 @@ object KernelDensityEstimation {
     * @param yBounds desired boundaries of the grid in data coordinates. Defaults to min and max y value of `data`.
     * @return A GridData object containing the 2D density estimation.
     */
-  def densityEstimate2D(data: Seq[Point], numPoints: (Int, Int) = (100, 100), xBounds: Option[Bounds] = None,
-                        yBounds: Option[Bounds] = None): GridData = {
+  def densityEstimate2D(
+    data: Seq[Point],
+    numPoints: (Int, Int) = (100, 100),
+    xBounds: Option[Bounds] = None,
+    yBounds: Option[Bounds] = None): GridData = {
     val _xBounds = xBounds.getOrElse(Bounds(data.minBy(_.x).x, data.maxBy(_.x).x))
     val _yBounds = yBounds.getOrElse(Bounds(data.minBy(_.y).y, data.maxBy(_.y).y))
     val (numXs, numYs) = numPoints
@@ -55,31 +58,48 @@ object KernelDensityEstimation {
     val denominator = data.length * bandwidthX * bandwidthY
     val estimate = matrixMatrixTransposeMult(xMatrix, yMatrix).map(_.map(_ / denominator))
     val zBounds = Bounds(estimate.map(_.min).min, estimate.map(_.max).max)
-    assert(estimate.length == numXs && estimate.head.length == numYs,
-    "density estimate dimensions do not match expectation")
+    assert(
+      estimate.length == numXs && estimate.head.length == numYs,
+      "density estimate dimensions do not match expectation")
     GridData(estimate.map(_.toVector).toVector, _xBounds, _yBounds, zBounds, spacingX, spacingY)
   }
 
-  def matrixMatrixTransposeMult(a: Array[Array[Double]], b: Array[Array[Double]]): Array[Array[Double]] = {
-    require(a.head.length == b.head.length, "matrix multiplication is not defined for matrices whose" +
-      " inner dimensions are not equal")
+  def matrixMatrixTransposeMult(
+    a: Array[Array[Double]],
+    b: Array[Array[Double]]): Array[Array[Double]] = {
+    require(
+      a.head.length == b.head.length,
+      "matrix multiplication is not defined for matrices whose" +
+        " inner dimensions are not equal")
     val innerIndices = a.head.indices
-    Array.tabulate[Double](a.length, b.length) { case (i, j) =>
-      innerIndices.foldLeft(0.0) { (total, k) =>
-        total + a(i)(k) * b(j)(k)
-      }
+    Array.tabulate[Double](a.length, b.length) {
+      case (i, j) =>
+        innerIndices.foldLeft(0.0) { (total, k) =>
+          total + a(i)(k) * b(j)(k)
+        }
     }
   }
 
-  private def kernelMatrix(vals: Array[Double], bounds: Bounds, nGridPoints: Int, spacing: Double,
-                           bandwidth: Double): Array[Array[Double]] = {
+  private def kernelMatrix(
+    vals: Array[Double],
+    bounds: Bounds,
+    nGridPoints: Int,
+    spacing: Double,
+    bandwidth: Double): Array[Array[Double]] = {
     val gridPoints = Array.tabulate(nGridPoints)(bounds.min + _ * spacing)
-    outerProduct(gridPoints, vals, (a: Double, b: Double) => probabilityDensityInNormal((a - b) / bandwidth))
+    outerProduct(
+      gridPoints,
+      vals,
+      (a: Double, b: Double) => probabilityDensityInNormal((a - b) / bandwidth))
   }
 
-  private[numeric] def outerProduct(a: Array[Double], b: Array[Double],
-                                   f: (Double, Double) => Double = _ * _): Array[Array[Double]] = {
-    Array.tabulate(a.length, b.length) { (row, col) => f(a(row), b(col)) }
+  private[numeric] def outerProduct(
+    a: Array[Double],
+    b: Array[Double],
+    f: (Double, Double) => Double = _ * _): Array[Array[Double]] = {
+    Array.tabulate(a.length, b.length) { (row, col) =>
+      f(a(row), b(col))
+    }
   }
 
   // lots of magic numbers, not sure on the theory behind this "rule of thumb" for bandwidth estimation.
