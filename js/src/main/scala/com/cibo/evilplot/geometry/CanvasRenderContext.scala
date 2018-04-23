@@ -43,12 +43,12 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
   }
 
   def draw(path: Path): Unit = CanvasOp(canvas) {
-    val correction = path.strokeWidth / 2
+    canvas.lineJoin = "round"
     canvas.beginPath()
-    canvas.moveTo(path.points.head.x - correction, path.points.head.y + correction)
+    canvas.moveTo(path.points.head.x, path.points.head.y)
     canvas.lineWidth = path.strokeWidth
     path.points.tail.foreach { point =>
-      canvas.lineTo(point.x - correction, point.y + correction)
+      canvas.lineTo(point.x, point.y)
     }
     canvas.stroke()
   }

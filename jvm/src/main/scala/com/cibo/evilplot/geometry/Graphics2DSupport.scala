@@ -122,13 +122,12 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   }
 
   def draw(path: Path): Unit = applyWithStrokeColor(this) {
-    val correction = path.strokeWidth / 2
     val stroke = path.strokeWidth.asStroke
     graphics.setStroke(stroke)
     val gpath = new GeneralPath()
-    gpath.moveTo(path.points.head.x - correction, path.points.head.y + correction)
+    gpath.moveTo(path.points.head.x, path.points.head.y)
     path.points.tail.foreach { point =>
-      gpath.lineTo(point.x - correction, point.y + correction)
+      gpath.lineTo(point.x, point.y)
     }
     graphics.draw(gpath)
   }
@@ -275,7 +274,14 @@ private[geometry] trait Graphics2DSupport {
   }
 
   implicit class StrokeWeightConverters(strokeWeight: Double) {
-    def asStroke: java.awt.Stroke = new BasicStroke(strokeWeight.toFloat)
+    def asStroke: java.awt.Stroke = new BasicStroke(
+      strokeWeight.toFloat,
+      BasicStroke.CAP_SQUARE,
+      BasicStroke.JOIN_ROUND,
+      10.0f,
+      null, // scalastyle:ignore
+      0.0f
+    )
   }
 
 }
