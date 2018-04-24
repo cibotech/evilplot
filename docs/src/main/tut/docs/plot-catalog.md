@@ -87,3 +87,48 @@ Facets(plots)
 <img src="/cibotech/evilplot/img/docs/plot-catalog/custom_pairs_plot.png" class="img-responsive"/>
 </div>
 </div>
+
+## Density Plot
+A `FunctionPlot` can be used to build density plots.
+
+<div class="row">
+<div class="col-md-6" markdown="1">
+```scala
+import com.cibo.evilplot.plot._
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+import com.cibo.evilplot.plot.renderers.PathRenderer
+import scala.util.Random
+
+def gaussianKernel(u: Double): Double = {
+  1 / math.sqrt(2 * math.Pi) * math.exp(-0.5d * u * u)
+}
+
+def densityEstimate(data: Seq[Double], bandwidth: Double)(x: Double): Double = {
+  val totalProbDensity = data.map { x_i =>
+    gaussianKernel((x - x_i) / bandwidth)
+  }.sum
+  totalProbDensity / (data.length * bandwidth)
+}
+
+val data = Seq.fill(150)(Random.nextDouble() * 30)
+val colors = Color.getGradientSeq(3)
+val bandwidths = Seq(5d, 2d, 0.5d)
+Overlay(
+  colors.zip(bandwidths).map { case (c, b) =>
+    FunctionPlot(
+      densityEstimate(data, b),
+      Some(Bounds(0, 30)),
+      Some(500),
+      Some(PathRenderer.default(color = Some(c)))
+    )
+  }:_*
+)
+  .standard()
+  .xbounds(0, 30)
+  .render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/density_plot.png" class="img-responsive"/>
+</div>
+</div>
