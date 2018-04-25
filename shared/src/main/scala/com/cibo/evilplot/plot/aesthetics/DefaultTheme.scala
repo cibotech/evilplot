@@ -32,6 +32,7 @@ package com.cibo.evilplot.plot.aesthetics
 
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.colors.ContinuousColoring.gradient
+import com.cibo.evilplot.geometry.LineStyle
 
 object DefaultTheme {
 
@@ -78,7 +79,8 @@ object DefaultTheme {
     xGridLineCount: Int = 10,
     yGridLineCount: Int = 10,
     tickThickness: Double = 1,
-    tickLength: Double = 5
+    tickLength: Double = 5,
+    lineDashStyle: LineStyle = LineStyle.Solid
   ) extends Elements
 
   case class DefaultTheme(

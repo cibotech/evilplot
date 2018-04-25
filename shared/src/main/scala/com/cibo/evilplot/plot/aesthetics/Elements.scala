@@ -30,8 +30,11 @@
 
 package com.cibo.evilplot.plot.aesthetics
 
+import com.cibo.evilplot.geometry.LineStyle
+
 trait Elements {
   val strokeWidth: Double
+  val lineDashStyle: LineStyle
   val pointSize: Double
   val gridLineSize: Double
   val boxSpacing: Double

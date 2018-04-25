@@ -126,6 +126,13 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
     weight.r.draw(this)
   }
 
+  def draw(lineDash: LineDash): Unit = CanvasOp(canvas) {
+    import scalajs.js.JSConverters._
+    canvas.setLineDash(lineDash.style.dashPattern.toJSArray)
+    canvas.lineDashOffset = lineDash.style.offset
+    lineDash.r.draw(this)
+  }
+
   def draw(text: Text): Unit = {
 
     // Adjust the size of the font to fill the requested extent.

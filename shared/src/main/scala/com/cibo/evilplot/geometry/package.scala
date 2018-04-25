@@ -72,6 +72,8 @@ package object geometry {
     def colored(color: Color): Drawable = StrokeStyle(r, fill = color)
     def filled(color: Color): Drawable = Style(r, fill = color)
     def weighted(weight: Double): Drawable = StrokeWeight(r, weight = weight)
+    def dashed(dashLength: Double): Drawable = LineDash(r, LineStyle.evenlySpaced(dashLength))
+    def dashed(lineStyle: LineStyle): Drawable = LineDash(r, style = lineStyle)
 
     def transX(nudge: Double): Drawable = translate(x = nudge)
     def transY(nudge: Double): Drawable = translate(y = nudge)
