@@ -31,7 +31,7 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, Path}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, LineStyle, Path}
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -43,31 +43,42 @@ sealed trait PlotLine extends PlotComponent {
   override val repeated: Boolean = true
 }
 
-case class HorizontalPlotLine(y: Double, thickness: Double, color: Color) extends PlotLine {
+case class HorizontalPlotLine(y: Double, thickness: Double, color: Color, lineStyle: LineStyle)
+    extends PlotLine {
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val offset = plot.ytransform(plot, extent)(y)
-    Line(extent.width, thickness).colored(color).middle().translate(y = offset)
+    Line(extent.width, thickness)
+      .colored(color)
+      .middle()
+      .translate(y = offset)
+      .dashed(lineStyle)
   }
 }
 
-case class VerticalPlotLine(x: Double, thickness: Double, color: Color) extends PlotLine {
+case class VerticalPlotLine(x: Double, thickness: Double, color: Color, lineStyle: LineStyle)
+    extends PlotLine {
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     val offset = plot.xtransform(plot, extent)(x)
-    Line(extent.height, thickness).colored(color).rotated(90).center().translate(x = offset)
+    Line(extent.height, thickness)
+      .colored(color)
+      .rotated(90)
+      .center()
+      .translate(x = offset)
+      .dashed(lineStyle)
   }
 }
 
-case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickness: Double)
+case class TrendPlotLine(
+  slope: Double,
+  intercept: Double,
+  color: Color,
+  thickness: Double,
+  lineStyle: LineStyle)
     extends PlotLine {
   private def solveForX(y: Double): Double = (y - intercept) / slope
   private def valueAt(x: Double): Double = x * slope + intercept
 
   private def points(plot: Plot): Option[Seq[Point]] = {
-
-    // from two points, return one in the plot window or None if neither is visible.
-    def pointInBounds(a: Point, b: Point): Option[Point] =
-      if (plot.inBounds(a)) Some(a) else Some(b).filter(plot.inBounds)
-
     val p1 = Point(solveForX(plot.ybounds.min), plot.ybounds.min)
     val p2 = Point(plot.xbounds.min, valueAt(plot.xbounds.min))
     val p3 = Point(solveForX(plot.ybounds.max), plot.ybounds.max)
@@ -86,7 +97,7 @@ case class TrendPlotLine(slope: Double, intercept: Double, color: Color, thickne
     points(plot)
       .map { ps =>
         val transformedPoints = ps.map(p => Point(xtransform(p.x), ytransform(p.y)))
-        Path(transformedPoints, thickness).colored(color)
+        Path(transformedPoints, thickness).colored(color).dashed(lineStyle)
       }
       .getOrElse(EmptyDrawable())
   }
@@ -96,6 +107,7 @@ case class FunctionPlotLine(
   fn: Double => Double,
   color: Color,
   thickness: Double,
+  lineStyle: LineStyle,
   all: Boolean = false)
     extends PlotLine {
   import FunctionPlotLine._
@@ -156,46 +168,63 @@ trait PlotLineImplicits {
   def hline(
     y: Double
   )(implicit theme: Theme): Plot =
-    plot :+ HorizontalPlotLine(y, defaultThickness, theme.colors.trendLine)
+    plot :+ HorizontalPlotLine(y, defaultThickness, theme.colors.trendLine, LineStyle.Solid)
 
   def hline(
     y: Double,
     color: Color,
-    thickness: Double = defaultThickness
-  ): Plot = plot :+ HorizontalPlotLine(y, thickness, color)
+    thickness: Double = defaultThickness,
+    lineStyle: LineStyle = LineStyle.Solid
+  ): Plot = plot :+ HorizontalPlotLine(y, thickness, color, lineStyle)
 
   def vline(
     x: Double
   )(implicit theme: Theme): Plot =
-    plot :+ VerticalPlotLine(x, defaultThickness, theme.colors.trendLine)
+    plot :+ VerticalPlotLine(
+      x,
+      defaultThickness,
+      theme.colors.trendLine,
+      theme.elements.lineDashStyle)
 
   def vline(
     x: Double,
     color: Color,
-    thickness: Double = defaultThickness
-  ): Plot = plot :+ VerticalPlotLine(x, thickness, color)
+    thickness: Double = defaultThickness,
+    lineStyle: LineStyle = LineStyle.Solid
+  ): Plot = plot :+ VerticalPlotLine(x, thickness, color, lineStyle)
 
   def trend(
     slope: Double,
     intercept: Double
   )(implicit theme: Theme): Plot =
-    plot :+ TrendPlotLine(slope, intercept, theme.colors.trendLine, defaultThickness)
+    plot :+ TrendPlotLine(
+      slope,
+      intercept,
+      theme.colors.trendLine,
+      defaultThickness,
+      theme.elements.lineDashStyle)
 
   def trend(
     slope: Double,
     intercept: Double,
     color: Color,
-    thickness: Double = defaultThickness
-  ): Plot = plot :+ TrendPlotLine(slope, intercept, color, thickness)
+    thickness: Double = defaultThickness,
+    lineStyle: LineStyle = LineStyle.Solid
+  ): Plot = plot :+ TrendPlotLine(slope, intercept, color, thickness, lineStyle)
 
   /** Plot a function. For lines, `trend` is more efficient. */
   def function(fn: Double => Double)(implicit theme: Theme): Plot =
-    plot :+ FunctionPlotLine(fn, theme.colors.trendLine, defaultThickness)
+    plot :+ FunctionPlotLine(
+      fn,
+      theme.colors.trendLine,
+      defaultThickness,
+      theme.elements.lineDashStyle)
 
   /** Plot a function. For lines, `trend` is more efficient. */
   def function(
     fn: Double => Double,
     color: Color,
-    thickness: Double = defaultThickness
-  ): Plot = plot :+ FunctionPlotLine(fn, color, thickness)
+    thickness: Double = defaultThickness,
+    lineStyle: LineStyle = LineStyle.Solid
+  ): Plot = plot :+ FunctionPlotLine(fn, color, thickness, lineStyle)
 }
