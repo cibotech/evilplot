@@ -64,18 +64,17 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
 
     graphics.setRenderingHints(renderingHints)
   }
-
   // Graphics2D does not distinguish between "fill" and "stroke" colors,
   // as both canvas and EvilPlot do, so we keep these locally as vars and
   // only push the change to the Graphics2D instance when we are performing
   // a fill/stroke operation.
-  private[geometry] var _fillColor: java.awt.Paint = initialState.fillColor
+  private[geometry] var _fillColor: java.awt.Paint = initialState.fillColor // scalastyle: ignore
 
   private[geometry] def fillColor_=(c: java.awt.Paint): Unit = {
     _fillColor = c
   }
   private[geometry] def fillColor: java.awt.Paint = _fillColor
-  private[geometry] var strokeColor: java.awt.Paint = initialState.strokeColor
+  private[geometry] var strokeColor: java.awt.Paint = initialState.strokeColor // scalastyle:ignore
 
   enableAntialiasing()
 
@@ -296,14 +295,15 @@ private[geometry] trait Graphics2DSupport {
       lineStyle: Option[LineStyle] = None): BasicStroke = {
       val newWeight = strokeWeight.fold(basicStroke.getLineWidth)(_.toFloat)
       val newDashPattern = lineStyle.fold(basicStroke.getDashArray) { style =>
-        if (style.dashPattern.forall(_ == 0.0)) null // scalastyle:ignore
+        if (style.dashPattern.isEmpty) null // scalastyle:ignore
+        else if (style.dashPattern.tail.isEmpty) Array.fill(2)(style.dashPattern.head.toFloat)
         else style.dashPattern.toArray.map(_.toFloat)
       }
       val newDashPhase = lineStyle.fold(basicStroke.getDashPhase)(_.offset.toFloat)
 
       new BasicStroke(
         newWeight,
-        BasicStroke.CAP_SQUARE,
+        BasicStroke.CAP_BUTT,
         BasicStroke.JOIN_ROUND,
         10.0f,
         newDashPattern,
