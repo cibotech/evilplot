@@ -4,7 +4,287 @@ title: Plot Catalog
 ---
 # Plot Catalog
 
-This is the Plot Catalog, where we've assembled some interesting EvilPlots along with the code to produce them.
+EvilPlot examples both simple and built-in as well as complex and custom are here. If you have one you'd like to share, please contribute it!
+
+* [Plot Catalog](#plot-catalog)
+  * [Bar Chart](#bar-chart)
+  * [Clustered Bar Chart](#clustered-bar-chart)
+  * [Stacked Bar Chart](#stacked-bar-chart)
+  * [Clustered Stacked Bar Chart](#clustered-stacked-bar-chart)
+  * [Function Plot](#function-plot)
+  * [Box Plot](#box-plot)
+  * [Scatter Plot](#scatter-plot)
+  * [Scatter Plot with Marginal Histograms](#scatter-plot-with-marginal-histograms)
+  * [Heatmap](#heatmap)
+  * [Pie Chart](#pie-chart)
+  * [Using Emoji](#using-emoji)
+  * [Tufte style box plot](#tufte-style-box-plot)
+  * [Pairs Plot](#pairs-plot)
+  * [Density Plot](#density-plot)
+
+## Bar Chart
+
+<div class="row">
+<div class="col-md-6" markdown="1">
+```scala
+val percentChange = Seq[Double](-10, 5, 12, 68, -22)
+  val labels = Seq("one", "two", "three", "four", "five")
+
+  val labeledByColor = new BarRenderer {
+    val positive = RGB(241, 121, 6)
+    val negative = RGB(226, 56, 140)
+    def render(plot: Plot, extent: Extent, category: Bar): Drawable = {
+      val rect = Rect(extent)
+      val value = category.values.head
+      val color = if (value >= 0) positive else negative
+      Align.center(rect filled color, Text(s"$value%", size = 20)).group
+    }
+  }
+
+  BarChart
+    .custom(percentChange.map(Bar.apply), spacing = Some(20), barRenderer = Some(labeledByColor))
+    .standard(xLabels = labels)
+    .hline(0)
+    .render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/barChart.png" class="img-responsive"/>
+</div>
+</div>
+
+## Clustered Bar Chart
+<div class="row">
+<div class="col-md-6" markdown="1">
+```scala
+ val data = Seq[Seq[Double]](
+    Seq(1, 2, 3),
+    Seq(4, 5, 6),
+    Seq(3, 4, 1),
+    Seq(2, 3, 4)
+  )
+  BarChart
+    .clustered(
+      data,
+      labels = Seq("one", "two", "three")
+    )
+    .title("Clustered Bar Chart Demo")
+    .xAxis(Seq("a", "b", "c", "d"))
+    .yAxis()
+    .background()
+    .bottomLegend()
+    .render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/clustered.png" class="img-responsive"/>
+</div>
+</div>
+
+## Stacked Bar Chart
+<div class="row">
+<div class="col-md-6" markdown="1">
+
+```scala
+ val data = Seq[Seq[Double]](
+    Seq(1, 2, 3),
+    Seq(4, 5, 6),
+    Seq(3, 4, 1),
+    Seq(2, 3, 4)
+  )
+  BarChart
+    .clustered(
+      data,
+      labels = Seq("one", "two", "three")
+    )
+    .title("Clustered Bar Chart Demo")
+    .xAxis(Seq("a", "b", "c", "d"))
+    .yAxis()
+    .background()
+    .bottomLegend()
+    .render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/stacked.png" class="img-responsive"/>
+</div>
+</div>
+
+## Clustered Stacked Bar Chart
+<div class="row">
+<div class="col-md-6" markdown="1">
+```scala
+ val data = Seq[Seq[Double]](
+    Seq(1, 2, 3),
+    Seq(4, 5, 6),
+    Seq(3, 4, 1),
+    Seq(2, 3, 4)
+  )
+  BarChart
+    .clustered(
+      data,
+      labels = Seq("one", "two", "three")
+    )
+    .title("Clustered Bar Chart Demo")
+    .xAxis(Seq("a", "b", "c", "d"))
+    .yAxis()
+    .background()
+    .bottomLegend()
+    .render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/clusteredStacked.png" class="img-responsive"/>
+</div>
+</div>
+
+## Function Plot
+<div class="row">
+<div class="col-md-6" markdown="1">
+
+```scala
+  import HTMLNamedColors.{blue, green, red}
+  Overlay(
+    FunctionPlot.series(x => x * x, "y = x^2", blue, xbounds = Some(Bounds(-1, 1))),
+    FunctionPlot.series(x => math.pow(x, 3), "y = x^3", red, xbounds = Some(Bounds(-1, 1))),
+    FunctionPlot.series(x => math.pow(x, 4), "y = x^4", green, xbounds = Some(Bounds(-1, 1)))
+  ).title("A bunch of polynomials.")
+    .overlayLegend()
+    .standard()
+    .render()
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/function.png" class="img-responsive"/>
+</div>
+</div>
+
+## Box Plot
+<div class="row">
+<div class="col-md-6" markdown="1">
+
+```scala
+ val data = Seq[Seq[Double]](
+    Seq(1, 2, 3),
+    Seq(4, 5, 6),
+    Seq(3, 4, 1),
+    Seq(2, 3, 4)
+  )
+  BarChart
+    .clustered(
+      data,
+      labels = Seq("one", "two", "three")
+    )
+    .title("Clustered Bar Chart Demo")
+    .xAxis(Seq("a", "b", "c", "d"))
+    .yAxis()
+    .background()
+    .bottomLegend()
+    .render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/boxPlot.png" class="img-responsive"/>
+</div>
+</div>
+
+## Scatter Plot
+<div class="row">
+<div class="col-md-6" markdown="1">
+```scala
+val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
+  val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
+  val pointsWithYears = years.zip(points).groupBy(_._1).mapValues(_.map(_._2)).toSeq.sortBy(_._1)
+  ScatterPlot(points, pointRenderer = Some(PointRenderer.depthColor(years, None, None)))
+    .title("Actual vs. Expected")(serifTheme)
+    .background()
+    .xGrid()
+    .yGrid()
+    .xAxis()
+    .yAxis()
+    .xLabel("Expected")(serifTheme)
+    .yLabel("Actual")(serifTheme)
+    .trend(1, 0)
+    .rightLegend()
+    .render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/scatter.png" class="img-responsive"/>
+</div>
+</div>
+
+## Scatter Plot with Marginal Histograms
+<div class="row">
+<div class="col-md-6" markdown="1">
+
+```scala
+  val allYears = (2007 to 2013).map(_.toDouble).toVector
+  val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
+  val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+
+  val xhist = Histogram(data.map(_.x), bins = 50)
+  val yhist = Histogram(data.map(_.y), bins = 40)
+  ScatterPlot(
+    data = data,
+    pointRenderer = Some(PointRenderer.colorByCategory(years))
+  ).background()
+    .topPlot(xhist)
+    .rightPlot(yhist)
+    .xGrid()
+    .yGrid()
+    .xAxis()
+    .yAxis()
+    .title("Measured vs Actual")
+    .xLabel("measured")
+    .yLabel("actual")
+    .trend(1, 0, color = HTMLNamedColors.dodgerBlue, lineStyle = LineStyle.DashDot)
+    .overlayLegend(x = 0.95, y = 0.8)
+    .render(Extent(600, 400))
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/marginal.png" class="img-responsive"/>
+</div>
+</div>
+
+## Heatmap
+<div class="row">
+<div class="col-md-6" markdown="1">
+
+```scala
+  val data = Seq[Seq[Double]](
+    Seq(1, 2, 3, 4),
+    Seq(5, 6, 7, 8),
+    Seq(9, 8, 7, 6)
+  )
+
+  Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/heatmap.png" class="img-responsive"/>
+</div>
+</div>
+
+## Pie Chart
+<div class="row">
+<div class="col-md-6" markdown="1">
+
+```scala
+  val data = Seq[Seq[Double]](
+    Seq(1, 2, 3, 4),
+    Seq(5, 6, 7, 8),
+    Seq(9, 8, 7, 6)
+  )
+
+  Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/pieChart.png" class="img-responsive"/>
+</div>
+</div>
 
 ## Using Emoji
 
