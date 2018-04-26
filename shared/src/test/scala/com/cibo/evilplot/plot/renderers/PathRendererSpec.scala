@@ -28,33 +28,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cibo.evilplot.geometry
+package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.JSONUtils
-import io.circe.{Decoder, Encoder}
-import io.circe.generic.extras.Configuration
+import com.cibo.evilplot.geometry.LineStyle
+import org.scalatest.{FunSpec, Matchers}
 
-/** The stroke pattern of a line.
-  * @param dashPattern A sequence containing distances between the solid portions of
-  *   the line and the invisible portions. A single value will result in equal-sized opaque
-  *   segments and gaps. An empty list uses a solid line. All values must be positive.
-  * @param offset The "phase" of the dash pattern.
-  */
-final case class LineStyle(
-  dashPattern: Seq[Double] = Seq.empty[Double],
-  offset: Double = 0.0
-) {
-  require(dashPattern.forall(_ > 0), "A dash pattern must only contain positive values.")
-}
-object LineStyle {
-  import io.circe.generic.extras.semiauto._
-  private implicit val jsonConfig: Configuration = JSONUtils.minifyProperties
-  implicit val lineStyleEncoder: Encoder[LineStyle] = deriveEncoder[LineStyle]
-  implicit val lineStyleDecoder: Decoder[LineStyle] = deriveDecoder[LineStyle]
+class PathRendererSpec extends FunSpec with Matchers {
+  describe("Legend stroke lengths") {
+    import LineStyle._
+    import PathRenderer._
+    it("should use the default for a solid style") {
+      calcLegendStrokeLength(Solid) shouldBe baseLegendStrokeLength
+    }
 
-  val Solid: LineStyle = LineStyle()
-  val Dotted: LineStyle = LineStyle(Seq(1, 2))
-  val DashDot: LineStyle = LineStyle(Seq(6, 3, 1, 3))
-  val Dashed: LineStyle = LineStyle(Seq(6))
-  def evenlySpaced(dist: Double): LineStyle = LineStyle(Seq(dist))
+    it("should always return at least the baseLegendStrokeLength") {
+      calcLegendStrokeLength(Dotted) shouldBe 9
+      calcLegendStrokeLength(evenlySpaced(3)) should be >= baseLegendStrokeLength
+      calcLegendStrokeLength(LineStyle(Seq(1, 1))) shouldBe baseLegendStrokeLength
+    }
+
+    it("should use at least 4x the pattern length with a single element pattern") {
+      calcLegendStrokeLength(evenlySpaced(6)) shouldBe 24
+    }
+
+    it("should use a minimum of 2x the pattern length with a regular element pattern") {
+      calcLegendStrokeLength(DashDot) shouldBe 26
+    }
+  }
 }

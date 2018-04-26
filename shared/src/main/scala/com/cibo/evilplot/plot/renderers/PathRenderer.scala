@@ -53,7 +53,7 @@ trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
 }
 
 object PathRenderer {
-  private val baseLegendStrokeLength: Double = 8.0
+  private[renderers] val baseLegendStrokeLength: Double = 8.0
 
   /** The default path renderer.
     * @param strokeWidth The width of the path.
@@ -86,22 +86,6 @@ object PathRenderer {
           d
         )
     }
-
-    // Need to use a multiple of the pattern array so the legend looks accurate.
-    private def calcLegendStrokeLength(lineStyle: LineStyle): Double =
-      if (lineStyle.dashPattern.isEmpty) baseLegendStrokeLength
-      else {
-        val patternLength = lineStyle.dashPattern.sum.toInt
-        val minimumLength =
-          if (lineStyle.dashPattern.tail.isEmpty) 4 * patternLength
-          else 2 * patternLength
-        if (patternLength <= baseLegendStrokeLength)
-          Stream
-            .iterate(0)(_ + patternLength)
-            .dropWhile(l => l < baseLegendStrokeLength && l < minimumLength)
-            .head
-        else minimumLength
-      }
 
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       Clipping
@@ -169,4 +153,18 @@ object PathRenderer {
   def empty(): PathRenderer = new PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = EmptyDrawable()
   }
+
+  // Need to use a multiple of the pattern array so the legend looks accurate.
+  private[renderers] def calcLegendStrokeLength(lineStyle: LineStyle): Double =
+    if (lineStyle.dashPattern.isEmpty) baseLegendStrokeLength
+    else {
+      val patternLength = lineStyle.dashPattern.sum
+      val minimumLength =
+        if (lineStyle.dashPattern.tail.isEmpty) 4 * patternLength
+        else 2 * patternLength
+      if (minimumLength <= baseLegendStrokeLength) {
+        val diff = baseLegendStrokeLength - minimumLength
+        minimumLength + (patternLength * math.max((diff / patternLength).toInt, 1))
+      } else minimumLength
+    }
 }
