@@ -64,18 +64,17 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
 
     graphics.setRenderingHints(renderingHints)
   }
-
   // Graphics2D does not distinguish between "fill" and "stroke" colors,
   // as both canvas and EvilPlot do, so we keep these locally as vars and
   // only push the change to the Graphics2D instance when we are performing
   // a fill/stroke operation.
-  private[geometry] var _fillColor: java.awt.Paint = initialState.fillColor
+  private[geometry] var _fillColor: java.awt.Paint = initialState.fillColor // scalastyle: ignore
 
   private[geometry] def fillColor_=(c: java.awt.Paint): Unit = {
     _fillColor = c
   }
   private[geometry] def fillColor: java.awt.Paint = _fillColor
-  private[geometry] var strokeColor: java.awt.Paint = initialState.strokeColor
+  private[geometry] var strokeColor: java.awt.Paint = initialState.strokeColor // scalastyle:ignore
 
   enableAntialiasing()
 
@@ -102,7 +101,9 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   }
 
   def draw(line: Line): Unit = applyWithStrokeColor(this) {
-    val stroke = line.strokeWidth.asStroke
+    val stroke = graphics.getStroke
+      .asInstanceOf[BasicStroke]
+      .update(strokeWeight = Some(line.strokeWidth))
     graphics.setStroke(stroke)
     val gpath = new GeneralPath()
     gpath.moveTo(0, line.strokeWidth / 2.0)
@@ -122,7 +123,10 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   }
 
   def draw(path: Path): Unit = applyWithStrokeColor(this) {
-    val stroke = path.strokeWidth.asStroke
+    val stroke = graphics.getStroke
+      .asInstanceOf[BasicStroke]
+      .update(strokeWeight = Some(path.strokeWidth))
+
     graphics.setStroke(stroke)
     val gpath = new GeneralPath()
     gpath.moveTo(path.points.head.x, path.points.head.y)
@@ -197,9 +201,21 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
   }
 
   def draw(weight: StrokeWeight): Unit = applyOp(this) {
-    val stroke = weight.weight.asStroke
+    val stroke = graphics.getStroke
+      .asInstanceOf[BasicStroke]
+      .update(strokeWeight = Some(weight.weight))
+
     graphics.setStroke(stroke)
     weight.r.draw(this)
+  }
+
+  def draw(lineDash: LineDash): Unit = applyOp(this) {
+    val stroke = graphics.getStroke
+      .asInstanceOf[BasicStroke]
+      .update(lineStyle = Some(lineDash.style))
+
+    graphics.setStroke(stroke)
+    lineDash.r.draw(this)
   }
 
   def draw(text: Text): Unit = applyWithStrokeColor(this) {
@@ -273,15 +289,27 @@ private[geometry] trait Graphics2DSupport {
     }
   }
 
-  implicit class StrokeWeightConverters(strokeWeight: Double) {
-    def asStroke: java.awt.Stroke = new BasicStroke(
-      strokeWeight.toFloat,
-      BasicStroke.CAP_SQUARE,
-      BasicStroke.JOIN_ROUND,
-      10.0f,
-      null, // scalastyle:ignore
-      0.0f
-    )
+  implicit class RichStroke(basicStroke: BasicStroke) {
+    def update(
+      strokeWeight: Option[Double] = None,
+      lineStyle: Option[LineStyle] = None): BasicStroke = {
+      val newWeight = strokeWeight.fold(basicStroke.getLineWidth)(_.toFloat)
+      val newDashPattern = lineStyle.fold(basicStroke.getDashArray) { style =>
+        if (style.dashPattern.isEmpty) null // scalastyle:ignore
+        else if (style.dashPattern.tail.isEmpty) Array.fill(2)(style.dashPattern.head.toFloat)
+        else style.dashPattern.toArray.map(_.toFloat)
+      }
+      val newDashPhase = lineStyle.fold(basicStroke.getDashPhase)(_.offset.toFloat)
+
+      new BasicStroke(
+        newWeight,
+        BasicStroke.CAP_BUTT,
+        BasicStroke.JOIN_ROUND,
+        10.0f,
+        newDashPattern,
+        newDashPhase
+      )
+    }
   }
 
 }

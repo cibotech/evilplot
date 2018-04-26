@@ -57,11 +57,10 @@ object LegendRenderer {
         .zip(labels)
         .map {
           case (element, label) =>
-            // The indicator will render itself centered on the origin, so we need to translate.
-            val offsetx = (elementSize - element.extent.width) / 2
-            val offsety = (elementSize - element.extent.height) / 2
-            val indicator = element.translate(x = offsetx, y = offsety).resize(elementExtent)
-            indicator.beside(label.padLeft(leftPadding)).padAll(spacing / 2)
+            Align
+              .middle(element, label.padLeft(leftPadding))
+              .reduce(_ beside _)
+              .padAll(spacing / 2)
         }
         .reduce(reduction)
     }

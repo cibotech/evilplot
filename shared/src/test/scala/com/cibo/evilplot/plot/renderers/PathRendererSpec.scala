@@ -28,26 +28,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cibo.evilplot.plot.aesthetics
+package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.geometry.LineStyle
+import org.scalatest.{FunSpec, Matchers}
 
-trait Elements {
-  val strokeWidth: Double
-  val lineDashStyle: LineStyle
-  val pointSize: Double
-  val gridLineSize: Double
-  val boxSpacing: Double
-  val barSpacing: Double
-  val clusterSpacing: Double
-  val boundBuffer: Double
-  val contours: Int
-  val categoricalXAxisLabelOrientation: Double
-  val continuousXAxisLabelOrientation: Double
-  val xTickCount: Int
-  val yTickCount: Int
-  val xGridLineCount: Int
-  val yGridLineCount: Int
-  val tickThickness: Double
-  val tickLength: Double
+class PathRendererSpec extends FunSpec with Matchers {
+  describe("Legend stroke lengths") {
+    import LineStyle._
+    import PathRenderer._
+    it("should use the default for a solid style") {
+      calcLegendStrokeLength(Solid) shouldBe baseLegendStrokeLength
+    }
+
+    it("should always return at least the baseLegendStrokeLength") {
+      calcLegendStrokeLength(Dotted) shouldBe 9
+      calcLegendStrokeLength(evenlySpaced(3)) should be >= baseLegendStrokeLength
+      calcLegendStrokeLength(LineStyle(Seq(1, 1))) shouldBe baseLegendStrokeLength
+    }
+
+    it("should use at least 4x the pattern length with a single element pattern") {
+      calcLegendStrokeLength(evenlySpaced(6)) shouldBe 24
+    }
+
+    it("should use a minimum of 2x the pattern length with a regular element pattern") {
+      calcLegendStrokeLength(DashDot) shouldBe 26
+    }
+  }
 }

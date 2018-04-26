@@ -62,6 +62,7 @@ object JSONUtils {
       case "Style"         => "S"
       case "StrokeStyle"   => "Y"
       case "StrokeWeight"  => "H"
+      case "LineDash"      => "l"
       case "Text"          => "X"
       case "HSLA"          => "c"
       case other           => other

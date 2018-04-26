@@ -45,5 +45,6 @@ trait RenderContext {
   def draw(style: Style): Unit
   def draw(style: StrokeStyle): Unit
   def draw(weight: StrokeWeight): Unit
+  def draw(lineDash: LineDash): Unit
   def draw(text: Text): Unit
 }

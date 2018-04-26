@@ -28,26 +28,33 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cibo.evilplot.plot.aesthetics
+package com.cibo.evilplot.geometry
 
-import com.cibo.evilplot.geometry.LineStyle
+import com.cibo.evilplot.JSONUtils
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.extras.Configuration
 
-trait Elements {
-  val strokeWidth: Double
-  val lineDashStyle: LineStyle
-  val pointSize: Double
-  val gridLineSize: Double
-  val boxSpacing: Double
-  val barSpacing: Double
-  val clusterSpacing: Double
-  val boundBuffer: Double
-  val contours: Int
-  val categoricalXAxisLabelOrientation: Double
-  val continuousXAxisLabelOrientation: Double
-  val xTickCount: Int
-  val yTickCount: Int
-  val xGridLineCount: Int
-  val yGridLineCount: Int
-  val tickThickness: Double
-  val tickLength: Double
+/** The stroke pattern of a line.
+  * @param dashPattern A sequence containing distances between the solid portions of
+  *   the line and the invisible portions. A single value will result in equal-sized opaque
+  *   segments and gaps. An empty list uses a solid line. All values must be positive.
+  * @param offset The "phase" of the dash pattern.
+  */
+final case class LineStyle(
+  dashPattern: Seq[Double] = Seq.empty[Double],
+  offset: Double = 0.0
+) {
+  require(dashPattern.forall(_ > 0), "A dash pattern must only contain positive values.")
+}
+object LineStyle {
+  import io.circe.generic.extras.semiauto._
+  private implicit val jsonConfig: Configuration = JSONUtils.minifyProperties
+  implicit val lineStyleEncoder: Encoder[LineStyle] = deriveEncoder[LineStyle]
+  implicit val lineStyleDecoder: Decoder[LineStyle] = deriveDecoder[LineStyle]
+
+  val Solid: LineStyle = LineStyle()
+  val Dotted: LineStyle = LineStyle(Seq(1, 2))
+  val DashDot: LineStyle = LineStyle(Seq(6, 3, 1, 3))
+  val Dashed: LineStyle = LineStyle(Seq(6))
+  def evenlySpaced(dist: Double): LineStyle = LineStyle(Seq(dist))
 }

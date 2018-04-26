@@ -317,6 +317,19 @@ object StrokeWeight {
   implicit val decoder: Decoder[StrokeWeight] = deriveDecoder[StrokeWeight]
 }
 
+/** Apply a line dash to a Drawable.
+  * @param r The drawable to apply the style to.
+  * @param style The LineStyle to apply.
+  */
+final case class LineDash(r: Drawable, style: LineStyle) extends Drawable {
+  lazy val extent: Extent = r.extent
+  def draw(context: RenderContext): Unit = context.draw(this)
+}
+object LineDash {
+  implicit val encoder: Encoder[LineDash] = deriveEncoder[LineDash]
+  implicit val decoder: Decoder[LineDash] = deriveDecoder[LineDash]
+}
+
 /** Some text.
   * @param msg the string to render.
   * @param size the font size of the text.
