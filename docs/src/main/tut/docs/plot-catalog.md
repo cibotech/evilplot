@@ -282,7 +282,7 @@ val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ P
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/pieChart.png" class="img-responsive"/>
+<img src="/cibotech/evilplot/img/docs/plot-catalog/piechart.png" class="img-responsive"/>
 </div>
 </div>
 
