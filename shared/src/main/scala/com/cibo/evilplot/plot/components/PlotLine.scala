@@ -151,11 +151,18 @@ object FunctionPlotLine {
     xbounds: Bounds,
     numPoints: Int
   ): Vector[Point] = {
-    // Should give decent resolution.
-    val width = xbounds.range / numPoints
-    Vector.tabulate(numPoints) { i =>
-      val x = xbounds.min + width * i
-      Point(x, function(x))
+    def pointAt(x: Double): Point = Point(x, function(x))
+
+    numPoints match {
+      case 0 => Vector.empty[Point]
+      case 1 => Vector(pointAt(xbounds.min))
+      case _ =>
+        val bdMin = BigDecimal(xbounds.min)
+        val bdMax = BigDecimal(xbounds.max)
+        val step = (bdMax - bdMin) / (numPoints - 1)
+        Vector.tabulate(numPoints) { i =>
+          pointAt((bdMin + step * i).toDouble)
+        }
     }
   }
 }

@@ -65,13 +65,66 @@ class FunctionPlotLineSpec extends FunSpec with Matchers {
     }
   }
 
-  describe("Calculating the points for a function.") {
+  describe("pointsForFunction") {
+    it("should return an empty vector when numPoints is 0") {
+      val points = FunctionPlotLine.pointsForFunction(x => x, Bounds(-5, 5), 0)
+
+      points shouldBe Vector.empty[Point]
+    }
+
+    it("should use the minimum bound when numPoints is 1") {
+      val points = FunctionPlotLine.pointsForFunction(x => x, Bounds(-5, 5), 1)
+
+      points.length shouldBe 1
+      points.head shouldBe Point(-5, -5)
+    }
+
+    it("should use the min and max bound when numPoints is 2") {
+      val points = FunctionPlotLine.pointsForFunction(x => x, Bounds(-5, 5), 2)
+
+      points.length shouldBe 2
+      points(0) shouldBe Point(-5, -5)
+      points(1) shouldBe Point(5, 5)
+    }
+
+    it("should divide the range evenly") {
+      val points = FunctionPlotLine.pointsForFunction(x => x, Bounds(-5, 5), 3)
+
+      points.length shouldBe 3
+      points(0) shouldBe Point(-5, -5)
+      points(1) shouldBe Point(0, 0)
+      points(2) shouldBe Point(5, 5)
+    }
+
+    it("should deal with Double precision issues") {
+      val points = FunctionPlotLine.pointsForFunction(x => x, Bounds(0, 1), 11)
+
+      points.length shouldBe 11
+      points.map(_.x) shouldBe Seq(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+    }
+
+    it("should still return the max bound point for large sequences of small x steps") {
+      val points = FunctionPlotLine.pointsForFunction(x => x, Bounds(0, 0.001), 1000)
+
+      points.length shouldBe 1000
+      points.head shouldBe Point(0, 0)
+      points.last shouldBe Point(0.001, 0.001)
+    }
+
+    it("should handle cases where a Range would stop short") {
+      val points = FunctionPlotLine.pointsForFunction(x => x, Bounds(2.2, 3.6), 10)
+
+      points.length shouldBe 10
+      points.head shouldBe Point(2.2, 2.2)
+      points.last shouldBe Point(3.6, 3.6)
+    }
+
     it("should return the correct points") {
       val pts = FunctionPlotLine.pointsForFunction(x => x * x, Bounds(0, 1), 5)
       pts.head.x shouldBe 0.0 +- math.ulp(1.0)
       pts.head.y shouldBe 0.0 +- math.ulp(1.0)
-      pts.last.x shouldBe 0.8 +- math.ulp(1.0)
-      pts.last.y shouldBe .64 +- math.ulp(1.0)
+      pts.last.x shouldBe 1.0 +- math.ulp(1.0)
+      pts.last.y shouldBe 1.0 +- math.ulp(1.0)
     }
   }
 }
