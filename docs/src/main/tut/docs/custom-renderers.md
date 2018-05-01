@@ -15,22 +15,22 @@ trait PlotElementRenderer[C] {
 }
 ```
 
-It's just one method. All you have to do is define how a piece of data gets displayed as a `Drawable`, and you're done. When you call `render()` on the `Plot` later on, it will call `render` on your `PlotElementRenderer` and pass through the appropriate context. The question is: what are those three arguments, and what can you do with them?
+All you have to do is define how a piece of data gets displayed as a `Drawable`, and you're done. When you call `render()` on the `Plot` later on, it will call `render` on your `PlotElementRenderer` and pass through the appropriate context. The question is: what are those three arguments, and what can you do with them?
 
-The first one is straightforward, you've seen `Plot` all over the place already! When you define your `render` method, you get a hook back into the plot, so you can get certain information out of it. For example, you might be interested in applying the plot's `xtransform` or `ytransform` to some auxiliary data, and you can just pull that out:
+1. The first one is straightforward, you've seen `Plot` all over the place already! When you define your `render` method, you get a hook back into the plot, so you can get certain information out of it. For example, you might be interested in applying the plot's `xtransform` or `ytransform` to some auxiliary data, and you can just pull that out:
 
 ```scala
 val xTransform: Double => Double = plot.xtransformer(plot, ...)
 ```
 
 <!-- This is not correct, the second argument is actually a size relevant to the plot's construction (full plot size in the case of scatter, line plot, contour plot and bar size in the case of box plot and bar chart) -->
-Wait, that takes a second argument! And that argument is the plot's size, because the data to screen transformation will be different depending on how big we want to make the plot when we render it. That's why `render` also gets an `extent` argument. This is the real size of the plot once it's rendered. Keep in mind that we're able to access that quantity here because renderers are _only_ called when we turn the `Plot` into a `Drawable`, not when we construct the `Plot`.
+2. The data to screen transformation will be different depending on how big we want to make the plot when we render it. That's why `render` also gets an `extent` argument. This is the real size of the plot once it's rendered. Keep in mind that we're able to access that quantity here because renderers are _only_ called when we turn the `Plot` into a `Drawable`, not when we construct the `Plot`.
 
 ```scala
 val xTransform: Double => Double = plot.ytransformer(plot, extent)
 ```
 
-Lastly, the context. The context is a value of type `C`. The best way to explain this parameter is probably to look at the renderers you've already seen, and what their respective context type is:
+3. Finally, the context. The context is a value of type `C`. The best way to explain this parameter is probably to look at the renderers you've already seen, and what their respective context type is:
 + `PointRenderer` is a `PlotElementRenderer[Int]`
 + `PathRenderer` is a `PlotElementRenderer[Seq[Point]]`
 + `BoxRenderer` is a `PlotElementRenderer[BoxPlotSummaryStatistics]`
@@ -41,7 +41,7 @@ Let's implement a few custom renderers as examples:
 
 ### Implementing "jitter"
 
-You might be familiar with adding random "jitter" to points in a scatter plot from other plotting libraries. We can implement that in EvilPlot as a custom point renderer. This adds a bit of jitter in the x dimension.
+You might be familiar with adding random "jitter" to points in a scatter plot from other plotting libraries. We can implement that in EvilPlot as a custom point renderer. This adds a bit of jitter in the y dimension.
 
 ```scala
 def jitter(range: Double)(implicit theme: Theme): PointRenderer = new PointRenderer {

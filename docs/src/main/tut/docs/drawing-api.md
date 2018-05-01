@@ -4,34 +4,111 @@ title: Drawing API
 ---
 # Low-Level Drawing API
 
-## Drawing Primitives
+### Drawing Primitives
 
 In EvilPlot, we represent everything that can be drawn to the screen as a `Drawable`.
 
 A `Drawable` is simply a _description_ of the scene, and constructing one does not actually render anything. There are only a handful of drawing primitives that exist within EvilPlot, and they can be divided into three categories: drawing, positioning, and style.
-
 The drawing primitives are the "leaves" of a scene. They represent concrete things like shapes and text. They are: 
 <div class="container">
-<img src="/cibotech/evilplot/img/docs/drawing-api/drawingprimitives.png" class="img-responsive"/>
+<div class="row">
+
+<div class="col-md-3">
+<img src="/cibotech/evilplot/img/docs/drawing-api/line.png" class="img-responsive"/>
+<code>Line</code>
 </div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/path.png" class="img-responsive"/>
+<code>Path</code>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/rect.png" class="img-responsive"/>
+<code>Rect</code>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/borderrect.png" class="img-responsive"/>
+<code>BorderRect</code>
+</div>
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/disc.png" class="img-responsive"/>
+<code>Disc</code>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/wedge.png" class="img-responsive"/>
+<code>Wedge</code>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/polygon.png" class="img-responsive"/>
+<code>Polygon</code>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/text.png" class="img-responsive"/>
+<code>Text</code>
+</div>
+</div>
+
+</div>
+</div>
+
+### Positioning Primitives
 
 Positioning primitives alter where other `Drawable`s are placed. Notably, `Drawable` scenes do not expose a notion of absolute coordinates.
 
-_Positioning_:
-* Translate
-* Rotate
-* Scale
-* Affine
-* Resize
-* Group
+<div class="container">
+<div class="row">
+<div class="col-md-3">
+<img src="/cibotech/evilplot/img/docs/drawing-api/translate.png" class="img-responsive"/>
+<code>Translate</code>
+</div>
+<div class="col-md-3">
+<img src="/cibotech/evilplot/img/docs/drawing-api/rotate.png" class="img-responsive"/>
+<code>Rotate</code>
+</div>
+<div class="col-md-3">
+<img src="/cibotech/evilplot/img/docs/drawing-api/scale.png" class="img-responsive"/>
+<code>Scale</code>
+</div>
+<div class="col-md-3">
+<img src="/cibotech/evilplot/img/docs/drawing-api/affine.png" class="img-responsive"/>
+<code>Affine</code>
+</div>
+</div>
+</div>
 
-Lastly, styling primitives allow us to modify the appearance of scenes. `Style` applies a fill color to a `Drawable`, while `StrokeStyle` applies a color to the outlines of `Drawable`s. 
+### Styling Primitives
 
-_Styling_:
-* Style
-* StrokeStyle
-* StrokeWeight
+Lastly, styling primitives allow us to modify the appearance of scenes.
 
++ `Style` colors the inside of a `Drawable`
++ `StrokeStyle` colors the outline of a `Drawable`
++ `StrokeWeight` changes the thickness of the outline of a `Drawable`
++ `LineDash` applies a [line style](/cibotech/evilplot/scaladoc/jvm/com/cibo/evilplot/geometry/LineStyle.html) to the outline of a `Drawable`
+
+### Composition
 
 Creating scenes is simply a matter of composing these primitives. For example, to place a blue rectangle next to a red circle, you might write:
 <div class="row">
@@ -40,7 +117,15 @@ Creating scenes is simply a matter of composing these primitives. For example, t
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.colors._
 val rect = Style(Rect(400, 400), RGB(83, 87, 79))
-Group(Seq(Style(Translate(Disc(200), x = rect.extent.width), RGB(78, 89, 94)), rect))
+Group(
+  Seq(
+    Style(
+      Translate(Disc(200), x = rect.extent.width),
+      RGB(78, 89, 94)
+    ),
+    rect
+  )
+)
 ```
 </div>
 <div class="col-md-6">
@@ -60,9 +145,9 @@ Disc(200) transX rect.extent.width filled RGB(7) behind rect
 
 The drawing API gives us the power to describe all of the scenes involved in the plots that EvilPlot can create; at no point do plot implementations reach below it and onto the rendering target. 
 
-## Positional Combinators
+### Positional Combinators
 
-EvilPlot is all about giving a higher-level vocabulary to refer to common geometric manipulations. In fact, above we just wrote a positional combinator called `beside`. It turns out that the `geometry` package is full of similar combinators, so most of the time you'll never have to manually think about shifting objects by their widths like we did above.
+EvilPlot gives a higher-level vocabulary to refer to common geometric manipulations. In fact, above we just wrote a positional combinator called `beside`. It turns out that the `geometry` package is full of similar combinators, so most of the time you'll never have to manually think about shifting objects by their widths like we did above.
 
 <div class="row">
 <div class="col-md-4">
@@ -121,7 +206,7 @@ The available alignment functions are:[^1].
 </div>
 </div>
 
-## An example
+### An example
 
 With EvilPlot's drawing combinators on our side, we're well equipped to recreate the box example from above that we made using only primitives--except it will be far easier to reason about. Recall, first we created our elements: two lines and two boxes, then centered them vertically and placed them on top of each other.
 
@@ -158,7 +243,7 @@ Align.center(
 
 And in fact, if you were to look at the source code for EvilPlot's default box plot, it would be almost identical. 
 
-## Actually drawing to the screen.
+### Drawing to the screen
 
 Of course, at some point we want to draw our scenes to the screen. To do that, we call `draw()`
 
