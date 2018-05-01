@@ -21,6 +21,7 @@ EvilPlot examples both simple and built-in as well as complex and custom are her
   * [Tufte style box plot](#tufte-style-box-plot)
   * [Pairs Plot](#pairs-plot)
   * [Density Plot](#density-plot)
+  * [Overlapping Histograms](#overlapping-histograms)
 
 ## Bar Chart
 
@@ -410,5 +411,31 @@ Overlay(
 </div>
 <div class="col-md-6">
 <img src="/cibotech/evilplot/img/docs/plot-catalog/density_plot.png" class="img-responsive"/>
+</div>
+</div>
+
+## Overlapping Histograms
+<div class="row">
+<div class="col-md-6" markdown="1">
+```scala
+import com.cibo.evilplot.colors._
+import com.cibo.evilplot.plot._
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+import com.cibo.evilplot.plot.renderers.BarRenderer
+import scala.util.Random
+
+val plotAreaSize: Extent = Extent(1000, 600)
+val data = Seq.fill(150)(Random.nextDouble() * 22)
+val data2 = Seq.fill(150)((Random.nextDouble() * 28) + 12)
+Overlay(
+  Histogram(data, barRenderer = Some(BarRenderer.default(Some(HTMLNamedColors.red.copy(opacity = 0.5))))),
+  Histogram(data2, barRenderer = Some(BarRenderer.default(Some(HTMLNamedColors.green.copy(opacity = 0.5)))))
+)
+  .standard()
+  .render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/overlap_histograms.png" class="img-responsive"/>
 </div>
 </div>
