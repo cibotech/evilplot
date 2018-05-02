@@ -8,8 +8,11 @@ title: Drawing API
 
 In EvilPlot, we represent everything that can be drawn to the screen as a `Drawable`.
 
-A `Drawable` is simply a _description_ of the scene, and constructing one does not actually render anything. There are only a handful of drawing primitives that exist within EvilPlot, and they can be divided into three categories: drawing, positioning, and style.
-The drawing primitives are the "leaves" of a scene. They represent concrete things like shapes and text. They are: 
+A `Drawable` is simply a _description_ of the scene, and constructing one does not actually render anything. There are
+only a handful of drawing primitives that exist within EvilPlot, and they can be divided into three categories: drawing,
+positioning, and style.
+The drawing primitives are the "leaves" of a scene. They represent concrete things like shapes and text. They are:
+
 <div class="container">
 <div class="row">
 
@@ -76,7 +79,8 @@ The drawing primitives are the "leaves" of a scene. They represent concrete thin
 
 ### Positioning Primitives
 
-Positioning primitives alter where other `Drawable`s are placed. Notably, `Drawable` scenes do not expose a notion of absolute coordinates.
+Positioning primitives alter where other `Drawable`s are placed. Notably, `Drawable` scenes do not expose a notion of
+absolute coordinates.
 
 <div class="container">
 <div class="row">
@@ -106,11 +110,13 @@ Lastly, styling primitives allow us to modify the appearance of scenes.
 + `Style` colors the inside of a `Drawable`
 + `StrokeStyle` colors the outline of a `Drawable`
 + `StrokeWeight` changes the thickness of the outline of a `Drawable`
-+ `LineDash` applies a [line style](/cibotech/evilplot/scaladoc/jvm/com/cibo/evilplot/geometry/LineStyle.html) to the outline of a `Drawable`
++ `LineDash` applies a [line style](/cibotech/evilplot/scaladoc/jvm/com/cibo/evilplot/geometry/LineStyle.html) to the
+outline of a `Drawable`
 
 ### Composition
 
-Creating scenes is simply a matter of composing these primitives. For example, to place a blue rectangle next to a red circle, you might write:
+Creating scenes is simply a matter of composing these primitives. For example, to place a blue rectangle next to a red
+circle, you might write:
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
@@ -133,7 +139,8 @@ Group(
 </div>
 </div>
 
-The `geometry` package also provides convenient syntax for dealing with positioning and styling primitives. So, instead of nesting constructors like we did up there, we can the following with the same result.
+The `geometry` package also provides convenient syntax for dealing with positioning and styling primitives. So, instead
+of nesting constructors like we did up there, we can do the following with the same result.
 
 ```scala
 import com.cibo.evilplot.geometry._
@@ -143,11 +150,14 @@ val rect = Rect(400, 400) filled RGB(83, 87, 79)
 Disc(200) transX rect.extent.width filled RGB(7) behind rect
 ```
 
-The drawing API gives us the power to describe all of the scenes involved in the plots that EvilPlot can create; at no point do plot implementations reach below it and onto the rendering target. 
+The drawing API gives us the power to describe all of the scenes involved in the plots that EvilPlot can create; at no
+point do plot implementations reach below it and onto the rendering target.
 
 ### Positional Combinators
 
-EvilPlot gives a higher-level vocabulary to refer to common geometric manipulations. In fact, above we just wrote a positional combinator called `beside`. It turns out that the `geometry` package is full of similar combinators, so most of the time you'll never have to manually think about shifting objects by their widths like we did above.
+EvilPlot gives a higher-level vocabulary to refer to common geometric manipulations. In fact, above we just wrote a
+positional combinator called `beside`. The `geometry` package is full of similar combinators, so most of the time you'll
+never have to manually think about shifting objects by their widths like we did above.
 
 <div class="row">
 <div class="col-md-4">
@@ -163,24 +173,24 @@ EvilPlot gives a higher-level vocabulary to refer to common geometric manipulati
 
 ### Alignment
 
-Additionally, you can align an entire sequence of `Drawable`s by calling one of the `Align` methods, which produce new sequence with all elements aligned. Combining alignment with reducing using a binary position operator is especially helpful:
-
+Additionally, you can align an entire sequence of `Drawable`s by calling one of the `Align` methods, which produce a new
+sequence with all elements aligned. Combining alignment with reducing using a binary position operator is especially
+helpful:
 
 ```scala
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.colors.HTMLNamedColors._
 
 val aligned: Seq[Drawable] = Align.right(
-	Rect(40, 60) filled blue,
-	Disc(70) filled red,
-	Polygon(Seq(Point(20, 60), Point(40, 20), Point(30, 30)) filled green)
+  Rect(40, 60) filled blue,
+  Disc(70) filled red,
+  Polygon(Seq(Point(20, 60), Point(40, 20), Point(30, 30)) filled green)
 )
 
 aligned.reduce(_ below _)
 ```
 
 The available alignment functions are:[^1].
-
 
 <!-- ugh fix this alignment -->
 <div class="container">
@@ -208,8 +218,10 @@ The available alignment functions are:[^1].
 
 ### An example
 
-With EvilPlot's drawing combinators on our side, we're well equipped to recreate the box example from above that we made using only primitives--except it will be far easier to reason about. Recall, first we created our elements: two lines and two boxes, then centered them vertically and placed them on top of each other.
-
+<!-- Was there a box plot example above? -->
+With EvilPlot's drawing combinators on our side, we're well equipped to recreate the box example from above that we made
+using only primitives--except it will be far easier to reason about. Recall, first we created our elements: two lines
+and two boxes, then centered them vertically and placed them on top of each other.
 
 <div class="row">
 <div class="col-md-8" markdown="1">
@@ -224,7 +236,6 @@ val bottomWhisker = 30
 val upperToMiddle = 40
 val middleToLower = 35
 val strokeWidth = 2
-
 
 Align.center(
   Line(topWhisker, strokeWidth).rotated(90),
@@ -249,13 +260,13 @@ Of course, at some point we want to draw our scenes to the screen. To do that, w
 
 ```scala
 trait Drawable {
-	// ...
+  // ...
 
-	def draw(ctx: RenderContext): Unit
+  def draw(ctx: RenderContext): Unit
 }
 ```
 
-The `RenderContext` is the interface between our drawing API and platform-specific rendering targets. For more information on how to obtain a `RenderContext`, see the (docs page)[render-context.html].
+The `RenderContext` is the interface between our drawing API and platform-specific rendering targets. For more
+information on how to obtain a `RenderContext`, see the [docs page](render-context.html).
 
 [^1]: A `.reduce(_ above _)` or `.reduce(_ beside _)` was applied to each of these so the examples didn't stomp all over each other.
-
