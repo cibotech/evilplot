@@ -67,7 +67,7 @@ trait BackgroundImplicits {
 
   /** Add a border frame around the plot. */
   def frame()(implicit theme: Theme): Plot =
-    frame(theme.colors.path, theme.elements.tickThickness)
+    frame(theme.colors.gridLine, theme.elements.tickThickness)
 
   /** Add a border frame around the plot. */
   def frame(color: Color, strokeWidth: Double): Plot = {
