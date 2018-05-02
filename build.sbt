@@ -15,19 +15,10 @@ lazy val root = project
   .disablePlugins(HeaderPlugin)
 
 lazy val commonSettings: Seq[Setting[_]] = Seq(
-  version := Settings.version,
   organization := Settings.organization,
   crossScalaVersions := Settings.versions.crossScalaVersions,
   scalaVersion := crossScalaVersions.value.head,
-  scalacOptions ++= Settings.scalacOptions,
-  publishTo in ThisBuild := {
-    val repo = ""
-    if (isSnapshot.value) {
-      Some("snapshots" at repo + "libs-snapshot-local")
-    } else {
-      Some("releases" at repo + "libs-release-local")
-    }
-  }
+  scalacOptions ++= Settings.scalacOptions
 )
 
 lazy val licenseSettings = Seq(
