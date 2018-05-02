@@ -30,7 +30,7 @@
 
 package com.cibo.evilplot.colors
 
-import com.cibo.evilplot.geometry.{Disc, Rect, Text}
+import com.cibo.evilplot.geometry.{Disc, Rect, Style, Text}
 import com.cibo.evilplot.numeric.{Bounds, ContinuousAxisDescriptor}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
@@ -51,8 +51,11 @@ trait CategoricalColoring[A] extends Coloring[A] {
     val (distinct, coloring) = distinctElemsAndColorFunction(dataToColor)
     LegendContext(
       elements = distinct.map(v => Disc(theme.elements.pointSize) filled coloring(v)),
-      labels =
-        distinct.map(a => Text(a.toString, theme.fonts.legendLabelSize, theme.fonts.fontFace)),
+      labels = distinct.map(
+        a =>
+          Style(
+            Text(a.toString, theme.fonts.legendLabelSize, theme.fonts.fontFace),
+            theme.colors.legendLabel)),
       defaultStyle = LegendStyle.Categorical
     )
   }
@@ -176,8 +179,11 @@ object ContinuousColoring {
         LegendContext(
           elements = axisDescriptor.values.map(v =>
             Rect(theme.fonts.legendLabelSize, theme.fonts.legendLabelSize) filled coloring(v)),
-          labels = axisDescriptor.labels.map(l =>
-            Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace)),
+          labels = axisDescriptor.labels.map(
+            l =>
+              Style(
+                Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace),
+                theme.colors.legendLabel)),
           defaultStyle = LegendStyle.Gradient
         )
       }
