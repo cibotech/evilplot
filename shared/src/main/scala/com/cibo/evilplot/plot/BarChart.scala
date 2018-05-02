@@ -168,7 +168,13 @@ object BarChart {
         cluster.zipWithIndex.map {
           case (value, index) =>
             val barLabel = if (clusterIndex == 0 && labels.lengthCompare(index) > 0) {
-              Seq(Text(labels(index), fontFace = theme.fonts.fontFace))
+              Seq(
+                Style(
+                  Text(
+                    labels(index),
+                    size = theme.fonts.legendLabelSize,
+                    fontFace = theme.fonts.fontFace),
+                  theme.colors.legendLabel))
             } else {
               Seq.empty[Drawable]
             }

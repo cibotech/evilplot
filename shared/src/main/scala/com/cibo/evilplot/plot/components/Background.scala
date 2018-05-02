@@ -31,7 +31,7 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, Extent, Line, Rect}
+import com.cibo.evilplot.geometry.{Drawable, Extent, Line, Rect, StrokeStyle}
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
 
@@ -71,7 +71,11 @@ trait BackgroundImplicits {
 
   /** Add a border frame around the plot. */
   def frame(color: Color, strokeWidth: Double): Plot = {
-    background((_, e: Extent) =>
-      Line(e.height, strokeWidth).rotated(90).center() above Line(e.width, strokeWidth).middle())
+    background(
+      (_, e: Extent) =>
+        StrokeStyle(
+          Line(e.height, strokeWidth).rotated(90).center() above Line(e.width, strokeWidth)
+            .middle(),
+          color))
   }
 }
