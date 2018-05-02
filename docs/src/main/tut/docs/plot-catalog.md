@@ -30,24 +30,26 @@ EvilPlot examples both simple and built-in as well as complex and custom are her
 <div class="col-md-6" markdown="1">
 ```scala
 val percentChange = Seq[Double](-10, 5, 12, 68, -22)
-  val labels = Seq("one", "two", "three", "four", "five")
+val labels = Seq("one", "two", "three", "four", "five")
 
-  val labeledByColor = new BarRenderer {
-    val positive = RGB(241, 121, 6)
-    val negative = RGB(226, 56, 140)
-    def render(plot: Plot, extent: Extent, category: Bar): Drawable = {
-      val rect = Rect(extent)
-      val value = category.values.head
-      val color = if (value >= 0) positive else negative
-      Align.center(rect filled color, Text(s"$value%", size = 20)).group
-    }
+val labeledByColor = new BarRenderer {
+  val positive = RGB(241, 121, 6)
+  val negative = RGB(226, 56, 140)
+  def render(plot: Plot, extent: Extent, category: Bar): Drawable = {
+    val rect = Rect(extent)
+    val value = category.values.head
+    val color = if (value >= 0) positive else negative
+    Align.center(rect filled color, Text(s"$value%", size = 20)).group
   }
+}
 
-  BarChart
-    .custom(percentChange.map(Bar.apply), spacing = Some(20), barRenderer = Some(labeledByColor))
-    .standard(xLabels = labels)
-    .hline(0)
-    .render(plotAreaSize)
+BarChart
+  .custom(percentChange.map(Bar.apply), spacing = Some(20),
+    barRenderer = Some(labeledByColor)
+  )
+  .standard(xLabels = labels)
+  .hline(0)
+  .render()
 ```
 </div>
 <div class="col-md-6">
@@ -73,9 +75,9 @@ val percentChange = Seq[Double](-10, 5, 12, 68, -22)
     .title("Clustered Bar Chart Demo")
     .xAxis(Seq("a", "b", "c", "d"))
     .yAxis()
-    .background()
+    .frame()
     .bottomLegend()
-    .render(plotAreaSize)
+    .render()
 ```
 </div>
 <div class="col-md-6">
@@ -102,9 +104,9 @@ val percentChange = Seq[Double](-10, 5, 12, 68, -22)
     .title("Clustered Bar Chart Demo")
     .xAxis(Seq("a", "b", "c", "d"))
     .yAxis()
-    .background()
+    .frame()
     .bottomLegend()
-    .render(plotAreaSize)
+    .render()
 ```
 </div>
 <div class="col-md-6">
@@ -130,9 +132,9 @@ val percentChange = Seq[Double](-10, 5, 12, 68, -22)
     .title("Clustered Bar Chart Demo")
     .xAxis(Seq("a", "b", "c", "d"))
     .yAxis()
-    .background()
+    .frame()
     .bottomLegend()
-    .render(plotAreaSize)
+    .render()
 ```
 </div>
 <div class="col-md-6">
@@ -145,15 +147,18 @@ val percentChange = Seq[Double](-10, 5, 12, 68, -22)
 <div class="col-md-6" markdown="1">
 
 ```scala
-  import HTMLNamedColors.{blue, green, red}
-  Overlay(
-    FunctionPlot.series(x => x * x, "y = x^2", blue, xbounds = Some(Bounds(-1, 1))),
-    FunctionPlot.series(x => math.pow(x, 3), "y = x^3", red, xbounds = Some(Bounds(-1, 1))),
-    FunctionPlot.series(x => math.pow(x, 4), "y = x^4", green, xbounds = Some(Bounds(-1, 1)))
-  ).title("A bunch of polynomials.")
-    .overlayLegend()
-    .standard()
-    .render()
+import HTMLNamedColors.{blue, green, red}
+Overlay(
+  FunctionPlot.series(x => x * x, "y = x^2",
+    blue, xbounds = Some(Bounds(-1, 1))),
+  FunctionPlot.series(x => math.pow(x, 3), "y = x^3",
+    red, xbounds = Some(Bounds(-1, 1))),
+  FunctionPlot.series(x => math.pow(x, 4), "y = x^4",
+    green, xbounds = Some(Bounds(-1, 1)))
+).title("A bunch of polynomials.")
+  .overlayLegend()
+  .standard()
+  .render()
 ```
 </div>
 <div class="col-md-6">
@@ -180,9 +185,9 @@ val percentChange = Seq[Double](-10, 5, 12, 68, -22)
     .title("Clustered Bar Chart Demo")
     .xAxis(Seq("a", "b", "c", "d"))
     .yAxis()
-    .background()
+    .frame()
     .bottomLegend()
-    .render(plotAreaSize)
+    .render()
 ```
 </div>
 <div class="col-md-6">
@@ -194,21 +199,28 @@ val percentChange = Seq[Double](-10, 5, 12, 68, -22)
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
-  val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
-  val pointsWithYears = years.zip(points).groupBy(_._1).mapValues(_.map(_._2)).toSeq.sortBy(_._1)
-  ScatterPlot(points, pointRenderer = Some(PointRenderer.depthColor(years, None, None)))
-    .title("Actual vs. Expected")(serifTheme)
-    .background()
-    .xGrid()
-    .yGrid()
-    .xAxis()
-    .yAxis()
-    .xLabel("Expected")(serifTheme)
-    .yLabel("Actual")(serifTheme)
-    .trend(1, 0)
-    .rightLegend()
-    .render(plotAreaSize)
+val points = Seq.fill(150) {
+  Point(Random.nextDouble(), Random.nextDouble())
+} :+ Point(0.0, 0.0)
+val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
+val pointsWithYears = years.zip(points).groupBy(_._1)
+  .mapValues(_.map(_._2)).toSeq.sortBy(_._1)
+
+ScatterPlot(
+  points,
+  pointRenderer = Some(PointRenderer.depthColor(years, None, None))
+)
+  .title("Actual vs. Expected")(serifTheme)
+  .frame()
+  .xGrid()
+  .yGrid()
+  .xAxis()
+  .yAxis()
+  .xLabel("Expected")(serifTheme)
+  .yLabel("Actual")(serifTheme)
+  .trend(1, 0)
+  .rightLegend()
+  .render()
 ```
 </div>
 <div class="col-md-6">
@@ -221,28 +233,31 @@ val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ P
 <div class="col-md-6" markdown="1">
 
 ```scala
-  val allYears = (2007 to 2013).map(_.toDouble).toVector
-  val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
-  val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+import com.cibo.evilplot.geometry.LineStyle.DashDot
+import com.cibo.evilplot.colors.HTMLNamedColors.dodgerBlue
 
-  val xhist = Histogram(data.map(_.x), bins = 50)
-  val yhist = Histogram(data.map(_.y), bins = 40)
-  ScatterPlot(
-    data = data,
-    pointRenderer = Some(PointRenderer.colorByCategory(years))
-  ).background()
-    .topPlot(xhist)
-    .rightPlot(yhist)
-    .xGrid()
-    .yGrid()
-    .xAxis()
-    .yAxis()
-    .title("Measured vs Actual")
-    .xLabel("measured")
-    .yLabel("actual")
-    .trend(1, 0, color = HTMLNamedColors.dodgerBlue, lineStyle = LineStyle.DashDot)
-    .overlayLegend(x = 0.95, y = 0.8)
-    .render(Extent(600, 400))
+val allYears = (2007 to 2013).map(_.toDouble).toVector
+val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
+val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+
+val xhist = Histogram(data.map(_.x), bins = 50)
+val yhist = Histogram(data.map(_.y), bins = 40)
+ScatterPlot(
+  data = data,
+  pointRenderer = Some(PointRenderer.colorByCategory(years))
+).frame()
+  .topPlot(xhist)
+  .rightPlot(yhist)
+  .xGrid()
+  .yGrid()
+  .xAxis()
+  .yAxis()
+  .title("Measured vs Actual")
+  .xLabel("measured")
+  .yLabel("actual")
+  .trend(1, 0, color = dodgerBlue, lineStyle = DashDot)
+  .overlayLegend(x = 0.95, y = 0.8)
+  .render(Extent(600, 400))
 ```
 </div>
 <div class="col-md-6">
@@ -255,13 +270,13 @@ val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ P
 <div class="col-md-6" markdown="1">
 
 ```scala
-  val data = Seq[Seq[Double]](
-    Seq(1, 2, 3, 4),
-    Seq(5, 6, 7, 8),
-    Seq(9, 8, 7, 6)
-  )
+val data = Seq[Seq[Double]](
+  Seq(1, 2, 3, 4),
+  Seq(5, 6, 7, 8),
+  Seq(9, 8, 7, 6)
+)
 
-  Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
+Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render()
 ```
 </div>
 <div class="col-md-6">
@@ -274,13 +289,13 @@ val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ P
 <div class="col-md-6" markdown="1">
 
 ```scala
-  val data = Seq[Seq[Double]](
-    Seq(1, 2, 3, 4),
-    Seq(5, 6, 7, 8),
-    Seq(9, 8, 7, 6)
-  )
+val data = Seq[Seq[Double]](
+  Seq(1, 2, 3, 4),
+  Seq(5, 6, 7, 8),
+  Seq(9, 8, 7, 6)
+)
 
-  Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
+Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render()
 ```
 </div>
 <div class="col-md-6">
@@ -294,25 +309,25 @@ val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ P
 <!-- Inspired by Edward Tufte's _The Visual Display of Quantitative Information_. We define a custom `BoxRenderer`:
 ```scala
 def tufteLikeBoxRenderer(implicit theme: Theme) = new BoxRenderer {
-	def render(plot: Plot, extent: Extent, summary: BoxPlotSummaryStatistics): Drawable = {
-		import summary._
-		val scale = extent.height / (upperWhisker - lowerWhisker)
-		// heights
-		val topWhisker = upperWhisker - upperQuantile
-		val bottomWhisker = lowerQuantile - lowerWhisker
-		val upperToMiddle = upperQuantile - middleQuantile
-		val middleToLower = middleQuantile - lowerQuantile
-		val strokeWidth = theme.elements.strokeWidth
+  def render(plot: Plot, extent: Extent, summary: BoxPlotSummaryStatistics): Drawable = {
+    import summary._
+    val scale = extent.height / (upperWhisker - lowerWhisker)
+    // heights
+    val topWhisker = upperWhisker - upperQuantile
+    val bottomWhisker = lowerQuantile - lowerWhisker
+    val upperToMiddle = upperQuantile - middleQuantile
+    val middleToLower = middleQuantile - lowerQuantile
+    val strokeWidth = theme.elements.strokeWidth
 
-		Align.center(
-		  Line(scale * topWhisker, strokeWidth).rotated(90),
-		  Disc.centered(theme.elements.pointSize)
-		  	.padTop(scale * upperToMiddle)
-		  	.padBottom(scale * middleToLower),
-		  Line(scale * bottomWhisker, strokeWidth).rotated(90)
-		).reduce(_ above _)
-		 .colored(theme.colors.path)
-	}
+    Align.center(
+      Line(scale * topWhisker, strokeWidth).rotated(90),
+      Disc.centered(theme.elements.pointSize)
+        .padTop(scale * upperToMiddle)
+        .padBottom(scale * middleToLower),
+      Line(scale * bottomWhisker, strokeWidth).rotated(90)
+    ).reduce(_ above _)
+     .colored(theme.colors.path)
+  }
 }
 ```
 
@@ -325,7 +340,7 @@ import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 
 val data: Seq[Seq[Double]] = // 
 BoxPlot(data, boxRenderer = Some(tufteLikeBoxRenderer))
-	.frame()
+  .frame()
 ```
 </div>
 <div class="col-md-6">
@@ -385,7 +400,9 @@ def gaussianKernel(u: Double): Double = {
   1 / math.sqrt(2 * math.Pi) * math.exp(-0.5d * u * u)
 }
 
-def densityEstimate(data: Seq[Double], bandwidth: Double)(x: Double): Double = {
+def densityEstimate(data: Seq[Double], bandwidth: Double)(
+  x: Double
+): Double = {
   val totalProbDensity = data.map { x_i =>
     gaussianKernel((x - x_i) / bandwidth)
   }.sum
@@ -407,7 +424,7 @@ Overlay(
 )
   .standard()
   .xbounds(0, 30)
-  .render(plotAreaSize)
+  .render()
 ```
 </div>
 <div class="col-md-6">
@@ -419,7 +436,7 @@ Overlay(
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-import com.cibo.evilplot.colors._
+import com.cibo.evilplot.colors.HTMLNamedColors.{red, green}
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.plot.renderers.BarRenderer
@@ -429,8 +446,10 @@ val plotAreaSize: Extent = Extent(1000, 600)
 val data = Seq.fill(150)(Random.nextDouble() * 22)
 val data2 = Seq.fill(150)((Random.nextDouble() * 28) + 12)
 Overlay(
-  Histogram(data, barRenderer = Some(BarRenderer.default(Some(HTMLNamedColors.red.copy(opacity = 0.5))))),
-  Histogram(data2, barRenderer = Some(BarRenderer.default(Some(HTMLNamedColors.green.copy(opacity = 0.5)))))
+  Histogram(data,
+   barRenderer = Some(BarRenderer.default(Some(red.copy(opacity = 0.5))))),
+  Histogram(data2,
+   barRenderer = Some(BarRenderer.default(Some(green.copy(opacity = 0.5)))))
 )
   .standard()
   .render(plotAreaSize)
@@ -450,7 +469,9 @@ import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import scala.util.Random
 
-val data = Seq.fill(100)(Point(Random.nextDouble() * 20, Random.nextDouble() * 20))
+val data = Seq.fill(100) { 
+  Point(Random.nextDouble() * 20, Random.nextDouble() * 20
+}
 ContourPlot(data)
   .standard()
   .xbounds(0, 20)
