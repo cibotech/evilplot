@@ -22,6 +22,7 @@ EvilPlot examples both simple and built-in as well as complex and custom are her
   * [Pairs Plot](#pairs-plot)
   * [Density Plot](#density-plot)
   * [Overlapping Histograms](#overlapping-histograms)
+  * [Contour Plot](#contour-plot)
 
 ## Bar Chart
 
@@ -437,5 +438,27 @@ Overlay(
 </div>
 <div class="col-md-6">
 <img src="/cibotech/evilplot/img/docs/plot-catalog/overlap_histograms.png" class="img-responsive"/>
+</div>
+</div>
+  
+## Contour Plot
+
+<div class="row">
+<div class="col-md-6" markdown="1">
+```scala
+import com.cibo.evilplot.plot._
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+import scala.util.Random
+
+val data = Seq.fill(100)(Point(Random.nextDouble() * 20, Random.nextDouble() * 20))
+ContourPlot(data)
+  .standard()
+  .xbounds(0, 20)
+  .ybounds(0, 20)
+  .render(plotAreaSize)
+```
+</div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plot-catalog/contour_plot.png" class="img-responsive"/>
 </div>
 </div>
