@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Custom Renderers
+position: 5
 ---
 
 # Custom Renderers

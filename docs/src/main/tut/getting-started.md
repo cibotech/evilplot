@@ -1,12 +1,13 @@
 ---
 layout: docs
 title: Getting Started
+position: 2
 ---
 # Getting Started
 
 To get going with EvilPlot, you'll need to add it to your build.
 ```scala
-resolvers += Seq(Resolver.bintrayRepo("cibotech", "public"))
+resolvers += Resolver.bintrayRepo("cibotech", "public")
 libraryDependencies += "com.cibo" %% "evilplot" % "0.2.0" // Use %%% instead of %% if you're using ScalaJS
 ```
 
