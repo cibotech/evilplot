@@ -57,6 +57,22 @@ class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
 
       baseColor.lighten(100).darken(50).lightness shouldEqual 50
     }
+
+    describe("triadic") {
+      it("correctly bounds hues that would be exactly 360") {
+        val color = HSLA(240, 0, 0, 0)
+
+        color.triadic shouldEqual (HSLA(120, 0, 0, 0), HSLA(0, 0, 0, 0))
+      }
+    }
+
+    describe("analogous") {
+      it("correctly bounds hues that would be exactly 360") {
+        val color = HSLA(350, 0, 0, 0)
+
+        color.analogous(10) shouldEqual (HSLA(340, 0, 0, 0), HSLA(0, 0, 0, 0))
+      }
+    }
   }
 
   describe("Color Utils") {
