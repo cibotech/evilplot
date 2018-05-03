@@ -164,7 +164,7 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.renderers.PointRenderer
 
-val gradient = ContinuousColoring.gradient(HTMLNamedColors.red, HTMLNamedColors.green)
+val gradient = ContinuousColoring.gradient(HTMLNamedColors.blue, HTMLNamedColors.orange)
 
 val points = Seq.tabulate(100) { i =>
   Point(i.toDouble, (math.sin(i.toDouble / 10) * 50) + 50)
