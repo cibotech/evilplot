@@ -48,7 +48,7 @@ case class HSLA(hue: Int, saturation: Int, lightness: Int, opacity: Double) exte
   require(lightness >= 0 && lightness <= 100, s"lightness must be within [0, 100] {was $lightness}")
   require(opacity >= 0 && opacity <= 1.0, s"transparency must be within [0, 1.0] {was $opacity}")
 
-  private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue > 360) hue - 360 else hue
+  private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue >= 360) hue - 360 else hue
 
   private def floorCeiling(value: Int)(floor: Int, ceiling: Int) = value.min(ceiling).max(floor)
 
