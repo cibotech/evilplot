@@ -1,9 +1,10 @@
 ---
 layout: docs
 title: Render Context 
+position: 7
 ---
 
-# `RenderContext`
+# RenderContext
 
 A `RenderContext` is the final target for all drawing operations in EvilPlot--it's where a constructed `Drawable` goes
 to ultimately be put on a screen. EvilPlot provides a `RenderContext` for each supported platform.

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Drawing API
+position: 4
 ---
 # Low-Level Drawing API
 

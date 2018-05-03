@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Plotting
+position: 3
 ---
 
 # Plots
@@ -25,10 +26,9 @@ Before, we passed the defaults for all parameters in `ScatterPlot` and let our t
 But what if we want to color each point differently depending on the value of another variable? That's where the
 `pointRenderer` argument comes in.
 
-<!-- Link to Scaladoc here. -->
 A `PointRenderer` tells your plot how to draw the data. When we don't pass one into `ScatterPlot`, we use
 `PointRenderer.default()`, which plots each item in the `data` sequence as a disc filled with the color in
-`theme.colors.fill`. But, there are a bunch more [`PointRenderer`s to choose from](deadlink).
+`theme.colors.fill`. But, there are a bunch more [`PointRenderer`s to choose from](/cibotech/evilplot/scaladoc/jvm/com/cibo/evilplot/plot/renderers/PointRenderer$.html).
 
 <div class="row">
 <div class="col-md-6" markdown="1">
