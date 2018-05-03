@@ -53,8 +53,9 @@ object TickRenderer {
     thickness: Double = defaultTickThickness,
     rotateText: Double = 0
   )(implicit theme: Theme): TickRenderer = new TickRenderer {
-    private def align(rs: Drawable*): Seq[Drawable] =
-      if (rotateText == 0 || rotateText == 90) Align.center(rs: _*) else rs
+    private def align(tick: Drawable, label: Drawable): Drawable =
+      if (rotateText.toInt % 90 == 0) Align.center(tick, label).reduce(_ above _)
+      else tick.above(label).transX(label.extent.width)
 
     def render(label: String): Drawable = {
       val line = Line(length, thickness).rotated(90)
@@ -65,7 +66,7 @@ object TickRenderer {
           theme.colors.tickLabel)
           .rotated(rotateText)
           .padTop(2)
-      ).reduce(above)
+      )
     }
   }
 
