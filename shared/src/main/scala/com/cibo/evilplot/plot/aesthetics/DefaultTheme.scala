@@ -81,7 +81,7 @@ object DefaultTheme {
 
   case class DefaultElements(
     strokeWidth: Double = 2,
-    pointSize: Double = 3,
+    pointSize: Double = 4,
     gridLineSize: Double = 0.25,
     barSpacing: Double = 1,
     clusterSpacing: Double = 4,
