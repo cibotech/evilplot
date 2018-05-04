@@ -45,7 +45,7 @@ import scala.util.Random
 object DemoPlots {
   implicit val theme: DefaultTheme = DefaultTheme().copy(
     fonts = DefaultFonts()
-      .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif"),
+      .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
   )
 
   val plotAreaSize: Extent = Extent(1000, 600)
@@ -345,6 +345,7 @@ object DemoPlots {
 
   lazy val functionPlot: Drawable = {
     val Seq(one, two, three) = theme.colors.stream.take(3)
+    // scalastyle:off
     Overlay(
       FunctionPlot.series(x => x * x, "y = x\u00B2", one, xbounds = Some(Bounds(-1, 1))),
       FunctionPlot.series(x => math.pow(x, 3), "y = x\u00B3", two, xbounds = Some(Bounds(-1, 1))),
@@ -355,6 +356,7 @@ object DemoPlots {
       .overlayLegend()
       .standard()
       .render(plotAreaSize)
+    // scalastyle:on
   }
 
   def gaussianKernel(u: Double): Double = {
