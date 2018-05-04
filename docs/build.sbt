@@ -12,11 +12,10 @@ micrositeDocumentationUrl := "/cibotech/evilplot/scaladoc/jvm/index.html"
 micrositeBaseUrl := "/cibotech/evilplot/"
 micrositeShareOnSocial := false
 micrositeGitterChannel := false
-
 micrositePalette := Map(
   "brand-primary" -> "#008080",
-  "brand-secondary" -> "#606C71",
-  "brand-tertiary" -> "#485155",
+  "brand-secondary" -> "#484848",
+  "brand-tertiary" -> "#323232",
   "gray-dark" -> "#453E46",
   "gray" -> "#837F84",
   "gray-light" -> "#E3E2E3",

@@ -17,7 +17,7 @@ options:
   - title: Colors
     url: colors.html
 
-  - title: RenderContext
+  - title: Render Contexts
     url: render-context.html
 
   - title: Plot Catalog

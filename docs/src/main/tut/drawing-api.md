@@ -162,12 +162,15 @@ never have to manually think about shifting objects by their widths like we did 
 
 <div class="row">
 <div class="col-md-4">
+<code>beside</code>
 <img src="/cibotech/evilplot/img/docs/drawing-api/beside.png" class="img-responsive"/>
 </div>
 <div class="col-md-4">
+<code>behind</code>
 <img src="/cibotech/evilplot/img/docs/drawing-api/behind.png" class="img-responsive"/>
 </div>
 <div class="col-md-4">
+<code>above</code>
 <img src="/cibotech/evilplot/img/docs/drawing-api/above.png" class="img-responsive"/>
 </div>
 </div>
