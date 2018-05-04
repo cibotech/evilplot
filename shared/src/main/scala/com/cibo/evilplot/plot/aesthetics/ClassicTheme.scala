@@ -30,24 +30,41 @@
 
 package com.cibo.evilplot.plot.aesthetics
 
-import com.cibo.evilplot.colors.{Color, ContinuousColoring}
+import com.cibo.evilplot.colors.{Color, HSL, HTMLNamedColors, RGB}
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultColors, DefaultElements, DefaultFonts}
 
-trait Colors {
-  val background: Color
-  val frame: Color
-  val bar: Color
-  val fill: Color
-  val path: Color
-  val point: Color
-  val gridLine: Color
-  val trendLine: Color
+object ClassicTheme {
+  val ClassicColors: DefaultColors = DefaultColors(
+    background = HSL(0, 0, 92),
+    frame = RGB(30, 30, 30),
+    bar = HSL(0, 0, 35),
+    fill = HTMLNamedColors.white,
+    path = HSL(0, 0, 0),
+    point = HSL(0, 0, 35),
+    gridLine = HTMLNamedColors.white,
+    trendLine = HSL(0, 0, 35),
+    title = HTMLNamedColors.black,
+    label = HTMLNamedColors.black,
+    annotation = HTMLNamedColors.black,
+    legendLabel = HTMLNamedColors.black,
+    tickLabel = HTMLNamedColors.black,
+    stream = Color.stream
+  )
 
-  val title: Color
-  val label: Color
-  val annotation: Color
-  val legendLabel: Color
-  val tickLabel: Color
+  val ClassicElements: DefaultElements = DefaultElements(
+    pointSize = 2.5,
+    gridLineSize = 1,
+    categoricalXAxisLabelOrientation = 90
+  )
 
-  val stream: Seq[Color]
-  val continuousColoring: ContinuousColoring
+  val ClassicFonts: DefaultFonts = DefaultFonts(
+    tickLabelSize = 10,
+    legendLabelSize = 10
+  )
+
+  implicit val classicTheme: DefaultTheme.DefaultTheme = DefaultTheme.DefaultTheme(
+    colors = ClassicColors,
+    elements = ClassicElements,
+    fonts = ClassicFonts
+  )
 }
