@@ -36,15 +36,17 @@ import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme.DefaultFonts
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PointRenderer}
 
 import scala.util.Random
 
 /** A number of examples of Evil Plotting */
 object DemoPlots {
-
-  val serifTheme = DefaultTheme(fonts = DefaultFonts(fontFace = "Comic Sans"))
+  implicit val theme: DefaultTheme = DefaultTheme().copy(
+    fonts = DefaultFonts()
+      .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif"),
+  )
 
   val plotAreaSize: Extent = Extent(1000, 600)
   lazy val histogram: Drawable = {
@@ -62,14 +64,18 @@ object DemoPlots {
     val percentChange = Seq[Double](-10, 5, 12, 68, -22)
     val labels = Seq("one", "two", "three", "four", "five")
 
-    val labeledByColor = new BarRenderer {
-      val positive = RGB(241, 121, 6)
-      val negative = RGB(226, 56, 140)
+    def labeledByColor(implicit theme: Theme) = new BarRenderer {
       def render(plot: Plot, extent: Extent, category: Bar): Drawable = {
         val rect = Rect(extent)
         val value = category.values.head
+        val positive = HEX("#4c78a8")
+        val negative = HEX("#e45756")
         val color = if (value >= 0) positive else negative
-        Align.center(rect filled color, Text(s"$value%", size = 20)).group
+        Align
+          .center(
+            rect filled color,
+            Text(s"$value%", fontFace = theme.fonts.fontFace, size = 20).filled(theme.colors.label))
+          .group
       }
     }
 
@@ -100,8 +106,8 @@ object DemoPlots {
       .yAxis()
       .xGrid()
       .yGrid()
-      .background()
-      .render()
+      .frame()
+      .render(plotAreaSize)
   }
 
   lazy val scatterPlot: Drawable = {
@@ -109,14 +115,14 @@ object DemoPlots {
     val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
     val pointsWithYears = years.zip(points).groupBy(_._1).mapValues(_.map(_._2)).toSeq.sortBy(_._1)
     ScatterPlot(points, pointRenderer = Some(PointRenderer.depthColor(years, None, None)))
-      .title("Actual vs. Expected")(serifTheme)
-      .background()
+      .title("Actual vs. Expected")
+      .frame()
       .xGrid()
       .yGrid()
       .xAxis()
       .yAxis()
-      .xLabel("Expected")(serifTheme)
-      .yLabel("Actual")(serifTheme)
+      .xLabel("Expected")
+      .yLabel("Actual")
       .trend(1, 0)
       .rightLegend()
       .render(plotAreaSize)
@@ -147,7 +153,7 @@ object DemoPlots {
       .title("Clustered Bar Chart Demo")
       .xAxis(Seq("a", "b", "c", "d"))
       .yAxis()
-      .background()
+      .frame()
       .bottomLegend()
       .render(plotAreaSize)
   }
@@ -167,7 +173,7 @@ object DemoPlots {
       .title("Stacked Bar Chart Demo")
       .xAxis(Seq("a", "b", "c", "d"))
       .yAxis()
-      .background()
+      .frame()
       .bottomLegend()
       .render(plotAreaSize)
   }
@@ -189,9 +195,9 @@ object DemoPlots {
       .yGrid()
       .xLabel("Category")
       .yLabel("Level")
-      .background()
+      .frame()
       .rightLegend()
-      .render(Extent(600, 400))
+      .render(plotAreaSize)
   }
 
   lazy val facetedPlot: Drawable = {
@@ -214,7 +220,7 @@ object DemoPlots {
     )
 
     Facets(Seq(Seq(plot1, plot2), Seq(plot3, plot4)))
-      .background()
+      .frame()
       .xAxis()
       .yAxis()
       .xLabel("x")
@@ -243,7 +249,7 @@ object DemoPlots {
     ScatterPlot(
       data = data,
       pointRenderer = Some(PointRenderer.colorByCategory(years))
-    ).background()
+    ).frame()
       .topPlot(xhist)
       .rightPlot(yhist)
       .xGrid()
@@ -253,9 +259,9 @@ object DemoPlots {
       .title("Measured vs Actual")
       .xLabel("measured")
       .yLabel("actual")
-      .trend(1, 0, color = HTMLNamedColors.dodgerBlue, lineStyle = LineStyle.DashDot)
+      .trend(1, 0, color = RGB(45, 45, 45), lineStyle = LineStyle.DashDot)
       .overlayLegend(x = 0.95, y = 0.8)
-      .render(Extent(600, 400))
+      .render(plotAreaSize)
   }
 
   lazy val crazyPlot: Drawable = {
@@ -324,7 +330,7 @@ object DemoPlots {
       .bottomLabel((e: Extent) => Rect(e) filled HTMLNamedColors.yellow, 10)
       .xAxis()
       .yAxis()
-      .background()
+      .frame()
       .xGrid()
       .yGrid()
     facets.render(plotAreaSize)
@@ -334,19 +340,21 @@ object DemoPlots {
     val data = Seq.fill(10)(Seq.fill(Random.nextInt(30))(Random.nextDouble()))
     BoxPlot(data)
       .standard(xLabels = (1 to 10).map(_.toString))
-      .render(Extent(800, 400))
+      .render(plotAreaSize)
   }
 
   lazy val functionPlot: Drawable = {
-    import HTMLNamedColors.{blue, green, red}
+    val Seq(one, two, three) = theme.colors.stream.take(3)
     Overlay(
-      FunctionPlot.series(x => x * x, "y = x^2", blue, xbounds = Some(Bounds(-1, 1))),
-      FunctionPlot.series(x => math.pow(x, 3), "y = x^3", red, xbounds = Some(Bounds(-1, 1))),
-      FunctionPlot.series(x => math.pow(x, 4), "y = x^4", green, xbounds = Some(Bounds(-1, 1)))
+      FunctionPlot.series(x => x * x, "y = x\u00B2", one, xbounds = Some(Bounds(-1, 1))),
+      FunctionPlot.series(x => math.pow(x, 3), "y = x\u00B3", two, xbounds = Some(Bounds(-1, 1))),
+      FunctionPlot.series(x => math.pow(x, 4), "y = x\u2074", three, xbounds = Some(Bounds(-1, 1)))
     ).title("A bunch of polynomials.")
+      .xLabel("x")
+      .yLabel("y")
       .overlayLegend()
       .standard()
-      .render()
+      .render(plotAreaSize)
   }
 
   def gaussianKernel(u: Double): Double = {
@@ -362,26 +370,26 @@ object DemoPlots {
 
   lazy val densityPlot: Drawable = {
     val data = Seq.fill(150)(Random.nextDouble() * 30)
-    val colors = Color.getGradientSeq(3)
+    val colors = theme.colors.stream.take(3)
     val bandwidths = Seq(5d, 2d, 0.5d)
     Overlay(
-      colors.zip(bandwidths).map { case (c, b) =>
-        FunctionPlot(
-          densityEstimate(data, b),
-          Some(Bounds(0, 30)),
-          Some(500),
-          Some(PathRenderer.default(color = Some(c)))
-        )
+      colors.zip(bandwidths).map {
+        case (c, b) =>
+          FunctionPlot(
+            densityEstimate(data, b),
+            Some(Bounds(0, 30)),
+            Some(500),
+            Some(PathRenderer.default(color = Some(c)))
+          )
       }: _*
-    )
-      .standard()
+    ).standard()
       .xbounds(0, 30)
       .render(plotAreaSize)
   }
 
   lazy val contourPlot: Drawable = {
     import com.cibo.evilplot.plot._
-    import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
     import scala.util.Random
 
     val data = Seq.fill(100)(Point(Random.nextDouble() * 20, Random.nextDouble() * 20))

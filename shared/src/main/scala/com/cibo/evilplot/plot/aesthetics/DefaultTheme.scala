@@ -35,44 +35,60 @@ import com.cibo.evilplot.colors.ContinuousColoring.gradient
 import com.cibo.evilplot.geometry.LineStyle
 
 object DefaultTheme {
+  private val darkGray: HSLA = HSLA(0, 0, 12, 1.0)
+  private val lightGray: HSLA = HSLA(0, 0, 65, 0.8)
+  private val darkBlue: HSLA = HSLA(211, 38, 48, 1.0)
+  val colorPalette = Seq(
+    HEX("#4c78a8"),
+    HEX("#f58518"),
+    HEX("#e45756"),
+    HEX("#72b7b2"),
+    HEX("#54a24b"),
+    HEX("#eeca3b"),
+    HEX("#b279a2"),
+    HEX("#ff9da6"),
+    HEX("#9d755d"),
+    HEX("#bab0ac"))
 
   case class DefaultFonts(
     titleSize: Double = 22,
     labelSize: Double = 20,
     annotationSize: Double = 10,
-    tickLabelSize: Double = 10,
-    legendLabelSize: Double = 10,
-    facetLabelSize: Double = 10,
+    tickLabelSize: Double = 14,
+    legendLabelSize: Double = 14,
+    facetLabelSize: Double = 14,
     fontFace: String = "sans-serif"
   ) extends Fonts
 
   case class DefaultColors(
-    background: Color = HSL(0, 0, 92),
-    bar: Color = HSL(0, 0, 35),
-    fill: Color = HTMLNamedColors.white,
-    path: Color = HSL(0, 0, 0),
-    point: Color = HSL(0, 0, 35),
-    gridLine: Color = HTMLNamedColors.white,
-    trendLine: Color = HSL(0, 0, 35),
-    title: Color = HTMLNamedColors.black,
-    label: Color = HTMLNamedColors.black,
-    annotation: Color = HTMLNamedColors.black,
-    legendLabel: Color = HTMLNamedColors.black,
-    tickLabel: Color = HTMLNamedColors.black,
-    stream: Seq[Color] = Color.stream,
-    continuousColoring: ContinuousColoring = gradient(HTMLNamedColors.blue, HTMLNamedColors.orange)
+    background: Color = Clear,
+    frame: Color = RGB(30, 30, 30),
+    bar: Color = darkBlue,
+    fill: Color = darkBlue,
+    path: Color = darkGray,
+    point: Color = darkGray,
+    gridLine: Color = lightGray,
+    trendLine: Color = darkGray,
+    title: Color = darkGray,
+    label: Color = darkGray,
+    annotation: Color = darkGray,
+    legendLabel: Color = darkGray,
+    tickLabel: Color = darkGray,
+    stream: Seq[Color] = colorPalette,
+    continuousColoring: ContinuousColoring =
+      gradient(HTMLNamedColors.blue, HTMLNamedColors.orange, gradientMode = GradientMode.Natural)
   ) extends Colors
 
   case class DefaultElements(
     strokeWidth: Double = 2,
-    pointSize: Double = 2.5,
-    gridLineSize: Double = 1,
+    pointSize: Double = 3,
+    gridLineSize: Double = 0.25,
     barSpacing: Double = 1,
     clusterSpacing: Double = 4,
     boundBuffer: Double = 0.1,
     boxSpacing: Double = 20,
     contours: Int = 20,
-    categoricalXAxisLabelOrientation: Double = 90,
+    categoricalXAxisLabelOrientation: Double = 0,
     continuousXAxisLabelOrientation: Double = 0,
     xTickCount: Int = 10,
     yTickCount: Int = 10,
