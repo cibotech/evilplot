@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Render Context 
+title: Render Contexts
 position: 7
 ---
 

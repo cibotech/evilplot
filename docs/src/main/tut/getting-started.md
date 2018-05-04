@@ -97,7 +97,5 @@ above: call it with your data, add your components, convert to a scene.
 The rest of this tutorial is split up as follows:
 + Using built-in plots
 + A tour of the drawing API.
-+ Colors and color utilities
 + How to use plot element renderers, which allow you to fully customize your plots.
-+ Plot themes
-+ The `Plot` data type itself, and implementing completely custom plots.
++ Colors and color utilities

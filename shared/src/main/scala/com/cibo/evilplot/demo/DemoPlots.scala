@@ -115,14 +115,13 @@ object DemoPlots {
     val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
     val pointsWithYears = years.zip(points).groupBy(_._1).mapValues(_.map(_._2)).toSeq.sortBy(_._1)
     ScatterPlot(points, pointRenderer = Some(PointRenderer.depthColor(years, None, None)))
-      .title("Actual vs. Expected")
       .frame()
       .xGrid()
       .yGrid()
       .xAxis()
       .yAxis()
-      .xLabel("Expected")
-      .yLabel("Actual")
+      .xLabel("x")
+      .yLabel("y")
       .trend(1, 0)
       .rightLegend()
       .render(plotAreaSize)
@@ -240,7 +239,7 @@ object DemoPlots {
     import com.cibo.evilplot.plot.renderers._
 
     // Make up some data...
-    val allYears = (2007 to 2013).map(_.toDouble).toVector
+    val allYears = (2007 to 2013).toVector
     val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
     val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
 
@@ -256,9 +255,8 @@ object DemoPlots {
       .yGrid()
       .xAxis()
       .yAxis()
-      .title("Measured vs Actual")
-      .xLabel("measured")
-      .yLabel("actual")
+      .xLabel("x")
+      .yLabel("y")
       .trend(1, 0, color = RGB(45, 45, 45), lineStyle = LineStyle.DashDot)
       .overlayLegend(x = 0.95, y = 0.8)
       .render(plotAreaSize)

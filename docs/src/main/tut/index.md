@@ -20,6 +20,4 @@ EvilPlot can do, along with code.
 You can also take a look at the complete [API documentation](/cibotech/evilplot/scaladoc/jvm/index.html)
 or the source on [GitHub](https://www.github.com/cibotech/evilplot).
 
-Have a question, or want to get involved? Feel free to talk to us on Gitter or file an issue. We welcome pull requests
-as well!
-
+Have a question, or want to get involved? Feel free to file an issue or open a pull request.

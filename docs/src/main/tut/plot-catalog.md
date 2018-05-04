@@ -16,10 +16,7 @@ EvilPlot examples both simple and built-in as well as complex and custom are her
   * [Box Plot](#box-plot)
   * [Scatter Plot](#scatter-plot)
   * [Scatter Plot with Marginal Histograms](#scatter-plot-with-marginal-histograms)
-  * [Heatmap](#heatmap)
   * [Pie Chart](#pie-chart)
-  * [Using Emoji](#using-emoji)
-  * [Tufte style box plot](#tufte-style-box-plot)
   * [Pairs Plot](#pairs-plot)
   * [Density Plot](#density-plot)
   * [Overlapping Histograms](#overlapping-histograms)
@@ -266,37 +263,13 @@ ScatterPlot(
 </div>
 </div>
 
-## Heatmap
-<div class="row">
-<div class="col-md-6" markdown="1">
-
-```scala
-val data = Seq[Seq[Double]](
-  Seq(1, 2, 3, 4),
-  Seq(5, 6, 7, 8),
-  Seq(9, 8, 7, 6)
-)
-
-Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render()
-```
-</div>
-<div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/heatmap.png" class="img-responsive"/>
-</div>
-</div>
-
 ## Pie Chart
 <div class="row">
 <div class="col-md-6" markdown="1">
 
 ```scala
-val data = Seq[Seq[Double]](
-  Seq(1, 2, 3, 4),
-  Seq(5, 6, 7, 8),
-  Seq(9, 8, 7, 6)
-)
-
-Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render()
+val data = Seq("one" -> 1.5, "two" -> 3.5, "three" -> 2.0)
+PieChart(data).rightLegend().render()
 ```
 </div>
 <div class="col-md-6">
@@ -304,51 +277,6 @@ Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render()
 </div>
 </div>
 
-## Using Emoji
-
-## Tufte style box plot
-<!-- Inspired by Edward Tufte's _The Visual Display of Quantitative Information_. We define a custom `BoxRenderer`:
-```scala
-def tufteLikeBoxRenderer(implicit theme: Theme) = new BoxRenderer {
-  def render(plot: Plot, extent: Extent, summary: BoxPlotSummaryStatistics): Drawable = {
-    import summary._
-    val scale = extent.height / (upperWhisker - lowerWhisker)
-    // heights
-    val topWhisker = upperWhisker - upperQuantile
-    val bottomWhisker = lowerQuantile - lowerWhisker
-    val upperToMiddle = upperQuantile - middleQuantile
-    val middleToLower = middleQuantile - lowerQuantile
-    val strokeWidth = theme.elements.strokeWidth
-
-    Align.center(
-      Line(scale * topWhisker, strokeWidth).rotated(90),
-      Disc.centered(theme.elements.pointSize)
-        .padTop(scale * upperToMiddle)
-        .padBottom(scale * middleToLower),
-      Line(scale * bottomWhisker, strokeWidth).rotated(90)
-    ).reduce(_ above _)
-     .colored(theme.colors.path)
-  }
-}
-```
-
-Then call `BoxPlot`: 
-<div class="row">
-<div class="col-md-6" markdown="1">
-```scala
-import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-
-val data: Seq[Seq[Double]] = // 
-BoxPlot(data, boxRenderer = Some(tufteLikeBoxRenderer))
-  .frame()
-```
-</div>
-<div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/tufte_box_plot.png" class="img-responsive"/>
-</div>
-</div>
- -->
 ## Pairs Plot
 A pairs plot can be built by combining `ScatterPlot` and `Histogram` plots with `Facet`.
 
