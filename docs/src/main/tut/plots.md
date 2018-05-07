@@ -28,7 +28,7 @@ But what if we want to color each point differently depending on the value of an
 
 A `PointRenderer` tells your plot how to draw the data. When we don't pass one into `ScatterPlot`, we use
 `PointRenderer.default()`, which plots each item in the `data` sequence as a disc filled with the color in
-`theme.colors.fill`. But, there are a bunch more [`PointRenderer`s to choose from](/cibotech/evilplot/scaladoc/jvm/com/cibo/evilplot/plot/renderers/PointRenderer$.html).
+`theme.colors.fill`. But, there are a bunch more [`PointRenderer`s to choose from](/evilplot/scaladoc/jvm/com/cibo/evilplot/plot/renderers/PointRenderer$.html).
 
 <div class="row">
 <div class="col-md-6" markdown="1">
@@ -58,7 +58,7 @@ ScatterPlot(
 ```
 </div>
 <div class="col-md-6">
-  <img src="/cibotech/evilplot/img/docs/plots/pointrenderer.png" class="img-responsive"/>
+  <img src="/evilplot/img/docs/plots/pointrenderer.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -97,7 +97,7 @@ ContourPlot(
 ```
 </div>
 <div class="col-md-6">
-  <img src="/cibotech/evilplot/img/docs/plots/contour.png" class="img-responsive"/>
+  <img src="/evilplot/img/docs/plots/contour.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -127,7 +127,7 @@ Overlay(contours, initial)
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plots/withinitialpoint.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plots/withinitialpoint.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -159,7 +159,7 @@ Overlay(contours, initial)
 ```
 </div>
 <div class="col-md-6">
-  <img src="/cibotech/evilplot/img/docs/plots/sideplots.png" class="img-responsive"/>
+  <img src="/evilplot/img/docs/plots/sideplots.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -199,7 +199,7 @@ Facets(
 ```
 </div>
 <div class="col-md-6">
-  <img src="/cibotech/evilplot/img/docs/plots/facetedcontours.png" class="img-responsive"/>
+  <img src="/evilplot/img/docs/plots/facetedcontours.png" class="img-responsive"/>
 </div>
 </div>
 

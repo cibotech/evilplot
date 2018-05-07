@@ -76,10 +76,10 @@ def jitter(range: Double)(implicit theme: Theme): PointRenderer = new PointRende
 A plot using the default `PointRenderer` at left and the `jitter` renderer at right:
 <div class="row">
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/custom-renderers/nojitter.png" class="img-responsive">
+<img src="/evilplot/img/docs/custom-renderers/nojitter.png" class="img-responsive">
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/custom-renderers/jitter.png" class="img-responsive">
+<img src="/evilplot/img/docs/custom-renderers/jitter.png" class="img-responsive">
 </div>
 </div>
 
@@ -114,6 +114,6 @@ BarChart.custom(Seq(-15, 22, -5).map(Bar(_)), Some(colorBy(coloring)))
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/custom-renderers/colorby.png" class="img-responsive">
+<img src="/evilplot/img/docs/custom-renderers/colorby.png" class="img-responsive">
 </div>
 </div>
