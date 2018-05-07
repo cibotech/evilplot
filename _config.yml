@@ -1,0 +1,11 @@
+name: EvilPlot
+baseurl: /evilplot/
+description: Combinators for graphics
+highlighter: rouge
+docs: true
+collections:
+  tut:
+    output: true
+version: 0.1.0-SNAPSHOT
+org: CiBO Technologies
+markdown: kramdown

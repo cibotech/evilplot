@@ -1,0 +1,48 @@
+code {
+	white-space: pre !important;
+}
+
+.jumbotron {
+	background-image: none;
+}
+
+.technologies{
+	height: 0px;
+}
+
+img{
+	padding: 20px;
+}
+
+
+
+@media screen and (min-width: 992px) {
+	#page-content-wrapper section pre {
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	#page-content-wrapper section{
+		margin: 0px;
+	}
+}
+
+#page-content-wrapper section {
+	padding-top: 1px;
+	max-width: 1600px;
+}
+
+.center-block .image-responsive{
+	margin: auto;
+}
+
+body{
+	color: #656167;
+}
+
+.content code{
+	color: #676468;
+	background-color: #e1e0e1;
+}

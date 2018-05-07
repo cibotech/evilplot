@@ -1,0 +1,219 @@
+<html><head><title>EvilPlot: Colors</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="CiBO Technologies" /><meta name="description" content="Combinators for graphics" /><meta name="og:image" content="/evilplot//img/poster.png" /><meta name="og:title" content="EvilPlot: Colors" /><meta name="og:site_name" content="EvilPlot" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Combinators for graphics" /><link rel="icon" type="image/png" href="/evilplot//img/favicon.png" /><meta name="twitter:title" content="EvilPlot: Colors" /><meta name="twitter:image" content="img/poster.png" /><meta name="twitter:description" content="Combinators for graphics" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="16x16" href="/evilplot//img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/evilplot//img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/evilplot//img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/evilplot//img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/evilplot//img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/evilplot//img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/evilplot//img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/evilplot//img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/evilplot//img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/evilplot//img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/evilplot//img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/evilplot//img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/evilplot//img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/evilplot//img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/evilplot//img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/evilplot//img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/evilplot//img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/evilplot//img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/evilplot//img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/evilplot//img/favicon310x150.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/evilplot//highlight/styles/default.css" /><link rel="stylesheet" href="/evilplot//css/style.css" /><link rel="stylesheet" href="/evilplot//css/palette.css" /><link rel="stylesheet" href="/evilplot//css/codemirror.css" /><link rel="stylesheet" href="/evilplot//css/custom.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/evilplot//" class="brand"><div class="brand-wrapper"><span>EvilPlot</span></div></a></li> <li><a href="/evilplot//" class="">Home</a></li> <li><a href="/evilplot//index.html" class=""></a></li> <li><a href="/evilplot//getting-started.html" class="">Getting Started</a></li> <li><a href="/evilplot//plots.html" class="">Plotting</a></li> <li><a href="/evilplot//drawing-api.html" class="">Drawing API</a></li> <li><a href="/evilplot//custom-renderers.html" class="">Custom Renderers</a></li> <li><a href="/evilplot//colors.html" class=" active ">Colors</a></li> <li><a href="/evilplot//render-context.html" class="">Render Contexts</a></li> <li><a href="/evilplot//plot-catalog.html" class="">Plot Catalog</a></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/cibotech/evilplot"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/cibotech/evilplot"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="cibotech" data-github-repo="evilplot"><div class="content-wrapper"><section><h1 id="colors">Colors</h1>
+
+<p>Colors in EvilPlot are described by their <a href="https://en.wikipedia.org/wiki/HSL_and_HSV">HSL</a> representation.</p>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">transparentColor</span> <span class="k">=</span> <span class="nc">HSLA</span><span class="o">(</span><span class="mi">210</span><span class="o">,</span> <span class="mi">100</span><span class="o">,</span> <span class="mi">56</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">color</span> <span class="k">=</span> <span class="nc">HSL</span><span class="o">(</span><span class="mi">210</span><span class="o">,</span> <span class="mi">100</span><span class="o">,</span> <span class="mi">56</span><span class="o">)</span> <span class="c1">// fully opaque
+</span></code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/basic_hsl.png" class="img-responsive" />
+</div>
+</div>
+
+<p>You can also use the RGB representation to describe a color. It will be converted to HSL automatically.</p>
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">transparentColor</span> <span class="k">=</span> <span class="nc">RGBA</span><span class="o">(</span><span class="mi">230</span><span class="o">,</span> <span class="mi">126</span><span class="o">,</span> <span class="mi">34</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">color</span> <span class="k">=</span> <span class="nc">RGB</span><span class="o">(</span><span class="mi">230</span><span class="o">,</span> <span class="mi">126</span><span class="o">,</span> <span class="mi">34</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">hexColor</span> <span class="k">=</span> <span class="nc">HEX</span><span class="o">(</span><span class="s">"E67E22"</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/basic_rgb.png" class="img-responsive" />
+</div>
+</div>
+
+<h3 id="predefined-colors">Predefined colors</h3>
+
+<p>All of the HTML named colors are available to use:</p>
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+
+<span class="k">val</span> <span class="n">htmlRed</span> <span class="k">=</span> <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">red</span>
+<span class="k">val</span> <span class="n">htmlDodgerBlue</span> <span class="k">=</span> <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">dodgerBlue</span>
+<span class="k">val</span> <span class="n">htmlTomato</span> <span class="k">=</span> <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">tomato</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/basic_html.png" class="img-responsive" />
+</div>
+</div>
+
+<h3 id="modifying-colors">Modifying colors</h3>
+
+<p>You can create colors by modifying the HSLA properties of another color.</p>
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+
+<span class="k">val</span> <span class="n">htmlRed</span> <span class="k">=</span> <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">red</span>
+<span class="k">val</span> <span class="n">transparentRed</span> <span class="k">=</span> <span class="n">htmlRed</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">opacity</span> <span class="k">=</span> <span class="mf">0.5</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">difficultWhite</span> <span class="k">=</span> <span class="n">htmlRed</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">lightness</span> <span class="k">=</span> <span class="mi">100</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/basic_mod.png" class="img-responsive" />
+</div>
+</div>
+
+<p>EvilPlot has several helpful methods for modifying colors:</p>
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+
+<span class="k">val</span> <span class="n">htmlRed</span> <span class="k">=</span> <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">red</span>
+
+<span class="k">val</span> <span class="n">lighterRed</span> <span class="k">=</span> <span class="n">htmlRed</span><span class="o">.</span><span class="n">lighten</span><span class="o">(</span><span class="mi">20</span><span class="o">)</span> <span class="c1">// Increase lightness by 20
+</span><span class="k">val</span> <span class="n">darkerRed</span> <span class="k">=</span> <span class="n">htmlRed</span><span class="o">.</span><span class="n">darken</span><span class="o">(</span><span class="mi">20</span><span class="o">)</span>
+
+<span class="c1">// Two new colors evenly spaced around the HSL color wheel from the first
+</span><span class="k">val</span> <span class="o">(</span><span class="n">triad1</span><span class="o">,</span> <span class="n">triad2</span><span class="o">)</span> <span class="k">=</span> <span class="n">htmlRed</span><span class="o">.</span><span class="n">triadic</span>
+
+<span class="c1">// Two new colors adjacent to the first color on the color wheel
+// (+/- 45 degrees away in this example)
+</span><span class="k">val</span> <span class="o">(</span><span class="n">analogue1</span><span class="o">,</span> <span class="n">analogue2</span><span class="o">)</span> <span class="k">=</span> <span class="n">htmlRed</span><span class="o">.</span><span class="n">analogous</span><span class="o">(</span><span class="mi">45</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/fancy_mod.png" class="img-responsive" />
+</div>
+</div>
+
+<h3 id="color-sequences-and-gradients">Color Sequences and Gradients</h3>
+
+<p>A variety of streams and sequences of colors can be generated.</p>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+
+<span class="k">val</span> <span class="n">colors</span> <span class="k">=</span> <span class="nc">Color</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">take</span><span class="o">(</span><span class="mi">40</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/stream.png" class="img-responsive" />
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+
+<span class="c1">// A gradient across all hues
+</span><span class="k">val</span> <span class="n">colors</span> <span class="k">=</span> <span class="nc">Color</span><span class="o">.</span><span class="n">getGradientSeq</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/gradient_seq.png" class="img-responsive" />
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+
+<span class="c1">// A gradient between specific hues
+</span><span class="k">val</span> <span class="n">colors</span> <span class="k">=</span> <span class="nc">Color</span><span class="o">.</span><span class="n">getGradientSeq</span><span class="o">(</span><span class="mi">10</span><span class="o">,</span> <span class="n">startHue</span> <span class="k">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">endHue</span> <span class="k">=</span> <span class="mi">120</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/gradient_narrow_seq.png" class="img-responsive" />
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+
+<span class="k">val</span> <span class="n">colors</span> <span class="k">=</span> <span class="nc">Color</span><span class="o">.</span><span class="n">getDefaultPaletteSeq</span><span class="o">(</span><span class="mi">8</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/default_seq.png" class="img-responsive" />
+</div>
+</div>
+
+<p>Data can be colored using a continuous gradient.</p>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.PointRenderer</span>
+
+<span class="k">val</span> <span class="n">gradient</span> <span class="k">=</span> <span class="nc">ContinuousColoring</span><span class="o">.</span><span class="n">gradient</span><span class="o">(</span><span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">blue</span><span class="o">,</span> <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">orange</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">points</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">tabulate</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span> <span class="o">{</span> <span class="n">i</span> <span class="k">=&gt;</span>
+  <span class="nc">Point</span><span class="o">(</span><span class="n">i</span><span class="o">.</span><span class="n">toDouble</span><span class="o">,</span> <span class="o">(</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="o">(</span><span class="n">i</span><span class="o">.</span><span class="n">toDouble</span> <span class="o">/</span> <span class="mi">10</span><span class="o">)</span> <span class="o">*</span> <span class="mi">50</span><span class="o">)</span> <span class="o">+</span> <span class="mi">50</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="k">val</span> <span class="n">renderer</span> <span class="k">=</span> <span class="nc">PointRenderer</span><span class="o">.</span><span class="n">depthColor</span><span class="o">(</span><span class="n">points</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">y</span><span class="o">),</span> <span class="nc">Some</span><span class="o">(</span><span class="n">gradient</span><span class="o">))</span>
+<span class="nc">ScatterPlot</span><span class="o">(</span><span class="n">points</span><span class="o">,</span> <span class="n">pointRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">renderer</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">frame</span><span class="o">().</span><span class="n">xAxis</span><span class="o">().</span><span class="n">yAxis</span><span class="o">().</span><span class="n">xGrid</span><span class="o">().</span><span class="n">yGrid</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">xbounds</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">100</span><span class="o">).</span><span class="n">ybounds</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">100</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">(</span><span class="nc">Extent</span><span class="o">(</span><span class="mi">500</span><span class="o">,</span> <span class="mi">300</span><span class="o">))</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/continuous_gradient.png" class="img-responsive" />
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+
+<span class="c1">// Multiple stop points can be given for continuous gradients
+</span><span class="k">val</span> <span class="n">gradient</span> <span class="k">=</span> <span class="nc">ContinuousColoring</span><span class="o">.</span><span class="n">gradient</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span>
+  <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">green</span><span class="o">,</span>
+  <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">red</span><span class="o">,</span>
+  <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">blue</span><span class="o">,</span>
+  <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">red</span>
+<span class="o">),</span> <span class="nc">Some</span><span class="o">(</span><span class="mf">0d</span><span class="o">),</span> <span class="nc">Some</span><span class="o">(</span><span class="mf">40d</span><span class="o">),</span> <span class="nc">GradientMode</span><span class="o">.</span><span class="nc">Linear</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">gradientFunc</span> <span class="k">=</span> <span class="n">gradient</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">40</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">colors</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">tabulate</span><span class="o">(</span><span class="mi">40</span><span class="o">)</span> <span class="o">{</span> <span class="n">gradientFunc</span><span class="o">(</span><span class="k">_</span><span class="o">)</span> <span class="o">}</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/continuous_multigradient.png" class="img-responsive" />
+</div>
+</div>
+
+<p>Categorical data can be colored using a categorical gradient.</p>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.PointRenderer</span>
+
+<span class="k">val</span> <span class="n">gradient</span><span class="k">:</span> <span class="kt">Coloring</span><span class="o">[</span><span class="kt">Double</span><span class="o">]</span> <span class="k">=</span> <span class="nc">CategoricalColoring</span><span class="o">.</span><span class="n">gradient</span><span class="o">(</span>
+  <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">blue</span><span class="o">,</span>
+  <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">orange</span>
+<span class="o">)</span>
+
+<span class="k">val</span> <span class="n">points</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">tabulate</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span> <span class="o">{</span> <span class="n">i</span> <span class="k">=&gt;</span> <span class="nc">Point</span><span class="o">(</span><span class="n">i</span><span class="o">.</span><span class="n">toDouble</span><span class="o">,</span> <span class="n">i</span><span class="o">.</span><span class="n">toDouble</span><span class="o">)</span> <span class="o">}</span>
+<span class="k">val</span> <span class="n">renderer</span> <span class="k">=</span> <span class="nc">PointRenderer</span><span class="o">.</span><span class="n">colorByCategory</span><span class="o">(</span><span class="n">points</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">p</span> <span class="k">=&gt;</span> <span class="n">p</span><span class="o">.</span><span class="n">x</span> <span class="o">%</span> <span class="mi">3</span><span class="o">),</span> <span class="nc">Some</span><span class="o">(</span><span class="n">gradient</span><span class="o">))</span>
+<span class="nc">ScatterPlot</span><span class="o">(</span><span class="n">points</span><span class="o">,</span> <span class="n">pointRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">renderer</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">frame</span><span class="o">().</span><span class="n">xAxis</span><span class="o">().</span><span class="n">yAxis</span><span class="o">().</span><span class="n">xGrid</span><span class="o">().</span><span class="n">yGrid</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">xbounds</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">100</span><span class="o">).</span><span class="n">ybounds</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">100</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">rightLegend</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">(</span><span class="nc">Extent</span><span class="o">(</span><span class="mi">500</span><span class="o">,</span> <span class="mi">300</span><span class="o">))</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/colors/categorical_gradient.png" class="img-responsive" />
+</div>
+</div>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/evilplot//highlight/highlight.pack.js"></script><script>hljs.configure({
+languages:['scala','java','bash']
+});
+hljs.initHighlighting();
+             </script><script src="/evilplot//js/main.js"></script></body></html>

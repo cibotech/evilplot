@@ -1,0 +1,61 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:400,300,700);
+.technologies {
+  background: #484848; }
+
+#site-header .navbar-wrapper a {
+  color: #fff; }
+
+#site-footer {
+  background: #323232; }
+
+::-moz-selection {
+  background: #008080;
+  color: #FFFFFF; }
+
+::selection {
+  background: #008080;
+  color: #FFFFFF; }
+
+.jumbotron {
+  background-color: #484848; }
+  .jumbotron .btn-outline-inverse {
+    border: 2px solid #FFFFFF;
+    color: #FFFFFF; }
+    .jumbotron .btn-outline-inverse:hover, .jumbotron .btn-outline-inverse:focus {
+      background: #FFFFFF;
+      color: #484848; }
+
+pre {
+  background: rgba(244, 243, 244, 0.6); }
+  pre code {
+    color: inherit;
+    background-color: transparent; }
+  pre .hljs {
+    background: none; }
+
+body.docs {
+  background: #F4F3F4; }
+
+#content code {
+  color: #837F84;
+  background-color: #F4F3F4; }
+
+#sidebar-wrapper {
+  background: #484848; }
+
+#page-content-wrapper .nav a {
+  color: #837F84; }
+  #page-content-wrapper .nav a:hover {
+    color: #453E46; }
+  #page-content-wrapper .nav a i {
+    font-size: 18px; }
+
+.sidebar-nav > li a:hover {
+  background: #323232; }
+.sidebar-nav > li a.active {
+  border-left: 3px solid #008080;
+  color: #fff; }
+.sidebar-nav > .sidebar-brand a {
+  background: #323232; }
+  .sidebar-nav > .sidebar-brand a:hover {
+    background: #323232; }

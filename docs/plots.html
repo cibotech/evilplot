@@ -1,0 +1,208 @@
+<html><head><title>EvilPlot: Plotting</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="CiBO Technologies" /><meta name="description" content="Combinators for graphics" /><meta name="og:image" content="/evilplot//img/poster.png" /><meta name="og:title" content="EvilPlot: Plotting" /><meta name="og:site_name" content="EvilPlot" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Combinators for graphics" /><link rel="icon" type="image/png" href="/evilplot//img/favicon.png" /><meta name="twitter:title" content="EvilPlot: Plotting" /><meta name="twitter:image" content="img/poster.png" /><meta name="twitter:description" content="Combinators for graphics" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="16x16" href="/evilplot//img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/evilplot//img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/evilplot//img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/evilplot//img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/evilplot//img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/evilplot//img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/evilplot//img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/evilplot//img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/evilplot//img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/evilplot//img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/evilplot//img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/evilplot//img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/evilplot//img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/evilplot//img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/evilplot//img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/evilplot//img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/evilplot//img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/evilplot//img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/evilplot//img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/evilplot//img/favicon310x150.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/evilplot//highlight/styles/default.css" /><link rel="stylesheet" href="/evilplot//css/style.css" /><link rel="stylesheet" href="/evilplot//css/palette.css" /><link rel="stylesheet" href="/evilplot//css/codemirror.css" /><link rel="stylesheet" href="/evilplot//css/custom.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/evilplot//" class="brand"><div class="brand-wrapper"><span>EvilPlot</span></div></a></li> <li><a href="/evilplot//" class="">Home</a></li> <li><a href="/evilplot//index.html" class=""></a></li> <li><a href="/evilplot//getting-started.html" class="">Getting Started</a></li> <li><a href="/evilplot//plots.html" class=" active ">Plotting</a></li> <li><a href="/evilplot//drawing-api.html" class="">Drawing API</a></li> <li><a href="/evilplot//custom-renderers.html" class="">Custom Renderers</a></li> <li><a href="/evilplot//colors.html" class="">Colors</a></li> <li><a href="/evilplot//render-context.html" class="">Render Contexts</a></li> <li><a href="/evilplot//plot-catalog.html" class="">Plot Catalog</a></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/cibotech/evilplot"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/cibotech/evilplot"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="cibotech" data-github-repo="evilplot"><div class="content-wrapper"><section><h1 id="plots">Plots</h1>
+
+<p>In the last section, we made a simple scatter plot using a built-in plot method in EvilPlot. In this section, we’re
+going to explore some more built-in plots.</p>
+
+<h2 id="scatterplot-the-whole-story"><code class="highlighter-rouge">ScatterPlot</code>: The Whole Story</h2>
+
+<p>If we take a look at the method signature for <code class="highlighter-rouge">ScatterPlot.apply</code>, we see it takes more than just data:</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">object</span> <span class="nc">ScatterPlot</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">apply</span><span class="o">(</span>
+    <span class="n">data</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">Point</span><span class="o">],</span>
+    <span class="n">pointRenderer</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">PointRenderer</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span><span class="o">,</span>
+    <span class="n">boundBuffer</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Double</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span>
+  <span class="o">)(</span><span class="k">implicit</span> <span class="n">theme</span><span class="k">:</span> <span class="kt">Theme</span><span class="o">)</span><span class="k">:</span> <span class="kt">Plot</span> <span class="o">=</span> <span class="o">???</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Before, we passed the defaults for all parameters in <code class="highlighter-rouge">ScatterPlot</code> and let our theme determine how things looked.
+But what if we want to color each point differently depending on the value of another variable? That’s where the
+<code class="highlighter-rouge">pointRenderer</code> argument comes in.</p>
+
+<!-- Link to Scaladoc here. -->
+<p>A <code class="highlighter-rouge">PointRenderer</code> tells your plot how to draw the data. When we don’t pass one into <code class="highlighter-rouge">ScatterPlot</code>, we use
+<code class="highlighter-rouge">PointRenderer.default()</code>, which plots each item in the <code class="highlighter-rouge">data</code> sequence as a disc filled with the color in
+<code class="highlighter-rouge">theme.colors.fill</code>. But, there are a bunch more <a href="deadlink"><code class="highlighter-rouge">PointRenderer</code>s to choose from</a>.</p>
+
+<div class="row">
+<div class="col-md-6">
+
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.PointRenderer</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.aesthetics.DefaultTheme._</span>
+<span class="k">import</span> <span class="nn">scala.util.Random</span>
+
+<span class="k">val</span> <span class="n">qualities</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"good"</span><span class="o">,</span> <span class="s">"bad"</span><span class="o">)</span>
+
+<span class="k">final</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">MyFancyData</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">y</span><span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">quality</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">data</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">MyFancyData</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">MyFancyData</span><span class="o">(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">(),</span> <span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">(),</span> <span class="n">qualities</span><span class="o">(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextInt</span><span class="o">(</span><span class="mi">2</span><span class="o">)))</span>
+<span class="o">}</span>
+<span class="k">val</span> <span class="n">points</span> <span class="k">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">d</span> <span class="k">=&gt;</span> <span class="nc">Point</span><span class="o">(</span><span class="n">d</span><span class="o">.</span><span class="n">x</span><span class="o">,</span> <span class="n">d</span><span class="o">.</span><span class="n">y</span><span class="o">))</span>
+
+<span class="nc">ScatterPlot</span><span class="o">(</span>
+  <span class="n">points</span><span class="o">,</span>
+  <span class="n">pointRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">PointRenderer</span><span class="o">.</span><span class="n">colorByCategory</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">quality</span><span class="o">)))</span>
+<span class="o">).</span><span class="n">xAxis</span><span class="o">()</span>
+ <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
+ <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+ <span class="o">.</span><span class="n">rightLegend</span><span class="o">()</span>
+ <span class="o">.</span><span class="n">render</span><span class="o">()</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+  <img src="/cibotech/evilplot/img/docs/plots/pointrenderer.png" class="img-responsive" />
+</div>
+</div>
+
+<p>The <code class="highlighter-rouge">colorByCategory</code> point renderer handled our categories for us. You’ll notice we included a call to <code class="highlighter-rouge">.rightLegend()</code>
+as well. The renderer is able to add our categories and their associated aesthetics to a context for a legend
+automatically, so we get a legend that makes sense.</p>
+
+<h2 id="overlaying">Overlaying</h2>
+
+<p>EvilPlot takes an unusual approach to overlaying, in the spirit of building more complex visualizations out of simpler
+ones. When you want to make a multilayered plot, just make a plot for each layer. We then give you a combinator,
+<code class="highlighter-rouge">Overlay</code>, to compose all the plots into a meaningful composite.</p>
+
+<p>Let’s look at two equally meaningful plots. The first is a
+<a href="https://en.wikipedia.org/wiki/Ramachandran_plot">Ramachandran plot</a>, which is a plot of the phi and psi dihredral
+angles in a peptide bond. This data came from a molecular dynamics simulation of alanine dipeptide, so we have a
+computed “phi” and “psi” from the simulation for each iteration. We want to look at how these two angles were
+distributed, so let’s make a contour plot out of the density.</p>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors._</span>
+<span class="nc">ContourPlot</span><span class="o">(</span>
+  <span class="nc">AlanineData</span><span class="o">.</span><span class="n">data</span><span class="o">,</span>
+  <span class="n">surfaceRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">SurfaceRenderer</span><span class="o">.</span><span class="n">contours</span><span class="o">(</span><span class="nc">Some</span><span class="o">(</span><span class="n">dodgerBlue</span><span class="o">)))</span>
+<span class="o">)</span>
+  <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"phi"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"psi"</span><span class="o">)</span>
+  <span class="c1">// For reference, fix the bounds over the allowed phi/psi ranges.
+</span>  <span class="o">.</span><span class="n">xbounds</span><span class="o">(-</span><span class="mi">180</span><span class="o">,</span> <span class="mi">180</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">ybounds</span><span class="o">(-</span><span class="mi">180</span><span class="o">,</span> <span class="mi">180</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">xAxis</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+  <img src="/cibotech/evilplot/img/docs/plots/contour.png" class="img-responsive" />
+</div>
+</div>
+
+<p>We might wonder what configuration the peptide was in at the beginning of the simulation. Let’s put a point on
+the chart that shows the initial configuration.</p>
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">initial</span> <span class="k">=</span> <span class="nc">ScatterPlot</span><span class="o">(</span>
+  <span class="nc">AlanineData</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="o">,</span>
+  <span class="n">pointRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">PointRenderer</span><span class="o">.</span><span class="n">default</span><span class="o">(</span><span class="n">color</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">crimson</span><span class="o">)))</span>
+<span class="o">)</span>
+
+<span class="k">val</span> <span class="n">contours</span> <span class="k">=</span> <span class="nc">ContourPlot</span><span class="o">(</span>
+  <span class="nc">AlanineData</span><span class="o">.</span><span class="n">data</span><span class="o">,</span>
+  <span class="n">surfaceRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">SurfaceRenderer</span><span class="o">.</span><span class="n">contours</span><span class="o">(</span><span class="nc">Some</span><span class="o">(</span><span class="n">dodgerBlue</span><span class="o">)))</span>
+<span class="o">)</span>
+
+<span class="nc">Overlay</span><span class="o">(</span><span class="n">contours</span><span class="o">,</span> <span class="n">initial</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"phi"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"psi"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">xbounds</span><span class="o">(-</span><span class="mi">180</span><span class="o">,</span> <span class="mi">180</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">ybounds</span><span class="o">(-</span><span class="mi">180</span><span class="o">,</span> <span class="mi">180</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">xAxis</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/plots/withinitialpoint.png" class="img-responsive" />
+</div>
+</div>
+
+<p>With <code class="highlighter-rouge">Overlay</code>, we don’t have to worry that the bounds of our plots might not align–EvilPlot will take care of all of
+the necessary transformations for you.</p>
+
+<h2 id="adding-side-plots">Adding side plots.</h2>
+
+<p>The contour plot gives us a good glimpse at the bivariate distribution. But, let’s say we were secondarily interested in
+looking at the univariate distribution of each parameter. Of course, we <em>could</em> just make histograms.</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">phiHistogram</span> <span class="k">=</span> <span class="nc">Histogram</span><span class="o">(</span><span class="nc">AlanineData</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">x</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">psiHistogram</span> <span class="k">=</span> <span class="nc">Histogram</span><span class="o">(</span><span class="nc">AlanineData</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">y</span><span class="o">))</span>
+</code></pre></div></div>
+
+<p>But we don’t have to stop at plotting these separately. EvilPlot will let us place plots in the margins of another plot
+using a whole family of border plot combinators. If we take what we’d been working on from before:</p>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Overlay</span><span class="o">(</span><span class="n">contours</span><span class="o">,</span> <span class="n">initial</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">topPlot</span><span class="o">(</span><span class="n">phiHistogram</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">rightPlot</span><span class="o">(</span><span class="n">psiHistogram</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"phi"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"psi"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+  <img src="/cibotech/evilplot/img/docs/plots/sideplots.png" class="img-responsive" />
+</div>
+</div>
+
+<h2 id="faceting">Faceting</h2>
+
+<p>Imagine that after you made the visualization above, it turned out that you want to run similar simulations at different
+temperatures and additionally evaluate a different set of simulation parameters. This is a perfect candidate for
+faceting.</p>
+
+<!-- TODO: Fix these axes. These axes are super ugly and -180-180 is standard for Rama plots -->
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Facets</span><span class="o">(</span>
+  <span class="nc">AlanineData</span><span class="o">.</span><span class="n">allDihedrals</span><span class="o">.</span><span class="n">map</span><span class="o">(</span>
+    <span class="k">_</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">ps</span> <span class="k">=&gt;</span>
+      <span class="nc">ContourPlot</span><span class="o">(</span><span class="n">ps</span><span class="o">,</span>
+       <span class="n">surfaceRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">SurfaceRenderer</span><span class="o">.</span><span class="n">contours</span><span class="o">(</span><span class="nc">Some</span><span class="o">(</span><span class="n">dodgerBlue</span><span class="o">))))</span>
+        <span class="o">.</span><span class="n">overlay</span><span class="o">(</span><span class="nc">ScatterPlot</span><span class="o">(</span><span class="n">ps</span><span class="o">.</span><span class="n">head</span><span class="o">,</span>
+           <span class="n">pointRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">PointRenderer</span><span class="o">.</span><span class="n">default</span><span class="o">(</span><span class="nc">Some</span><span class="o">(</span><span class="n">crimson</span><span class="o">)))))</span>
+        <span class="o">.</span><span class="n">topPlot</span><span class="o">(</span><span class="nc">Histogram</span><span class="o">(</span><span class="n">ps</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">x</span><span class="o">)))</span>
+        <span class="o">.</span><span class="n">rightPlot</span><span class="o">(</span><span class="nc">Histogram</span><span class="o">(</span><span class="n">ps</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">y</span><span class="o">)))</span>
+        <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+    <span class="o">)</span>
+  <span class="o">)</span>
+<span class="o">)</span>
+  <span class="o">.</span><span class="n">topLabels</span><span class="o">(</span><span class="nc">AlanineData</span><span class="o">.</span><span class="n">temps</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">k</span> <span class="k">=&gt;</span> <span class="n">s</span><span class="s">"$k K"</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">rightLabels</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"params1"</span><span class="o">,</span> <span class="s">"params2"</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">xbounds</span><span class="o">(-</span><span class="mi">180</span><span class="o">,</span> <span class="mi">180</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">ybounds</span><span class="o">(-</span><span class="mi">180</span><span class="o">,</span> <span class="mi">180</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">xAxis</span><span class="o">(</span><span class="n">tickCount</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="mi">6</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">yAxis</span><span class="o">(</span><span class="n">tickCount</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="mi">6</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"phi"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"psi"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">()</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+  <img src="/cibotech/evilplot/img/docs/plots/facetedcontours.png" class="img-responsive" />
+</div>
+</div>
+
+<p>Hopefully, this example convinces you that it’s easy to start with a simple visual and compose more and more complexity
+on top of it using plot combinators. We first saw that the base plot can be customized using <code class="highlighter-rouge">PlotRenderers</code>. After that
+we saw how simple <code class="highlighter-rouge">Plot =&gt; Plot</code> combinators can add additional features piece-by-piece. Next, we saw that
+“multilayer plots” are expressed in EvilPlot simply by applying <code class="highlighter-rouge">Overlay</code>, a function from <code class="highlighter-rouge">Seq[Plot] =&gt; Plot</code>.
+Finally, we saw how we can build a multivariate, faceted display out of other plots easily, regardless of how
+complicated the individual plots are.</p>
+
+<p>But, we’re just getting started. Check out the <a href="plot-catalog.html">Plot Catalog</a> for awesome examples of what you can do
+with EvilPlot. Or, read about the <a href="drawing-api.html">drawing API</a> for some background before venturing into writing your
+own renderers, which is an easy way to make EvilPlot even more customizable.</p>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/evilplot//highlight/highlight.pack.js"></script><script>hljs.configure({
+languages:['scala','java','bash']
+});
+hljs.initHighlighting();
+             </script><script src="/evilplot//js/main.js"></script></body></html>

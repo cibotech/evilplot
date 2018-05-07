@@ -1,0 +1,24 @@
+options:
+  - title: Home
+  - url: index.html
+
+  - title: Getting Started
+    url: getting-started.html
+
+  - title: Plotting
+    url: plots.html
+
+  - title: Drawing API
+    url: drawing-api.html
+
+  - title: Custom Renderers
+    url: custom-renderers.html
+
+  - title: Colors
+    url: colors.html
+
+  - title: Render Contexts
+    url: render-context.html
+
+  - title: Plot Catalog
+    url: plot-catalog.html

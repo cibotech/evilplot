@@ -1,0 +1,121 @@
+<html><head><title>EvilPlot: Custom Renderers</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="CiBO Technologies" /><meta name="description" content="Combinators for graphics" /><meta name="og:image" content="/evilplot//img/poster.png" /><meta name="og:title" content="EvilPlot: Custom Renderers" /><meta name="og:site_name" content="EvilPlot" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Combinators for graphics" /><link rel="icon" type="image/png" href="/evilplot//img/favicon.png" /><meta name="twitter:title" content="EvilPlot: Custom Renderers" /><meta name="twitter:image" content="img/poster.png" /><meta name="twitter:description" content="Combinators for graphics" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="16x16" href="/evilplot//img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/evilplot//img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/evilplot//img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/evilplot//img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/evilplot//img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/evilplot//img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/evilplot//img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/evilplot//img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/evilplot//img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/evilplot//img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/evilplot//img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/evilplot//img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/evilplot//img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/evilplot//img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/evilplot//img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/evilplot//img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/evilplot//img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/evilplot//img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/evilplot//img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/evilplot//img/favicon310x150.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/evilplot//highlight/styles/default.css" /><link rel="stylesheet" href="/evilplot//css/style.css" /><link rel="stylesheet" href="/evilplot//css/palette.css" /><link rel="stylesheet" href="/evilplot//css/codemirror.css" /><link rel="stylesheet" href="/evilplot//css/custom.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/evilplot//" class="brand"><div class="brand-wrapper"><span>EvilPlot</span></div></a></li> <li><a href="/evilplot//" class="">Home</a></li> <li><a href="/evilplot//index.html" class=""></a></li> <li><a href="/evilplot//getting-started.html" class="">Getting Started</a></li> <li><a href="/evilplot//plots.html" class="">Plotting</a></li> <li><a href="/evilplot//drawing-api.html" class="">Drawing API</a></li> <li><a href="/evilplot//custom-renderers.html" class=" active ">Custom Renderers</a></li> <li><a href="/evilplot//colors.html" class="">Colors</a></li> <li><a href="/evilplot//render-context.html" class="">Render Contexts</a></li> <li><a href="/evilplot//plot-catalog.html" class="">Plot Catalog</a></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/cibotech/evilplot"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/cibotech/evilplot"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="cibotech" data-github-repo="evilplot"><div class="content-wrapper"><section><h1 id="custom-renderers">Custom Renderers</h1>
+
+<p>In the introduction to plotting with EvilPlot, we gave <code class="highlighter-rouge">ScatterPlot</code> <code class="highlighter-rouge">PointRenderer.colorByCategory</code> as an argument. We
+also mentioned that there are several <code class="highlighter-rouge">PointRenderer</code>s available by default. If you took a look at the plot catalog, you
+might have also seen that there were some other types of renderers, like <code class="highlighter-rouge">BoxRenderer</code>, <code class="highlighter-rouge">PathRenderer</code>, and
+<code class="highlighter-rouge">BarRenderer</code> that we can use to customize the base plots.</p>
+
+<p>All of these are <code class="highlighter-rouge">PlotElementRenderer</code>s, and you’re not limited to the ones that EvilPlot provides. With a little bit of
+understanding of the <a href="drawing-api.html">Drawing API</a>, implementing a renderer can be the easiest way to get a highly
+custom plot. Let’s look at the interface:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">trait</span> <span class="nc">PlotElementRenderer</span><span class="o">[</span><span class="kt">C</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">render</span><span class="o">(</span><span class="n">plot</span><span class="k">:</span> <span class="kt">Plot</span><span class="o">,</span> <span class="n">extent</span><span class="k">:</span> <span class="kt">Extent</span><span class="o">,</span> <span class="n">context</span><span class="k">:</span> <span class="kt">C</span><span class="o">)</span><span class="k">:</span> <span class="kt">Drawable</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>All you have to do is define how a piece of data gets displayed as a <code class="highlighter-rouge">Drawable</code>, and you’re done. When you call
+<code class="highlighter-rouge">render()</code> on the <code class="highlighter-rouge">Plot</code> later on, it will call <code class="highlighter-rouge">render</code> on your <code class="highlighter-rouge">PlotElementRenderer</code> and pass through the appropriate
+context. The question is: what are those three arguments, and what can you do with them?</p>
+
+<ol>
+  <li>
+    <p>The first one is straightforward, you’ve seen <code class="highlighter-rouge">Plot</code> all over the place already! When you define your <code class="highlighter-rouge">render</code>
+method, you get a hook back into the plot, so you can get certain information out of it. For example, you might be
+interested in applying the plot’s <code class="highlighter-rouge">xtransform</code> or <code class="highlighter-rouge">ytransform</code> to some auxiliary data, and you can just pull that out:</p>
+
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">val</span> <span class="n">xTransform</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=&gt;</span> <span class="nc">Double</span> <span class="k">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">xtransformer</span><span class="o">(</span><span class="n">plot</span><span class="o">,</span> <span class="o">...)</span>
+</code></pre></div>    </div>
+
+    <p><!--
+   This is not correct, the second argument is actually a size relevant to the plot's construction (full plot size in the
+   case of scatter, line plot, contour plot and bar size in the case of box plot and bar chart)
+ --></p>
+  </li>
+  <li>
+    <p>The data to screen transformation will be different depending on how big we want to make the plot when we render it.
+That’s why <code class="highlighter-rouge">render</code> also gets an <code class="highlighter-rouge">extent</code> argument. This is the real size of the plot once it’s rendered. Keep in mind
+that we’re able to access that quantity here because renderers are <em>only</em> called when we turn the <code class="highlighter-rouge">Plot</code> into a
+<code class="highlighter-rouge">Drawable</code>, not when we construct the <code class="highlighter-rouge">Plot</code>.</p>
+
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">val</span> <span class="n">xTransform</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=&gt;</span> <span class="nc">Double</span> <span class="k">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">ytransformer</span><span class="o">(</span><span class="n">plot</span><span class="o">,</span> <span class="n">extent</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Finally, the context. The context is a value of type <code class="highlighter-rouge">C</code>. The best way to explain this parameter is probably to look
+at the renderers you’ve already seen, and what their respective context type is:</p>
+    <ul>
+      <li><code class="highlighter-rouge">PointRenderer</code> is a <code class="highlighter-rouge">PlotElementRenderer[Int]</code></li>
+      <li><code class="highlighter-rouge">PathRenderer</code> is a <code class="highlighter-rouge">PlotElementRenderer[Seq[Point]]</code></li>
+      <li><code class="highlighter-rouge">BoxRenderer</code> is a <code class="highlighter-rouge">PlotElementRenderer[BoxPlotSummaryStatistics]</code></li>
+    </ul>
+  </li>
+</ol>
+
+<p><code class="highlighter-rouge">PointRenderer</code> uses its context as a way to index into another sequence of data (like a sequence of categories in the
+<code class="highlighter-rouge">colorByCategory</code> renderer). <code class="highlighter-rouge">PathRenderer</code> gets as context all the points that are in a particular path.</p>
+
+<p>Let’s implement a few custom renderers as examples:</p>
+
+<h3 id="implementing-jitter">Implementing “jitter”</h3>
+
+<p>You might be familiar with adding random “jitter” to points in a scatter plot from other plotting libraries. We can
+implement that in EvilPlot as a custom point renderer. This adds a bit of jitter in the y dimension.</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">jitter</span><span class="o">(</span><span class="n">range</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)(</span><span class="k">implicit</span> <span class="n">theme</span><span class="k">:</span> <span class="kt">Theme</span><span class="o">)</span><span class="k">:</span> <span class="kt">PointRenderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PointRenderer</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">render</span><span class="o">(</span><span class="n">plot</span><span class="k">:</span> <span class="kt">Plot</span><span class="o">,</span> <span class="n">extent</span><span class="k">:</span> <span class="kt">Extent</span><span class="o">,</span> <span class="n">context</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Drawable</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">import</span> <span class="nn">scala.util.Random</span>
+    <span class="k">val</span> <span class="n">yTransform</span> <span class="k">=</span> <span class="o">(</span><span class="n">y</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">plot</span><span class="o">.</span><span class="n">xtransform</span><span class="o">(</span><span class="n">plot</span><span class="o">,</span> <span class="n">extent</span><span class="o">)(</span><span class="n">y</span><span class="o">)</span> <span class="o">+</span> <span class="n">plot</span><span class="o">.</span><span class="n">xbounds</span><span class="o">.</span><span class="n">min</span>
+    <span class="nc">Disc</span><span class="o">.</span><span class="n">centered</span><span class="o">(</span><span class="n">theme</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">pointSize</span><span class="o">)</span>
+      <span class="o">.</span><span class="n">transY</span><span class="o">(</span><span class="n">yTransform</span><span class="o">(</span><span class="n">range</span> <span class="o">*</span> <span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">()</span> <span class="o">-</span> <span class="o">.</span><span class="mi">5</span><span class="o">))</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>A plot using the default <code class="highlighter-rouge">PointRenderer</code> at left and the <code class="highlighter-rouge">jitter</code> renderer at right:</p>
+<div class="row">
+<div class="col-md-6">
+<img src="/evilplot/img/docs/custom-renderers/nojitter.png" class="img-responsive" />
+</div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/custom-renderers/jitter.png" class="img-responsive" />
+</div>
+</div>
+
+<h3 id="coloring-data-using-a-function">Coloring data using a function</h3>
+
+<p>Our <code class="highlighter-rouge">jitter</code> renderer didn’t access the context during plot creation at all, which makes it somewhat uninteresting and
+not illustrative of the power of what you can do with plot element renderers. Let’s write one that does. Imagine you
+need a renderer for a bar chart that colors the bar based on the value, say red for negative and blue for positive. This
+will work for non-stacked bar charts:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">colorBy</span><span class="o">(</span><span class="n">fn</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=&gt;</span> <span class="nc">Color</span><span class="o">)</span><span class="k">:</span> <span class="kt">BarRenderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BarRenderer</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">render</span><span class="o">(</span><span class="n">plot</span><span class="k">:</span> <span class="kt">Plot</span><span class="o">,</span> <span class="n">extent</span><span class="k">:</span> <span class="kt">Extent</span><span class="o">,</span> <span class="n">category</span><span class="k">:</span> <span class="kt">Bar</span><span class="o">)</span><span class="k">:</span> <span class="kt">Drawable</span> <span class="o">=</span>
+    <span class="nc">Rect</span><span class="o">(</span><span class="n">extent</span><span class="o">)</span> <span class="n">filled</span> <span class="n">fn</span><span class="o">(</span><span class="n">category</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">head</span><span class="o">)</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>For a stacked bar chart, things might get a bit more complicated. But, we can use this and observe it in action.</p>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors.</span><span class="o">{</span><span class="n">crimson</span><span class="o">,</span> <span class="n">dodgerBlue</span><span class="o">}</span>
+<span class="k">val</span> <span class="n">coloring</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=&gt;</span> <span class="nc">Color</span> <span class="k">=</span> <span class="o">(</span><span class="n">d</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="k">=&gt;</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="n">crimson</span> <span class="k">else</span> <span class="n">dodgerBlue</span>
+<span class="nc">BarChart</span><span class="o">.</span><span class="n">custom</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(-</span><span class="mi">15</span><span class="o">,</span> <span class="mi">22</span><span class="o">,</span> <span class="o">-</span><span class="mi">5</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="nc">Bar</span><span class="o">(</span><span class="k">_</span><span class="o">)),</span> <span class="nc">Some</span><span class="o">(</span><span class="n">colorBy</span><span class="o">(</span><span class="n">coloring</span><span class="o">)))</span>
+  <span class="o">.</span><span class="n">xAxis</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span><span class="o">,</span> <span class="s">"two"</span><span class="o">,</span> <span class="s">"three"</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">hline</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">()</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/evilplot/img/docs/custom-renderers/colorby.png" class="img-responsive" />
+</div>
+</div>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/evilplot//highlight/highlight.pack.js"></script><script>hljs.configure({
+languages:['scala','java','bash']
+});
+hljs.initHighlighting();
+             </script><script src="/evilplot//js/main.js"></script></body></html>

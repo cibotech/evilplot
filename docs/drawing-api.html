@@ -1,0 +1,276 @@
+<html><head><title>EvilPlot: Drawing API</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="CiBO Technologies" /><meta name="description" content="Combinators for graphics" /><meta name="og:image" content="/evilplot//img/poster.png" /><meta name="og:title" content="EvilPlot: Drawing API" /><meta name="og:site_name" content="EvilPlot" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Combinators for graphics" /><link rel="icon" type="image/png" href="/evilplot//img/favicon.png" /><meta name="twitter:title" content="EvilPlot: Drawing API" /><meta name="twitter:image" content="img/poster.png" /><meta name="twitter:description" content="Combinators for graphics" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="16x16" href="/evilplot//img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/evilplot//img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/evilplot//img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/evilplot//img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/evilplot//img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/evilplot//img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/evilplot//img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/evilplot//img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/evilplot//img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/evilplot//img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/evilplot//img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/evilplot//img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/evilplot//img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/evilplot//img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/evilplot//img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/evilplot//img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/evilplot//img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/evilplot//img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/evilplot//img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/evilplot//img/favicon310x150.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/evilplot//highlight/styles/default.css" /><link rel="stylesheet" href="/evilplot//css/style.css" /><link rel="stylesheet" href="/evilplot//css/palette.css" /><link rel="stylesheet" href="/evilplot//css/codemirror.css" /><link rel="stylesheet" href="/evilplot//css/custom.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/evilplot//" class="brand"><div class="brand-wrapper"><span>EvilPlot</span></div></a></li> <li><a href="/evilplot//" class="">Home</a></li> <li><a href="/evilplot//index.html" class=""></a></li> <li><a href="/evilplot//getting-started.html" class="">Getting Started</a></li> <li><a href="/evilplot//plots.html" class="">Plotting</a></li> <li><a href="/evilplot//drawing-api.html" class=" active ">Drawing API</a></li> <li><a href="/evilplot//custom-renderers.html" class="">Custom Renderers</a></li> <li><a href="/evilplot//colors.html" class="">Colors</a></li> <li><a href="/evilplot//render-context.html" class="">Render Contexts</a></li> <li><a href="/evilplot//plot-catalog.html" class="">Plot Catalog</a></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/cibotech/evilplot"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/cibotech/evilplot"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="cibotech" data-github-repo="evilplot"><div class="content-wrapper"><section><h1 id="low-level-drawing-api">Low-Level Drawing API</h1>
+
+<h3 id="drawing-primitives">Drawing Primitives</h3>
+
+<p>In EvilPlot, we represent everything that can be drawn to the screen as a <code class="highlighter-rouge">Drawable</code>.</p>
+
+<p>A <code class="highlighter-rouge">Drawable</code> is simply a <em>description</em> of the scene, and constructing one does not actually render anything. There are
+only a handful of drawing primitives that exist within EvilPlot, and they can be divided into three categories: drawing,
+positioning, and style.
+The drawing primitives are the “leaves” of a scene. They represent concrete things like shapes and text. They are:</p>
+
+<div class="container">
+<div class="row">
+
+<div class="col-md-3">
+<img src="/cibotech/evilplot/img/docs/drawing-api/line.png" class="img-responsive" />
+<code>Line</code>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/path.png" class="img-responsive" />
+<code>Path</code>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/rect.png" class="img-responsive" />
+<code>Rect</code>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/borderrect.png" class="img-responsive" />
+<code>BorderRect</code>
+</div>
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/disc.png" class="img-responsive" />
+<code>Disc</code>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/wedge.png" class="img-responsive" />
+<code>Wedge</code>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/polygon.png" class="img-responsive" />
+<code>Polygon</code>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="center-block">
+<img src="/cibotech/evilplot/img/docs/drawing-api/text.png" class="img-responsive" />
+<code>Text</code>
+</div>
+</div>
+
+</div>
+</div>
+
+<h3 id="positioning-primitives">Positioning Primitives</h3>
+
+<p>Positioning primitives alter where other <code class="highlighter-rouge">Drawable</code>s are placed. Notably, <code class="highlighter-rouge">Drawable</code> scenes do not expose a notion of
+absolute coordinates.</p>
+
+<div class="container">
+<div class="row">
+<div class="col-md-3">
+<img src="/cibotech/evilplot/img/docs/drawing-api/translate.png" class="img-responsive" />
+<code>Translate</code>
+</div>
+<div class="col-md-3">
+<img src="/cibotech/evilplot/img/docs/drawing-api/rotate.png" class="img-responsive" />
+<code>Rotate</code>
+</div>
+<div class="col-md-3">
+<img src="/cibotech/evilplot/img/docs/drawing-api/scale.png" class="img-responsive" />
+<code>Scale</code>
+</div>
+<div class="col-md-3">
+<img src="/cibotech/evilplot/img/docs/drawing-api/affine.png" class="img-responsive" />
+<code>Affine</code>
+</div>
+</div>
+</div>
+
+<h3 id="styling-primitives">Styling Primitives</h3>
+
+<p>Lastly, styling primitives allow us to modify the appearance of scenes.</p>
+
+<ul>
+  <li><code class="highlighter-rouge">Style</code> colors the inside of a <code class="highlighter-rouge">Drawable</code></li>
+  <li><code class="highlighter-rouge">StrokeStyle</code> colors the outline of a <code class="highlighter-rouge">Drawable</code></li>
+  <li><code class="highlighter-rouge">StrokeWeight</code> changes the thickness of the outline of a <code class="highlighter-rouge">Drawable</code></li>
+  <li><code class="highlighter-rouge">LineDash</code> applies a <a href="/cibotech/evilplot/scaladoc/jvm/com/cibo/evilplot/geometry/LineStyle.html">line style</a> to the
+outline of a <code class="highlighter-rouge">Drawable</code></li>
+</ul>
+
+<h3 id="composition">Composition</h3>
+
+<p>Creating scenes is simply a matter of composing these primitives. For example, to place a blue rectangle next to a red
+circle, you might write:</p>
+<div class="row">
+<div class="col-md-6">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+<span class="k">val</span> <span class="n">rect</span> <span class="k">=</span> <span class="nc">Style</span><span class="o">(</span><span class="nc">Rect</span><span class="o">(</span><span class="mi">400</span><span class="o">,</span> <span class="mi">400</span><span class="o">),</span> <span class="nc">RGB</span><span class="o">(</span><span class="mi">83</span><span class="o">,</span> <span class="mi">87</span><span class="o">,</span> <span class="mi">79</span><span class="o">))</span>
+<span class="nc">Group</span><span class="o">(</span>
+  <span class="nc">Seq</span><span class="o">(</span>
+    <span class="nc">Style</span><span class="o">(</span>
+      <span class="nc">Translate</span><span class="o">(</span><span class="nc">Disc</span><span class="o">(</span><span class="mi">200</span><span class="o">),</span> <span class="n">x</span> <span class="k">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">extent</span><span class="o">.</span><span class="n">width</span><span class="o">),</span>
+      <span class="nc">RGB</span><span class="o">(</span><span class="mi">78</span><span class="o">,</span> <span class="mi">89</span><span class="o">,</span> <span class="mi">94</span><span class="o">)</span>
+    <span class="o">),</span>
+    <span class="n">rect</span>
+  <span class="o">)</span>
+<span class="o">)</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-6">
+<img src="/cibotech/evilplot/img/docs/drawing-api/initialexample.png" class="img-responsive" />
+</div>
+</div>
+
+<p>The <code class="highlighter-rouge">geometry</code> package also provides convenient syntax for dealing with positioning and styling primitives. So, instead
+of nesting constructors like we did up there, we can do the following with the same result.</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
+
+<span class="k">val</span> <span class="n">rect</span> <span class="k">=</span> <span class="nc">Rect</span><span class="o">(</span><span class="mi">400</span><span class="o">,</span> <span class="mi">400</span><span class="o">)</span> <span class="n">filled</span> <span class="nc">RGB</span><span class="o">(</span><span class="mi">83</span><span class="o">,</span> <span class="mi">87</span><span class="o">,</span> <span class="mi">79</span><span class="o">)</span>
+<span class="nc">Disc</span><span class="o">(</span><span class="mi">200</span><span class="o">)</span> <span class="n">transX</span> <span class="n">rect</span><span class="o">.</span><span class="n">extent</span><span class="o">.</span><span class="n">width</span> <span class="n">filled</span> <span class="nc">RGB</span><span class="o">(</span><span class="mi">7</span><span class="o">)</span> <span class="n">behind</span> <span class="n">rect</span>
+</code></pre></div></div>
+
+<p>The drawing API gives us the power to describe all of the scenes involved in the plots that EvilPlot can create; at no
+point do plot implementations reach below it and onto the rendering target.</p>
+
+<h3 id="positional-combinators">Positional Combinators</h3>
+
+<p>EvilPlot gives a higher-level vocabulary to refer to common geometric manipulations. In fact, above we just wrote a
+positional combinator called <code class="highlighter-rouge">beside</code>. The <code class="highlighter-rouge">geometry</code> package is full of similar combinators, so most of the time you’ll
+never have to manually think about shifting objects by their widths like we did above.</p>
+
+<div class="row">
+<div class="col-md-4">
+<img src="/cibotech/evilplot/img/docs/drawing-api/beside.png" class="img-responsive" />
+</div>
+<div class="col-md-4">
+<img src="/cibotech/evilplot/img/docs/drawing-api/behind.png" class="img-responsive" />
+</div>
+<div class="col-md-4">
+<img src="/cibotech/evilplot/img/docs/drawing-api/above.png" class="img-responsive" />
+</div>
+</div>
+
+<h3 id="alignment">Alignment</h3>
+
+<p>Additionally, you can align an entire sequence of <code class="highlighter-rouge">Drawable</code>s by calling one of the <code class="highlighter-rouge">Align</code> methods, which produce a new
+sequence with all elements aligned. Combining alignment with reducing using a binary position operator is especially
+helpful:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors._</span>
+
+<span class="k">val</span> <span class="n">aligned</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">Drawable</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Align</span><span class="o">.</span><span class="n">right</span><span class="o">(</span>
+  <span class="nc">Rect</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="mi">60</span><span class="o">)</span> <span class="n">filled</span> <span class="n">blue</span><span class="o">,</span>
+  <span class="nc">Disc</span><span class="o">(</span><span class="mi">70</span><span class="o">)</span> <span class="n">filled</span> <span class="n">red</span><span class="o">,</span>
+  <span class="nc">Polygon</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">20</span><span class="o">,</span> <span class="mi">60</span><span class="o">),</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="mi">20</span><span class="o">),</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">30</span><span class="o">,</span> <span class="mi">30</span><span class="o">))</span> <span class="n">filled</span> <span class="n">green</span><span class="o">)</span>
+<span class="o">)</span>
+
+<span class="n">aligned</span><span class="o">.</span><span class="n">reduce</span><span class="o">(</span><span class="k">_</span> <span class="n">below</span> <span class="k">_</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>The available alignment functions are:<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>.</p>
+
+<!-- ugh fix this alignment -->
+<div class="container">
+<div class="row">
+<div class="col-md-3">
+<div class="center-block">
+<code>Align.bottom</code>
+<img src="/cibotech/evilplot/img/docs/drawing-api/alignbottom.png" class="img-responsive" />
+</div>
+</div>
+<div class="col-md-3">
+<code>Align.right</code>
+<img src="/cibotech/evilplot/img/docs/drawing-api/alignright.png" class="img-responsive" />
+</div>
+<div class="col-md-3">
+<code>Align.middle</code>
+<img src="/cibotech/evilplot/img/docs/drawing-api/alignmiddle.png" class="img-responsive" />
+</div>
+<div class="col-md-3">
+<code>Align.center</code>
+<img src="/cibotech/evilplot/img/docs/drawing-api/aligncenter.png" class="img-responsive" />
+</div>
+</div>
+</div>
+
+<h3 id="an-example">An example</h3>
+
+<!-- Was there a box plot example above? -->
+<p>With EvilPlot’s drawing combinators on our side, we’re well equipped to recreate the box example from above that we made
+using only primitives–except it will be far easier to reason about. Recall, first we created our elements: two lines
+and two boxes, then centered them vertically and placed them on top of each other.</p>
+
+<div class="row">
+<div class="col-md-8">
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors.</span><span class="o">{</span><span class="n">blue</span><span class="o">,</span> <span class="n">white</span><span class="o">}</span>
+
+<span class="c1">// Some values from the outside:
+</span><span class="k">val</span> <span class="n">width</span> <span class="k">=</span> <span class="mi">10</span>
+<span class="k">val</span> <span class="n">topWhisker</span> <span class="k">=</span> <span class="mi">50</span>
+<span class="k">val</span> <span class="n">bottomWhisker</span> <span class="k">=</span> <span class="mi">30</span>
+<span class="k">val</span> <span class="n">upperToMiddle</span> <span class="k">=</span> <span class="mi">40</span>
+<span class="k">val</span> <span class="n">middleToLower</span> <span class="k">=</span> <span class="mi">35</span>
+<span class="k">val</span> <span class="n">strokeWidth</span> <span class="k">=</span> <span class="mi">2</span>
+
+<span class="nc">Align</span><span class="o">.</span><span class="n">center</span><span class="o">(</span>
+  <span class="nc">Line</span><span class="o">(</span><span class="n">topWhisker</span><span class="o">,</span> <span class="n">strokeWidth</span><span class="o">).</span><span class="n">rotated</span><span class="o">(</span><span class="mi">90</span><span class="o">),</span>
+  <span class="nc">BorderRect</span><span class="o">.</span><span class="n">filled</span><span class="o">(</span><span class="n">width</span><span class="o">,</span> <span class="n">upperToMiddle</span><span class="o">),</span>
+  <span class="nc">BorderRect</span><span class="o">.</span><span class="n">filled</span><span class="o">(</span><span class="n">width</span><span class="o">,</span> <span class="n">middleToLower</span><span class="o">),</span>
+  <span class="nc">Line</span><span class="o">(</span><span class="n">bottomWhisker</span><span class="o">,</span> <span class="n">strokeWidth</span><span class="o">).</span><span class="n">rotated</span><span class="o">(</span><span class="mi">90</span><span class="o">)</span> 
+<span class="o">).</span><span class="n">reduce</span><span class="o">(</span><span class="k">_</span> <span class="n">above</span> <span class="k">_</span><span class="o">)</span>
+ <span class="o">.</span><span class="n">colored</span><span class="o">(</span><span class="n">blue</span><span class="o">)</span>
+ <span class="o">.</span><span class="n">filled</span><span class="o">(</span><span class="n">white</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </div>
+<div class="col-md-4">
+<img src="/cibotech/evilplot/img/docs/drawing-api/box2.png" class="img-responsive" />
+</div>
+</div>
+
+<p>And in fact, if you were to look at the source code for EvilPlot’s default box plot, it would be almost identical.</p>
+
+<h3 id="drawing-to-the-screen">Drawing to the screen</h3>
+
+<p>Of course, at some point we want to draw our scenes to the screen. To do that, we call <code class="highlighter-rouge">draw()</code></p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">trait</span> <span class="nc">Drawable</span> <span class="o">{</span>
+  <span class="c1">// ...
+</span>
+  <span class="k">def</span> <span class="n">draw</span><span class="o">(</span><span class="n">ctx</span><span class="k">:</span> <span class="kt">RenderContext</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">RenderContext</code> is the interface between our drawing API and platform-specific rendering targets. For more
+information on how to obtain a <code class="highlighter-rouge">RenderContext</code>, see the <a href="render-context.html">docs page</a>.</p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>A <code class="highlighter-rouge">.reduce(_ above _)</code> or <code class="highlighter-rouge">.reduce(_ beside _)</code> was applied to each of these so the examples didn’t stomp all over each other. <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/evilplot//highlight/highlight.pack.js"></script><script>hljs.configure({
+languages:['scala','java','bash']
+});
+hljs.initHighlighting();
+             </script><script src="/evilplot//js/main.js"></script></body></html>
