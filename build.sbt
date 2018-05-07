@@ -10,7 +10,9 @@ lazy val root = project
   .in(file("."))
   .aggregate(evilplotJVM, evilplotJS, assetJVM, evilplotRunner)
   .settings(
-    publishArtifact := false
+    publishArtifact := false,
+    publish := {},
+    publishLocal := {}
   )
   .disablePlugins(HeaderPlugin)
 
