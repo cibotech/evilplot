@@ -16,6 +16,3 @@ releaseProcess := Seq[ReleaseStep](
 
 releaseCrossBuild := true
 
-bintrayOrganization := Some("cibotech")
-bintrayRepository := "public"
-bintrayPackageLabels := Seq("scala", "plot", "visualization", "visualisation")

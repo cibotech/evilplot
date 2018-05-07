@@ -20,7 +20,11 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   organization := Settings.organization,
   crossScalaVersions := Settings.versions.crossScalaVersions,
   scalaVersion := crossScalaVersions.value.head,
-  scalacOptions ++= Settings.scalacOptions
+  scalacOptions ++= Settings.scalacOptions,
+  bintrayOrganization := Some("cibotech"),
+  bintrayRepository := "public",
+  bintrayPackageLabels := Seq("scala", "plot", "visualization", "visualisation"),
+  licenses += ("BSD 3-Clause", url("https://opensource.org/licenses/BSD-3-Clause"))
 )
 
 lazy val licenseSettings = Seq(
