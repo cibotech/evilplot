@@ -12,14 +12,26 @@ to ultimately be put on a screen. EvilPlot provides a `RenderContext` for each s
 ## CanvasRenderContext
 
 `CanvasRenderContext` is for rendering to an HTML5 Canvas element and is available from within ScalaJS. To use it, you
-must obtain a `CanvasRenderingContext2D` from a canvas element in your page.
+must obtain a `CanvasRenderingContext2D` from a canvas element in your page. Here's the example plot from the Getting
+Started page using `CanvasRenderContext`.
 
 ```scala
+import com.cibo.evilplot.geometry.{CanvasRenderContext, Extent}
+import com.cibo.evilplot.plot._
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+import com.cibo.evilplot.numeric.Point
 import org.scalajs.dom
-val canvas = dom.document.body.createElement("canvas").asInstanceOf[dom.html.Canvas]
+
+val canvas = dom.document.createElement("canvas").asInstanceOf[dom.html.Canvas]
+canvas.width = 400
+canvas.height = 400
 dom.document.body.appendChild(canvas)
-val context = canvas.getContext("2d").getContext("2d").asInstanceOf[dom.raw.CanvasRenderingContext2D]
-CanvasRenderContext(context)
+val context = CanvasRenderContext(canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D])
+
+val data = Seq.tabulate(100) { i =>
+  Point(i.toDouble, scala.util.Random.nextDouble())
+}
+ScatterPlot(data).render(Extent(400, 400)).draw(context)
 ```
 
 ### Canvas only: The text metrics buffer
