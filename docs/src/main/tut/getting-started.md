@@ -15,7 +15,8 @@ libraryDependencies += "com.cibo" %% "evilplot" % "0.2.0" // Use %%% instead of 
 
 EvilPlot is all about building larger graphical capabilities out of smaller ones. What this means for you is that making
 simple plots is easy, and we don't have to spend a lot of time going over all the features just to get started. So let's make
-our first plot, a simple scatter plot with sequential x-values and random y-values.
+our first plot, a simple scatter plot with sequential x-values and random y-values. Then we'll save the plot as an image
+file to disk.
 
 <div class="row">
 <div class="col-md-6" markdown="1">
@@ -23,17 +24,24 @@ our first plot, a simple scatter plot with sequential x-values and random y-valu
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.numeric.Point
+import javax.imageio.ImageIO
+import java.io.File
 
 val data = Seq.tabulate(100) { i =>
   Point(i.toDouble, scala.util.Random.nextDouble())
 }
-ScatterPlot(data).render()
+val plotDrawable = ScatterPlot(data).render()
+val plotImage = plotDrawable.asBufferedImage
+
+ImageIO.write(plotImage, "png", new File("/tmp/plot.png"))
 ```
 </div>
 <div class="col-md-6">
   <img src="/cibotech/evilplot/img/docs/getting-started/scatter1.png" class="img-responsive"/>
 </div>
 </div>
+
+There's a version of this example which renders to an HTML canvas using ScalaJS [here](render-context.html#canvasrendercontext)
 
 To break it down:
 + EvilPlot uses an implicit theming system, which lets you control the appearance of plots wholesale. In this case,
