@@ -56,10 +56,15 @@ class AxisDescriptorSpec extends FunSpec {
     }
 
     it("doesn't update bounds when fixed") {
-      val ticks = ContinuousAxisDescriptor(Bounds(-3500, 6100), 5, fixed = true)
-      ticks.tickMin shouldBe -3500
-      ticks.tickMax shouldBe 6100
-      ticks.spacing shouldBe 2000
+      val ex1 = ContinuousAxisDescriptor(Bounds(-0.05, 0.55), 10, fixed = true)
+      ex1.tickMin shouldBe -0.05
+      ex1.tickMax shouldBe 0.55
+      ex1.spacing shouldBe 0.05
+
+      val ex2 = ContinuousAxisDescriptor(Bounds(-3500, 6100), 5, fixed = true)
+      ex2.tickMin shouldBe -3500
+      ex2.tickMax shouldBe 6100
+      ex2.spacing shouldBe 2000
     }
 
     it("gives nice ticks, with small numbers") {

@@ -52,6 +52,7 @@ case class ContinuousAxisDescriptor(
   numTicksRequested: Int,
   fixed: Boolean
 ) extends AxisDescriptor {
+  import AxisDescriptor._
 
   /** Given a numeric range and the desired number of ticks, figure out where to put the ticks so the labels will
     * have "nice" values (e.g., 100 not 137). Return the first tick, last tick, tick increment, and number of
@@ -63,20 +64,19 @@ case class ContinuousAxisDescriptor(
     */
   val (maxValue, minValue) = (bounds.max, bounds.min)
   require(maxValue >= minValue || (bounds.max.isNaN && bounds.min.isNaN))
-  private val range = AxisDescriptor.nicenum(maxValue - minValue, round = false)
   private[numeric] def calcSpacing(aRange: Double) =
-    AxisDescriptor.nicenum(aRange / (numTicksRequested + 1), round = true)
+    nicenum(aRange / (numTicksRequested + 1), round = true)
 
-  private val spacingGuess: Double =
-    AxisDescriptor.nicenum(range / (numTicksRequested + 1), round = true)
   val (tickMin, tickMax, spacing) = {
     if (fixed) {
-      (minValue, maxValue, spacingGuess)
-    } else if (!AxisDescriptor.arePracticallyEqual(minValue, maxValue) && !(minValue.isNaN && maxValue.isNaN)) {
+      (minValue, maxValue, calcSpacing(maxValue - minValue))
+    } else if (!arePracticallyEqual(minValue, maxValue) && !(minValue.isNaN && maxValue.isNaN)) {
+      val tickSpacing: Double = calcSpacing(nicenum(maxValue - minValue, round = false))
       (
-        math.floor(minValue / spacingGuess) * spacingGuess,
-        math.ceil(maxValue / spacingGuess) * spacingGuess,
-        spacingGuess)
+        math.floor(minValue / tickSpacing) * tickSpacing,
+        math.ceil(maxValue / tickSpacing) * tickSpacing,
+        tickSpacing
+      )
     } else {
       (minValue - 0.5, minValue + 0.5, calcSpacing(1.0))
     }
@@ -98,7 +98,7 @@ case class ContinuousAxisDescriptor(
   }
 
   lazy val labels: Seq[String] = values.map { value =>
-    AxisDescriptor.createNumericLabel(value, numFrac)
+    createNumericLabel(value, numFrac)
   }
 }
 
