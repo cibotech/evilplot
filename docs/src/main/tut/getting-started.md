@@ -33,7 +33,7 @@ ScatterPlot(data).render().write(new File("/tmp/plot.png"))
 ```
 </div>
 <div class="col-md-6">
-  <img src="/cibotech/evilplot/img/docs/getting-started/scatter1.png" class="img-responsive"/>
+  <img src="/evilplot/img/docs/getting-started/scatter1.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -71,7 +71,7 @@ ScatterPlot(data)
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/getting-started/scatter2.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/getting-started/scatter2.png" class="img-responsive"/>
 </div>
 </div>
 

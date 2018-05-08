@@ -18,27 +18,27 @@ The drawing primitives are the "leaves" of a scene. They represent concrete thin
 <div class="row">
 
 <div class="col-md-3">
-<img src="/cibotech/evilplot/img/docs/drawing-api/line.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/line.png" class="img-responsive"/>
 <code>Line</code>
 </div>
 
 <div class="col-md-3">
 <div class="center-block">
-<img src="/cibotech/evilplot/img/docs/drawing-api/path.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/path.png" class="img-responsive"/>
 <code>Path</code>
 </div>
 </div>
 
 <div class="col-md-3">
 <div class="center-block">
-<img src="/cibotech/evilplot/img/docs/drawing-api/rect.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/rect.png" class="img-responsive"/>
 <code>Rect</code>
 </div>
 </div>
 
 <div class="col-md-3">
 <div class="center-block">
-<img src="/cibotech/evilplot/img/docs/drawing-api/borderrect.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/borderrect.png" class="img-responsive"/>
 <code>BorderRect</code>
 </div>
 </div>
@@ -49,28 +49,28 @@ The drawing primitives are the "leaves" of a scene. They represent concrete thin
 
 <div class="col-md-3">
 <div class="center-block">
-<img src="/cibotech/evilplot/img/docs/drawing-api/disc.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/disc.png" class="img-responsive"/>
 <code>Disc</code>
 </div>
 </div>
 
 <div class="col-md-3">
 <div class="center-block">
-<img src="/cibotech/evilplot/img/docs/drawing-api/wedge.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/wedge.png" class="img-responsive"/>
 <code>Wedge</code>
 </div>
 </div>
 
 <div class="col-md-3">
 <div class="center-block">
-<img src="/cibotech/evilplot/img/docs/drawing-api/polygon.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/polygon.png" class="img-responsive"/>
 <code>Polygon</code>
 </div>
 </div>
 
 <div class="col-md-3">
 <div class="center-block">
-<img src="/cibotech/evilplot/img/docs/drawing-api/text.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/text.png" class="img-responsive"/>
 <code>Text</code>
 </div>
 </div>
@@ -86,19 +86,19 @@ absolute coordinates.
 <div class="container">
 <div class="row">
 <div class="col-md-3">
-<img src="/cibotech/evilplot/img/docs/drawing-api/translate.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/translate.png" class="img-responsive"/>
 <code>Translate</code>
 </div>
 <div class="col-md-3">
-<img src="/cibotech/evilplot/img/docs/drawing-api/rotate.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/rotate.png" class="img-responsive"/>
 <code>Rotate</code>
 </div>
 <div class="col-md-3">
-<img src="/cibotech/evilplot/img/docs/drawing-api/scale.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/scale.png" class="img-responsive"/>
 <code>Scale</code>
 </div>
 <div class="col-md-3">
-<img src="/cibotech/evilplot/img/docs/drawing-api/affine.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/affine.png" class="img-responsive"/>
 <code>Affine</code>
 </div>
 </div>
@@ -111,7 +111,7 @@ Lastly, styling primitives allow us to modify the appearance of scenes.
 + `Style` colors the inside of a `Drawable`
 + `StrokeStyle` colors the outline of a `Drawable`
 + `StrokeWeight` changes the thickness of the outline of a `Drawable`
-+ `LineDash` applies a [line style](/cibotech/evilplot/scaladoc/jvm/com/cibo/evilplot/geometry/LineStyle.html) to the
++ `LineDash` applies a [line style](/evilplot/scaladoc/jvm/com/cibo/evilplot/geometry/LineStyle.html) to the
 outline of a `Drawable`
 
 ### Composition
@@ -136,7 +136,7 @@ Group(
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/drawing-api/initialexample.png" class="img-responsive">
+<img src="/evilplot/img/docs/drawing-api/initialexample.png" class="img-responsive">
 </div>
 </div>
 
@@ -163,15 +163,15 @@ never have to manually think about shifting objects by their widths like we did 
 <div class="row">
 <div class="col-md-4">
 <code>beside</code>
-<img src="/cibotech/evilplot/img/docs/drawing-api/beside.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/beside.png" class="img-responsive"/>
 </div>
 <div class="col-md-4">
 <code>behind</code>
-<img src="/cibotech/evilplot/img/docs/drawing-api/behind.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/behind.png" class="img-responsive"/>
 </div>
 <div class="col-md-4">
 <code>above</code>
-<img src="/cibotech/evilplot/img/docs/drawing-api/above.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/above.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -202,20 +202,20 @@ The available alignment functions are:[^1].
 <div class="col-md-3">
 <div class="center-block">
 <code>Align.bottom</code>
-<img src="/cibotech/evilplot/img/docs/drawing-api/alignbottom.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/alignbottom.png" class="img-responsive"/>
 </div>
 </div>
 <div class="col-md-3">
 <code>Align.right</code>
-<img src="/cibotech/evilplot/img/docs/drawing-api/alignright.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/alignright.png" class="img-responsive"/>
 </div>
 <div class="col-md-3">
 <code>Align.middle</code>
-<img src="/cibotech/evilplot/img/docs/drawing-api/alignmiddle.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/alignmiddle.png" class="img-responsive"/>
 </div>
 <div class="col-md-3">
 <code>Align.center</code>
-<img src="/cibotech/evilplot/img/docs/drawing-api/aligncenter.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/aligncenter.png" class="img-responsive"/>
 </div>
 </div>
 </div>
@@ -252,7 +252,7 @@ Align.center(
 ```
 </div>
 <div class="col-md-4">
-<img src="/cibotech/evilplot/img/docs/drawing-api/box2.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/drawing-api/box2.png" class="img-responsive"/>
 </div>
 </div>
 

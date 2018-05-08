@@ -51,7 +51,7 @@ BarChart
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/barChart.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/barChart.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -79,7 +79,7 @@ BarChart
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/clustered.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/clustered.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -108,7 +108,7 @@ BarChart
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/stacked.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/stacked.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -136,7 +136,7 @@ BarChart
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/clusteredStacked.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/clusteredStacked.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -160,7 +160,7 @@ Overlay(
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/function.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/function.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -189,7 +189,7 @@ Overlay(
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/boxPlot.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/boxPlot.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -222,7 +222,7 @@ ScatterPlot(
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/scatter.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/scatter.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -259,7 +259,7 @@ ScatterPlot(
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/marginal.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/marginal.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -273,7 +273,7 @@ PieChart(data).rightLegend().render()
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/piechart.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/piechart.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -310,7 +310,7 @@ Facets(plots)
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/custom_pairs_plot.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/custom_pairs_plot.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -357,7 +357,7 @@ Overlay(
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/density_plot.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/density_plot.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -385,7 +385,7 @@ Overlay(
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/overlap_histograms.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/overlap_histograms.png" class="img-responsive"/>
 </div>
 </div>
   
@@ -409,6 +409,6 @@ ContourPlot(data)
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/plot-catalog/contour_plot.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plot-catalog/contour_plot.png" class="img-responsive"/>
 </div>
 </div>

@@ -17,7 +17,7 @@ val color = HSL(210, 100, 56) // fully opaque
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/basic_hsl.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/basic_hsl.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -33,7 +33,7 @@ val hexColor = HEX("E67E22")
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/basic_rgb.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/basic_rgb.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -51,7 +51,7 @@ val htmlTomato = HTMLNamedColors.tomato
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/basic_html.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/basic_html.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -69,7 +69,7 @@ val difficultWhite = htmlRed.copy(lightness = 100)
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/basic_mod.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/basic_mod.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -93,7 +93,7 @@ val (analogue1, analogue2) = htmlRed.analogous(45)
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/fancy_mod.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/fancy_mod.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -110,7 +110,7 @@ val colors = Color.stream.take(40)
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/stream.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/stream.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -124,7 +124,7 @@ val colors = Color.getGradientSeq(10)
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/gradient_seq.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/gradient_seq.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -138,7 +138,7 @@ val colors = Color.getGradientSeq(10, startHue = 0, endHue = 120)
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/gradient_narrow_seq.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/gradient_narrow_seq.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -151,7 +151,7 @@ val colors = Color.getDefaultPaletteSeq(8)
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/default_seq.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/default_seq.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -177,7 +177,7 @@ ScatterPlot(points, pointRenderer = Some(renderer))
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/continuous_gradient.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/continuous_gradient.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -199,7 +199,7 @@ val colors = Seq.tabulate(40) { gradientFunc(_) }
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/continuous_multigradient.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/continuous_multigradient.png" class="img-responsive"/>
 </div>
 </div>
 
@@ -227,6 +227,6 @@ ScatterPlot(points, pointRenderer = Some(renderer))
 ```
 </div>
 <div class="col-md-6">
-<img src="/cibotech/evilplot/img/docs/colors/categorical_gradient.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/colors/categorical_gradient.png" class="img-responsive"/>
 </div>
 </div>
