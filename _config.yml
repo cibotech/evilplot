@@ -1,5 +1,5 @@
 name: EvilPlot
-baseurl: /evilplot/
+baseurl: /evilplot
 description: Combinators for graphics
 highlighter: rouge
 docs: true
