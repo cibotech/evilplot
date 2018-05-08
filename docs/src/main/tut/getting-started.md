@@ -24,16 +24,12 @@ file to disk.
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.numeric.Point
-import javax.imageio.ImageIO
 import java.io.File
 
 val data = Seq.tabulate(100) { i =>
   Point(i.toDouble, scala.util.Random.nextDouble())
 }
-val plotDrawable = ScatterPlot(data).render()
-val plotImage = plotDrawable.asBufferedImage
-
-ImageIO.write(plotImage, "png", new File("/tmp/plot.png"))
+ScatterPlot(data).render().write(new File("/tmp/plot.png"))
 ```
 </div>
 <div class="col-md-6">
