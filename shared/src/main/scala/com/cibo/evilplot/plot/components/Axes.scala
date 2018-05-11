@@ -31,12 +31,7 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{
-  AxisDescriptor,
-  Bounds,
-  ContinuousAxisDescriptor,
-  DiscreteAxisDescriptor
-}
+import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{GridLineRenderer, TickRenderer}
@@ -60,7 +55,7 @@ object Axes {
     val tickCount: Int
     def bounds(plot: Plot): Bounds
     def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor =
-      ContinuousAxisDescriptor(bounds(plot), tickCount, fixed)
+      Labeling.label(bounds(plot), Some(tickCount), fixed = fixed)
   }
 
   private sealed trait DiscreteAxis {
@@ -122,6 +117,7 @@ object Axes {
     }
   }
 
+  // Can make these options to get the good behavior!!!
   private case class ContinuousXAxisPlotComponent(
     tickCount: Int,
     tickRenderer: TickRenderer
