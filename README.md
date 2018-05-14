@@ -1,5 +1,11 @@
-# Evil Plot
-Evil Plot is about combinators for graphics.
+# EvilPlot
+[![Build Status](https://travis-ci.org/cibotech/evilplot.svg?branch=master)](https://travis-ci.org/cibotech/evilplot)
+[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-0.6.17.svg)](https://www.scala-js.org)
+[ ![Download](https://api.bintray.com/packages/cibotech/public/evilplot/images/download.svg) ](https://bintray.com/cibotech/public/evilplot/_latestVersion)
+
+EvilPlot is about combinators for graphics.
+
+Documentation for EvilPlot is available [here](https://cibotech.github.com/evilplot).
 
 ### Table of Contents
   * [Low-Level Drawing API](#low-level-drawing-api)
