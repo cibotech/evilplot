@@ -31,16 +31,19 @@
 package com.cibo.evilplot.numeric
 
 import org.scalacheck.Gen
-import org.scalatest.prop.PropertyChecks
+import org.scalacheck.Prop.forAllNoShrink
+import org.scalatest.prop.Checkers
 import org.scalatest.{FunSpec, Matchers}
 
-class LabelingSpec extends FunSpec with Matchers with PropertyChecks {
+class LabelingSpec extends FunSpec with Matchers with Checkers {
+  implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
+    PropertyCheckConfiguration(minSuccessful = 500)
   private val boundsGen = for {
     x <- Gen.chooseNum[Double](-10000, 10000)
     y <- Gen.posNum[Double]
   } yield Bounds(x, x + y)
 
-  private val nticksGen = Gen.chooseNum[Int](2, 12).map(i => Some(i))
+  private val nticksGen = Gen.chooseNum[Int](2, 12)
 
   private val boundsNticks = boundsGen.flatMap(b => nticksGen.map(n => (b, n)))
 
@@ -79,18 +82,19 @@ class LabelingSpec extends FunSpec with Matchers with PropertyChecks {
     }
 
     it("should produce exactly the number of ticks specified when requested (unfixed bounds)") {
-      forAll((boundsGen, "bounds")) { bounds =>
-        val labeling = Labeling.label(bounds, numTicks = Some(4))
-        labeling.numTicks shouldBe 4
-      }
+      check(forAllNoShrink(boundsGen, nticksGen) {
+        case (bounds, nticks) =>
+          val labeling = Labeling.label(bounds, numTicks = Some(nticks))
+          labeling.numTicks == nticks
+      })
     }
 
     it("should produce exactly the number of ticks specified when requested (fixed bounds)") {
-      forAll((boundsNticks, "bounds")) {
+      check(forAllNoShrink(boundsGen, nticksGen) {
         case (bounds, nticks) =>
-          val labeling = Labeling.label(bounds, numTicks = nticks, fixed = true)
-          Seq(labeling.numTicks) should contain oneOf (2, 3, 4)
-      }
+          val labeling = Labeling.label(bounds, numTicks = Some(nticks), fixed = true)
+          labeling.numTicks == nticks
+      })
     }
   }
 }

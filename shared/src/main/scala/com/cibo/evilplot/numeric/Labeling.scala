@@ -69,6 +69,7 @@ object Labeling {
     val labelingType = if (fixed) LabelingType.StrictLabeling else LabelingType.LooseLabeling
     val answer =
       if (bounds.max.isNaN && bounds.min.isNaN) NaNAxisDescriptor
+      else if (numTicks.contains(2)) fallback(bounds)
       else if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max))
         optimalLabeling(
           Bounds(bounds.min - 0.5, bounds.max + 0.5),
@@ -134,45 +135,48 @@ object Labeling {
     val power = math.floor(math.log10(delta)).toInt
 
     val best =
-      power.to(power + 1).foldLeft((None: Option[LabelingResult], None: Option[LabelingResult])) {
-        case (acc, pow) =>
-          val base = math.pow(10, pow)
-          nicenums.zipWithIndex.foldLeft(acc) {
-            case ((bestScoring, bestBelowCoverageFloor), (q, i)) =>
-              val lDelta = q * base
-              val labelMin = labelingType.labelMin(bounds.min, lDelta)
-              val labelMax = labelMin + intervals * lDelta
-              if (labelingType.ofType(bounds, labelMin, labelMax)) {
-                val g = granularity(nticks, nticks)
-                val c = coverage(bounds, labelMax, labelMin, labelingType)
-                val s =
-                  simplicity(i + 1, nicenums.length, if (labelMin <= 0 && labelMax >= 0) 1 else 0)
-                val score = (c + g + s) / 3
-                val improved = bestScoring.forall(_.score < score) && score <= 1.0
-                if (improved && c > coverageFloor) {
-                  (
-                    Some(
-                      labelingType
-                        .create(bounds, Bounds(labelMin, labelMax), nticks, lDelta, score)),
-                    bestBelowCoverageFloor)
-                } else if (improved) {
-                  (
-                    bestScoring,
-                    Some(
-                      labelingType
-                        .create(bounds, Bounds(labelMin, labelMax), nticks, lDelta, score)))
-                } else {
-                  (bestScoring, bestBelowCoverageFloor)
-                }
-              } else (bestScoring, bestBelowCoverageFloor)
-          }
-      }
+      (power - 1)
+        .to(power + 1)
+        .foldLeft((None: Option[LabelingResult], None: Option[LabelingResult])) {
+          case (acc, pow) =>
+            val base = math.pow(10, pow)
+            nicenums.zipWithIndex.foldLeft(acc) {
+              case ((bestScoring, bestBelowCoverageFloor), (q, i)) =>
+                val lDelta = q * base
+                val labelMin = labelingType.labelMin(bounds.min, lDelta)
+                val labelMax = labelMin + intervals * lDelta
+                if (labelingType.ofType(bounds, labelMin, labelMax)) {
+                  val g = granularity(nticks, nticks)
+                  val c = coverage(bounds, labelMax, labelMin, labelingType)
+                  val s =
+                    simplicity(i + 1, nicenums.length, if (labelMin <= 0 && labelMax >= 0) 1 else 0)
+                  val score = (c + g + s) / 3
+                  val improved = bestScoring.forall(_.score < score) && score <= 1.0
+                  if (improved && c > coverageFloor) {
+                    (
+                      Some(
+                        labelingType
+                          .create(bounds, Bounds(labelMin, labelMax), nticks, lDelta, score)),
+                      bestBelowCoverageFloor)
+                  } else if (improved) {
+                    (
+                      bestScoring,
+                      Some(
+                        labelingType
+                          .create(bounds, Bounds(labelMin, labelMax), nticks, lDelta, score)))
+                  } else {
+                    (bestScoring, bestBelowCoverageFloor)
+                  }
+                } else (bestScoring, bestBelowCoverageFloor)
+            }
+        }
     best._1.orElse(best._2)
   }
 
   private[numeric] sealed trait LabelingType {
     def labelMin(min: Double, ldelta: Double): Double
     def ofType(dataBounds: Bounds, labelMin: Double, labelMax: Double): Boolean
+    def powerSearchMin(power: Int): Int
     def create(
       dataBounds: Bounds,
       labelBounds: Bounds,
@@ -184,6 +188,9 @@ object Labeling {
     case object LooseLabeling extends LabelingType {
       def labelMin(min: Double, ldelta: Double): Double =
         math.floor(min / ldelta) * ldelta
+
+      def powerSearchMin(power: Int): Int = power
+
       def ofType(dataBounds: Bounds, labelMin: Double, labelMax: Double): Boolean =
         labelMin <= dataBounds.min && labelMax >= dataBounds.max
       def create(
@@ -200,6 +207,8 @@ object Labeling {
       def labelMin(min: Double, ldelta: Double): Double =
         math.ceil(min / ldelta) * ldelta
 
+      def powerSearchMin(power: Int): Int = power - 1
+
       def ofType(dataBounds: Bounds, labelMin: Double, labelMax: Double): Boolean =
         labelMin >= dataBounds.min && labelMax <= dataBounds.max
 
@@ -212,6 +221,14 @@ object Labeling {
         LabelingResult(dataBounds, dataBounds, labelBounds, numTicks, spacing, score)
 
     }
+  }
+
+  private def fallback(bs: Bounds): AxisDescriptor = new AxisDescriptor {
+    val bounds: Bounds = bs
+    val numTicks: Int = 2
+    val axisBounds: Bounds = bs
+    lazy val values: Seq[Double] = Seq(bounds.min, bounds.max)
+    lazy val labels: Seq[String] = values.map(_.toString)
   }
 
   private[numeric] case class LabelingResult(
