@@ -17,7 +17,7 @@ Check out our [documentation](/evilplot/getting-started.html), where you can lea
 to get going with EvilPlot.
 Alternatively, skip straight to the [Plot Catalog](/evilplot/plot-catalog.html) for some examples of what
 EvilPlot can do, along with code.
-You can also take a look at the complete [API documentation](/evilplot/scaladoc/jvm/index.html)
-or the source on [GitHub](https://www.github.com/evilplot).
+You can also take a look at the complete [API documentation](/evilplot/scaladoc/jvm/com/cibo/evilplot/index.html)
+or the source on [GitHub](https://www.github.com/cibotech/evilplot).
 
 Have a question, or want to get involved? Feel free to file an issue or open a pull request.
