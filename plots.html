@@ -26,7 +26,8 @@ But what if we want to color each point differently depending on the value of an
 <div class="row">
 <div class="col-md-6">
 
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Point</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.PointRenderer</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.aesthetics.DefaultTheme._</span>
 <span class="k">import</span> <span class="nn">scala.util.Random</span>
@@ -73,6 +74,7 @@ distributed, so let’s make a contour plot out of the density.</p>
 <div class="row">
 <div class="col-md-6">
     <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.SurfaceRenderer</span>
 <span class="nc">ContourPlot</span><span class="o">(</span>
   <span class="nc">AlanineData</span><span class="o">.</span><span class="n">data</span><span class="o">,</span>
   <span class="n">surfaceRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">SurfaceRenderer</span><span class="o">.</span><span class="n">contours</span><span class="o">(</span><span class="nc">Some</span><span class="o">(</span><span class="n">dodgerBlue</span><span class="o">)))</span>
@@ -85,6 +87,7 @@ distributed, so let’s make a contour plot out of the density.</p>
   <span class="o">.</span><span class="n">xAxis</span><span class="o">()</span>
   <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
   <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
   </div>
 <div class="col-md-6">
@@ -97,7 +100,7 @@ the chart that shows the initial configuration.</p>
 <div class="row">
 <div class="col-md-6">
     <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">initial</span> <span class="k">=</span> <span class="nc">ScatterPlot</span><span class="o">(</span>
-  <span class="nc">AlanineData</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="o">,</span>
+  <span class="nc">Seq</span><span class="o">(</span><span class="nc">AlanineData</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="o">),</span>
   <span class="n">pointRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">PointRenderer</span><span class="o">.</span><span class="n">default</span><span class="o">(</span><span class="n">color</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">crimson</span><span class="o">)))</span>
 <span class="o">)</span>
 
@@ -114,6 +117,7 @@ the chart that shows the initial configuration.</p>
   <span class="o">.</span><span class="n">xAxis</span><span class="o">()</span>
   <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
   <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
   </div>
 <div class="col-md-6">
@@ -144,6 +148,7 @@ using a whole family of border plot combinators. If we take what we’d been wor
   <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"phi"</span><span class="o">)</span>
   <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"psi"</span><span class="o">)</span>
   <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
   </div>
 <div class="col-md-6">
@@ -166,7 +171,7 @@ faceting.</p>
     <span class="k">_</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">ps</span> <span class="k">=&gt;</span>
       <span class="nc">ContourPlot</span><span class="o">(</span><span class="n">ps</span><span class="o">,</span>
        <span class="n">surfaceRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">SurfaceRenderer</span><span class="o">.</span><span class="n">contours</span><span class="o">(</span><span class="nc">Some</span><span class="o">(</span><span class="n">dodgerBlue</span><span class="o">))))</span>
-        <span class="o">.</span><span class="n">overlay</span><span class="o">(</span><span class="nc">ScatterPlot</span><span class="o">(</span><span class="n">ps</span><span class="o">.</span><span class="n">head</span><span class="o">,</span>
+        <span class="o">.</span><span class="n">overlay</span><span class="o">(</span><span class="nc">ScatterPlot</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="n">ps</span><span class="o">.</span><span class="n">head</span><span class="o">),</span>
            <span class="n">pointRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">PointRenderer</span><span class="o">.</span><span class="n">default</span><span class="o">(</span><span class="nc">Some</span><span class="o">(</span><span class="n">crimson</span><span class="o">)))))</span>
         <span class="o">.</span><span class="n">topPlot</span><span class="o">(</span><span class="nc">Histogram</span><span class="o">(</span><span class="n">ps</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">x</span><span class="o">)))</span>
         <span class="o">.</span><span class="n">rightPlot</span><span class="o">(</span><span class="nc">Histogram</span><span class="o">(</span><span class="n">ps</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">y</span><span class="o">)))</span>
