@@ -34,6 +34,7 @@ A `PointRenderer` tells your plot how to draw the data. When we don't pass one i
 <div class="col-md-6" markdown="1">
 
 ```scala
+import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.renderers.PointRenderer
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
@@ -82,6 +83,7 @@ distributed, so let's make a contour plot out of the density.
 <div class="col-md-6" markdown="1">
 ```scala
 import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.plot.renderers.SurfaceRenderer
 ContourPlot(
   AlanineData.data,
   surfaceRenderer = Some(SurfaceRenderer.contours(Some(dodgerBlue)))
@@ -94,6 +96,7 @@ ContourPlot(
   .xAxis()
   .yAxis()
   .frame()
+  .render()
 ```
 </div>
 <div class="col-md-6">
@@ -107,7 +110,7 @@ the chart that shows the initial configuration.
 <div class="col-md-6" markdown="1">
 ```scala
 val initial = ScatterPlot(
-  AlanineData.data.head,
+  Seq(AlanineData.data.head),
   pointRenderer = Some(PointRenderer.default(color = Some(crimson)))
 )
 
@@ -124,6 +127,7 @@ Overlay(contours, initial)
   .xAxis()
   .yAxis()
   .frame()
+  .render()
 ```
 </div>
 <div class="col-md-6">
@@ -156,6 +160,7 @@ Overlay(contours, initial)
   .xLabel("phi")
   .yLabel("psi")
   .frame()
+  .render()
 ```
 </div>
 <div class="col-md-6">
@@ -179,7 +184,7 @@ Facets(
     _.map(ps =>
       ContourPlot(ps,
        surfaceRenderer = Some(SurfaceRenderer.contours(Some(dodgerBlue))))
-        .overlay(ScatterPlot(ps.head,
+        .overlay(ScatterPlot(Seq(ps.head),
            pointRenderer = Some(PointRenderer.default(Some(crimson)))))
         .topPlot(Histogram(ps.map(_.x)))
         .rightPlot(Histogram(ps.map(_.y)))

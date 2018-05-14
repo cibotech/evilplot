@@ -148,7 +148,7 @@ import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.colors._
 
 val rect = Rect(400, 400) filled RGB(83, 87, 79)
-Disc(200) transX rect.extent.width filled RGB(7) behind rect
+Disc(200) transX rect.extent.width filled RGB(78, 89, 94) behind rect
 ```
 
 The drawing API gives us the power to describe all of the scenes involved in the plots that EvilPlot can create; at no
@@ -188,7 +188,7 @@ import com.cibo.evilplot.colors.HTMLNamedColors._
 val aligned: Seq[Drawable] = Align.right(
   Rect(40, 60) filled blue,
   Disc(70) filled red,
-  Polygon(Seq(Point(20, 60), Point(40, 20), Point(30, 30)) filled green)
+  Polygon(Seq(Point(20, 60), Point(40, 20), Point(30, 30))) filled green
 )
 
 aligned.reduce(_ below _)
