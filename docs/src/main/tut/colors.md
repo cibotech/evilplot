@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Colors
-position: 6
+position: 7
 ---
 
 # Colors
