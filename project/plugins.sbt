@@ -6,4 +6,12 @@ addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.4")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.22")
 dependencyOverrides += "org.scala-js" % "sbt-scalajs" % "0.6.22"
 
-addSbtPlugin("com.lihaoyi" % "workbench" % "0.3.0")
+addSbtPlugin("com.lihaoyi" % "workbench" % "0.4.1")
+addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.18")
+
+dependencyOverrides ++= Seq(
+  "org.scala-js" % "sbt-scalajs" % "0.6.22",
+  "com.typesafe.akka" %% "akka-actor" % "2.4.19",
+  "com.typesafe.akka" %% "akka-stream" % "2.4.19"
+)
+
