@@ -33,11 +33,11 @@ package com.cibo.evilplot.numeric
 import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 import org.scalatest.prop.Checkers
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.{FunSpec, Matchers, OptionValues}
 
-class LabelingSpec extends FunSpec with Matchers with Checkers {
+class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
-    PropertyCheckConfiguration(minSuccessful = 500)
+    PropertyCheckConfiguration(minSuccessful = 2000000)
 
   private val boundsGen = for {
     x <- Gen.chooseNum[Double](-10000, 10000)
@@ -48,7 +48,7 @@ class LabelingSpec extends FunSpec with Matchers with Checkers {
 
   describe("Axis labeling") {
     it("should not produce misleadingly formatted labels") {
-      val labeling = Labeling.label(Bounds(-.72, .47), fixed = true)
+      val labeling = Labeling.label(Bounds(-.72, .47), fixed = true).value
       val labelsAsDoubles = labeling.labels.map(_.toDouble)
       labelsAsDoubles.zip(labeling.values).foreach {
         case (text, value) =>
@@ -57,32 +57,32 @@ class LabelingSpec extends FunSpec with Matchers with Checkers {
     }
 
     it("should pad the data range when min == max and bounds are not fixed") {
-      val labeling = Labeling.label(Bounds(2.2, 2.2))
+      val labeling = Labeling.label(Bounds(2.2, 2.2)).value
       labeling.bounds.min shouldBe 1.7 +- math.ulp(1.0)
       labeling.bounds.max shouldBe 2.7 +- math.ulp(1.0)
     }
 
     ignore("should work with fixed bounds and 0 range") {
       val bounds = Bounds(2.2, 2.2)
-      val labeling = Labeling.label(bounds, fixed = true)
+      val labeling = Labeling.label(bounds, fixed = true).value
       labeling.bounds shouldBe bounds
       labeling.axisBounds shouldBe bounds
     }
 
     it("should work with 0 ticks") {
-      val labeling = Labeling.label(Bounds(-.323, .525), numTicks = Some(0))
+      val labeling = Labeling.label(Bounds(-.323, .525), numTicks = Some(0)).value
       labeling.values shouldBe empty
       labeling.labels shouldBe empty
     }
 
     it("should produce no ticks when bounds are NaN and 0 ticks are requested") {
-      val labeling = Labeling.label(Bounds(Double.NaN, Double.NaN), numTicks = Some(0))
+      val labeling = Labeling.label(Bounds(Double.NaN, Double.NaN), numTicks = Some(0)).value
       labeling.values shouldBe empty
       labeling.labels shouldBe empty
     }
 
     it("should use the midpoint of the bounds when only one tick is requested") {
-      val labeling = Labeling.label(Bounds(0, 1), numTicks = Some(1))
+      val labeling = Labeling.label(Bounds(0, 1), numTicks = Some(1)).value
       labeling.values should have length 1
       labeling.values.head shouldBe 0.5
       labeling.labels should have length 1
@@ -90,7 +90,7 @@ class LabelingSpec extends FunSpec with Matchers with Checkers {
     }
 
     it("should use max and min for two ticks") {
-      val labeling = Labeling.label(Bounds(0, 1), numTicks = Some(2))
+      val labeling = Labeling.label(Bounds(0, 1), numTicks = Some(2)).value
       labeling.values should have length 2
       labeling.values should contain theSameElementsInOrderAs Seq(0d, 1d)
       labeling.labels should have length 2
@@ -98,12 +98,12 @@ class LabelingSpec extends FunSpec with Matchers with Checkers {
     }
 
     it("should not update the axis bounds when fixing") {
-      val labeling = Labeling.label(Bounds(-0.05, 0.55), fixed = true)
+      val labeling = Labeling.label(Bounds(-0.05, 0.55), fixed = true).value
       labeling.axisBounds shouldBe Bounds(-0.05, 0.55)
     }
 
     it("should produce a labeling when passed NaN bounds") {
-      val labeling = Labeling.label(Bounds(Double.NaN, Double.NaN))
+      val labeling = Labeling.label(Bounds(Double.NaN, Double.NaN)).value
       Double.box(labeling.axisBounds.min) shouldBe 'isNaN
       Double.box(labeling.axisBounds.max) shouldBe 'isNaN
       noException shouldBe thrownBy(labeling.labels)
@@ -126,7 +126,7 @@ class LabelingSpec extends FunSpec with Matchers with Checkers {
     it("should produce exactly the number of ticks specified when requested (unfixed bounds)") {
       check(forAll(boundsGen, nticksGen) {
         case (bounds, nticks) =>
-          val labeling = Labeling.label(bounds, numTicks = Some(nticks))
+          val labeling = Labeling.label(bounds, numTicks = Some(nticks)).value
           labeling.numTicks == nticks
       })
     }
@@ -134,7 +134,7 @@ class LabelingSpec extends FunSpec with Matchers with Checkers {
     it("should produce exactly the number of ticks specified when requested (fixed bounds)") {
       check(forAll(boundsGen, nticksGen) {
         case (bounds, nticks) =>
-          val labeling = Labeling.label(bounds, numTicks = Some(nticks), fixed = true)
+          val labeling = Labeling.label(bounds, numTicks = Some(nticks), fixed = true).value
           labeling.numTicks == nticks
       })
     }

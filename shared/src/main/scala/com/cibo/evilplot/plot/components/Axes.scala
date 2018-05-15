@@ -52,10 +52,11 @@ object Axes {
 
   private sealed trait ContinuousAxis {
     final val discrete: Boolean = false
-    val tickCount: Int
+    val tickCount: Option[Int]
     def bounds(plot: Plot): Bounds
+    // FIXME: :)
     def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor =
-      Labeling.label(bounds(plot), Some(tickCount), fixed = fixed)
+      Labeling.label(bounds(plot), tickCount, fixed = fixed).get
   }
 
   private sealed trait DiscreteAxis {
@@ -119,7 +120,7 @@ object Axes {
 
   // Can make these options to get the good behavior!!!
   private case class ContinuousXAxisPlotComponent(
-    tickCount: Int,
+    tickCount: Option[Int],
     tickRenderer: TickRenderer
   ) extends XAxisPlotComponent
       with ContinuousAxis
@@ -131,7 +132,7 @@ object Axes {
       with DiscreteAxis
 
   private case class ContinuousYAxisPlotComponent(
-    tickCount: Int,
+    tickCount: Option[Int],
     tickRenderer: TickRenderer
   ) extends YAxisPlotComponent
       with ContinuousAxis
@@ -187,20 +188,20 @@ object Axes {
   }
 
   private case class ContinuousXGridComponent(
-    tickCount: Int,
+    tickCount: Option[Int],
     lineRenderer: GridLineRenderer
   ) extends XGridComponent
       with ContinuousAxis
 
   private case class ContinuousYGridComponent(
-    tickCount: Int,
+    tickCount: Option[Int],
     lineRenderer: GridLineRenderer
   ) extends YGridComponent
       with ContinuousAxis
 
   trait AxesImplicits {
     protected val plot: Plot
-
+    // FIXME: Axis implicits don't listen to themes now.
     /** Add an X axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
@@ -210,7 +211,8 @@ object Axes {
       tickRenderer: Option[TickRenderer] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousXAxisPlotComponent(
-        tickCount.getOrElse(theme.elements.xTickCount),
+//        tickCount.getOrElse(theme.elements.xTickCount),
+        tickCount,
         tickRenderer.getOrElse(
           TickRenderer.xAxisTickRenderer(
             length = theme.elements.tickLength,
@@ -244,6 +246,7 @@ object Axes {
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
+    // FIXME: Axis implicits don't listen to themes now.
     /** Add a Y axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
@@ -253,7 +256,7 @@ object Axes {
       tickRenderer: Option[TickRenderer] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousYAxisPlotComponent(
-        tickCount.getOrElse(theme.elements.yTickCount),
+        tickCount,
         tickRenderer.getOrElse(
           TickRenderer.yAxisTickRenderer(
             length = theme.elements.tickLength,
@@ -294,7 +297,7 @@ object Axes {
       lineRenderer: Option[GridLineRenderer] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousXGridComponent(
-        lineCount.getOrElse(theme.elements.xGridLineCount),
+        lineCount,
         lineRenderer.getOrElse(GridLineRenderer.xGridLineRenderer())
       )
       plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds) :+ component
@@ -309,7 +312,7 @@ object Axes {
       lineRenderer: Option[GridLineRenderer] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousYGridComponent(
-        lineCount.getOrElse(theme.elements.yGridLineCount),
+        lineCount,
         lineRenderer.getOrElse(GridLineRenderer.yGridLineRenderer())
       )
       plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds) :+ component

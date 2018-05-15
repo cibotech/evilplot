@@ -30,6 +30,8 @@
 
 package com.cibo.evilplot.numeric
 
+import scala.util.control.NonFatal
+
 object Labeling {
   private val defaultNTicks = 5
   private val defaultMRange = 2 to 10
@@ -41,47 +43,33 @@ object Labeling {
     * @param bounds The bounds of the data.
     * @param numTicks Optional number of ticks to use. If provided, the resulting
     *               axis will have exactly that number of ticks. By default,
-    *               we optimize for axis "goodness" over a range of number of ticks.
-    *               If "loose" is false the number of ticks will be no larger than nticks
-    *               but _may_ be smaller.
+    *               we optimize for axis "goodness" over a range of 3 to 12 ticks.
     * @param nicenums A list of intervals which are considered to be "nice" by humans,
     *                 in the order from most preferred to least. We base our spacings
-    *                 based on the powers of ten of these numbres.
+    *                 based on the powers of ten of these numbers.
     * @param fixed When true, the generated labeling will never produces labels outside of the
     *              supplied bounds. In general better labelings can be achieved if fixed is not set.
+    * @return `Some` of [[com.cibo.evilplot.numeric.AxisDescriptor]] representing the optimal labeling given
+    *         the constraints if it exists, or `None` otherwise.
+    * @note Given the default nice number list and number of ticks search space,
+    *       this method should give a result. It is only when `numTicks` is constrained
+    *       to a single value and the `nicenums` list is shortened that there exists a risk
+    *       of no result being found.
     */
   def label(
     bounds: Bounds,
     numTicks: Option[Int] = None,
     nicenums: Seq[Double] = Seq(1, 5, 2, 2.5, 3, 4, 1.5, 7, 6, 8, 9),
     fixed: Boolean = false
-  ): AxisDescriptor = {
+  ): Option[AxisDescriptor] = {
     validate(bounds, numTicks, nicenums)
     val labelingType = if (fixed) LabelingType.StrictLabeling else LabelingType.LooseLabeling
-    val answer =
-      if (numTicks.exists(_ <= 2)) fallback(bounds, numTicks.get)
-      else if (bounds.max.isNaN && bounds.min.isNaN) fallback(bounds, 2)
-      else if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max))
-        optimalLabeling(
-          Bounds(bounds.min - 0.5, bounds.max + 0.5),
-          numTicks,
-          nicenums,
-          labelingType)
-      else optimalLabeling(bounds, numTicks, nicenums, labelingType)
+    if (numTicks.exists(_ <= 2)) Some(fallback(bounds, numTicks.get))
+    else if (bounds.max.isNaN && bounds.min.isNaN) Some(fallback(bounds, 2))
+    else if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max))
+      optimalLabeling(Bounds(bounds.min - 0.5, bounds.max + 0.5), numTicks, nicenums, labelingType)
+    else optimalLabeling(bounds, numTicks, nicenums, labelingType)
 
-    try {
-      println(s"""
-           |AXIS BOUNDS: ${answer.axisBounds}
-           |DATA BOUNDS: ${answer.bounds}
-           |SCORE: ${answer.asInstanceOf[LabelingResult].score}
-           |VALUES: ${answer.values.mkString("[", ", ", "]")}
-           |LABELS: ${answer.labels.mkString("[", ", ", "]")}
-       """.stripMargin)
-
-    } catch {
-      case e: ClassCastException => ()
-    }
-    answer
   }
 
   private def validate(bounds: Bounds, numTicks: Option[Int], nicenums: Seq[Double]): Unit = {
@@ -103,12 +91,13 @@ object Labeling {
     nticks: Option[Int],
     nicenums: Seq[Double],
     labelingType: LabelingType
-  ): LabelingResult = {
+  ): Option[LabelingResult] = {
     val mrange = nticks.fold(defaultMRange: Seq[Int])(Seq(_))
-    mrange.foldLeft(LabelingResult(bounds, bounds, bounds, 1, 1.0, 0.0)) { (bestScoring, nticks) =>
-      val l = genlabels(bounds, nticks, nicenums, labelingType)
-      if (l.forall(_.score > bestScoring.score)) l.getOrElse(bestScoring)
-      else bestScoring
+    mrange.foldLeft(None: Option[LabelingResult]) {
+      case (bestScoring, numticks) =>
+        val labeling = genlabels(bounds, numticks, nicenums, labelingType)
+        if (labeling.exists(l => bestScoring.forall(bs => bs.score > l.score))) labeling
+        else bestScoring
     }
   }
 
