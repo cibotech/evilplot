@@ -7,6 +7,14 @@ EvilPlot is about combinators for graphics.
 
 Documentation for EvilPlot is available [here](https://cibotech.github.com/evilplot).
 
+## Getting Started
+Add EvilPlot to your build with:
+```scala
+resolvers += Resolver.bintrayRepo("cibotech", "public")
+libraryDependencies += "com.cibo" %% "evilplot" % "0.2.0" // Use %%% instead of %% if you're using ScalaJS
+```
+Take a look at the full [getting started guide](https://cibotech.github.com/evilplot/getting-started.html).
+
 ### Table of Contents
   * [Low-Level Drawing API](#low-level-drawing-api)
   * [Plot API](#plot-api)
