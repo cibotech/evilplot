@@ -49,8 +49,8 @@ object Labeling {
     *                 based on the powers of ten of these numbers.
     * @param fixed When true, the generated labeling will never produces labels outside of the
     *              supplied bounds. In general better labelings can be achieved if fixed is not set.
-    * @return `Some` of [[com.cibo.evilplot.numeric.AxisDescriptor]] representing the optimal labeling given
-    *         the constraints if it exists, or `None` otherwise.
+    * @return A [[com.cibo.evilplot.numeric.AxisDescriptor]] representing the optimal labeling given
+    *         the constraints if it exists, a naive labeling if none can be found.
     * @note Given the default nice number list and number of ticks search space,
     *       this method should give a result. It is only when `numTicks` is constrained
     *       to a single value and the `nicenums` list is shortened that there exists a risk
@@ -61,12 +61,12 @@ object Labeling {
     numTicks: Option[Int] = None,
     nicenums: Seq[Double] = Seq(1, 5, 2, 2.5, 3, 4, 1.5, 7, 6, 8, 9),
     fixed: Boolean = false
-  ): Option[AxisDescriptor] = {
+  ): AxisDescriptor = {
     validate(bounds, numTicks, nicenums)
     val labelingType = if (fixed) LabelingType.StrictLabeling else LabelingType.LooseLabeling
     val ans =
-      if (numTicks.exists(_ <= 2)) Some(fallback(bounds, numTicks.get))
-      else if (bounds.max.isNaN && bounds.min.isNaN) Some(fallback(bounds, 2))
+      if (numTicks.exists(_ <= 2)) Some(naiveFallback(bounds, numTicks.get))
+      else if (bounds.max.isNaN && bounds.min.isNaN) Some(naiveFallback(bounds, 2))
       else if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max))
         optimalLabeling(
           Bounds(bounds.min - 0.5, bounds.max + 0.5),
@@ -85,7 +85,7 @@ object Labeling {
 //      case NonFatal(e) => ()
 //    }
 
-    ans
+    ans.getOrElse(naiveFallback(bounds, numTicks.get))
   }
 
   private def validate(bounds: Bounds, numTicks: Option[Int], nicenums: Seq[Double]): Unit = {
@@ -216,7 +216,7 @@ object Labeling {
     }
   }
 
-  private def fallback(bs: Bounds, nticks: Int): AxisDescriptor = new AxisDescriptor {
+  private def naiveFallback(bs: Bounds, nticks: Int): AxisDescriptor = new AxisDescriptor {
     val bounds: Bounds = bs
     val numTicks: Int = nticks
     val axisBounds: Bounds = bs
@@ -225,7 +225,11 @@ object Labeling {
       if (nticks == 0) Seq()
       else if (nticks == 1) Seq((bs.min + bs.max) / 2)
       else if (nticks == 2) Seq(bs.min, bs.max)
-      else throw new IllegalArgumentException("Fallback axis descriptor only handles 0 - 2 ticks")
+      else {
+        val intervals = numTicks - 1
+        val spacing = bounds.range / intervals
+        Seq.tabulate(numTicks)(i => bounds.min + i * spacing)
+      }
     }
 
     lazy val labels: Seq[String] = values.map(_.toString)

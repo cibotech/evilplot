@@ -54,9 +54,8 @@ object Axes {
     final val discrete: Boolean = false
     val tickCount: Option[Int]
     def bounds(plot: Plot): Bounds
-    // FIXME: :)
     def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor =
-      Labeling.label(bounds(plot), tickCount, fixed = fixed).get
+      Labeling.label(bounds(plot), tickCount, fixed = fixed)
   }
 
   private sealed trait DiscreteAxis {
