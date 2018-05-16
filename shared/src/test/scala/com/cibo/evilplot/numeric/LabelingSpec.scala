@@ -60,11 +60,13 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
       labeling.bounds.max shouldBe 2.7 +- math.ulp(1.0)
     }
 
-    ignore("should work with fixed bounds and 0 range") {
+    it("should work with fixed bounds and 0 range") {
       val bounds = Bounds(2.2, 2.2)
       val labeling = Labeling.label(bounds, fixed = true)
       labeling.bounds shouldBe bounds
       labeling.axisBounds shouldBe bounds
+      labeling.values should have length 1
+      labeling.labels should have length 1
     }
 
     it("should work with 0 ticks") {

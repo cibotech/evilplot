@@ -64,28 +64,31 @@ object Labeling {
   ): AxisDescriptor = {
     validate(bounds, numTicks, nicenums)
     val labelingType = if (fixed) LabelingType.StrictLabeling else LabelingType.LooseLabeling
-    val ans =
-      if (numTicks.exists(_ <= 2)) Some(naiveFallback(bounds, numTicks.get))
-      else if (bounds.max.isNaN && bounds.min.isNaN) Some(naiveFallback(bounds, 2))
-      else if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max))
-        optimalLabeling(
-          Bounds(bounds.min - 0.5, bounds.max + 0.5),
-          numTicks,
-          defaultNTicks,
-          nicenums,
-          labelingType)
-      else optimalLabeling(bounds, numTicks, defaultNTicks, nicenums, labelingType)
-//    try {
-//      val cast = ans.get.asInstanceOf[LabelingResult]
-//      println(s"SCORE: ${cast.score}")
-//      println(s"LABELS: ${cast.labels}")
-//      println(s"BOUNDS: ${cast.axisBounds}")
-//      println(s"VALUES: ${cast.values}")
-//    } catch {
-//      case NonFatal(e) => ()
-//    }
 
-    ans.getOrElse(naiveFallback(bounds, numTicks.get))
+    if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max)) {
+      labelEqualBounds(bounds, numTicks, defaultNTicks, nicenums, fixed)
+    } else {
+      numTicks
+        .flatMap(nt => if (nt <= 2) Some(naiveFallback(bounds, nt)) else None)
+        .orElse(if (bounds.max.isNaN && bounds.min.isNaN) Some(naiveFallback(bounds, 2)) else None)
+        .orElse(optimalLabeling(bounds, numTicks, defaultNTicks, nicenums, labelingType))
+        .getOrElse(naiveFallback(bounds, numTicks.getOrElse(defaultNTicks)))
+    }
+  }
+
+  private def labelEqualBounds(
+    bounds: Bounds,
+    numTicks: Option[Int],
+    targetNTicks: Int,
+    nicenums: Seq[Double],
+    fixed: Boolean): AxisDescriptor = {
+    if (fixed)
+      naiveFallback(bounds, 1)
+    else {
+      val bs = Bounds(bounds.min - 0.5, bounds.max + 0.5)
+      optimalLabeling(bs, numTicks, targetNTicks, nicenums, LabelingType.LooseLabeling)
+        .getOrElse(naiveFallback(bs, numTicks.getOrElse(targetNTicks)))
+    }
   }
 
   private def validate(bounds: Bounds, numTicks: Option[Int], nicenums: Seq[Double]): Unit = {
@@ -95,12 +98,6 @@ object Labeling {
       "The maximum value must be greater than or equal to the minimum value.")
     require(numTicks.forall(_ >= 0), "Cannot use a negative number of ticks.")
   }
-
-  /* Terminology used herein:
-   * a "loose" labeling is one where the labels are either the bounds of the data or outside
-   * a "strict" labeling is one where the labels are either the bounds of the data or inside
-   * In particular, it is important to note that some loose labelings are strict labelings!
-   */
 
   private def optimalLabeling(
     bounds: Bounds,
@@ -112,13 +109,14 @@ object Labeling {
     val mrange = nticks.fold(defaultMRange: Seq[Int])(Seq(_))
     mrange.foldLeft(None: Option[LabelingResult]) {
       case (bestScoring, numticks) =>
-        val labeling = genlabels(bounds, numticks, targetnticks, nicenums, labelingType)
+        val labeling =
+          searchPowersAndIntervals(bounds, numticks, targetnticks, nicenums, labelingType)
         if (labeling.exists(l => bestScoring.forall(bs => l.score > bs.score))) labeling
         else bestScoring
     }
   }
 
-  private def genlabels(
+  private def searchPowersAndIntervals(
     bounds: Bounds,
     nticks: Int,
     targetnticks: Int,
@@ -157,7 +155,7 @@ object Labeling {
       }
   }
 
-  private[numeric] sealed trait LabelingType {
+  private sealed trait LabelingType {
     def labelMin(min: Double, ldelta: Double): Double
     def ofType(dataBounds: Bounds, labelMin: Double, labelMax: Double, spacing: Double): Boolean
     def powerSearchRange(power: Int): Range.Inclusive
@@ -168,7 +166,9 @@ object Labeling {
       spacing: Double,
       score: Double): LabelingResult
   }
-  private[numeric] object LabelingType {
+
+  // a "loose" labeling is one where the labels are either the bounds of the data or outside
+  private object LabelingType {
     case object LooseLabeling extends LabelingType {
       def labelMin(min: Double, ldelta: Double): Double =
         math.floor(min / ldelta) * ldelta
@@ -188,6 +188,7 @@ object Labeling {
       }
     }
 
+    // a "strict" labeling is one where the labels are either the bounds of the data or inside
     case object StrictLabeling extends LabelingType {
       def labelMin(min: Double, ldelta: Double): Double =
         math.ceil(min / ldelta) * ldelta
@@ -195,6 +196,7 @@ object Labeling {
       // Expand search range for strict labeling to increase chances of finding a labeling.
       def powerSearchRange(power: Int): Range.Inclusive = (power - 1).to(power + 1)
 
+      // Must be strict _and_ complete, (can't fit another tick on either side)
       def ofType(
         dataBounds: Bounds,
         labelMin: Double,
@@ -203,7 +205,7 @@ object Labeling {
         labelMin >= dataBounds.min &&
         labelMax <= dataBounds.max &&
         labelMin - spacing <= dataBounds.min &&
-        labelMax + spacing >= dataBounds.max // "One extra tick" test
+        labelMax + spacing >= dataBounds.max
       }
 
       def create(
@@ -270,6 +272,7 @@ object Labeling {
 
   @inline private def cost(coverage: Double, granularity: Double, simplicity: Double): Double =
     (0.4 * coverage) + (0.2 * granularity) + (0.4 * simplicity)
+
   @inline private def granularity(k: Double, m: Double, allowedUpper: Double): Double =
     if (k > 0 && k < 2 * m)
       1 - math.abs(k - m) / m
