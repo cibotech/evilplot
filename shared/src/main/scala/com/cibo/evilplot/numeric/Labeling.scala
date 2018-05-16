@@ -64,12 +64,27 @@ object Labeling {
   ): Option[AxisDescriptor] = {
     validate(bounds, numTicks, nicenums)
     val labelingType = if (fixed) LabelingType.StrictLabeling else LabelingType.LooseLabeling
-    if (numTicks.exists(_ <= 2)) Some(fallback(bounds, numTicks.get))
-    else if (bounds.max.isNaN && bounds.min.isNaN) Some(fallback(bounds, 2))
-    else if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max))
-      optimalLabeling(Bounds(bounds.min - 0.5, bounds.max + 0.5), numTicks, nicenums, labelingType)
-    else optimalLabeling(bounds, numTicks, nicenums, labelingType)
+    val ans =
+      if (numTicks.exists(_ <= 2)) Some(fallback(bounds, numTicks.get))
+      else if (bounds.max.isNaN && bounds.min.isNaN) Some(fallback(bounds, 2))
+      else if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max))
+        optimalLabeling(
+          Bounds(bounds.min - 0.5, bounds.max + 0.5),
+          numTicks,
+          defaultNTicks,
+          nicenums,
+          labelingType)
+      else optimalLabeling(bounds, numTicks, defaultNTicks, nicenums, labelingType)
+    try {
+      val cast = ans.get.asInstanceOf[LabelingResult]
+      println(s"SCORE: ${cast.score}")
+      println(s"LABELS: ${cast.labels}")
+      println(s"BOUNDS: ${cast.axisBounds}")
+    } catch {
+      case NonFatal(e) => ()
+    }
 
+    ans
   }
 
   private def validate(bounds: Bounds, numTicks: Option[Int], nicenums: Seq[Double]): Unit = {
@@ -89,13 +104,14 @@ object Labeling {
   private def optimalLabeling(
     bounds: Bounds,
     nticks: Option[Int],
+    targetnticks: Int,
     nicenums: Seq[Double],
     labelingType: LabelingType
   ): Option[LabelingResult] = {
     val mrange = nticks.fold(defaultMRange: Seq[Int])(Seq(_))
     mrange.foldLeft(None: Option[LabelingResult]) {
       case (bestScoring, numticks) =>
-        val labeling = genlabels(bounds, numticks, nicenums, labelingType)
+        val labeling = genlabels(bounds, numticks, targetnticks, nicenums, labelingType)
         if (labeling.exists(l => bestScoring.forall(bs => bs.score > l.score))) labeling
         else bestScoring
     }
@@ -104,6 +120,7 @@ object Labeling {
   private def genlabels(
     bounds: Bounds,
     nticks: Int,
+    targetnticks: Int,
     nicenums: Seq[Double],
     labelingType: LabelingType
   ): Option[LabelingResult] = {
@@ -122,7 +139,7 @@ object Labeling {
               val labelMin = labelingType.labelMin(bounds.min, lDelta)
               val labelMax = labelMin + intervals * lDelta
               if (labelingType.ofType(bounds, labelMin, labelMax)) {
-                val g = granularity(nticks, nticks)
+                val g = granularity(nticks, targetnticks)
                 val c = coverage(bounds, labelMax, labelMin, labelingType)
                 val s =
                   simplicity(i + 1, nicenums.length, if (labelMin <= 0 && labelMax >= 0) 1 else 0)
