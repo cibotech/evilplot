@@ -91,8 +91,14 @@ final case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable 
   def draw(context: RenderContext): Unit = if (points.nonEmpty) context.draw(this) else ()
 }
 object Path {
-  implicit val encoder: Encoder[Path] = deriveEncoder[Path]
-  implicit val decoder: Decoder[Path] = deriveDecoder[Path]
+
+  def apply(points: Seq[Point], strokeWidth: Double) : Drawable = {
+    val minX = points.map(_.x).min
+    val minY = points.map(_.y).min
+    Translate(new Path(points.map{x=> Point(x.x - minX, x.y - minY)},strokeWidth), minX, minY)
+  }
+  implicit val encoder: Encoder[Path] = Encoder.forProduct2("points", "strokeWidth"){x => (x.points, x.strokeWidth)}
+  implicit val decoder: Decoder[Path] = Decoder.forProduct2("points", "strokeWidth")(new Path(_,_))
 }
 
 /** A filled polygon.
@@ -102,15 +108,21 @@ final case class Polygon(boundary: Seq[Point]) extends Drawable {
   private lazy val xS: Seq[Double] = boundary.map(_.x)
   private lazy val yS: Seq[Double] = boundary.map(_.y)
   lazy val extent: Extent =
-    if (boundary.nonEmpty) Extent(xS.max - xS.min, yS.max - yS.min) else Extent(0, 0)
+    if (boundary.nonEmpty) Extent(xS.max, yS.max) else Extent(0, 0)
   def draw(context: RenderContext): Unit = if (boundary.nonEmpty) context.draw(this) else ()
 }
 object Polygon {
-  implicit val encoder: Encoder[Polygon] = deriveEncoder[Polygon]
-  implicit val decoder: Decoder[Polygon] = deriveDecoder[Polygon]
+  implicit val encoder: Encoder[Polygon] = Encoder.forProduct1("boundary"){x=> x.boundary}
+  implicit val decoder: Decoder[Polygon] = Decoder.forProduct1("boundary")(new Polygon(_))
 
   def clipped(boundary: Seq[Point], extent: Extent): Drawable = {
     Polygon(Clipping.clipPolygon(boundary, extent))
+  }
+
+  def apply(boundary: Seq[Point]) :Drawable = {
+      val minX = boundary.map(_.x).min
+      val minY = boundary.map(_.y).min
+      Translate(new Polygon(boundary.map{x=> Point(x.x - minX, x.y - minY)}), minX, minY)
   }
 }
 
