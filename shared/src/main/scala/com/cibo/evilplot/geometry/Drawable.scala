@@ -87,7 +87,7 @@ final case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable 
   private lazy val xS: Seq[Double] = points.map(_.x)
   private lazy val yS: Seq[Double] = points.map(_.y)
   lazy val extent: Extent =
-    if (points.nonEmpty) Extent(xS.max - xS.min, yS.max - yS.min) else Extent(0, 0)
+    if (points.nonEmpty) Extent(xS.max , yS.max) else Extent(0, 0)
   def draw(context: RenderContext): Unit = if (points.nonEmpty) context.draw(this) else ()
 }
 object Path {
