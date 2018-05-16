@@ -31,7 +31,7 @@
 package com.cibo.evilplot.colors
 
 import com.cibo.evilplot.geometry.{Disc, Rect, Style, Text}
-import com.cibo.evilplot.numeric.{Bounds, ContinuousAxisDescriptor}
+import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, Labeling}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
 
@@ -118,7 +118,21 @@ object CategoricalColoring {
     gradient(Seq(start, end), gradientMode)
 }
 
-trait ContinuousColoring extends Coloring[Double]
+trait ContinuousColoring extends Coloring[Double] {
+  protected def getDescriptor(
+    min: Option[Double],
+    max: Option[Double],
+    dataToColor: Seq[Double],
+    numDivisions: Int): AxisDescriptor = {
+    val bounds = max
+      .flatMap(mx => min.map(mn => Bounds(mn, mx)))
+      .getOrElse(
+        Bounds(
+          dataToColor.reduceOption[Double](math.min).getOrElse(0.0),
+          dataToColor.reduceOption[Double](math.max).getOrElse(0.0)))
+    Labeling.label(bounds, numTicks = Some(numDivisions), fixed = min.isDefined || max.isDefined)
+  }
+}
 object ContinuousColoring {
 
   /** Color using a 2-stop gradient.
@@ -167,19 +181,21 @@ object ContinuousColoring {
     new ContinuousColoring {
       require(colors.nonEmpty, "Cannot make a gradient out of zero colors.")
       def apply(dataToColor: Seq[Double])(implicit theme: Theme): Double => Color = {
-        val xmin = min.getOrElse(dataToColor.min)
-        val xmax = max.getOrElse(dataToColor.max)
-        GradientUtils.multiGradient(colors, xmin, xmax, gradientMode)
+        val descriptor = getDescriptor(min, max, dataToColor, 5)
+        GradientUtils.multiGradient(
+          colors,
+          descriptor.axisBounds.min,
+          descriptor.axisBounds.max,
+          gradientMode)
       }
 
       def legendContext(coloringDimension: Seq[Double])(implicit theme: Theme): LegendContext = {
-        val bounds = Bounds.get(coloringDimension).get
-        val axisDescriptor = ContinuousAxisDescriptor(bounds, 10, fixed = true)
+        val descriptor = getDescriptor(min, max, coloringDimension, 5)
         val coloring = apply(coloringDimension)
         LegendContext(
-          elements = axisDescriptor.values.map(v =>
+          elements = descriptor.values.map(v =>
             Rect(theme.fonts.legendLabelSize, theme.fonts.legendLabelSize) filled coloring(v)),
-          labels = axisDescriptor.labels.map(
+          labels = descriptor.labels.map(
             l =>
               Style(
                 Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace),
