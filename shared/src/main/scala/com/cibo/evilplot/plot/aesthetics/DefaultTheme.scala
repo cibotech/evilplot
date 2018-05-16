@@ -85,7 +85,7 @@ object DefaultTheme {
     gridLineSize: Double = 0.25,
     barSpacing: Double = 1,
     clusterSpacing: Double = 4,
-    boundBuffer: Double = 0.1,
+    boundBuffer: Double = 0.0,
     boxSpacing: Double = 20,
     contours: Int = 20,
     categoricalXAxisLabelOrientation: Double = 0,
