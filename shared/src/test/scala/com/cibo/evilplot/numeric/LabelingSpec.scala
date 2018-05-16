@@ -30,12 +30,13 @@
 
 package com.cibo.evilplot.numeric
 
+import com.cibo.evilplot.numeric.Labeling.LabelingResult
 import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 import org.scalatest.prop.Checkers
-import org.scalatest.{FunSpec, Matchers, OptionValues}
+import org.scalatest.{FunSpec, Inside, Matchers, OptionValues}
 
-class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues {
+class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues with Inside {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 2000000)
 
@@ -110,9 +111,8 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
     }
 
     it("handles negative tick num requests with an IllegalArgumentException") {
-      an[IllegalArgumentException] should be thrownBy Labeling.label(
-        Bounds(0, 1),
-        numTicks = Some(-1))
+      an[IllegalArgumentException] should be thrownBy Labeling
+        .label(Bounds(0, 1), numTicks = Some(-1))
     }
 
     it("handles invalid bounds (min > max) with an IllegalArgumentException") {
@@ -128,6 +128,16 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
         case (bounds, nticks) =>
           val labeling = Labeling.label(bounds, numTicks = Some(nticks)).value
           labeling.numTicks == nticks
+      })
+    }
+
+    it("should produce fixed bounds labelings for which adding additional ticks is not possible") {
+      check(forAll(boundsGen, Gen.option(nticksGen)) {
+        case (bounds, nticks) =>
+          inside(Labeling.label(bounds, nticks, fixed = true).value) {
+            case LabelingResult(_, axis, label, _, spacing, _) =>
+              label.max + spacing >= axis.max
+          }
       })
     }
 

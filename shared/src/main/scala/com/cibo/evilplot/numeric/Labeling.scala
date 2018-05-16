@@ -75,14 +75,15 @@ object Labeling {
           nicenums,
           labelingType)
       else optimalLabeling(bounds, numTicks, defaultNTicks, nicenums, labelingType)
-    try {
-      val cast = ans.get.asInstanceOf[LabelingResult]
-      println(s"SCORE: ${cast.score}")
-      println(s"LABELS: ${cast.labels}")
-      println(s"BOUNDS: ${cast.axisBounds}")
-    } catch {
-      case NonFatal(e) => ()
-    }
+//    try {
+//      val cast = ans.get.asInstanceOf[LabelingResult]
+//      println(s"SCORE: ${cast.score}")
+//      println(s"LABELS: ${cast.labels}")
+//      println(s"BOUNDS: ${cast.axisBounds}")
+//      println(s"VALUES: ${cast.values}")
+//    } catch {
+//      case NonFatal(e) => ()
+//    }
 
     ans
   }
@@ -112,7 +113,7 @@ object Labeling {
     mrange.foldLeft(None: Option[LabelingResult]) {
       case (bestScoring, numticks) =>
         val labeling = genlabels(bounds, numticks, targetnticks, nicenums, labelingType)
-        if (labeling.exists(l => bestScoring.forall(bs => bs.score > l.score))) labeling
+        if (labeling.exists(l => bestScoring.forall(bs => l.score > bs.score))) labeling
         else bestScoring
     }
   }
@@ -138,14 +139,13 @@ object Labeling {
               val lDelta = q * base
               val labelMin = labelingType.labelMin(bounds.min, lDelta)
               val labelMax = labelMin + intervals * lDelta
-              if (labelingType.ofType(bounds, labelMin, labelMax)) {
-                val g = granularity(nticks, targetnticks)
+              if (labelingType.ofType(bounds, labelMin, labelMax, lDelta)) {
+                val g = granularity(nticks, targetnticks, 15)
                 val c = coverage(bounds, labelMax, labelMin, labelingType)
                 val s =
                   simplicity(i + 1, nicenums.length, if (labelMin <= 0 && labelMax >= 0) 1 else 0)
-                val score = (c + g + s) / 3
-                val improved = bestScoring.forall(_.score < score) && score <= 1.0
-                if (improved) {
+                val score: Double = cost(c, g, s)
+                if (bestScoring.forall(best => score > best.score)) {
                   Some(
                     labelingType
                       .create(bounds, Bounds(labelMin, labelMax), nticks, lDelta, score))
@@ -159,7 +159,7 @@ object Labeling {
 
   private[numeric] sealed trait LabelingType {
     def labelMin(min: Double, ldelta: Double): Double
-    def ofType(dataBounds: Bounds, labelMin: Double, labelMax: Double): Boolean
+    def ofType(dataBounds: Bounds, labelMin: Double, labelMax: Double, spacing: Double): Boolean
     def powerSearchRange(power: Int): Range.Inclusive
     def create(
       dataBounds: Bounds,
@@ -175,7 +175,7 @@ object Labeling {
 
       def powerSearchRange(power: Int): Range.Inclusive = power.to(power + 1)
 
-      def ofType(dataBounds: Bounds, labelMin: Double, labelMax: Double): Boolean =
+      def ofType(dataBounds: Bounds, labelMin: Double, labelMax: Double, spacing: Double): Boolean =
         labelMin <= dataBounds.min && labelMax >= dataBounds.max
 
       def create(
@@ -195,8 +195,16 @@ object Labeling {
       // Expand search range for strict labeling to increase chances of finding a labeling.
       def powerSearchRange(power: Int): Range.Inclusive = (power - 1).to(power + 1)
 
-      def ofType(dataBounds: Bounds, labelMin: Double, labelMax: Double): Boolean =
-        labelMin >= dataBounds.min && labelMax <= dataBounds.max
+      def ofType(
+        dataBounds: Bounds,
+        labelMin: Double,
+        labelMax: Double,
+        spacing: Double): Boolean = {
+        labelMin >= dataBounds.min &&
+        labelMax <= dataBounds.max &&
+        labelMin - spacing <= dataBounds.min &&
+        labelMax + spacing >= dataBounds.max // "One extra tick" test
+      }
 
       def create(
         dataBounds: Bounds,
@@ -205,7 +213,6 @@ object Labeling {
         spacing: Double,
         score: Double): LabelingResult =
         LabelingResult(dataBounds, dataBounds, labelBounds, numTicks, spacing, score)
-
     }
   }
 
@@ -230,8 +237,7 @@ object Labeling {
     labelBounds: Bounds, // The first and last label value.
     numTicks: Int,
     spacing: Double,
-    score: Double,
-    loose: Boolean = true
+    score: Double
   ) extends AxisDescriptor {
 
     private lazy val nfrac = math.max(-math.floor(math.log10(spacing)), 0).toInt
@@ -258,6 +264,10 @@ object Labeling {
     }
   }
 
-  @inline private def granularity(k: Double, m: Double): Double =
-    if (k > 0 && k < 2 * m) 1 - math.abs(k - m) / m else 0
+  @inline private def cost(coverage: Double, granularity: Double, simplicity: Double): Double =
+    (0.4 * coverage) + (0.2 * granularity) + (0.4 * simplicity)
+  @inline private def granularity(k: Double, m: Double, allowedUpper: Double): Double =
+    if (k > 0 && k < 2 * m)
+      1 - math.abs(k - m) / m
+    else 0
 }
