@@ -84,18 +84,20 @@ object XyPlot {
     require(xboundBuffer.getOrElse(0.0) >= 0.0)
     require(yboundBuffer.getOrElse(0.0) >= 0.0)
     val xs = data.map(_.x)
+    val xbuffer = xboundBuffer.getOrElse(theme.elements.boundBuffer)
+    val ybuffer = yboundBuffer.getOrElse(theme.elements.boundBuffer)
     val xbounds = Plot.expandBounds(
       Bounds(
         xs.reduceOption[Double](math.min).getOrElse(0.0),
         xs.reduceOption[Double](math.max).getOrElse(0.0)),
-      xboundBuffer.getOrElse(theme.elements.boundBuffer)
+      if (data.length == 1 && xbuffer == 0) 0.1 else xbuffer
     )
     val ys = data.map(_.y)
     val ybounds = Plot.expandBounds(
       Bounds(
         ys.reduceOption[Double](math.min).getOrElse(0.0),
         ys.reduceOption[Double](math.max).getOrElse(0.0)),
-      yboundBuffer.getOrElse(theme.elements.boundBuffer)
+      if (data.length == 1 && ybuffer == 0) 0.1 else xbuffer
     )
     Plot(
       xbounds,
