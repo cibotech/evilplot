@@ -70,19 +70,19 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
     }
 
     it("should work with 0 ticks") {
-      val labeling = Labeling.label(Bounds(-.323, .525), numTicks = Some(0))
+      val labeling = Labeling.label(Bounds(-.323, .525), preferredTickCount = Some(0))
       labeling.values shouldBe empty
       labeling.labels shouldBe empty
     }
 
     it("should produce no ticks when bounds are NaN and 0 ticks are requested") {
-      val labeling = Labeling.label(Bounds(Double.NaN, Double.NaN), numTicks = Some(0))
+      val labeling = Labeling.label(Bounds(Double.NaN, Double.NaN), preferredTickCount = Some(0))
       labeling.values shouldBe empty
       labeling.labels shouldBe empty
     }
 
     it("should use the midpoint of the bounds when only one tick is requested") {
-      val labeling = Labeling.label(Bounds(0, 1), numTicks = Some(1))
+      val labeling = Labeling.label(Bounds(0, 1), preferredTickCount = Some(1))
       labeling.values should have length 1
       labeling.values.head shouldBe 0.5
       labeling.labels should have length 1
@@ -90,7 +90,7 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
     }
 
     it("should use max and min for two ticks") {
-      val labeling = Labeling.label(Bounds(0, 1), numTicks = Some(2))
+      val labeling = Labeling.label(Bounds(0, 1), preferredTickCount = Some(2))
       labeling.values should have length 2
       labeling.values should contain theSameElementsInOrderAs Seq(0d, 1d)
       labeling.labels should have length 2
@@ -98,7 +98,7 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
     }
 
     it("should use a naive labeling when the optimization scheme cannot find a good one") {
-      val labeling = Labeling.label(Bounds(0, 1.0), numTicks = Some(12), fixed = true)
+      val labeling = Labeling.forceTickCount(Bounds(0, 1.0), tickCount = 12, fixed = true)
       labeling.axisBounds.min shouldBe 0.0
       labeling.axisBounds.max shouldBe 1.0
       labeling.numTicks shouldBe 12
@@ -120,7 +120,7 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
 
     it("handles negative tick num requests with an IllegalArgumentException") {
       an[IllegalArgumentException] should be thrownBy Labeling
-        .label(Bounds(0, 1), numTicks = Some(-1))
+        .label(Bounds(0, 1), preferredTickCount = Some(-1))
     }
 
     it("handles invalid bounds (min > max) with an IllegalArgumentException") {
@@ -131,25 +131,34 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
       an[IllegalArgumentException] should be thrownBy Labeling.label(Bounds(0, 1), nicenums = Seq())
     }
 
+    it("should use a passed in formatting function") {
+      val labeling = Labeling.forceTickCount(
+        Bounds(0, 1.0),
+        tickCount = 5,
+        fixed = true,
+        formatter = Some(d => f"$d%.3f"))
+      labeling.labels shouldBe Seq("0.000", "0.250", "0.500", "0.750", "1.000")
+    }
+
     it("should produce exactly the number of ticks specified when requested (unfixed bounds)") {
-      check(forAll(boundsGen, nticksGen) {
+      check(forAllNoShrink(boundsGen, nticksGen) {
         case (bounds, nticks) =>
-          val labeling = Labeling.label(bounds, numTicks = Some(nticks))
+          val labeling = Labeling.forceTickCount(bounds, tickCount = nticks)
           labeling.numTicks == nticks
       })
     }
 
     it("should produce a non-naive labeling with the default parameters") {
-      check(forAll(boundsGen) { bounds =>
+      check(forAllNoShrink(boundsGen) { bounds =>
         Labeling.label(bounds).isInstanceOf[LabelingResult]
       })
     }
 
     it("should produce fixed bounds labelings for which adding additional ticks is not possible") {
-      check(forAll(boundsGen, Gen.option(nticksGen)) {
+      check(forAllNoShrink(boundsGen, Gen.option(nticksGen)) {
         case (bounds, nticks) =>
-          inside(Labeling.label(bounds, nticks, fixed = true)) {
-            case LabelingResult(_, axis, label, _, spacing, _) =>
+          inside(Labeling.label(bounds, preferredTickCount = nticks, fixed = true)) {
+            case LabelingResult(_, axis, label, _, spacing, _, _) =>
               label.max + spacing >= axis.max
             case naive: AxisDescriptor =>
               (naive.axisBounds.max === naive.bounds.max +- math.ulp(1.0)) &&
@@ -161,7 +170,7 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
     it("should produce exactly the number of ticks specified when requested (fixed bounds)") {
       check(forAllNoShrink(boundsGen, nticksGen) {
         case (bounds, nticks) =>
-          val labeling = Labeling.label(bounds, numTicks = Some(nticks), fixed = true)
+          val labeling = Labeling.forceTickCount(bounds, tickCount = nticks, fixed = true)
           labeling.numTicks == nticks
       })
     }

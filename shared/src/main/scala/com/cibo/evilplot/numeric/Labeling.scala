@@ -30,23 +30,26 @@
 
 package com.cibo.evilplot.numeric
 
-import scala.util.control.NonFatal
-
 object Labeling {
   private val defaultNTicks = 5
-  private val defaultMRange = 2 to 10
+  private val defaultTickCountRange: Int => Seq[Int] = (i: Int) => math.max(3, i / 2) to (2 * i)
+
+  val defaultNiceNums: Seq[Double] = Seq(1, 5, 2, 2.5, 3, 4, 1.5, 7, 6, 8, 9)
 
   /**
     * Implements a modified version of Wilkinson's labeling algorithm.
     * For reference, see ''The Grammar of Graphics'' (L. Wilkinson) pp. 96-97,
     * or ''An Extension to Wilkinson's Algorithm for Tick Labels on Axes'' (J. Talbot, et al.)
     * @param bounds The bounds of the data.
-    * @param numTicks Optional number of ticks to use. If provided, the resulting
-    *               axis will have exactly that number of ticks. By default,
-    *               we optimize for axis "goodness" over a range of 3 to 12 ticks.
+    * @param preferredTickCount A preferred number of ticks to use.
     * @param nicenums A list of intervals which are considered to be "nice" by humans,
     *                 in the order from most preferred to least. We base our spacings
     *                 based on the powers of ten of these numbers.
+    * @param tickCountRange A function to create the range of acceptable tick counts. Labelings
+    *                       with a tick count close to  `preferredTickCount` are favored,
+    *                       however we may a choose a "nicer" labeling within this range.
+    * @param formatter Function to format tick labels. If none is provided, we attempt to format
+    *                  the tick labels using a reasonable amount of precision in decimal notation.
     * @param fixed When true, the generated labeling will never produces labels outside of the
     *              supplied bounds. In general better labelings can be achieved if fixed is not set.
     * @return A [[com.cibo.evilplot.numeric.AxisDescriptor]] representing the optimal labeling given
@@ -58,36 +61,61 @@ object Labeling {
     */
   def label(
     bounds: Bounds,
-    numTicks: Option[Int] = None,
-    nicenums: Seq[Double] = Seq(1, 5, 2, 2.5, 3, 4, 1.5, 7, 6, 8, 9),
+    preferredTickCount: Option[Int] = None,
+    nicenums: Seq[Double] = defaultNiceNums,
+    tickCountRange: Option[Int => Seq[Int]] = None,
+    formatter: Option[Double => String] = None,
     fixed: Boolean = false
   ): AxisDescriptor = {
-    validate(bounds, numTicks, nicenums)
+    validate(bounds, preferredTickCount, nicenums)
     val labelingType = if (fixed) LabelingType.StrictLabeling else LabelingType.LooseLabeling
+    val ticksCenter = preferredTickCount.getOrElse(defaultNTicks)
+    val ticksRange: Seq[Int] = tickCountRange.getOrElse(defaultTickCountRange)(ticksCenter)
 
     if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max)) {
-      labelEqualBounds(bounds, numTicks, defaultNTicks, nicenums, fixed)
+      labelEqualBounds(bounds, ticksCenter, ticksRange, nicenums, formatter, fixed)
     } else {
-      numTicks
-        .flatMap(nt => if (nt <= 2) Some(naiveFallback(bounds, nt)) else None)
-        .orElse(if (bounds.max.isNaN && bounds.min.isNaN) Some(naiveFallback(bounds, 2)) else None)
-        .orElse(optimalLabeling(bounds, numTicks, defaultNTicks, nicenums, labelingType))
-        .getOrElse(naiveFallback(bounds, numTicks.getOrElse(defaultNTicks)))
+      (if (ticksCenter <= 2) Some(naiveFallback(bounds, ticksCenter, formatter)) else None)
+        .orElse(if (bounds.max.isNaN && bounds.min.isNaN) Some(naiveFallback(bounds, 2, formatter))
+        else None)
+        .orElse(optimalLabeling(bounds, ticksCenter, ticksRange, nicenums, labelingType, formatter))
+        .getOrElse(naiveFallback(bounds, ticksCenter, formatter))
     }
   }
 
+  def forceTickCount(
+    bounds: Bounds,
+    tickCount: Int,
+    nicenums: Seq[Double] = defaultNiceNums,
+    formatter: Option[Double => String] = None,
+    fixed: Boolean = false
+  ): AxisDescriptor =
+    label(
+      bounds,
+      preferredTickCount = Some(tickCount),
+      tickCountRange = Some(Seq(_)),
+      formatter = formatter,
+      fixed = fixed)
+
   private def labelEqualBounds(
     bounds: Bounds,
-    numTicks: Option[Int],
-    targetNTicks: Int,
+    preferredTickCount: Int,
+    ticksRange: Seq[Int],
     nicenums: Seq[Double],
+    formatter: Option[Double => String],
     fixed: Boolean): AxisDescriptor = {
     if (fixed)
-      naiveFallback(bounds, 1)
+      naiveFallback(bounds, 1, formatter)
     else {
       val bs = Bounds(bounds.min - 0.5, bounds.max + 0.5)
-      optimalLabeling(bs, numTicks, targetNTicks, nicenums, LabelingType.LooseLabeling)
-        .getOrElse(naiveFallback(bs, numTicks.getOrElse(targetNTicks)))
+      optimalLabeling(
+        bs,
+        preferredTickCount,
+        ticksRange,
+        nicenums,
+        LabelingType.LooseLabeling,
+        formatter)
+        .getOrElse(naiveFallback(bs, preferredTickCount, formatter))
     }
   }
 
@@ -101,16 +129,22 @@ object Labeling {
 
   private def optimalLabeling(
     bounds: Bounds,
-    nticks: Option[Int],
-    targetnticks: Int,
+    preferredTickCount: Int,
+    ticksRange: Seq[Int],
     nicenums: Seq[Double],
-    labelingType: LabelingType
+    labelingType: LabelingType,
+    formatter: Option[Double => String]
   ): Option[LabelingResult] = {
-    val mrange = nticks.fold(defaultMRange: Seq[Int])(Seq(_))
-    mrange.foldLeft(None: Option[LabelingResult]) {
+    ticksRange.foldLeft(None: Option[LabelingResult]) {
       case (bestScoring, numticks) =>
         val labeling =
-          searchPowersAndIntervals(bounds, numticks, targetnticks, nicenums, labelingType)
+          searchPowersAndIntervals(
+            bounds,
+            numticks,
+            preferredTickCount,
+            nicenums,
+            labelingType,
+            formatter)
         if (labeling.exists(l => bestScoring.forall(bs => l.score > bs.score))) labeling
         else bestScoring
     }
@@ -118,12 +152,13 @@ object Labeling {
 
   private def searchPowersAndIntervals(
     bounds: Bounds,
-    nticks: Int,
-    targetnticks: Int,
+    tickCount: Int,
+    preferredTickCount: Int,
     nicenums: Seq[Double],
-    labelingType: LabelingType
+    labelingType: LabelingType,
+    formatter: Option[Double => String]
   ): Option[LabelingResult] = {
-    val intervals = nticks - 1
+    val intervals = tickCount - 1
     val delta = bounds.range / intervals
     val power = math.floor(math.log10(delta)).toInt
 
@@ -138,7 +173,7 @@ object Labeling {
               val labelMin = labelingType.labelMin(bounds.min, lDelta)
               val labelMax = labelMin + intervals * lDelta
               if (labelingType.ofType(bounds, labelMin, labelMax, lDelta)) {
-                val g = granularity(nticks, targetnticks, 15)
+                val g = granularity(tickCount, preferredTickCount, 15)
                 val c = coverage(bounds, labelMax, labelMin, labelingType)
                 val s =
                   simplicity(i + 1, nicenums.length, if (labelMin <= 0 && labelMax >= 0) 1 else 0)
@@ -146,7 +181,13 @@ object Labeling {
                 if (bestScoring.forall(best => score > best.score)) {
                   Some(
                     labelingType
-                      .create(bounds, Bounds(labelMin, labelMax), nticks, lDelta, score))
+                      .create(
+                        bounds,
+                        Bounds(labelMin, labelMax),
+                        tickCount,
+                        lDelta,
+                        score,
+                        formatter))
                 } else {
                   bestScoring
                 }
@@ -164,7 +205,8 @@ object Labeling {
       labelBounds: Bounds,
       numTicks: Int,
       spacing: Double,
-      score: Double): LabelingResult
+      score: Double,
+      formatter: Option[Double => String]): LabelingResult
   }
 
   // a "loose" labeling is one where the labels are either the bounds of the data or outside
@@ -183,8 +225,9 @@ object Labeling {
         labelBounds: Bounds,
         numTicks: Int,
         spacing: Double,
-        score: Double): LabelingResult = {
-        LabelingResult(dataBounds, labelBounds, labelBounds, numTicks, spacing, score)
+        score: Double,
+        formatter: Option[Double => String]): LabelingResult = {
+        LabelingResult(dataBounds, labelBounds, labelBounds, numTicks, spacing, score, formatter)
       }
     }
 
@@ -213,12 +256,16 @@ object Labeling {
         labelBounds: Bounds,
         numTicks: Int,
         spacing: Double,
-        score: Double): LabelingResult =
-        LabelingResult(dataBounds, dataBounds, labelBounds, numTicks, spacing, score)
+        score: Double,
+        formatter: Option[Double => String]): LabelingResult =
+        LabelingResult(dataBounds, dataBounds, labelBounds, numTicks, spacing, score, formatter)
     }
   }
 
-  private def naiveFallback(bs: Bounds, nticks: Int): AxisDescriptor = new AxisDescriptor {
+  private def naiveFallback(
+    bs: Bounds,
+    nticks: Int,
+    formatter: Option[Double => String]): AxisDescriptor = new AxisDescriptor {
     val bounds: Bounds = bs
     val numTicks: Int = nticks
     val axisBounds: Bounds = bs
@@ -233,8 +280,8 @@ object Labeling {
         Seq.tabulate(numTicks)(i => bounds.min + i * spacing)
       }
     }
-
-    lazy val labels: Seq[String] = values.map(_.toString)
+    private lazy val format: Double => String = formatter.getOrElse(_.toString)
+    lazy val labels: Seq[String] = values.map(format)
   }
 
   private[numeric] case class LabelingResult(
@@ -243,13 +290,18 @@ object Labeling {
     labelBounds: Bounds, // The first and last label value.
     numTicks: Int,
     spacing: Double,
-    score: Double
+    score: Double,
+    formatter: Option[Double => String]
   ) extends AxisDescriptor {
 
     private lazy val nfrac = math.max(-math.floor(math.log10(spacing)), 0).toInt
 
+    private lazy val format: Double => String = formatter.getOrElse {
+      AxisDescriptor.createNumericLabel(_, nfrac)
+    }
+
     lazy val labels: Seq[String] = {
-      values.map(AxisDescriptor.createNumericLabel(_, nfrac))
+      values.map(format)
     }
 
     lazy val values: Seq[Double] = Seq.tabulate(numTicks)(i => spacing * i + labelBounds.min)
@@ -271,7 +323,7 @@ object Labeling {
   }
 
   @inline private def cost(coverage: Double, granularity: Double, simplicity: Double): Double =
-    (0.4 * coverage) + (0.2 * granularity) + (0.4 * simplicity)
+    (coverage + granularity + simplicity) / 3
 
   @inline private def granularity(k: Double, m: Double, allowedUpper: Double): Double =
     if (k > 0 && k < 2 * m)

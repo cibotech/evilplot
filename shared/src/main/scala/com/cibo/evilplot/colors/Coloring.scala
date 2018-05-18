@@ -130,7 +130,11 @@ trait ContinuousColoring extends Coloring[Double] {
         Bounds(
           dataToColor.reduceOption[Double](math.min).getOrElse(0.0),
           dataToColor.reduceOption[Double](math.max).getOrElse(0.0)))
-    Labeling.label(bounds, numTicks = Some(numDivisions), fixed = min.isDefined || max.isDefined)
+    Labeling.label(
+      bounds,
+      preferredTickCount = Some(numDivisions),
+      tickCountRange = Some(Seq(_)),
+      fixed = min.isDefined || max.isDefined)
   }
 }
 object ContinuousColoring {
