@@ -34,7 +34,7 @@ object Labeling {
   private val defaultNTicks = 5
   private val defaultTickCountRange: Int => Seq[Int] = (i: Int) => math.max(3, i / 2) to (2 * i)
 
-  val defaultNiceNums: Seq[Double] = Seq(1, 5, 2, 2.5, 3, 4, 1.5, 7, 6, 8, 9)
+  private val niceNums: Seq[Double] = Seq(1, 5, 2, 2.5, 3, 4, 1.5, 7, 6, 8, 9)
 
   /**
     * Implements a modified version of Wilkinson's labeling algorithm.
@@ -42,9 +42,6 @@ object Labeling {
     * or ''An Extension to Wilkinson's Algorithm for Tick Labels on Axes'' (J. Talbot, et al.)
     * @param bounds The bounds of the data.
     * @param preferredTickCount A preferred number of ticks to use.
-    * @param nicenums A list of intervals which are considered to be "nice" by humans,
-    *                 in the order from most preferred to least. We base our spacings
-    *                 based on the powers of ten of these numbers.
     * @param tickCountRange A function to create the range of acceptable tick counts. Labelings
     *                       with a tick count close to  `preferredTickCount` are favored,
     *                       however we may a choose a "nicer" labeling within this range.
@@ -54,31 +51,26 @@ object Labeling {
     *              supplied bounds. In general better labelings can be achieved if fixed is not set.
     * @return A [[com.cibo.evilplot.numeric.AxisDescriptor]] representing the optimal labeling given
     *         the constraints if it exists, a naive labeling if none can be found.
-    * @note Given the default nice number list and number of ticks search space,
-    *       this method should give a result. It is only when `numTicks` is constrained
-    *       to a single value and the `nicenums` list is shortened that there exists a risk
-    *       of no result being found.
     */
   def label(
     bounds: Bounds,
     preferredTickCount: Option[Int] = None,
-    nicenums: Seq[Double] = defaultNiceNums,
     tickCountRange: Option[Int => Seq[Int]] = None,
     formatter: Option[Double => String] = None,
     fixed: Boolean = false
   ): AxisDescriptor = {
-    validate(bounds, preferredTickCount, nicenums)
+    validate(bounds, preferredTickCount)
     val labelingType = if (fixed) LabelingType.StrictLabeling else LabelingType.LooseLabeling
     val ticksCenter = preferredTickCount.getOrElse(defaultNTicks)
     val ticksRange: Seq[Int] = tickCountRange.getOrElse(defaultTickCountRange)(ticksCenter)
 
     if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max)) {
-      labelEqualBounds(bounds, ticksCenter, ticksRange, nicenums, formatter, fixed)
+      labelEqualBounds(bounds, ticksCenter, ticksRange, formatter, fixed)
     } else {
       (if (ticksCenter <= 2) Some(naiveFallback(bounds, ticksCenter, formatter)) else None)
         .orElse(if (bounds.max.isNaN && bounds.min.isNaN) Some(naiveFallback(bounds, 2, formatter))
         else None)
-        .orElse(optimalLabeling(bounds, ticksCenter, ticksRange, nicenums, labelingType, formatter))
+        .orElse(optimalLabeling(bounds, ticksCenter, ticksRange, niceNums, labelingType, formatter))
         .getOrElse(naiveFallback(bounds, ticksCenter, formatter))
     }
   }
@@ -86,7 +78,6 @@ object Labeling {
   def forceTickCount(
     bounds: Bounds,
     tickCount: Int,
-    nicenums: Seq[Double] = defaultNiceNums,
     formatter: Option[Double => String] = None,
     fixed: Boolean = false
   ): AxisDescriptor =
@@ -101,7 +92,6 @@ object Labeling {
     bounds: Bounds,
     preferredTickCount: Int,
     ticksRange: Seq[Int],
-    nicenums: Seq[Double],
     formatter: Option[Double => String],
     fixed: Boolean): AxisDescriptor = {
     if (fixed)
@@ -112,15 +102,14 @@ object Labeling {
         bs,
         preferredTickCount,
         ticksRange,
-        nicenums,
+        niceNums,
         LabelingType.LooseLabeling,
         formatter)
         .getOrElse(naiveFallback(bs, preferredTickCount, formatter))
     }
   }
 
-  private def validate(bounds: Bounds, numTicks: Option[Int], nicenums: Seq[Double]): Unit = {
-    require(nicenums.nonEmpty, "The list of preferred intervals must not be empty.")
+  private def validate(bounds: Bounds, numTicks: Option[Int]): Unit = {
     require(
       bounds.max >= bounds.min || (bounds.max.isNaN && bounds.min.isNaN),
       "The maximum value must be greater than or equal to the minimum value.")
@@ -187,6 +176,7 @@ object Labeling {
                         tickCount,
                         lDelta,
                         score,
+                        extraPrecision(i, base),
                         formatter))
                 } else {
                   bestScoring
@@ -206,6 +196,7 @@ object Labeling {
       numTicks: Int,
       spacing: Double,
       score: Double,
+      precisionBump: Int,
       formatter: Option[Double => String]): LabelingResult
   }
 
@@ -226,8 +217,17 @@ object Labeling {
         numTicks: Int,
         spacing: Double,
         score: Double,
+        precisionBump: Int,
         formatter: Option[Double => String]): LabelingResult = {
-        LabelingResult(dataBounds, labelBounds, labelBounds, numTicks, spacing, score, formatter)
+        LabelingResult(
+          dataBounds,
+          labelBounds,
+          labelBounds,
+          numTicks,
+          spacing,
+          score,
+          precisionBump,
+          formatter)
       }
     }
 
@@ -257,8 +257,17 @@ object Labeling {
         numTicks: Int,
         spacing: Double,
         score: Double,
+        precisionBump: Int,
         formatter: Option[Double => String]): LabelingResult =
-        LabelingResult(dataBounds, dataBounds, labelBounds, numTicks, spacing, score, formatter)
+        LabelingResult(
+          dataBounds,
+          dataBounds,
+          labelBounds,
+          numTicks,
+          spacing,
+          score,
+          precisionBump,
+          formatter)
     }
   }
 
@@ -291,13 +300,12 @@ object Labeling {
     numTicks: Int,
     spacing: Double,
     score: Double,
+    precisionBump: Int,
     formatter: Option[Double => String]
   ) extends AxisDescriptor {
 
-    private lazy val nfrac = math.max(-math.floor(math.log10(spacing)), 0).toInt
-
     private lazy val format: Double => String = formatter.getOrElse {
-      AxisDescriptor.createNumericLabel(_, nfrac)
+      AxisDescriptor.createNumericLabel(_, precisionForBase(spacing) + precisionBump)
     }
 
     lazy val labels: Seq[String] = {
@@ -329,4 +337,15 @@ object Labeling {
     if (k > 0 && k < 2 * m)
       1 - math.abs(k - m) / m
     else 0
+
+  // Hack to get an extra digit if we base the labeling off of 2.5 or 1.5.
+  // But we still want 0 if we're using 25 or 15.
+  private def extraPrecision(index: Int, base: Double): Int =
+    if ((index == 3 || index == 6) && base <= 1) 1 else 0
+
+  // Assumes (rightfully so for its use) that all the numbers it is going
+  // to format are multiples of the spacing.
+  private def precisionForBase(spacing: Double): Int = {
+    if (spacing == 0 || spacing.isNaN) 0 else math.max(-math.floor(math.log10(spacing)), 0).toInt
+  }
 }

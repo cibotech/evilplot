@@ -32,7 +32,7 @@ package com.cibo.evilplot.numeric
 
 import com.cibo.evilplot.numeric.Labeling.LabelingResult
 import org.scalacheck.Gen
-import org.scalacheck.Prop.{forAll, forAllNoShrink}
+import org.scalacheck.Prop.forAllNoShrink
 import org.scalatest.prop.Checkers
 import org.scalatest.{FunSpec, Inside, Matchers, OptionValues}
 
@@ -52,6 +52,37 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
         case (text, value) =>
           text shouldBe value +- 0.0001
       }
+    }
+
+    it(
+      "should properly format intervals that need more precision than indicated by their power of 10") {
+      Labeling.forceTickCount(Bounds(0, 1.0), tickCount = 5, fixed = true).labels shouldBe Seq(
+        "0.00",
+        "0.25",
+        "0.50",
+        "0.75",
+        "1.00")
+
+    }
+
+    it("should base precision off the power of 10 when it's larger than 1") {
+      Labeling.forceTickCount(Bounds(0, 100), tickCount = 5, fixed = true).labels shouldBe Seq(
+        "0",
+        "25",
+        "50",
+        "75",
+        "100"
+      )
+
+      Labeling.forceTickCount(Bounds(0, 75), tickCount = 6, fixed = true).labels shouldBe Seq(
+        "0",
+        "15",
+        "30",
+        "45",
+        "60",
+        "75"
+      )
+
     }
 
     it("should pad the data range when min == max and bounds are not fixed") {
@@ -127,10 +158,6 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
       an[IllegalArgumentException] should be thrownBy Labeling.label(Bounds(1, 0))
     }
 
-    it("throws an IllegalArgumentException when given an empty nice number list") {
-      an[IllegalArgumentException] should be thrownBy Labeling.label(Bounds(0, 1), nicenums = Seq())
-    }
-
     it("should use a passed in formatting function") {
       val labeling = Labeling.forceTickCount(
         Bounds(0, 1.0),
@@ -158,7 +185,7 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
       check(forAllNoShrink(boundsGen, Gen.option(nticksGen)) {
         case (bounds, nticks) =>
           inside(Labeling.label(bounds, preferredTickCount = nticks, fixed = true)) {
-            case LabelingResult(_, axis, label, _, spacing, _, _) =>
+            case LabelingResult(_, axis, label, _, spacing, _, _, _) =>
               label.max + spacing >= axis.max
             case naive: AxisDescriptor =>
               (naive.axisBounds.max === naive.bounds.max +- math.ulp(1.0)) &&
