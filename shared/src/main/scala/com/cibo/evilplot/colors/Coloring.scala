@@ -188,4 +188,14 @@ object ContinuousColoring {
         )
       }
     }
+  /** Convenience coloring method when we know exactly what the values of the gradients are.
+    * @param colors the colors to use as interpolation points
+    * @param min min value
+    * @param max max override for the data
+    */
+  def gradient(colors: Seq[Color],
+               min: Double,
+               max: Double,
+               gradientMode: GradientMode
+              )(implicit theme: Theme) : Double => Color = gradient(colors, Some(min), Some(max), gradientMode)(Seq.empty)
 }

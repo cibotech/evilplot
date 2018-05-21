@@ -46,7 +46,7 @@ private[colors] object GradientUtils {
     if (numGradients == 0) (_: Double) => colors.head
     else {
       val singleGradientExtent = (max - min) / numGradients
-      val gradients: Seq[PartialFunction[Double, HSLA]] = Seq.tabulate(numGradients) { i =>
+      val gradients: Seq[PartialFunction[Double, Color]] = Seq.tabulate(numGradients) { i =>
         val lower = min + i * singleGradientExtent
         singleGradient(
           lower - 1e-5,
@@ -64,17 +64,23 @@ private[colors] object GradientUtils {
     startColor: Color,
     endColor: Color,
     mode: GradientMode
-  ): PartialFunction[Double, HSLA] = {
-    case d if d >= minValue && d <= maxValue =>
-      import mode._
-      val (r1, g1, b1, a1) = rgba(startColor)
-      val (r2, g2, b2, a2) = rgba(endColor)
-      val range = maxValue - minValue
-      val interpolationCoefficient = (d - minValue) / range
-      val r = interpolate(inverse(r1), inverse(r2), interpolationCoefficient)
-      val g = interpolate(inverse(g1), inverse(g2), interpolationCoefficient)
-      val b = interpolate(inverse(b1), inverse(b2), interpolationCoefficient)
-      val a = interpolate(a1, a2, interpolationCoefficient)
-      RGBA((255 * forward(r)).toInt, (255 * forward(g)).toInt, (255 * forward(b)).toInt, a)
+  ): PartialFunction[Double, Color] = {
+
+    {
+      case d if d > minValue && d < maxValue =>
+        import mode._
+        val (r1, g1, b1, a1) = rgba(startColor)
+        val (r2, g2, b2, a2) = rgba(endColor)
+        val range = maxValue - minValue
+        val interpolationCoefficient = (d - minValue) / range
+        val r = interpolate(inverse(r1), inverse(r2), interpolationCoefficient)
+        val g = interpolate(inverse(g1), inverse(g2), interpolationCoefficient)
+        val b = interpolate(inverse(b1), inverse(b2), interpolationCoefficient)
+        val a = interpolate(a1, a2, interpolationCoefficient)
+        RGBA((255 * forward(r)).toInt, (255 * forward(g)).toInt, (255 * forward(b)).toInt, a)
+      case d if d <= minValue => startColor
+      case d if d >= maxValue => endColor
+    }
   }
+
 }
