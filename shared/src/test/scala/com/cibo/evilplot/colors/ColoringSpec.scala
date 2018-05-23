@@ -57,6 +57,16 @@ class ColoringSpec extends FunSpec with Matchers {
       val coloring = gradient(data)
       data.foreach(d => noException shouldBe thrownBy(coloring(d)))
     }
+
+    it("should behave properly when asked to render past the edge") {
+      val gradient = ContinuousColoring.gradient(HTMLNamedColors.red, HTMLNamedColors.blue)
+      val coloring = gradient(Seq(1.0,5.0))
+      coloring(1.0) shouldBe HTMLNamedColors.red
+     // coloring(0.0) shouldBe HTMLNamedColors.red
+      coloring(5.0) shouldBe HTMLNamedColors.blue
+      coloring(6.0) shouldBe HTMLNamedColors.blue
+
+    }
   }
   describe("coloring from the theme") {
     import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultColors => AesColors}
