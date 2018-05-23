@@ -16,3 +16,6 @@ cache:
 
 script:
     - sbt ++$TRAVIS_SCALA_VERSION scalastyle test headerCheck test:headerCheck
+
+notifications:
+  email: false
