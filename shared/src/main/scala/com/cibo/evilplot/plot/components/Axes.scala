@@ -31,12 +31,7 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{
-  AxisDescriptor,
-  Bounds,
-  ContinuousAxisDescriptor,
-  DiscreteAxisDescriptor
-}
+import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{GridLineRenderer, TickRenderer}
@@ -58,9 +53,16 @@ object Axes {
   private sealed trait ContinuousAxis {
     final val discrete: Boolean = false
     val tickCount: Int
+    val tickCountRange: Option[Seq[Int]]
+    val labelFormatter: Option[Double => String] = None
     def bounds(plot: Plot): Bounds
     def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor =
-      ContinuousAxisDescriptor(bounds(plot), tickCount, fixed)
+      Labeling.label(
+        bounds(plot),
+        preferredTickCount = Some(tickCount),
+        tickCountRange = tickCountRange,
+        formatter = labelFormatter,
+        fixed = fixed)
   }
 
   private sealed trait DiscreteAxis {
@@ -124,7 +126,9 @@ object Axes {
 
   private case class ContinuousXAxisPlotComponent(
     tickCount: Int,
-    tickRenderer: TickRenderer
+    tickRenderer: TickRenderer,
+    override val labelFormatter: Option[Double => String],
+    tickCountRange: Option[Seq[Int]]
   ) extends XAxisPlotComponent
       with ContinuousAxis
 
@@ -136,7 +140,9 @@ object Axes {
 
   private case class ContinuousYAxisPlotComponent(
     tickCount: Int,
-    tickRenderer: TickRenderer
+    tickRenderer: TickRenderer,
+    override val labelFormatter: Option[Double => String],
+    tickCountRange: Option[Seq[Int]]
   ) extends YAxisPlotComponent
       with ContinuousAxis
 
@@ -192,13 +198,15 @@ object Axes {
 
   private case class ContinuousXGridComponent(
     tickCount: Int,
-    lineRenderer: GridLineRenderer
+    lineRenderer: GridLineRenderer,
+    tickCountRange: Option[Seq[Int]]
   ) extends XGridComponent
       with ContinuousAxis
 
   private case class ContinuousYGridComponent(
     tickCount: Int,
-    lineRenderer: GridLineRenderer
+    lineRenderer: GridLineRenderer,
+    tickCountRange: Option[Seq[Int]]
   ) extends YGridComponent
       with ContinuousAxis
 
@@ -208,10 +216,14 @@ object Axes {
     /** Add an X axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
+      * @param labelFormatter Custom function to format tick labels.
+      * @param tickCountRange Allow searching over axis labels with this many ticks.
       */
     def xAxis(
       tickCount: Option[Int] = None,
-      tickRenderer: Option[TickRenderer] = None
+      tickRenderer: Option[TickRenderer] = None,
+      labelFormatter: Option[Double => String] = None,
+      tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousXAxisPlotComponent(
         tickCount.getOrElse(theme.elements.xTickCount),
@@ -220,7 +232,9 @@ object Axes {
             length = theme.elements.tickLength,
             thickness = theme.elements.tickThickness,
             rotateText = theme.elements.continuousXAxisLabelOrientation
-          ))
+          )),
+        labelFormatter,
+        tickCountRange
       )
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
@@ -251,10 +265,14 @@ object Axes {
     /** Add a Y axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
+      * @param labelFormatter Custom function to format tick labels.
+      * @param tickCountRange Allow searching over axis labels with this many ticks.
       */
     def yAxis(
       tickCount: Option[Int] = None,
-      tickRenderer: Option[TickRenderer] = None
+      tickRenderer: Option[TickRenderer] = None,
+      labelFormatter: Option[Double => String] = None,
+      tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousYAxisPlotComponent(
         tickCount.getOrElse(theme.elements.yTickCount),
@@ -262,7 +280,9 @@ object Axes {
           TickRenderer.yAxisTickRenderer(
             length = theme.elements.tickLength,
             thickness = theme.elements.tickThickness
-          ))
+          )),
+        labelFormatter,
+        tickCountRange
       )
       component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
@@ -295,11 +315,13 @@ object Axes {
       */
     def xGrid(
       lineCount: Option[Int] = None,
-      lineRenderer: Option[GridLineRenderer] = None
+      lineRenderer: Option[GridLineRenderer] = None,
+      tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousXGridComponent(
         lineCount.getOrElse(theme.elements.xGridLineCount),
-        lineRenderer.getOrElse(GridLineRenderer.xGridLineRenderer())
+        lineRenderer.getOrElse(GridLineRenderer.xGridLineRenderer()),
+        tickCountRange
       )
       plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds) :+ component
     }
@@ -310,11 +332,13 @@ object Axes {
       */
     def yGrid(
       lineCount: Option[Int] = None,
-      lineRenderer: Option[GridLineRenderer] = None
+      lineRenderer: Option[GridLineRenderer] = None,
+      tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousYGridComponent(
         lineCount.getOrElse(theme.elements.yGridLineCount),
-        lineRenderer.getOrElse(GridLineRenderer.yGridLineRenderer())
+        lineRenderer.getOrElse(GridLineRenderer.yGridLineRenderer()),
+        tickCountRange
       )
       plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds) :+ component
     }

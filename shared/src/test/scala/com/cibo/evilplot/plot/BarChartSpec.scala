@@ -40,13 +40,13 @@ class BarChartSpec extends FunSpec with Matchers {
 
   describe("BarChart") {
     it("should have the right bounds without buffer") {
-      val plot = BarChart(Seq[Double](10, 20, 15), boundBuffer = Some(0))
+      val plot = BarChart(Seq[Double](10, 20, 15))
       plot.xbounds shouldBe Bounds(0, 3)
       plot.ybounds shouldBe Bounds(10, 20)
     }
 
     it("should have the right bounds with buffer") {
-      val plot = BarChart(Seq[Double](10, 20, 15))
+      val plot = BarChart(Seq[Double](10, 20, 15), boundBuffer = Some(.1))
       plot.xbounds shouldBe Bounds(0, 3)
       plot.ybounds.min should be < 10.0
       plot.ybounds.max should be > 20.0
