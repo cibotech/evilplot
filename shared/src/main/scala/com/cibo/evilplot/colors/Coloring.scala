@@ -193,7 +193,7 @@ object ContinuousColoring {
     * @param min min value
     * @param max max override for the data
     */
-  def gradient(colors: Seq[Color],
+  def gradientColoringFunction(colors: Seq[Color],
                min: Double,
                max: Double,
                gradientMode: GradientMode
