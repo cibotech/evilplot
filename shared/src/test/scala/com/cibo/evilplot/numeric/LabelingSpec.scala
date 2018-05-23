@@ -144,8 +144,8 @@ class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues
 
     it("should produce a labeling when passed NaN bounds") {
       val labeling = Labeling.label(Bounds(Double.NaN, Double.NaN))
-      Double.box(labeling.axisBounds.min) shouldBe 'isNaN
-      Double.box(labeling.axisBounds.max) shouldBe 'isNaN
+      labeling.axisBounds.min.isNaN shouldBe true
+      labeling.axisBounds.max.isNaN shouldBe true
       noException shouldBe thrownBy(labeling.labels)
     }
 

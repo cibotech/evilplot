@@ -53,7 +53,7 @@ object Axes {
   private sealed trait ContinuousAxis {
     final val discrete: Boolean = false
     val tickCount: Int
-    val tickCountRange: Option[Int => Seq[Int]]
+    val tickCountRange: Option[Seq[Int]]
     val labelFormatter: Option[Double => String] = None
     def bounds(plot: Plot): Bounds
     def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor =
@@ -128,7 +128,7 @@ object Axes {
     tickCount: Int,
     tickRenderer: TickRenderer,
     override val labelFormatter: Option[Double => String],
-    tickCountRange: Option[Int => Seq[Int]]
+    tickCountRange: Option[Seq[Int]]
   ) extends XAxisPlotComponent
       with ContinuousAxis
 
@@ -142,7 +142,7 @@ object Axes {
     tickCount: Int,
     tickRenderer: TickRenderer,
     override val labelFormatter: Option[Double => String],
-    tickCountRange: Option[Int => Seq[Int]]
+    tickCountRange: Option[Seq[Int]]
   ) extends YAxisPlotComponent
       with ContinuousAxis
 
@@ -199,14 +199,14 @@ object Axes {
   private case class ContinuousXGridComponent(
     tickCount: Int,
     lineRenderer: GridLineRenderer,
-    tickCountRange: Option[Int => Seq[Int]]
+    tickCountRange: Option[Seq[Int]]
   ) extends XGridComponent
       with ContinuousAxis
 
   private case class ContinuousYGridComponent(
     tickCount: Int,
     lineRenderer: GridLineRenderer,
-    tickCountRange: Option[Int => Seq[Int]]
+    tickCountRange: Option[Seq[Int]]
   ) extends YGridComponent
       with ContinuousAxis
 
@@ -223,7 +223,7 @@ object Axes {
       tickCount: Option[Int] = None,
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
-      tickCountRange: Option[Int => Seq[Int]] = None
+      tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousXAxisPlotComponent(
         tickCount.getOrElse(theme.elements.xTickCount),
@@ -272,7 +272,7 @@ object Axes {
       tickCount: Option[Int] = None,
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
-      tickCountRange: Option[Int => Seq[Int]] = None
+      tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousYAxisPlotComponent(
         tickCount.getOrElse(theme.elements.yTickCount),
@@ -316,7 +316,7 @@ object Axes {
     def xGrid(
       lineCount: Option[Int] = None,
       lineRenderer: Option[GridLineRenderer] = None,
-      tickCountRange: Option[Int => Seq[Int]] = None
+      tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousXGridComponent(
         lineCount.getOrElse(theme.elements.xGridLineCount),
@@ -333,7 +333,7 @@ object Axes {
     def yGrid(
       lineCount: Option[Int] = None,
       lineRenderer: Option[GridLineRenderer] = None,
-      tickCountRange: Option[Int => Seq[Int]] = None
+      tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousYGridComponent(
         lineCount.getOrElse(theme.elements.yGridLineCount),

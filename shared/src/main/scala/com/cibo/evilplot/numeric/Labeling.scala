@@ -32,7 +32,7 @@ package com.cibo.evilplot.numeric
 
 object Labeling {
   private val defaultNTicks = 5
-  private val defaultTickCountRange: Int => Seq[Int] = (i: Int) => math.max(3, i / 2) to (2 * i)
+  private def defaultTickCountRange(center: Int): Seq[Int] = math.max(3, center / 2) to (2 * center)
 
   private val niceNums: Seq[Double] = Seq(1, 5, 2, 2.5, 3, 4, 1.5, 7, 6, 8, 9)
 
@@ -55,14 +55,14 @@ object Labeling {
   def label(
     bounds: Bounds,
     preferredTickCount: Option[Int] = None,
-    tickCountRange: Option[Int => Seq[Int]] = None,
+    tickCountRange: Option[Seq[Int]] = None,
     formatter: Option[Double => String] = None,
     fixed: Boolean = false
   ): AxisDescriptor = {
     validate(bounds, preferredTickCount)
     val labelingType = if (fixed) LabelingType.StrictLabeling else LabelingType.LooseLabeling
     val ticksCenter = preferredTickCount.getOrElse(defaultNTicks)
-    val ticksRange: Seq[Int] = tickCountRange.getOrElse(defaultTickCountRange)(ticksCenter)
+    val ticksRange: Seq[Int] = tickCountRange.getOrElse(defaultTickCountRange(ticksCenter))
 
     if (AxisDescriptor.arePracticallyEqual(bounds.min, bounds.max)) {
       labelEqualBounds(bounds, ticksCenter, ticksRange, formatter, fixed)
@@ -84,7 +84,7 @@ object Labeling {
     label(
       bounds,
       preferredTickCount = Some(tickCount),
-      tickCountRange = Some(Seq(_)),
+      tickCountRange = Some(Seq(tickCount)),
       formatter = formatter,
       fixed = fixed)
 

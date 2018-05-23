@@ -133,7 +133,7 @@ trait ContinuousColoring extends Coloring[Double] {
     Labeling.label(
       bounds,
       preferredTickCount = Some(numDivisions),
-      tickCountRange = Some(Seq(_)),
+      tickCountRange = Some(Seq(numDivisions)),
       fixed = min.isDefined || max.isDefined)
   }
 }
