@@ -31,7 +31,7 @@ see the javadoc for all the built-in components
 ### Building a Custom Component
 
 You can build your own components by extending `plot.compoments.PlotComponent`.
-They are added to a plot using the plot's `appendComponent` method.
+They are added to a plot using the plot's `component` method.
 
 Every `PlotComponent` instance has a `Position` indicating how it should be rendered relative to the plot.
 <dl>
@@ -98,7 +98,7 @@ LinePlot(Seq(Point(1, 1), Point(3, 3)))
   .xGrid().yGrid()
   .hline(2d)
   .title("An example plot")
-  .appendComponent(RightSideMarker("marker at 2", 2))
+  .component(RightSideMarker("marker at 2", 2))
   .render(plotAreaSize)
 ```
 </div>
