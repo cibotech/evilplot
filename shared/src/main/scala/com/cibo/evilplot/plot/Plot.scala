@@ -66,6 +66,8 @@ final case class Plot(
   private[plot] def +:(component: FacetedPlotComponent): Plot =
     copy(components = component +: components)
 
+  def component(component: FacetedPlotComponent): Plot = this :+ component
+
   /** Create a copy of this plot with updated x bounds
     * @param newBounds the new bounds.
     */

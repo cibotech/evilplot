@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Plot Catalog
-position: 8
+position: 9
 ---
 # Plot Catalog
 
