@@ -37,6 +37,7 @@ import com.cibo.evilplot.plot
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.components.{GenericDrawable, Position}
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PointRenderer}
 
 import scala.util.Random
@@ -348,11 +349,13 @@ object DemoPlots {
       FunctionPlot.series(x => x * x, "y = x\u00B2", one, xbounds = Some(Bounds(-1, 1))),
       FunctionPlot.series(x => math.pow(x, 3), "y = x\u00B3", two, xbounds = Some(Bounds(-1, 1))),
       FunctionPlot.series(x => math.pow(x, 4), "y = x\u2074", three, xbounds = Some(Bounds(-1, 1)))
-    ).title("A bunch of polynomials.")
+    )
       .xLabel("x")
       .yLabel("y")
       .overlayLegend()
       .standard()
+      .component(GenericDrawable(Position.Top, _ => Rect(25), Extent(25,25), 1, 0))
+      .title("A bunch of polynomials.")
       .render(plotAreaSize)
     // scalastyle:on
   }
