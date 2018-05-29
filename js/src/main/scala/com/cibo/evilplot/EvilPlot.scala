@@ -73,6 +73,7 @@ object EvilPlot {
   @JSExport
   def renderExample(canvasId: String): Unit = {
     addExample(DemoPlots.functionPlot)
+    addExample(DemoPlots.markerPlot)
     addExample(DemoPlots.marginalHistogram)
     addExample(DemoPlots.scatterPlot)
     addExample(DemoPlots.barChart)
