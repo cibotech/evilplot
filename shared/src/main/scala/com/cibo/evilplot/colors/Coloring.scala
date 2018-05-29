@@ -40,6 +40,32 @@ sealed trait Coloring[A] {
   def apply(dataToColor: Seq[A])(implicit theme: Theme): A => Color
 }
 
+case class LegendEntry(color: Color, desc: String)
+case class LegendData(style: LegendStyle, entries: Seq[LegendEntry])
+
+object LegendContextBuilders{
+
+  def fromCategorical(data: LegendData, legendGlyph: Double => Drawable)(implicit theme: Theme): LegendContext = {
+    val elements = data.entries.map{ x =>
+      legendGlyph(theme.elements.pointSize) filled x.color
+    }
+    val labels = renderLabels(data)
+    LegendContext(elements, labels, LegendStyle.Categorical)
+  }
+
+  def fromGradient(data: LegendData)(implicit theme: Theme): LegendContext = {
+    val elements = data.entries.map{ x =>
+      Rect(theme.fonts.legendLabelSize, theme.fonts.legendLabelSize) filled x.color
+    }
+    val labels = renderLabels(data)
+    LegendContext(elements, labels, LegendStyle.Gradient)
+  }
+
+  private def renderLabels(data: LegendData)(implicit theme: Theme): Seq[Drawable] = data.entries.map(x => Style(
+    Text(x.desc, theme.fonts.legendLabelSize, theme.fonts.fontFace),
+    theme.colors.legendLabel))
+}
+
 trait CategoricalColoring[A] extends Coloring[A] {
   protected def distinctElemsAndColorFunction(dataToColor: Seq[A])(
     implicit theme: Theme): (Seq[A], A => Color)
@@ -47,23 +73,22 @@ trait CategoricalColoring[A] extends Coloring[A] {
     distinctElemsAndColorFunction(dataToColor)._2
   }
 
+  protected def buildLegendData(elems: Seq[A], coloring: A => Color) = LegendData(
+    LegendStyle.Categorical,
+    elems.map{ x => LegendEntry(coloring(x), x.toString) }
+  )
+
   def legendContext(dataToColor: Seq[A])(implicit theme: Theme): LegendContext =
     legendContext(dataToColor, legendGlyph = (d: Double) => Disc(d))
 
   def legendContext(dataToColor: Seq[A], legendGlyph: Double => Drawable)(
     implicit theme: Theme): LegendContext = {
     val (distinct, coloring) = distinctElemsAndColorFunction(dataToColor)
-    LegendContext(
-      elements = distinct.map(v => legendGlyph(theme.elements.pointSize) filled coloring(v)),
-      labels = distinct.map(
-        a =>
-          Style(
-            Text(a.toString, theme.fonts.legendLabelSize, theme.fonts.fontFace),
-            theme.colors.legendLabel)),
-      defaultStyle = LegendStyle.Categorical
-    )
+    val data = buildLegendData(distinct,coloring)
+    LegendContextBuilders.fromCategorical(data, legendGlyph)
   }
 }
+
 object CategoricalColoring {
 
   /**
@@ -197,20 +222,19 @@ object ContinuousColoring {
           gradientMode)
       }
 
-      def legendContext(coloringDimension: Seq[Double])(implicit theme: Theme): LegendContext = {
+      private def axisDescriptorToLegendData(d: AxisDescriptor, coloring: Double => Color) =
+        LegendData(LegendStyle.Gradient, d.values.zip(d.labels).map{ case (value, label) =>
+          LegendEntry(coloring(value), label)
+        })
+
+      protected def buildLegendData(coloringDimension: Seq[Double])(implicit theme: Theme) = {
         val descriptor = getDescriptor(min, max, coloringDimension, 5)
         val coloring = apply(coloringDimension)
-        LegendContext(
-          elements = descriptor.values.map(v =>
-            Rect(theme.fonts.legendLabelSize, theme.fonts.legendLabelSize) filled coloring(v)),
-          labels = descriptor.labels.map(
-            l =>
-              Style(
-                Text(l, theme.fonts.legendLabelSize, theme.fonts.fontFace),
-                theme.colors.legendLabel)),
-          defaultStyle = LegendStyle.Gradient
-        )
+        axisDescriptorToLegendData(descriptor, coloring)
       }
+
+      def legendContext(coloringDimension: Seq[Double])(implicit theme: Theme): LegendContext =
+        LegendContextBuilders.fromGradient(buildLegendData(coloringDimension))
     }
 
   /** Convenience coloring method when we know exactly what the values of the gradients are.
