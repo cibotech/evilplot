@@ -344,7 +344,6 @@ object DemoPlots {
 
   lazy val functionPlot: Drawable = {
     val Seq(one, two, three) = theme.colors.stream.take(3)
-    // scalastyle:off
     Overlay(
       FunctionPlot.series(x => x * x, "y = x\u00B2", one, xbounds = Some(Bounds(-1, 1))),
       FunctionPlot.series(x => math.pow(x, 3), "y = x\u00B3", two, xbounds = Some(Bounds(-1, 1))),
@@ -355,7 +354,6 @@ object DemoPlots {
       .standard()
       .title("A bunch of polynomials.")
       .render(plotAreaSize)
-    // scalastyle:on
   }
 
   lazy val markerPlot: Drawable = {
@@ -389,7 +387,6 @@ object DemoPlots {
           0.7))
       .title("A line graph with markers")
       .render(plotAreaSize)
-    // scalastyle:on
   }
 
   def gaussianKernel(u: Double): Double = {

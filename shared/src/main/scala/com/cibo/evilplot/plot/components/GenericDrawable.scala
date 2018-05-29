@@ -4,7 +4,7 @@ import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
 
-case class GenericDrawable(
+final case class GenericDrawable(
   position: Position,
   f: (Extent => Drawable),
   size: Extent,
@@ -27,7 +27,6 @@ case class GenericDrawable(
         val yoffset = plot.ytransform(plot, extent)(y) - (drawable.extent.height / 2)
         val xoffset = plot.xtransform(plot, extent)(x) - (drawable.extent.width / 2)
         drawable.translate(x = xoffset, y = yoffset)
-      case _ => throw new IllegalArgumentException("`position` must be one of Top, Bottom, Left, or Right")
     }
   }
 }

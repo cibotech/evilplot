@@ -3,14 +3,14 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.demo.DemoPlots.{plotAreaSize, theme}
 import com.cibo.evilplot.geometry.{Extent, Rect, Rotate, Style, Text, Wedge}
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plot.components.{GenericDrawable, Position}
+import com.cibo.evilplot.plot.components.{Marker, Position}
 import org.scalatest.{FunSpec, Matchers}
 
 class MarkerPlotSpec extends FunSpec with Matchers {
 
   describe("Marker Plot") {
     it("overlay marker displays correctly") {
-      val marker = GenericDrawable(Position.Overlay, _ => Rect(25), Extent(25, 25), 0, 0)
+      val marker = Marker(Position.Overlay, _ => Rect(25), Extent(25, 25), 0, 0)
       val data = Seq(Point(-1, 10), Point(20, -5))
       val plot = ScatterPlot(data, boundBuffer = Some(0.1)).component(marker)
 
