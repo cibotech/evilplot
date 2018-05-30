@@ -4,12 +4,12 @@ import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
 
-final case class GenericDrawable(
+final case class Marker(
   position: Position,
   f: (Extent => Drawable),
   size: Extent,
   x: Double = 0,
-  y: Double = 0,
+  y: Double = 0
 ) extends PlotComponent {
 
   override def size(plot: Plot): Extent = size
