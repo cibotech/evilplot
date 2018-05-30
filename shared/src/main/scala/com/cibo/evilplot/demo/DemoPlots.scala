@@ -37,7 +37,7 @@ import com.cibo.evilplot.plot
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.components.{GenericDrawable, Position}
+import com.cibo.evilplot.plot.components.{Marker, Position}
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PointRenderer}
 
 import scala.util.Random
@@ -364,27 +364,18 @@ object DemoPlots {
       .yLabel("y")
       .overlayLegend()
       .standard()
+      .component(Marker(Position.Overlay, _ => Style(Rect(25), three), Extent(25, 25), 0, 0))
       .component(
-        GenericDrawable(Position.Overlay, _ => Style(Rect(25), three), Extent(25, 25), 0, 0))
-      .component(
-        GenericDrawable(
+        Marker(
           Position.Overlay,
           _ => Style(Text(" Square marker at the center", 20), three),
           Extent(25, 25),
           0,
           -0.1))
       .component(
-        GenericDrawable(
-          Position.Top,
-          _ => Style(Rotate(Wedge(40, 25), 250), two),
-          Extent(25, 25),
-          0.7))
+        Marker(Position.Top, _ => Style(Rotate(Wedge(40, 25), 250), two), Extent(25, 25), 0.7))
       .component(
-        GenericDrawable(
-          Position.Top,
-          _ => Style(Text(" Up here is a wedge", 20), two),
-          Extent(25, 25),
-          0.7))
+        Marker(Position.Top, _ => Style(Text(" Up here is a wedge", 20), two), Extent(25, 25), 0.7))
       .title("A line graph with markers")
       .render(plotAreaSize)
   }
