@@ -88,23 +88,23 @@ BarChart
 <div class="col-md-6" markdown="1">
 
 ```scala
- val data = Seq[Seq[Double]](
-    Seq(1, 2, 3),
-    Seq(4, 5, 6),
-    Seq(3, 4, 1),
-    Seq(2, 3, 4)
+val data = Seq[Seq[Double]](
+  Seq(1, 2, 3),
+  Seq(4, 5, 6),
+  Seq(3, 4, 1),
+  Seq(2, 3, 4)
+)
+BarChart
+  .stacked(
+    data,
+    labels = Seq("one", "two", "three")
   )
-  BarChart
-    .clustered(
-      data,
-      labels = Seq("one", "two", "three")
-    )
-    .title("Clustered Bar Chart Demo")
-    .xAxis(Seq("a", "b", "c", "d"))
-    .yAxis()
-    .frame()
-    .bottomLegend()
-    .render()
+  .title("Stacked Bar Chart Demo")
+  .xAxis(Seq("a", "b", "c", "d"))
+  .yAxis()
+  .frame()
+  .bottomLegend()
+  .render()
 ```
 </div>
 <div class="col-md-6">
@@ -116,23 +116,25 @@ BarChart
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
- val data = Seq[Seq[Double]](
-    Seq(1, 2, 3),
-    Seq(4, 5, 6),
-    Seq(3, 4, 1),
-    Seq(2, 3, 4)
+val data = Seq[Seq[Seq[Double]]](
+  Seq(Seq(1, 2, 3), Seq(4, 5, 6)),
+  Seq(Seq(3, 4, 1), Seq(2, 3, 4))
+)
+BarChart
+  .clusteredStacked(
+    data,
+    labels = Seq("one", "two", "three")
   )
-  BarChart
-    .clustered(
-      data,
-      labels = Seq("one", "two", "three")
-    )
-    .title("Clustered Bar Chart Demo")
-    .xAxis(Seq("a", "b", "c", "d"))
-    .yAxis()
-    .frame()
-    .bottomLegend()
-    .render()
+  .title("Clustered Stacked Bar Chart Demo")
+  .xAxis(Seq("Category 1", "Category 2"))
+  .yAxis()
+  .xGrid()
+  .yGrid()
+  .xLabel("Category")
+  .yLabel("Level")
+  .frame()
+  .rightLegend()
+  .render()
 ```
 </div>
 <div class="col-md-6">
@@ -169,23 +171,10 @@ Overlay(
 <div class="col-md-6" markdown="1">
 
 ```scala
- val data = Seq[Seq[Double]](
-    Seq(1, 2, 3),
-    Seq(4, 5, 6),
-    Seq(3, 4, 1),
-    Seq(2, 3, 4)
-  )
-  BarChart
-    .clustered(
-      data,
-      labels = Seq("one", "two", "three")
-    )
-    .title("Clustered Bar Chart Demo")
-    .xAxis(Seq("a", "b", "c", "d"))
-    .yAxis()
-    .frame()
-    .bottomLegend()
-    .render()
+val data = Seq.fill(10)(Seq.fill(Random.nextInt(30))(Random.nextDouble()))
+BoxPlot(data)
+  .standard(xLabels = (1 to 10).map(_.toString))
+  .render()
 ```
 </div>
 <div class="col-md-6">
@@ -197,25 +186,25 @@ Overlay(
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
+import com.cibo.evilplot.numeric._
+import com.cibo.evilplot.plot._
+import com.cibo.evilplot.plot.renderers.PointRenderer
+
 val points = Seq.fill(150) {
   Point(Random.nextDouble(), Random.nextDouble())
 } :+ Point(0.0, 0.0)
 val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
-val pointsWithYears = years.zip(points).groupBy(_._1)
-  .mapValues(_.map(_._2)).toSeq.sortBy(_._1)
-
 ScatterPlot(
   points,
   pointRenderer = Some(PointRenderer.depthColor(years, None, None))
 )
-  .title("Actual vs. Expected")(serifTheme)
   .frame()
   .xGrid()
   .yGrid()
   .xAxis()
   .yAxis()
-  .xLabel("Expected")(serifTheme)
-  .yLabel("Actual")(serifTheme)
+  .xLabel("x")
+  .yLabel("y")
   .trend(1, 0)
   .rightLegend()
   .render()
