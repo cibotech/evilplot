@@ -37,6 +37,7 @@ import com.cibo.evilplot.plot
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.components.{Marker, Position}
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PointRenderer}
 
 import scala.util.Random
@@ -343,18 +344,40 @@ object DemoPlots {
 
   lazy val functionPlot: Drawable = {
     val Seq(one, two, three) = theme.colors.stream.take(3)
-    // scalastyle:off
     Overlay(
       FunctionPlot.series(x => x * x, "y = x\u00B2", one, xbounds = Some(Bounds(-1, 1))),
       FunctionPlot.series(x => math.pow(x, 3), "y = x\u00B3", two, xbounds = Some(Bounds(-1, 1))),
       FunctionPlot.series(x => math.pow(x, 4), "y = x\u2074", three, xbounds = Some(Bounds(-1, 1)))
-    ).title("A bunch of polynomials.")
+    ).xLabel("x")
+      .yLabel("y")
+      .overlayLegend()
+      .standard()
+      .title("A bunch of polynomials.")
+      .render(plotAreaSize)
+  }
+
+  lazy val markerPlot: Drawable = {
+    val Seq(one, two, three) = theme.colors.stream.take(3)
+    FunctionPlot
+      .series(x => x, "y = x", one, xbounds = Some(Bounds(-1, 1)))
       .xLabel("x")
       .yLabel("y")
       .overlayLegend()
       .standard()
+      .component(Marker(Position.Overlay, _ => Style(Rect(25), three), Extent(25, 25), 0, 0))
+      .component(
+        Marker(
+          Position.Overlay,
+          _ => Style(Text(" Square marker at the center", 20), three),
+          Extent(25, 25),
+          0,
+          -0.1))
+      .component(
+        Marker(Position.Top, _ => Style(Rotate(Wedge(40, 25), 250), two), Extent(25, 25), 0.7))
+      .component(
+        Marker(Position.Top, _ => Style(Text(" Up here is a wedge", 20), two), Extent(25, 25), 0.7))
+      .title("A line graph with markers")
       .render(plotAreaSize)
-    // scalastyle:on
   }
 
   def gaussianKernel(u: Double): Double = {

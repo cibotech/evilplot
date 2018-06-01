@@ -22,6 +22,7 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
     DemoPlots.barChart -> "bar",
     DemoPlots.scatterPlot -> "scatter",
     DemoPlots.functionPlot -> "functionPlot",
+    DemoPlots.markerPlot -> "markerPlot",
     DemoPlots.boxPlot -> "boxPlot",
     DemoPlots.facetedPlot -> "facetedPlot"
   )
