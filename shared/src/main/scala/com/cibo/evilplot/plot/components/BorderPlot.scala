@@ -59,8 +59,9 @@ case class BorderPlot(
         val borderExtent = Extent(extent.height, borderSize)
         border
           .xbounds(plot.ybounds)
-          .copy(xtransform = plot.ytransform)
+          .copy(xtransform = plot.xtransform)
           .render(borderExtent)
+          .resize(borderExtent)
           .rotated(270)
       case Position.Right =>
         val borderExtent = Extent(extent.height, borderSize)
@@ -68,6 +69,7 @@ case class BorderPlot(
           .xbounds(plot.ybounds)
           .copy(xtransform = plot.xtransform)
           .render(borderExtent)
+          .resize(borderExtent)
           .rotated(90)
           .flipY
       case _ =>
