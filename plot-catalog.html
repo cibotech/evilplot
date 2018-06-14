@@ -85,23 +85,23 @@
 <div class="row">
 <div class="col-md-6">
 
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]](</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]](</span>
+  <span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span>
+  <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">),</span>
+  <span class="nc">Seq</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span>
+  <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
+<span class="o">)</span>
+<span class="nc">BarChart</span>
+  <span class="o">.</span><span class="n">stacked</span><span class="o">(</span>
+    <span class="n">data</span><span class="o">,</span>
+    <span class="n">labels</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span><span class="o">,</span> <span class="s">"two"</span><span class="o">,</span> <span class="s">"three"</span><span class="o">)</span>
   <span class="o">)</span>
-  <span class="nc">BarChart</span>
-    <span class="o">.</span><span class="n">clustered</span><span class="o">(</span>
-      <span class="n">data</span><span class="o">,</span>
-      <span class="n">labels</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span><span class="o">,</span> <span class="s">"two"</span><span class="o">,</span> <span class="s">"three"</span><span class="o">)</span>
-    <span class="o">)</span>
-    <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"Clustered Bar Chart Demo"</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">xAxis</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">,</span> <span class="s">"d"</span><span class="o">))</span>
-    <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">bottomLegend</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">render</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"Stacked Bar Chart Demo"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">xAxis</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">,</span> <span class="s">"d"</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">bottomLegend</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
   </div>
 <div class="col-md-6">
@@ -112,23 +112,25 @@
 <h2 id="clustered-stacked-bar-chart">Clustered Stacked Bar Chart</h2>
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]](</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]]](</span>
+  <span class="nc">Seq</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span> <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">)),</span>
+  <span class="nc">Seq</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span> <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">))</span>
+<span class="o">)</span>
+<span class="nc">BarChart</span>
+  <span class="o">.</span><span class="n">clusteredStacked</span><span class="o">(</span>
+    <span class="n">data</span><span class="o">,</span>
+    <span class="n">labels</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span><span class="o">,</span> <span class="s">"two"</span><span class="o">,</span> <span class="s">"three"</span><span class="o">)</span>
   <span class="o">)</span>
-  <span class="nc">BarChart</span>
-    <span class="o">.</span><span class="n">clustered</span><span class="o">(</span>
-      <span class="n">data</span><span class="o">,</span>
-      <span class="n">labels</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span><span class="o">,</span> <span class="s">"two"</span><span class="o">,</span> <span class="s">"three"</span><span class="o">)</span>
-    <span class="o">)</span>
-    <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"Clustered Bar Chart Demo"</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">xAxis</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">,</span> <span class="s">"d"</span><span class="o">))</span>
-    <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">bottomLegend</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">render</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"Clustered Stacked Bar Chart Demo"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">xAxis</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"Category 1"</span><span class="o">,</span> <span class="s">"Category 2"</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">xGrid</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">yGrid</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"Category"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"Level"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">rightLegend</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
   </div>
 <div class="col-md-6">
@@ -163,23 +165,10 @@
 <div class="row">
 <div class="col-md-6">
 
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]](</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
-  <span class="o">)</span>
-  <span class="nc">BarChart</span>
-    <span class="o">.</span><span class="n">clustered</span><span class="o">(</span>
-      <span class="n">data</span><span class="o">,</span>
-      <span class="n">labels</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span><span class="o">,</span> <span class="s">"two"</span><span class="o">,</span> <span class="s">"three"</span><span class="o">)</span>
-    <span class="o">)</span>
-    <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"Clustered Bar Chart Demo"</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">xAxis</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">,</span> <span class="s">"d"</span><span class="o">))</span>
-    <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">bottomLegend</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">render</span><span class="o">()</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="mi">10</span><span class="o">)(</span><span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextInt</span><span class="o">(</span><span class="mi">30</span><span class="o">))(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">()))</span>
+<span class="nc">BoxPlot</span><span class="o">(</span><span class="n">data</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">standard</span><span class="o">(</span><span class="n">xLabels</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">toString</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
   </div>
 <div class="col-md-6">
@@ -190,25 +179,25 @@
 <h2 id="scatter-plot">Scatter Plot</h2>
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">points</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="mi">150</span><span class="o">)</span> <span class="o">{</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.PointRenderer</span>
+
+<span class="k">val</span> <span class="n">points</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="mi">150</span><span class="o">)</span> <span class="o">{</span>
   <span class="nc">Point</span><span class="o">(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">(),</span> <span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">())</span>
 <span class="o">}</span> <span class="o">:+</span> <span class="nc">Point</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="mf">0.0</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">years</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="mi">150</span><span class="o">)(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">())</span> <span class="o">:+</span> <span class="mf">1.0</span>
-<span class="k">val</span> <span class="n">pointsWithYears</span> <span class="k">=</span> <span class="n">years</span><span class="o">.</span><span class="n">zip</span><span class="o">(</span><span class="n">points</span><span class="o">).</span><span class="n">groupBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_1</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">mapValues</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_2</span><span class="o">)).</span><span class="n">toSeq</span><span class="o">.</span><span class="n">sortBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_1</span><span class="o">)</span>
-
 <span class="nc">ScatterPlot</span><span class="o">(</span>
   <span class="n">points</span><span class="o">,</span>
   <span class="n">pointRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">PointRenderer</span><span class="o">.</span><span class="n">depthColor</span><span class="o">(</span><span class="n">years</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="nc">None</span><span class="o">))</span>
 <span class="o">)</span>
-  <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"Actual vs. Expected"</span><span class="o">)(</span><span class="n">serifTheme</span><span class="o">)</span>
   <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
   <span class="o">.</span><span class="n">xGrid</span><span class="o">()</span>
   <span class="o">.</span><span class="n">yGrid</span><span class="o">()</span>
   <span class="o">.</span><span class="n">xAxis</span><span class="o">()</span>
   <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"Expected"</span><span class="o">)(</span><span class="n">serifTheme</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"Actual"</span><span class="o">)(</span><span class="n">serifTheme</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"x"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"y"</span><span class="o">)</span>
   <span class="o">.</span><span class="n">trend</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">)</span>
   <span class="o">.</span><span class="n">rightLegend</span><span class="o">()</span>
   <span class="o">.</span><span class="n">render</span><span class="o">()</span>
