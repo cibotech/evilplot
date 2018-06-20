@@ -6,7 +6,7 @@ crossScalaVersions in ThisBuild := Settings.versions.crossScalaVersions
 scalaVersion in ThisBuild := crossScalaVersions.value.head
 scalacOptions in ThisBuild ++= Settings.scalacOptions
 
-lazy val root = project
+lazy val `evilplot-root` = project
   .in(file("."))
   .aggregate(evilplotJVM, evilplotJS, assetJVM, evilplotRunner)
   .settings(
