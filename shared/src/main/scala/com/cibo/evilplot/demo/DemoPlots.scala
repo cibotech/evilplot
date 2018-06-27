@@ -111,6 +111,23 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
+  lazy val multiOverlayHistogram: Drawable = {
+    import scala.util.Random
+    def data(offset: Double): Seq[Double] = Seq.fill(200)(offset + Random.nextDouble())
+    Overlay
+      .fromSeq((0 to 3).zip(theme.colors.stream).collect {
+        case (offset, c: HSLA) =>
+          val color = c.copy(opacity = 0.3)
+          Histogram(
+            data(offset),
+            bins = 10,
+            barRenderer = Some(BarRenderer.named(color = Some(color), name = Some(offset.toString)))
+          )
+      })
+      .rightLegend()
+      .render()
+  }
+
   lazy val scatterPlot: Drawable = {
     val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
     val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
