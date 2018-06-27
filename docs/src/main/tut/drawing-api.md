@@ -106,7 +106,7 @@ absolute coordinates.
 
 ### Styling Primitives
 
-Lastly, styling primitives allow us to modify the appearance of scenes.
+Styling primitives allow us to modify the appearance of scenes.
 
 + `Style` colors the inside of a `Drawable`
 + `StrokeStyle` colors the outline of a `Drawable`
@@ -123,11 +123,11 @@ circle, you might write:
 ```scala
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.colors._
-val rect = Style(Rect(400, 400), RGB(83, 87, 79))
+val rect = Style(Rect(40, 40), RGB(83, 87, 79))
 Group(
   Seq(
     Style(
-      Translate(Disc(200), x = rect.extent.width),
+      Translate(Disc(20), x = rect.extent.width),
       RGB(78, 89, 94)
     ),
     rect
@@ -147,8 +147,8 @@ of nesting constructors like we did up there, we can do the following with the s
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.colors._
 
-val rect = Rect(400, 400) filled RGB(83, 87, 79)
-Disc(200) transX rect.extent.width filled RGB(78, 89, 94) behind rect
+val rect = Rect(40, 40) filled RGB(83, 87, 79)
+Disc(20) transX rect.extent.width filled RGB(78, 89, 94) behind rect
 ```
 
 The drawing API gives us the power to describe all of the scenes involved in the plots that EvilPlot can create; at no
@@ -186,9 +186,9 @@ import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.colors.HTMLNamedColors._
 
 val aligned: Seq[Drawable] = Align.right(
-  Rect(40, 60) filled blue,
-  Disc(70) filled red,
-  Polygon(Seq(Point(20, 60), Point(40, 20), Point(30, 30))) filled green
+  Rect(50, 50) filled blue,
+  Disc(25) filled red,
+  Polygon(Seq(Point(0, 50), Point(25, 0), Point(50, 50))) filled red
 )
 
 aligned.reduce(_ below _)
@@ -234,12 +234,12 @@ import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.colors.HTMLNamedColors.{blue, white}
 
 // Some values from the outside:
-val width = 10
-val topWhisker = 50
-val bottomWhisker = 30
-val upperToMiddle = 40
-val middleToLower = 35
-val strokeWidth = 2
+val width = 100
+val topWhisker = 60
+val bottomWhisker = 40
+val upperToMiddle = 50
+val middleToLower = 45
+val strokeWidth = 3
 
 Align.center(
   Line(topWhisker, strokeWidth).rotated(90),

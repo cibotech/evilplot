@@ -157,6 +157,8 @@ using a whole family of border plot combinators. If we take what we'd been worki
 Overlay(contours, initial)
   .topPlot(phiHistogram)
   .rightPlot(psiHistogram)
+  .xbounds(-180, 180)
+  .ybounds(-180, 180)
   .xLabel("phi")
   .yLabel("psi")
   .frame()
@@ -184,8 +186,6 @@ Facets(
     _.map(ps =>
       ContourPlot(ps,
        surfaceRenderer = Some(SurfaceRenderer.contours(Some(dodgerBlue))))
-        .overlay(ScatterPlot(Seq(ps.head),
-           pointRenderer = Some(PointRenderer.default(Some(crimson)))))
         .topPlot(Histogram(ps.map(_.x)))
         .rightPlot(Histogram(ps.map(_.y)))
         .frame()
@@ -196,8 +196,8 @@ Facets(
   .rightLabels(Seq("params1", "params2"))
   .xbounds(-180, 180)
   .ybounds(-180, 180)
-  .xAxis(tickCount = Some(6))
-  .yAxis(tickCount = Some(6))
+  .xAxis(tickCount = Some(4))
+  .yAxis(tickCount = Some(4))
   .xLabel("phi")
   .yLabel("psi")
   .render()
