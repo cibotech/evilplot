@@ -2,6 +2,9 @@
 
 ## [Changes since last release]
 
+### Added
+- `BarRenderer.named`, which allows specifying a name and color to the legend context, especially in histograms.
+
 ## [0.3.1] - 2018-06-14
 ### Added
 - Ability to create data positioned plot components.
