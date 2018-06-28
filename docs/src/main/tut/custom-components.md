@@ -11,6 +11,9 @@ Many of the plots in the documentation apply fluent methods to a plot before ren
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
+import com.cibo.evilplot.plot._
+import com.cibo.evilplot.numeric.Point
+
 LinePlot(Seq(Point(1, 1), Point(3, 3)))
   .xAxis().yAxis()
   .xGrid().yGrid()

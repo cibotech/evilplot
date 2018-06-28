@@ -73,11 +73,10 @@ EvilPlot takes an unusual approach to overlaying, in the spirit of building more
 ones. When you want to make a multilayered plot, just make a plot for each layer. We then give you a combinator,
 `Overlay`, to compose all the plots into a meaningful composite.
 
-Let's look at two equally meaningful plots. The first is a
-[Ramachandran plot](https://en.wikipedia.org/wiki/Ramachandran_plot), which is a plot of the phi and psi dihredral
-angles in a peptide bond. This data came from a molecular dynamics simulation of alanine dipeptide, so we have a
-computed "phi" and "psi" from the simulation for each iteration. We want to look at how these two angles were
-distributed, so let's make a contour plot out of the density.
+Let's take a look at some real world data. In its natural state, real world data can be hard to interpret and even harder
+to put to use. Take a look at the data from https://data.boston.gov/dataset/ containing the Latitude(y) and Longitude(x)
+coordinates of several free wifi hotspots in Boston:
+
 
 <div class="row">
 <div class="col-md-6" markdown="1">

@@ -63,6 +63,9 @@ You might be familiar with adding random "jitter" to points in a scatter plot fr
 implement that in EvilPlot as a custom point renderer. This adds a bit of jitter in the y dimension.
 
 ```scala
+import scala.util.Random
+import com.cibo.evilplot._
+
 def jitter(range: Double)(implicit theme: Theme): PointRenderer = (plot: Plot, extent: Extent, context: Int) => {
     val scaleY = (y: Double) =>
       plot.ytransform(plot, extent)(y + plot.ybounds.min) - extent.height
