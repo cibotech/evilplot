@@ -90,7 +90,6 @@ ContourPlot(
 )
   .xLabel("phi")
   .yLabel("psi")
-  // For reference, fix the bounds over the allowed phi/psi ranges.
   .xbounds(-180, 180)
   .ybounds(-180, 180)
   .xAxis()
