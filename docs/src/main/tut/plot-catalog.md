@@ -37,7 +37,9 @@ val labeledByColor = new BarRenderer {
     val rect = Rect(extent)
     val value = category.values.head
     val color = if (value >= 0) positive else negative
-    Align.center(rect filled color, Text(s"$value%", size = 20)).group
+    Align.center(rect filled color, Text(s"$value%", size = 20)
+     .filled(theme.colors.label)
+    ).group
   }
 }
 
@@ -242,7 +244,7 @@ ScatterPlot(
   .title("Measured vs Actual")
   .xLabel("measured")
   .yLabel("actual")
-  .trend(1, 0, color = dodgerBlue, lineStyle = DashDot)
+  .trend(1, 0, color = RGB(45, 45, 45), lineStyle = DashDot)
   .overlayLegend(x = 0.95, y = 0.8)
   .render(Extent(600, 400))
 ```
