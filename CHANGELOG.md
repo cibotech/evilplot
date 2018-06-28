@@ -2,8 +2,10 @@
 
 ## [Changes since last release]
 
+## [0.3.2] - 2018-06-28
 ### Added
-- `BarRenderer.named`, which allows specifying a name and color to the legend context, especially in histograms.
+- `BarRenderer.named`, which allows specifying a name and color to the legend context,
+especially in histograms.
 
 ## [0.3.1] - 2018-06-14
 ### Added
@@ -27,6 +29,7 @@ correcting previously incorrect extent calculation.
 - Applying "bound buffers" to plots is no longer part of the default theme.
 - The default number of ticks on continuous axes has been decreased.
 
-[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.3.1...HEAD
+[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/cibotech/evilplot/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/cibotech/evilplot/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/cibotech/evilplot/compare/v0.2.1...v0.3.0
