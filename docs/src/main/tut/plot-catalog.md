@@ -27,6 +27,9 @@ EvilPlot examples both simple and built-in as well as complex and custom are her
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
+import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.plot._
+
 val percentChange = Seq[Double](-10, 5, 12, 68, -22)
 val labels = Seq("one", "two", "three", "four", "five")
 
@@ -61,6 +64,9 @@ BarChart
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
+import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.plot._
+
  val data = Seq[Seq[Double]](
     Seq(1, 2, 3),
     Seq(4, 5, 6),
@@ -90,6 +96,9 @@ BarChart
 <div class="col-md-6" markdown="1">
 
 ```scala
+import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.plot._
+
 val data = Seq[Seq[Double]](
   Seq(1, 2, 3),
   Seq(4, 5, 6),
@@ -118,6 +127,9 @@ BarChart
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
+import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.plot._
+
 val data = Seq[Seq[Seq[Double]]](
   Seq(Seq(1, 2, 3), Seq(4, 5, 6)),
   Seq(Seq(3, 4, 1), Seq(2, 3, 4))
@@ -149,7 +161,9 @@ BarChart
 <div class="col-md-6" markdown="1">
 
 ```scala
-import HTMLNamedColors.{blue, green, red}
+import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.plot._
+
 Overlay(
   FunctionPlot.series(x => x * x, "y = x^2",
     blue, xbounds = Some(Bounds(-1, 1))),
@@ -173,6 +187,9 @@ Overlay(
 <div class="col-md-6" markdown="1">
 
 ```scala
+import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.plot._
+
 val data = Seq.fill(10)(Seq.fill(Random.nextInt(30))(Random.nextDouble()))
 BoxPlot(data)
   .standard(xLabels = (1 to 10).map(_.toString))
@@ -223,7 +240,8 @@ ScatterPlot(
 
 ```scala
 import com.cibo.evilplot.geometry.LineStyle.DashDot
-import com.cibo.evilplot.colors.HTMLNamedColors.dodgerBlue
+import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.plot._
 
 val allYears = (2007 to 2013).map(_.toDouble).toVector
 val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
@@ -259,6 +277,9 @@ ScatterPlot(
 <div class="col-md-6" markdown="1">
 
 ```scala
+import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.plot._
+
 val data = Seq("one" -> 1.5, "two" -> 3.5, "three" -> 2.0)
 PieChart(data).rightLegend().render()
 ```
