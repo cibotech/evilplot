@@ -71,7 +71,7 @@ def jitter(range: Double)(implicit theme: Theme): PointRenderer = (plot: Plot, e
       plot.ytransform(plot, extent)(y + plot.ybounds.min) - extent.height
     Disc
       .centered(theme.elements.pointSize)
-      .transY(scaleY(range * (Random.nextDouble() - .5))
+      .transY(scaleY(range * (Random.nextDouble() - .5)))
 }
 ```
 
