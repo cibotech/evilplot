@@ -5,10 +5,10 @@ position: 2
 ---
 # Getting Started
 
-To get going with EvilPlot, you'll need to add it to your build.
+To get going with EvilPlot, you'll need to add it to your build. EvilPlot is published for Scala 2.11 and 2.12.
 ```scala
 resolvers += Resolver.bintrayRepo("cibotech", "public")
-libraryDependencies += "com.cibo" %% "evilplot" % "0.3.2" // Use %%% instead of %% if you're using ScalaJS
+libraryDependencies += "com.cibo" %% "evilplot" % "0.3.3" // Use %%% instead of %% if you're using ScalaJS
 ```
 
 ## Our first plot
