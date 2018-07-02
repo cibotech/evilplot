@@ -11,7 +11,7 @@ Documentation for EvilPlot is available [here](https://cibotech.github.io/evilpl
 Add EvilPlot to your build with:
 ```scala
 resolvers += Resolver.bintrayRepo("cibotech", "public")
-libraryDependencies += "com.cibo" %% "evilplot" % "0.3.1" // Use %%% instead of %% if you're using ScalaJS
+libraryDependencies += "com.cibo" %% "evilplot" % "0.3.2" // Use %%% instead of %% if you're using ScalaJS
 ```
 Take a look at the full [getting started guide](https://cibotech.github.io/evilplot/getting-started.html).
 
