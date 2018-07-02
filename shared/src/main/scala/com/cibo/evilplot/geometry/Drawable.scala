@@ -98,7 +98,9 @@ object Path {
     Translate(new Path(points.map{x=> Point(x.x - minX, x.y - minY)},strokeWidth), minX, minY)
   }
   implicit val encoder: Encoder[Path] = Encoder.forProduct2("p", "s"){x => (x.points, x.strokeWidth)}
-  implicit val decoder: Decoder[Path] = Decoder.forProduct2("p", "s")(new Path(_,_))
+  implicit val decoder: Decoder[Path] = Decoder.forProduct2("p", "s")(
+    (points: Seq[Point], strokeWidth: Double) => new Path(points, strokeWidth)
+  )
 }
 
 /** A filled polygon.
@@ -112,8 +114,10 @@ final case class Polygon(boundary: Seq[Point]) extends Drawable {
   def draw(context: RenderContext): Unit = if (boundary.nonEmpty) context.draw(this) else ()
 }
 object Polygon {
-  implicit val encoder: Encoder[Polygon] = Encoder.forProduct1("b"){x=> x.boundary}
-  implicit val decoder: Decoder[Polygon] = Decoder.forProduct1("b")(new Polygon(_))
+  implicit val encoder: Encoder[Polygon] = Encoder.forProduct1("b"){x => x.boundary}
+  implicit val decoder: Decoder[Polygon] = Decoder.forProduct1("b")(
+    (boundary: Seq[Point]) => new Polygon(boundary)
+  )
 
   def clipped(boundary: Seq[Point], extent: Extent): Drawable = {
     Polygon(Clipping.clipPolygon(boundary, extent))

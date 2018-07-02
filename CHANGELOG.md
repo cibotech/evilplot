@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Changes since last release]
+### Added
+- Build for Scala 2.11
 
 ## [0.3.2] - 2018-06-28
 ### Added
