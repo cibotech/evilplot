@@ -8,11 +8,12 @@ object Settings {
     "-deprecation",
     "-unchecked",
     "-feature",
-    "-Xfatal-warnings"
+    "-Xfatal-warnings",
+    "-Xsource:2.12"
   )
 
   object versions { //scalastyle:ignore
-    val crossScalaVersions = Seq("2.12.4")
+    val crossScalaVersions = Seq("2.12.4", "2.11.12")
     val scalaDom = "0.9.3"
     val scalaTest = "3.0.1"
     val scalactic = "3.0.1"
