@@ -75,7 +75,7 @@ ones. When you want to make a multilayered plot, just make a plot for each layer
 
 Let's take a look at some real world data. In its natural state, real world data can be hard to interpret and even harder
 to put to use. Take a look at the public data from https://data.boston.gov/dataset/wicked-free-wi-fi-locations
-containing the Latitude(y) and Longitude(x) coordinates of several free wifi hotspots in Boston. To start, lets parse this
+containing the Latitude(y) and Longitude(x) coordinates of several free WiFi hotspots in Boston. To start, let's parse this
 file into a `Seq[Points]`:
 
 ```scala
@@ -99,7 +99,7 @@ val data: Seq[Point] = {
 }
 ```
 
-Now that we have our data in a usable form, lets make a Contour plot to show the general density of free wifi locations
+Now that we have our data in a usable form, let's make a contour plot to show the general density of free WiFi locations
 throughout Boston:
 
 <div class="row">
@@ -111,7 +111,9 @@ import com.cibo.evilplot.plot._
 def contourPlot(seq: Seq[Point]): Plot = {
     ContourPlot(
       seq,
-      surfaceRenderer = Some(SurfaceRenderer.contours(color = Some(HTMLNamedColors.dodgerBlue))))
+      surfaceRenderer = Some(SurfaceRenderer.contours(
+        color = Some(HTMLNamedColors.dodgerBlue))
+      ))
 }
 
 contourPlot(data)
@@ -196,13 +198,13 @@ contourPlot(data)
 
 ## Faceting
 
-Plotting wifi locations is helpful, but what if we have even more data that we want to compare and plot using the same
-axis? EvilPlot's faceting lets us compare several plots at the same time. Lets grab data from
+Plotting WiFi locations is helpful, but what if we have even more data that we want to compare and plot using the same
+axis? EvilPlot's faceting lets us compare several plots at the same time. Let's grab data from
 <a href="https://data.boston.gov/dataset/snow-emergency-parking">snow parking</a>,
 <a href="https://data.boston.gov/dataset/tot-sprays">water playgrounds</a>,
 and <a href="https://data.boston.gov/dataset/polling-locations-20171">polling locations</a> and compare their respective
 contour plots. For the below example, load each of the CSVs into their
-own `Seq[Point]` and add each of them into a `Seq[Seq[Point]]` called `allData` in order so that wifi is first, then
+own `Seq[Point]` and add each of them into a `Seq[Seq[Point]]` called `allData` in order so that WiFi is first, then
 snow parking, then water playgrounds, then polling locations.
 
 
@@ -235,7 +237,7 @@ Facets(
 </div>
 
 Hopefully at this point we can start to draw some useful conclusions from our data. Interested in a low-key family outing?
-Your best bet is to search in an area with a high density of both free wifi and water playgrounds! Did the Boston winter hit a
+Your best bet is to search in an area with a high density of both free WiFi and water playgrounds! Did the Boston winter hit a
 little sooner than expected? No problem. Just look for a polling center near a highly dense emergency snow parking area.
 
 These examples are a little contrived, but now you know how to start with a simple visual and compose more and more complexity
