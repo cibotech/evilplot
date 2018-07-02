@@ -22,13 +22,22 @@ EvilPlot examples both simple and built-in as well as complex and custom are her
   * [Overlapping Histograms](#overlapping-histograms)
   * [Contour Plot](#contour-plot)
 
+
 ## Bar Chart
 
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.colors.RGB
+import com.cibo.evilplot.geometry.{Align, Drawable, Extent, Rect, Text}
 import com.cibo.evilplot.plot._
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
+import com.cibo.evilplot.plot.renderers.BarRenderer
+
+implicit val theme: DefaultTheme = DefaultTheme().copy(
+  fonts = DefaultFonts()
+    .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
+)
 
 val percentChange = Seq[Double](-10, 5, 12, 68, -22)
 val labels = Seq("one", "two", "three", "four", "five")
@@ -64,26 +73,25 @@ BarChart
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-import com.cibo.evilplot.colors.HTMLNamedColors._
 import com.cibo.evilplot.plot._
 
- val data = Seq[Seq[Double]](
-    Seq(1, 2, 3),
-    Seq(4, 5, 6),
-    Seq(3, 4, 1),
-    Seq(2, 3, 4)
-  )
-  BarChart
-    .clustered(
-      data,
-      labels = Seq("one", "two", "three")
-    )
-    .title("Clustered Bar Chart Demo")
-    .xAxis(Seq("a", "b", "c", "d"))
-    .yAxis()
-    .frame()
-    .bottomLegend()
-    .render()
+val data = Seq[Seq[Double]](
+Seq(1, 2, 3),
+Seq(4, 5, 6),
+   Seq(3, 4, 1),
+   Seq(2, 3, 4)
+ )
+ BarChart
+   .clustered(
+     data,
+     labels = Seq("one", "two", "three")
+   )
+   .title("Clustered Bar Chart Demo")
+   .xAxis(Seq("a", "b", "c", "d"))
+   .yAxis()
+   .frame()
+   .bottomLegend()
+   .render()
 ```
 </div>
 <div class="col-md-6">
@@ -96,7 +104,6 @@ import com.cibo.evilplot.plot._
 <div class="col-md-6" markdown="1">
 
 ```scala
-import com.cibo.evilplot.colors.HTMLNamedColors._
 import com.cibo.evilplot.plot._
 
 val data = Seq[Seq[Double]](
@@ -127,7 +134,6 @@ BarChart
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-import com.cibo.evilplot.colors.HTMLNamedColors._
 import com.cibo.evilplot.plot._
 
 val data = Seq[Seq[Seq[Double]]](
@@ -162,15 +168,16 @@ BarChart
 
 ```scala
 import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot._
 
 Overlay(
   FunctionPlot.series(x => x * x, "y = x^2",
-    blue, xbounds = Some(Bounds(-1, 1))),
+    HTMLNamedColors.dodgerBlue, xbounds = Some(Bounds(-1, 1))),
   FunctionPlot.series(x => math.pow(x, 3), "y = x^3",
-    red, xbounds = Some(Bounds(-1, 1))),
+    HTMLNamedColors.crimson, xbounds = Some(Bounds(-1, 1))),
   FunctionPlot.series(x => math.pow(x, 4), "y = x^4",
-    green, xbounds = Some(Bounds(-1, 1)))
+    HTMLNamedColors.green, xbounds = Some(Bounds(-1, 1)))
 ).title("A bunch of polynomials.")
   .overlayLegend()
   .standard()
@@ -187,8 +194,8 @@ Overlay(
 <div class="col-md-6" markdown="1">
 
 ```scala
-import com.cibo.evilplot.colors.HTMLNamedColors._
 import com.cibo.evilplot.plot._
+import scala.util.Random
 
 val data = Seq.fill(10)(Seq.fill(Random.nextInt(30))(Random.nextDouble()))
 BoxPlot(data)
@@ -239,9 +246,12 @@ ScatterPlot(
 <div class="col-md-6" markdown="1">
 
 ```scala
+import com.cibo.evilplot.colors.RGB
+import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.geometry.LineStyle.DashDot
-import com.cibo.evilplot.colors.HTMLNamedColors._
+import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot._
+import com.cibo.evilplot.plot.renderers.PointRenderer
 
 val allYears = (2007 to 2013).map(_.toDouble).toVector
 val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
@@ -262,7 +272,7 @@ ScatterPlot(
   .title("Measured vs Actual")
   .xLabel("measured")
   .yLabel("actual")
-  .trend(1, 0, color = RGB(45, 45, 45), lineStyle = DashDot)
+  .trend(1, 0, color = RGB(45, 45, 45), lineStyle = LineStyle.DashDot)
   .overlayLegend(x = 0.95, y = 0.8)
   .render(Extent(600, 400))
 ```
@@ -277,7 +287,6 @@ ScatterPlot(
 <div class="col-md-6" markdown="1">
 
 ```scala
-import com.cibo.evilplot.colors.HTMLNamedColors._
 import com.cibo.evilplot.plot._
 
 val data = Seq("one" -> 1.5, "two" -> 3.5, "three" -> 2.0)
@@ -295,6 +304,7 @@ A pairs plot can be built by combining `ScatterPlot` and `Histogram` plots with 
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
+import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import scala.util.Random
@@ -332,6 +342,8 @@ A `FunctionPlot` can be used to build density plots.
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
+import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.plot.renderers.PathRenderer
@@ -377,7 +389,8 @@ Overlay(
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-import com.cibo.evilplot.colors.HTMLNamedColors.{red, green}
+import com.cibo.evilplot.colors.HTMLNamedColors.{green, red}
+import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.plot.renderers.BarRenderer
@@ -406,18 +419,19 @@ Overlay(
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
+import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import scala.util.Random
 
-val data = Seq.fill(100) { 
+val data = Seq.fill(100) {
   Point(Random.nextDouble() * 20, Random.nextDouble() * 20
 }
 ContourPlot(data)
   .standard()
   .xbounds(0, 20)
   .ybounds(0, 20)
-  .render(plotAreaSize)
+  .render()
 ```
 </div>
 <div class="col-md-6">

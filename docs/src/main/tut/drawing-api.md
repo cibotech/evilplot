@@ -187,7 +187,7 @@ import com.cibo.evilplot.colors.HTMLNamedColors._
 import com.cibo.evilplot.numeric.Point
 
 val aligned: Seq[Drawable] = Align.right(
-  Polygon(Seq(Point(0, 30), Point(15, 0), Point(30, 30))) filled red
+  Polygon(Seq(Point(0, 30), Point(15, 0), Point(30, 30))) filled red,
   Rect(50, 50) filled blue,
   Disc(15) filled red,
 )

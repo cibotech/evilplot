@@ -72,6 +72,10 @@ LinePlot(Seq(Point(1, 1), Point(3, 3)))
 Here's a sample custom component that adds a marker to the right side of our example plot.
 
 ```scala
+import com.cibo.evilplot.geometry.{Align, Drawable, Extent, Polygon, Text}
+import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.components.{PlotComponent, Position}
+
 case class RightSideMarker(
   msg: String,
   value: Double
@@ -102,7 +106,7 @@ LinePlot(Seq(Point(1, 1), Point(3, 3)))
   .hline(2d)
   .title("An example plot")
   .component(RightSideMarker("marker at 2", 2))
-  .render(plotAreaSize)
+  .render()
 ```
 </div>
 <div class="col-md-6">
