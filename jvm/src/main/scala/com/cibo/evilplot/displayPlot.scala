@@ -2,17 +2,18 @@ package com.cibo.evilplot
 
 import java.awt.{Graphics, Graphics2D}
 
-import com.cibo.evilplot.plot.{Plot}
+import com.cibo.evilplot.plot.{Plot, ScatterPlot}
 import javax.swing.{JFrame, JOptionPane, JPanel}
 import java.awt.event.{ActionEvent, ComponentAdapter, ComponentEvent}
 import java.io.File
 
-import com.cibo.evilplot.demo.DemoPlots.{theme}
+import com.cibo.evilplot.demo.DemoPlots.theme
 import com.cibo.evilplot.geometry.{Drawable, Extent}
+import com.cibo.evilplot.numeric.Point
 
 object displayPlot {
 
-  object DrawablePanel extends JPanel {
+  private class DrawablePanel extends JPanel {
     var drawable: Option[Drawable] = None
 
     def setDrawable(drawnPlot: Drawable): Unit = {
@@ -29,13 +30,14 @@ object displayPlot {
     }
   }
 
-  object DrawableFrame extends JFrame {
+  private class DrawableFrame extends JFrame {
 
     import javax.swing.JMenuBar
     import javax.swing.JMenuItem
 
     var drawable: Option[Drawable] = None
     var plot: Option[Plot] = None
+    val panel: DrawablePanel = new DrawablePanel()
 
 
     private def createMenuBar(): Unit = {
@@ -57,17 +59,17 @@ object displayPlot {
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
       if (!drawable.isEmpty) {
         setSize(drawable.get.extent.width.toInt*2, drawable.get.extent.height.toInt*2 + 20)
-        DrawablePanel.setDrawable(drawable.get.scaled(0.5,0.5))
+        panel.setDrawable(drawable.get.scaled(0.5,0.5))
       }
       else {
         setSize(400, 420)
-        DrawablePanel.setDrawable(plot.get.render(new Extent(200, 200)).scaled(0.5, 0.5))
+        panel.setDrawable(plot.get.render(new Extent(200, 200)).scaled(0.5, 0.5))
       }
-      add(DrawablePanel)
+      add(panel)
       createMenuBar()
       addComponentListener(new ComponentAdapter {
         override def componentResized(e: ComponentEvent): Unit = {
-          resizePlot(DrawableFrame.getWidth, DrawableFrame.getHeight)
+          resizePlot(getWidth, getHeight)
         }
       })
       setVisible(true)
@@ -79,7 +81,7 @@ object displayPlot {
 
     def resizePlot(width: Int, height: Int): Unit = {
       if (!plot.isEmpty) {
-        DrawablePanel.setDrawable(plot.get.render(getPlotExtent).scaled(0.5,0.5))
+        panel.setDrawable(plot.get.render(getPlotExtent).scaled(0.5,0.5))
       }
     }
 
@@ -101,13 +103,20 @@ object displayPlot {
 
   def apply(plot: Plot): Unit = {
     JFrame.setDefaultLookAndFeelDecorated(true)
-    DrawableFrame(None, Some(plot))
+    new DrawableFrame().apply(None, Some(plot))
   }
 
   def apply(drawnPlot: Drawable): Unit = {
     JFrame.setDefaultLookAndFeelDecorated(true)
-    DrawableFrame(Some(drawnPlot), None)
+    new DrawableFrame().apply(Some(drawnPlot), None)
   }
 
 }
 
+object testRunner extends App {
+  val Seq(one, two, three) = theme.colors.stream.take(3)
+  val item = ScatterPlot(Seq(Point(1,1), Point(2,2))).standard()
+  val item2 = ScatterPlot(Seq(Point(0.5, 0.5))).standard()
+  displayPlot(item)
+  displayPlot(item2)
+}
