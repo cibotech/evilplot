@@ -1,3 +1,33 @@
+/*
+ * Copyright (c) 2018, CiBO Technologies, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.cibo.evilplot
 
 import java.awt.{Graphics, Graphics2D}
@@ -38,7 +68,6 @@ object displayPlot {
     var plot: Option[Plot] = None
     val panel: DrawablePanel = new DrawablePanel()
 
-
     private def createMenuBar(): Unit = {
       val menubar = new JMenuBar
       val save = new JMenuItem("Save")
@@ -61,10 +90,9 @@ object displayPlot {
     private def init(): Unit = {
       setTitle("Plot")
       if (!drawable.isEmpty) {
-        setSize(drawable.get.extent.width.toInt*2, drawable.get.extent.height.toInt*2 + 20)
-        panel.setDrawable(drawable.get.scaled(0.5,0.5))
-      }
-      else {
+        setSize(drawable.get.extent.width.toInt * 2, drawable.get.extent.height.toInt * 2 + 20)
+        panel.setDrawable(drawable.get.scaled(0.5, 0.5))
+      } else {
         setSize(400, 420)
         panel.setDrawable(plot.get.render(new Extent(200, 200)).scaled(0.5, 0.5))
       }
@@ -79,18 +107,18 @@ object displayPlot {
     }
 
     def getPlotExtent: Extent = {
-      Extent(this.getWidth/2, (this.getHeight-20)/2)
+      Extent(this.getWidth / 2, (this.getHeight - 20) / 2)
     }
 
     def resizePlot(width: Int, height: Int): Unit = {
       if (!plot.isEmpty) {
-        panel.setDrawable(plot.get.render(getPlotExtent).scaled(0.5,0.5))
+        panel.setDrawable(plot.get.render(getPlotExtent).scaled(0.5, 0.5))
       }
     }
 
     def savePlot(result: File): Unit = {
-      if(!plot.isEmpty) {
-        plot.get.render(getPlotExtent).scaled(0.5,0.5).write(result)
+      if (!plot.isEmpty) {
+        plot.get.render(getPlotExtent).scaled(0.5, 0.5).write(result)
       } else {
         drawable.get.write(result)
       }
@@ -113,4 +141,22 @@ object displayPlot {
     JFrame.setDefaultLookAndFeelDecorated(true)
     new DrawableFrame().apply(Some(drawnPlot), None)
   }
+}
+
+object runner extends App {
+  import com.cibo.evilplot.plot._
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+  import com.cibo.evilplot.numeric.Point
+
+  val data = Seq.tabulate(100) { i =>
+    Point(i.toDouble, scala.util.Random.nextDouble())
+  }
+  val plot = ScatterPlot(data)
+    .xAxis()
+    .yAxis()
+    .frame()
+    .xLabel("x")
+    .yLabel("y")
+
+  displayPlot(plot)
 }
