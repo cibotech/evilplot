@@ -74,29 +74,25 @@ ones. When you want to make a multilayered plot, just make a plot for each layer
 `Overlay`, to compose all the plots into a meaningful composite.
 
 Let's take a look at some real world data. In its natural state, real world data can be hard to interpret and even harder
-to put to use. Take a look at the public data from https://data.boston.gov/dataset/wicked-free-wi-fi-locations
-containing the Latitude(y) and Longitude(x) coordinates of several free WiFi hotspots in Boston. To start, let's parse this
-file into a `Seq[Points]`:
+to put to use. We will use <a href="https://data.boston.gov/dataset/wicked-free-wi-fi-locations">Wicked Free WiFi</a>, a
+public data set containing the latitude and longitude (columns X and Y respectively) coordinates of several free WiFi
+hotspots in Boston. After downloading the CSV file, let's parse the data into a `Seq[Points]`:
 
 ```scala
 import com.cibo.evilplot.numeric.Point
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
-import scala.util.Try
 
-val path: String = //Path to saved CSV file
-val data: Seq[Point] = {
-    val points: ArrayBuffer[Point] = ArrayBuffer[Point]()
+val path: String = //Insert your path to saved CSV file
+ val data: Seq[Point] = {
     val bufferedSource = Source.fromFile(path + "wifi.csv")
-    //Drop the header row, we just need the points
-    for (line <- bufferedSource.getLines.drop(1)) {
-      val cols: Array[String] = line.split(",").map(_.trim)
-      //Columns 0 and 1 contain the x/y coordinates
-      points += Point(cols(0).toDouble, cols(1).toDouble)
-    }
-    bufferedSource.close()
+    val points = bufferedSource.getLines.drop(1).map { line =>
+      val columns = line.split(",").map{_.trim()}
+      //The coordinates are found in the first and second columns
+      Point(columns.head.toDouble, columns(1).toDouble)
+    }.toSeq
     points
-}
+  }
 ```
 
 Now that we have our data in a usable form, let's make a contour plot to show the general density of free WiFi locations
@@ -162,7 +158,7 @@ The Cambridge office location is just north of the central city of Boston, so th
 check to make sure that we rendered the plot rendered correctly. With `Overlay`, we don't have to worry that the bounds of
 our plots might not align--EvilPlot will take care of all of the necessary transformations for you.
 
-## Adding side plots.
+## Adding side plots
 
 The contour plot gives us a good glimpse at the bivariate distribution. But, let's say we were secondarily interested in
 looking at the univariate distribution of each geographic coordinate. Of course, we _could_ just make histograms.
@@ -200,11 +196,11 @@ contourPlot(data)
 
 Plotting WiFi locations is helpful, but what if we have even more data that we want to compare and plot using the same
 axis? EvilPlot's faceting lets us compare several plots at the same time. Let's grab data from
-<a href="https://data.boston.gov/dataset/snow-emergency-parking">snow parking</a>,
-<a href="https://data.boston.gov/dataset/tot-sprays">water playgrounds</a>,
-and <a href="https://data.boston.gov/dataset/polling-locations-20171">polling locations</a> and compare their respective
+<a href="https://data.boston.gov/dataset/snow-emergency-parking">Snow Parking</a>,
+<a href="https://data.boston.gov/dataset/tot-sprays">Water Playgrounds</a>,
+and <a href="https://data.boston.gov/dataset/polling-locations-20171">Polling Locations</a> and compare their respective
 contour plots. For the below example, load each of the CSVs into their
-own `Seq[Point]` and add each of them into a `Seq[Seq[Point]]` called `allData` in order so that WiFi is first, then
+own `Seq[Point]` and add each of them into a `Seq[Seq[Point]]` called `allData` in order, so that WiFi is first, then
 snow parking, then water playgrounds, then polling locations.
 
 
