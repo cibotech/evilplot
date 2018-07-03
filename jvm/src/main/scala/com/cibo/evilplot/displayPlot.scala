@@ -3,7 +3,7 @@ package com.cibo.evilplot
 import java.awt.{Graphics, Graphics2D}
 
 import com.cibo.evilplot.plot.{Plot, ScatterPlot}
-import javax.swing.{JFrame, JOptionPane, JPanel}
+import javax.swing.{JFileChooser, JFrame, JOptionPane, JPanel}
 import java.awt.event.{ActionEvent, ComponentAdapter, ComponentEvent}
 import java.io.File
 
@@ -24,7 +24,7 @@ object displayPlot {
       super.paintComponent(g)
       val g2 = g.asInstanceOf[Graphics2D]
       if (!(drawable == None)) {
-        g2.drawImage(drawable.get.asBufferedImage, -40, 0, this)
+        g2.drawImage(drawable.get.asBufferedImage, -30, 0, this)
 
       }
     }
@@ -45,8 +45,13 @@ object displayPlot {
       val save = new JMenuItem("Save")
       save.addActionListener((event: ActionEvent) => {
         def save(event: ActionEvent) = {
-          val result = JOptionPane.showInputDialog("Enter a filename:")
-          savePlot(result)
+          val selectFile = new JFileChooser()
+          selectFile.setCurrentDirectory(new File("~"))
+          val savedFile: Int = selectFile.showSaveDialog(this)
+          if (savedFile == JFileChooser.APPROVE_OPTION) {
+            val file = selectFile.getSelectedFile
+            savePlot(file)
+          }
         }
         save(event)
       })
@@ -56,7 +61,6 @@ object displayPlot {
 
     private def init(): Unit = {
       setTitle("Plot")
-      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
       if (!drawable.isEmpty) {
         setSize(drawable.get.extent.width.toInt*2, drawable.get.extent.height.toInt*2 + 20)
         panel.setDrawable(drawable.get.scaled(0.5,0.5))
@@ -85,11 +89,11 @@ object displayPlot {
       }
     }
 
-    def savePlot(result: String): Unit = {
+    def savePlot(result: File): Unit = {
       if(!plot.isEmpty) {
-        plot.get.render(getPlotExtent).scaled(0.5,0.5).write(new File(s"/tmp/$result.png"))
+        plot.get.render(getPlotExtent).scaled(0.5,0.5).write(result)
       } else {
-        drawable.get.write(new File(s"/tmp/$result.png"))
+        drawable.get.write(result)
       }
     }
 
