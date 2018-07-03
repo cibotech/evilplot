@@ -8,7 +8,7 @@ scalacOptions in ThisBuild ++= Settings.scalacOptions
 
 lazy val `evilplot-root` = project
   .in(file("."))
-  .aggregate(evilplotJVM, evilplotJS, assetJVM, evilplotRunner)
+  .aggregate(evilplotJVM, evilplotJS, evilplotRepl, assetJVM, evilplotRunner)
   .settings(
     publishArtifact := false,
     publish := {},
@@ -95,6 +95,15 @@ lazy val evilplotRunner = project
   )
   .settings(licenseSettings)
   .enablePlugins(WorkbenchPlugin)
+
+lazy val evilplotRepl = project
+  .in(file("repl-plots"))
+  .dependsOn(evilplotJVM)
+  .settings(commonSettings)
+  .settings(licenseSettings)
+  .settings(
+    name := "evilplot-repl"
+  )
 
 val EvilPlotJVM = config("jvm")
 val EvilPlotJS = config("js")
