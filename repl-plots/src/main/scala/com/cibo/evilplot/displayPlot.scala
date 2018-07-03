@@ -2,14 +2,13 @@ package com.cibo.evilplot
 
 import java.awt.{Graphics, Graphics2D}
 
-import com.cibo.evilplot.plot.{Plot, ScatterPlot}
-import javax.swing.{JFileChooser, JFrame, JOptionPane, JPanel}
+import com.cibo.evilplot.plot.{Plot}
+import javax.swing.{JFileChooser, JFrame, JPanel}
 import java.awt.event.{ActionEvent, ComponentAdapter, ComponentEvent}
 import java.io.File
 
 import com.cibo.evilplot.demo.DemoPlots.theme
 import com.cibo.evilplot.geometry.{Drawable, Extent}
-import com.cibo.evilplot.numeric.Point
 
 object displayPlot {
 
@@ -114,13 +113,4 @@ object displayPlot {
     JFrame.setDefaultLookAndFeelDecorated(true)
     new DrawableFrame().apply(Some(drawnPlot), None)
   }
-
-}
-
-object testRunner extends App {
-  val Seq(one, two, three) = theme.colors.stream.take(3)
-  val item = ScatterPlot(Seq(Point(1,1), Point(2,2))).standard()
-  val item2 = ScatterPlot(Seq(Point(0.5, 0.5))).standard()
-  displayPlot(item)
-  displayPlot(item2)
 }
