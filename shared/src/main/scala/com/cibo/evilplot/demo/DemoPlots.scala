@@ -89,15 +89,25 @@ object DemoPlots {
 
   lazy val flipPoints = Seq(Point(1, 1), Point(1.5, 1.1), Point(2.5,1.5), Point(2.9, 2.5), Point(3, 3))
 
+  lazy val axesStuff: Drawable = {
+    LinePlot(flipPoints)
+      .yAxis()
+      .xHackedAxis(LinearScaling((1, 3), (0, 300)))
+      .xGrid().yGrid()
+      .frame()
+      .render(Extent(300, 300))
+  }
+
   lazy val baseFlip: Drawable = {
     val blah = Text("Hello")
-    val side = LinePlot(flipPoints)
-      .xAxis()
-      .component(Marker(Position.Top, _ => blah, size = blah.extent, x = 1.5))
+    //val side = LinePlot(flipPoints)
+    //  .xAxis()
+    //  .component(Marker(Position.Top, _ => blah, size = blah.extent, x = 1.5))
     LinePlot(flipPoints)
-      .rightPlot(side, 50)
-      .bottomPlot(side, 50)
+      //.rightPlot(side, 50)
+      //.bottomPlot(side, 50)
       .yAxis().xAxis()
+      .xAxis(Seq("hi", "there", "world"))
       .xGrid().yGrid()
       .frame()
       .render(Extent(300, 300))

@@ -239,6 +239,27 @@ object Axes {
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
+    def xHackedAxis(
+      scaling: LinearScaling,
+      tickCount: Option[Int] = None,
+      tickRenderer: Option[TickRenderer] = None,
+      labelFormatter: Option[Double => String] = None,
+      tickCountRange: Option[Seq[Int]] = None
+    )(implicit theme: Theme): Plot = {
+      //val component = ContinuousXAxisPlotComponent(
+      //  tickCount.getOrElse(theme.elements.xTickCount),
+      //  tickRenderer.getOrElse(
+      //    TickRenderer.xAxisTickRenderer(
+      //      length = theme.elements.tickLength,
+      //      thickness = theme.elements.tickThickness,
+      //      rotateText = theme.elements.continuousXAxisLabelOrientation
+      //    )),
+      //  labelFormatter,
+      //  tickCountRange
+      //)
+      //component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
+    }
+
     /** Add an X axis to the plot
       * @param labels The labels. The x values are assumed to start at 0 and increment by one for each label.
       */

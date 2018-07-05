@@ -31,7 +31,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.numeric.{Bounds, LinearScaling, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.{FacetedPlotComponent, Position}
 import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
@@ -152,17 +152,21 @@ object Plot {
 
   private[plot] case class DefaultXTransformer() extends Transformer {
     def apply(plot: Plot, plotExtent: Extent): Double => Double = {
-      val scale = plotExtent.width / plot.xbounds.range
-      (x: Double) =>
-        (x - plot.xbounds.min) * scale
+      val scaler = LinearScaling((plot.xbounds.min, plot.xbounds.max), (0, plotExtent.width))
+      (x: Double) => scaler.scale(x)
+      //val scale = plotExtent.width / plot.xbounds.range
+      //(x: Double) =>
+      //  (x - plot.xbounds.min) * scale
     }
   }
 
   private[plot] case class DefaultYTransformer() extends Transformer {
     def apply(plot: Plot, plotExtent: Extent): Double => Double = {
-      val scale = plotExtent.height / plot.ybounds.range
-      (y: Double) =>
-        plotExtent.height - (y - plot.ybounds.min) * scale
+      val scaler = LinearScaling((plot.ybounds.min, plot.ybounds.max), (plotExtent.height, 0))
+      (x: Double) => scaler.scale(x)
+      //val scale = plotExtent.height / plot.ybounds.range
+      //(y: Double) =>
+      //  plotExtent.height - (y - plot.ybounds.min) * scale
     }
   }
 
