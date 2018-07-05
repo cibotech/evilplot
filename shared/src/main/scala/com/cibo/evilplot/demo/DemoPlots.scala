@@ -87,74 +87,6 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
-  lazy val pieChart: Drawable = {
-    val data = Seq("one" -> 1.5, "two" -> 3.5, "three" -> 2.0)
-    PieChart(data).rightLegend().render(plotAreaSize)
-  }
-
-  lazy val linePlot: Drawable = {
-    val data = (0 to 5)
-      .map(_.toDouble)
-      .zip(
-        Seq(
-          0.0, 0.1, 0.0, 0.1, 0.0, 0.1
-        ))
-      .map(Point.tupled)
-
-    LinePlot(
-      data
-    ).ybounds(0, .12)
-      .yAxis()
-      .xGrid()
-      .yGrid()
-      .frame()
-      .render(plotAreaSize)
-  }
-
-  lazy val multiOverlayHistogram: Drawable = {
-    import scala.util.Random
-    def data(offset: Double): Seq[Double] = Seq.fill(200)(offset + Random.nextDouble())
-    Overlay
-      .fromSeq((0 to 3).zip(theme.colors.stream).collect {
-        case (offset, c: HSLA) =>
-          val color = c.copy(opacity = 0.3)
-          Histogram(
-            data(offset),
-            bins = 10,
-            barRenderer = Some(BarRenderer.named(color = Some(color), name = Some(offset.toString)))
-          )
-      })
-      .rightLegend()
-      .render()
-  }
-
-  lazy val scatterPlot: Drawable = {
-    val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
-    val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
-    val pointsWithYears = years.zip(points).groupBy(_._1).mapValues(_.map(_._2)).toSeq.sortBy(_._1)
-    ScatterPlot(points, pointRenderer = Some(PointRenderer.depthColor(years, None, None)))
-      .frame()
-      .xGrid()
-      .yGrid()
-      .xAxis()
-      .yAxis()
-      .xLabel("x")
-      .yLabel("y")
-      .trend(1, 0)
-      .rightLegend()
-      .render(plotAreaSize)
-  }
-
-  lazy val heatmap: Drawable = {
-    val data = Seq[Seq[Double]](
-      Seq(1, 2, 3, 4),
-      Seq(5, 6, 7, 8),
-      Seq(9, 8, 7, 6)
-    )
-
-    Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
-  }
-
   lazy val clusteredBarChart: Drawable = {
     val data = Seq[Seq[Double]](
       Seq(1, 2, 3),
@@ -206,15 +138,113 @@ object DemoPlots {
         labels = Seq("one", "two", "three")
       )
       .title("Clustered Stacked Bar Chart Demo")
-      .xAxis(Seq("Category 1", "Category 2"))
+      .standard(Seq("Category 1", "Category 2"))
+      .xLabel("Category")
+      .yLabel("Level")
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
+  lazy val functionPlot: Drawable = {
+    val Seq(one, two, three) = theme.colors.stream.take(3)
+    Overlay(
+      FunctionPlot.series(x => x * x, "y = x\u00B2", one, xbounds = Some(Bounds(-1, 1))),
+      FunctionPlot.series(x => math.pow(x, 3), "y = x\u00B3", two, xbounds = Some(Bounds(-1, 1))),
+      FunctionPlot.series(x => math.pow(x, 4), "y = x\u2074", three, xbounds = Some(Bounds(-1, 1)))
+    ).title("A bunch of polynomials.")
+      .overlayLegend()
+      .standard()
+      .render(plotAreaSize)
+  }
+
+  lazy val boxPlot: Drawable = {
+    val data = Seq.fill(10)(Seq.fill(Random.nextInt(30))(Random.nextDouble()))
+    BoxPlot(data)
+      .standard(xLabels = (1 to 10).map(_.toString))
+      .render(plotAreaSize)
+  }
+
+  lazy val scatterPlot: Drawable = {
+    val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
+    val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
+    ScatterPlot(points, pointRenderer = Some(PointRenderer.depthColor(years, None, None)))
+      .standard()
+      .xLabel("x")
+      .yLabel("y")
+      .trend(1, 0)
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
+  lazy val marginalHistogram: Drawable = {
+    import com.cibo.evilplot.plot._
+    import com.cibo.evilplot.plot.renderers._
+
+    // Make up some data...
+    val allYears = (2007 to 2013).toVector
+    val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
+    val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+
+    val xhist = Histogram(data.map(_.x), bins = 50)
+    val yhist = Histogram(data.map(_.y), bins = 40)
+    ScatterPlot(
+      data = data,
+      pointRenderer = Some(PointRenderer.colorByCategory(years))
+    ).topPlot(xhist)
+      .rightPlot(yhist)
+      .standard()
+      .xLabel("x")
+      .yLabel("y")
+      .trend(1, 0, color = RGB(45, 45, 45), lineStyle = LineStyle.DashDot)
+      .overlayLegend(x = 0.95, y = 0.8)
+      .render(plotAreaSize)
+  }
+
+  lazy val pieChart: Drawable = {
+    val data = Seq("one" -> 1.5, "two" -> 3.5, "three" -> 2.0)
+    PieChart(data).rightLegend().render(plotAreaSize)
+  }
+
+  lazy val contourPlot: Drawable = {
+    import com.cibo.evilplot.plot._
+
+    import scala.util.Random
+
+    val data = Seq.fill(100)(Point(Random.nextDouble() * 20, Random.nextDouble() * 20))
+    ContourPlot(data)
+      .standard()
+      .xbounds(0, 20)
+      .ybounds(0, 20)
+      .render(plotAreaSize)
+  }
+
+  lazy val linePlot: Drawable = {
+    val data = (0 to 5)
+      .map(_.toDouble)
+      .zip(
+        Seq(
+          0.0, 0.1, 0.0, 0.1, 0.0, 0.1
+        ))
+      .map(Point.tupled)
+
+    LinePlot(
+      data
+    ).ybounds(0, .12)
       .yAxis()
       .xGrid()
       .yGrid()
-      .xLabel("Category")
-      .yLabel("Level")
       .frame()
-      .rightLegend()
       .render(plotAreaSize)
+  }
+
+  lazy val heatmap: Drawable = {
+    val data = Seq[Seq[Double]](
+      Seq(1, 2, 3, 4),
+      Seq(5, 6, 7, 8),
+      Seq(9, 8, 7, 6)
+    )
+
+    Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
   }
 
   lazy val facetedPlot: Drawable = {
@@ -237,47 +267,15 @@ object DemoPlots {
     )
 
     Facets(Seq(Seq(plot1, plot2), Seq(plot3, plot4)))
-      .frame()
-      .xAxis()
-      .yAxis()
+      .standard()
       .xLabel("x")
       .yLabel("y")
-      .xGrid()
-      .yGrid()
       .trend(1.0, 0)
       .topLabels(Seq("A", "B"))
       .title("Facet Demo")
       .rightLegend()
       .rightLabels(Seq("before", "after"))
       .render(Extent(600, 400))
-  }
-
-  lazy val marginalHistogram: Drawable = {
-    import com.cibo.evilplot.plot._
-    import com.cibo.evilplot.plot.renderers._
-
-    // Make up some data...
-    val allYears = (2007 to 2013).toVector
-    val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
-    val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
-
-    val xhist = Histogram(data.map(_.x), bins = 50)
-    val yhist = Histogram(data.map(_.y), bins = 40)
-    ScatterPlot(
-      data = data,
-      pointRenderer = Some(PointRenderer.colorByCategory(years))
-    ).frame()
-      .topPlot(xhist)
-      .rightPlot(yhist)
-      .xGrid()
-      .yGrid()
-      .xAxis()
-      .yAxis()
-      .xLabel("x")
-      .yLabel("y")
-      .trend(1, 0, color = RGB(45, 45, 45), lineStyle = LineStyle.DashDot)
-      .overlayLegend(x = 0.95, y = 0.8)
-      .render(plotAreaSize)
   }
 
   lazy val crazyPlot: Drawable = {
@@ -344,33 +342,8 @@ object DemoPlots {
       .leftLabel((e: Extent) => Rect(e) filled HTMLNamedColors.green, 10)
       .topLabel((e: Extent) => Rect(e) filled HTMLNamedColors.red, 10)
       .bottomLabel((e: Extent) => Rect(e) filled HTMLNamedColors.yellow, 10)
-      .xAxis()
-      .yAxis()
-      .frame()
-      .xGrid()
-      .yGrid()
-    facets.render(plotAreaSize)
-  }
-
-  lazy val boxPlot: Drawable = {
-    val data = Seq.fill(10)(Seq.fill(Random.nextInt(30))(Random.nextDouble()))
-    BoxPlot(data)
-      .standard(xLabels = (1 to 10).map(_.toString))
-      .render(plotAreaSize)
-  }
-
-  lazy val functionPlot: Drawable = {
-    val Seq(one, two, three) = theme.colors.stream.take(3)
-    Overlay(
-      FunctionPlot.series(x => x * x, "y = x\u00B2", one, xbounds = Some(Bounds(-1, 1))),
-      FunctionPlot.series(x => math.pow(x, 3), "y = x\u00B3", two, xbounds = Some(Bounds(-1, 1))),
-      FunctionPlot.series(x => math.pow(x, 4), "y = x\u2074", three, xbounds = Some(Bounds(-1, 1)))
-    ).xLabel("x")
-      .yLabel("y")
-      .overlayLegend()
       .standard()
-      .title("A bunch of polynomials.")
-      .render(plotAreaSize)
+    facets.render(plotAreaSize)
   }
 
   lazy val markerPlot: Drawable = {
@@ -427,16 +400,4 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
-  lazy val contourPlot: Drawable = {
-    import com.cibo.evilplot.plot._
-
-    import scala.util.Random
-
-    val data = Seq.fill(100)(Point(Random.nextDouble() * 20, Random.nextDouble() * 20))
-    ContourPlot(data)
-      .standard()
-      .xbounds(0, 20)
-      .ybounds(0, 20)
-      .render(plotAreaSize)
-  }
 }

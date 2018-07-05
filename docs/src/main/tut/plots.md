@@ -73,61 +73,80 @@ EvilPlot takes an unusual approach to overlaying, in the spirit of building more
 ones. When you want to make a multilayered plot, just make a plot for each layer. We then give you a combinator,
 `Overlay`, to compose all the plots into a meaningful composite.
 
-Let's look at two equally meaningful plots. The first is a
-[Ramachandran plot](https://en.wikipedia.org/wiki/Ramachandran_plot), which is a plot of the phi and psi dihredral
-angles in a peptide bond. This data came from a molecular dynamics simulation of alanine dipeptide, so we have a
-computed "phi" and "psi" from the simulation for each iteration. We want to look at how these two angles were
-distributed, so let's make a contour plot out of the density.
+Let's take a look at some real world data. In its natural state, real world data can be hard to interpret and even harder
+to put to use. We will use <a href="https://data.boston.gov/dataset/wicked-free-wi-fi-locations">Wicked Free WiFi</a>, a
+public data set containing the latitude and longitude (columns X and Y respectively) coordinates of several free WiFi
+hotspots in Boston. After downloading the CSV file, let's parse the data into a `Seq[Points]`:
+
+```scala
+import com.cibo.evilplot.numeric.Point
+import scala.collection.mutable.ArrayBuffer
+import scala.io.Source
+
+val path: String = //Insert your path to saved CSV file
+ val data: Seq[Point] = {
+    val bufferedSource = Source.fromFile(path + "wifi.csv")
+    val points = bufferedSource.getLines.drop(1).map { line =>
+      val columns = line.split(",").map{_.trim()}
+      //The coordinates are found in the first and second columns
+      Point(columns.head.toDouble, columns(1).toDouble)
+    }.toSeq
+    points
+  }
+```
+
+Now that we have our data in a usable form, let's make a contour plot to show the general density of free WiFi locations
+throughout Boston:
 
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-import com.cibo.evilplot.colors.HTMLNamedColors._
-import com.cibo.evilplot.plot.renderers.SurfaceRenderer
-ContourPlot(
-  AlanineData.data,
-  surfaceRenderer = Some(SurfaceRenderer.contours(Some(dodgerBlue)))
-)
-  .xLabel("phi")
-  .yLabel("psi")
-  // For reference, fix the bounds over the allowed phi/psi ranges.
-  .xbounds(-180, 180)
-  .ybounds(-180, 180)
-  .xAxis()
-  .yAxis()
-  .frame()
-  .render()
+import com.cibo.evilplot.colors._
+import com.cibo.evilplot.plot._
+
+def contourPlot(seq: Seq[Point]): Plot = {
+    ContourPlot(
+      seq,
+      surfaceRenderer = Some(SurfaceRenderer.contours(
+        color = Some(HTMLNamedColors.dodgerBlue))
+      ))
+}
+
+contourPlot(data)
+    .xLabel("Lon")
+    .yLabel("Lat")
+    .xbounds(-71.2, -71)
+    .ybounds(42.20, 42.4)
+    .xAxis()
+    .yAxis()
+    .frame()
+    .render()
 ```
 </div>
 <div class="col-md-6">
-  <img src="/evilplot/img/docs/plots/contour.png" class="img-responsive"/>
+<img src="/evilplot/img/docs/plots/contour.png" class="img-responsive"/>
 </div>
 </div>
 
-We might wonder what configuration the peptide was in at the beginning of the simulation. Let's put a point on
-the chart that shows the initial configuration.
+How can we make use of this plot? To start, we can add points for reference using EvilPlot's `Overlay`. Let's add a
+reference point at `(-71.081754, 42.3670272)`, the approximate location of CiBO's Cambridge Office.
+
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-val initial = ScatterPlot(
-  Seq(AlanineData.data.head),
-  pointRenderer = Some(PointRenderer.default(color = Some(crimson)))
-)
-
-val contours = ContourPlot(
-  AlanineData.data,
-  surfaceRenderer = Some(SurfaceRenderer.contours(Some(dodgerBlue)))
-)
-
-Overlay(contours, initial)
-  .xLabel("phi")
-  .yLabel("psi")
-  .xbounds(-180, 180)
-  .ybounds(-180, 180)
-  .xAxis()
-  .yAxis()
-  .frame()
-  .render()
+Overlay(
+      contourPlot(data),
+        ScatterPlot(
+          Seq(Point(-71.081754,42.3670272)),
+          pointRenderer = Some(PointRenderer.default(color = Some(HTMLNamedColors.crimson))))
+      ).xLabel("Lon")
+        .yLabel("Lat")
+        .xbounds(-71.2, -71)
+        .ybounds(42.20, 42.4)
+        .xAxis()
+        .yAxis()
+        .frame()
+        .render()
 ```
 </div>
 <div class="col-md-6">
@@ -135,17 +154,18 @@ Overlay(contours, initial)
 </div>
 </div>
 
-With `Overlay`, we don't have to worry that the bounds of our plots might not align--EvilPlot will take care of all of
-the necessary transformations for you.
+The Cambridge office location is just north of the central city of Boston, so this reference point serves as an easy
+check to make sure that we rendered the plot rendered correctly. With `Overlay`, we don't have to worry that the bounds of
+our plots might not align--EvilPlot will take care of all of the necessary transformations for you.
 
-## Adding side plots.
+## Adding side plots
 
 The contour plot gives us a good glimpse at the bivariate distribution. But, let's say we were secondarily interested in
-looking at the univariate distribution of each parameter. Of course, we _could_ just make histograms.
+looking at the univariate distribution of each geographic coordinate. Of course, we _could_ just make histograms.
 
 ```scala
-val phiHistogram = Histogram(AlanineData.data.map(_.x))
-val psiHistogram = Histogram(AlanineData.data.map(_.y))
+val lonHistogram = Histogram(data.map(_.x))
+val latHistogram = Histogram(data.map(_.y))
 ```
 
 But we don't have to stop at plotting these separately. EvilPlot will let us place plots in the margins of another plot
@@ -154,13 +174,17 @@ using a whole family of border plot combinators. If we take what we'd been worki
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-Overlay(contours, initial)
-  .topPlot(phiHistogram)
-  .rightPlot(psiHistogram)
-  .xLabel("phi")
-  .yLabel("psi")
-  .frame()
-  .render()
+contourPlot(data)
+        .frame()
+        .xLabel("Lon")
+        .yLabel("Lat")
+        .xbounds(-71.2, -71)
+        .ybounds(42.20, 42.4)
+        .xAxis()
+        .yAxis()
+        .topPlot(Histogram(data.map(_.x)))
+        .rightPlot(Histogram(data.map(_.y)))
+        .render()
 ```
 </div>
 <div class="col-md-6">
@@ -170,37 +194,37 @@ Overlay(contours, initial)
 
 ## Faceting
 
-Imagine that after you made the visualization above, it turned out that you want to run similar simulations at different
-temperatures and additionally evaluate a different set of simulation parameters. This is a perfect candidate for
-faceting.
+Plotting WiFi locations is helpful, but what if we have even more data that we want to compare and plot using the same
+axis? EvilPlot's faceting lets us compare several plots at the same time. Let's grab data from
+<a href="https://data.boston.gov/dataset/snow-emergency-parking">Snow Parking</a>,
+<a href="https://data.boston.gov/dataset/tot-sprays">Water Playgrounds</a>,
+and <a href="https://data.boston.gov/dataset/polling-locations-20171">Polling Locations</a> and compare their respective
+contour plots. For the below example, load each of the CSVs into their
+own `Seq[Point]` and add each of them into a `Seq[Seq[Point]]` called `allData` in order, so that WiFi is first, then
+snow parking, then water playgrounds, then polling locations.
 
-<!-- TODO: Fix these axes. These axes are super ugly and -180-180 is standard for Rama plots -->
 
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
 Facets(
-  AlanineData.allDihedrals.map(
-    _.map(ps =>
-      ContourPlot(ps,
-       surfaceRenderer = Some(SurfaceRenderer.contours(Some(dodgerBlue))))
-        .overlay(ScatterPlot(Seq(ps.head),
-           pointRenderer = Some(PointRenderer.default(Some(crimson)))))
+    Seq(allData.take(2).map(ps =>
+        contourPlot(ps)
+          .topPlot(Histogram(ps.map(_.x)))
+          .rightPlot(Histogram(ps.map(_.y)))
+          .frame()),
+      allData.takeRight(2).map(ps =>
+        contourPlot(ps)
         .topPlot(Histogram(ps.map(_.x)))
         .rightPlot(Histogram(ps.map(_.y)))
-        .frame()
-    )
+        .frame()))
   )
-)
-  .topLabels(AlanineData.temps.map(k => s"$k K"))
-  .rightLabels(Seq("params1", "params2"))
-  .xbounds(-180, 180)
-  .ybounds(-180, 180)
-  .xAxis(tickCount = Some(6))
-  .yAxis(tickCount = Some(6))
-  .xLabel("phi")
-  .yLabel("psi")
-  .render()
+    .topLabels(Seq("Family Outing", "Snowy Election"))
+    .xbounds(-71.2, -71)
+    .ybounds(42.1, 42.4)
+    .xAxis(tickCount = Some(4))
+    .yAxis(tickCount = Some(4))
+    .render()
 ```
 </div>
 <div class="col-md-6">
@@ -208,7 +232,11 @@ Facets(
 </div>
 </div>
 
-Hopefully, this example convinces you that it's easy to start with a simple visual and compose more and more complexity
+Hopefully at this point we can start to draw some useful conclusions from our data. Interested in a low-key family outing?
+Your best bet is to search in an area with a high density of both free WiFi and water playgrounds! Did the Boston winter hit a
+little sooner than expected? No problem. Just look for a polling center near a highly dense emergency snow parking area.
+
+These examples are a little contrived, but now you know how to start with a simple visual and compose more and more complexity
 on top of it using plot combinators. We first saw that the base plot can be customized using `PlotRenderers`. After that
 we saw how simple `Plot => Plot` combinators can add additional features piece-by-piece. Next, we saw that
 "multilayer plots" are expressed in EvilPlot simply by applying `Overlay`, a function from `Seq[Plot] => Plot`.
