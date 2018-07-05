@@ -26,7 +26,18 @@
 
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">percentChange</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">](-</span><span class="mi">10</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">12</span><span class="o">,</span> <span class="mi">68</span><span class="o">,</span> <span class="o">-</span><span class="mi">22</span><span class="o">)</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.RGB</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry.</span><span class="o">{</span><span class="nc">Align</span><span class="o">,</span> <span class="nc">Drawable</span><span class="o">,</span> <span class="nc">Extent</span><span class="o">,</span> <span class="nc">Rect</span><span class="o">,</span> <span class="nc">Text</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.aesthetics.DefaultTheme.</span><span class="o">{</span><span class="nc">DefaultFonts</span><span class="o">,</span> <span class="nc">DefaultTheme</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.BarRenderer</span>
+
+<span class="k">implicit</span> <span class="k">val</span> <span class="n">theme</span><span class="k">:</span> <span class="kt">DefaultTheme</span> <span class="o">=</span> <span class="nc">DefaultTheme</span><span class="o">().</span><span class="n">copy</span><span class="o">(</span>
+  <span class="n">fonts</span> <span class="k">=</span> <span class="nc">DefaultFonts</span><span class="o">()</span>
+    <span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">tickLabelSize</span> <span class="k">=</span> <span class="mi">14</span><span class="o">,</span> <span class="n">legendLabelSize</span> <span class="k">=</span> <span class="mi">14</span><span class="o">,</span> <span class="n">fontFace</span> <span class="k">=</span> <span class="s">"'Lato', sans-serif"</span><span class="o">)</span>
+<span class="o">)</span>
+
+<span class="k">val</span> <span class="n">percentChange</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">](-</span><span class="mi">10</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">12</span><span class="o">,</span> <span class="mi">68</span><span class="o">,</span> <span class="o">-</span><span class="mi">22</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">labels</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span><span class="o">,</span> <span class="s">"two"</span><span class="o">,</span> <span class="s">"three"</span><span class="o">,</span> <span class="s">"four"</span><span class="o">,</span> <span class="s">"five"</span><span class="o">)</span>
 
 <span class="k">val</span> <span class="n">labeledByColor</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">BarRenderer</span> <span class="o">{</span>
@@ -36,7 +47,9 @@
     <span class="k">val</span> <span class="n">rect</span> <span class="k">=</span> <span class="nc">Rect</span><span class="o">(</span><span class="n">extent</span><span class="o">)</span>
     <span class="k">val</span> <span class="n">value</span> <span class="k">=</span> <span class="n">category</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">head</span>
     <span class="k">val</span> <span class="n">color</span> <span class="k">=</span> <span class="k">if</span> <span class="o">(</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="n">positive</span> <span class="k">else</span> <span class="n">negative</span>
-    <span class="nc">Align</span><span class="o">.</span><span class="n">center</span><span class="o">(</span><span class="n">rect</span> <span class="n">filled</span> <span class="n">color</span><span class="o">,</span> <span class="nc">Text</span><span class="o">(</span><span class="n">s</span><span class="s">"$value%"</span><span class="o">,</span> <span class="n">size</span> <span class="k">=</span> <span class="mi">20</span><span class="o">)).</span><span class="n">group</span>
+    <span class="nc">Align</span><span class="o">.</span><span class="n">center</span><span class="o">(</span><span class="n">rect</span> <span class="n">filled</span> <span class="n">color</span><span class="o">,</span> <span class="nc">Text</span><span class="o">(</span><span class="n">s</span><span class="s">"$value%"</span><span class="o">,</span> <span class="n">size</span> <span class="k">=</span> <span class="mi">20</span><span class="o">)</span>
+     <span class="o">.</span><span class="n">filled</span><span class="o">(</span><span class="n">theme</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">label</span><span class="o">)</span>
+    <span class="o">).</span><span class="n">group</span>
   <span class="o">}</span>
 <span class="o">}</span>
 
@@ -57,23 +70,25 @@
 <h2 id="clustered-bar-chart">Clustered Bar Chart</h2>
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]](</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span>
-    <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
-  <span class="o">)</span>
-  <span class="nc">BarChart</span>
-    <span class="o">.</span><span class="n">clustered</span><span class="o">(</span>
-      <span class="n">data</span><span class="o">,</span>
-      <span class="n">labels</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span><span class="o">,</span> <span class="s">"two"</span><span class="o">,</span> <span class="s">"three"</span><span class="o">)</span>
-    <span class="o">)</span>
-    <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"Clustered Bar Chart Demo"</span><span class="o">)</span>
-    <span class="o">.</span><span class="n">xAxis</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">,</span> <span class="s">"d"</span><span class="o">))</span>
-    <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">bottomLegend</span><span class="o">()</span>
-    <span class="o">.</span><span class="n">render</span><span class="o">()</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+
+<span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]](</span>
+<span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span>
+<span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">),</span>
+   <span class="nc">Seq</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span>
+   <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
+ <span class="o">)</span>
+ <span class="nc">BarChart</span>
+   <span class="o">.</span><span class="n">clustered</span><span class="o">(</span>
+     <span class="n">data</span><span class="o">,</span>
+     <span class="n">labels</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span><span class="o">,</span> <span class="s">"two"</span><span class="o">,</span> <span class="s">"three"</span><span class="o">)</span>
+   <span class="o">)</span>
+   <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"Clustered Bar Chart Demo"</span><span class="o">)</span>
+   <span class="o">.</span><span class="n">xAxis</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">,</span> <span class="s">"d"</span><span class="o">))</span>
+   <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
+   <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
+   <span class="o">.</span><span class="n">bottomLegend</span><span class="o">()</span>
+   <span class="o">.</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
   </div>
 <div class="col-md-6">
@@ -85,7 +100,9 @@
 <div class="row">
 <div class="col-md-6">
 
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]](</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+
+<span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]](</span>
   <span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span>
   <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">),</span>
   <span class="nc">Seq</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span>
@@ -112,7 +129,9 @@
 <h2 id="clustered-stacked-bar-chart">Clustered Stacked Bar Chart</h2>
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]]](</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+
+<span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">Double</span><span class="o">]]](</span>
   <span class="nc">Seq</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span> <span class="nc">Seq</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">)),</span>
   <span class="nc">Seq</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span> <span class="nc">Seq</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">))</span>
 <span class="o">)</span>
@@ -120,15 +139,10 @@
   <span class="o">.</span><span class="n">clusteredStacked</span><span class="o">(</span>
     <span class="n">data</span><span class="o">,</span>
     <span class="n">labels</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span><span class="o">,</span> <span class="s">"two"</span><span class="o">,</span> <span class="s">"three"</span><span class="o">)</span>
-  <span class="o">)</span>
-  <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"Clustered Stacked Bar Chart Demo"</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">xAxis</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"Category 1"</span><span class="o">,</span> <span class="s">"Category 2"</span><span class="o">))</span>
-  <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">xGrid</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">yGrid</span><span class="o">()</span>
+  <span class="o">).</span><span class="n">title</span><span class="o">(</span><span class="s">"Clustered Stacked Bar Chart Demo"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">standard</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="s">"Category 1"</span><span class="o">,</span> <span class="s">"Category 2"</span><span class="o">))</span>
   <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"Category"</span><span class="o">)</span>
   <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"Level"</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
   <span class="o">.</span><span class="n">rightLegend</span><span class="o">()</span>
   <span class="o">.</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
@@ -142,14 +156,17 @@
 <div class="row">
 <div class="col-md-6">
 
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">HTMLNamedColors.</span><span class="o">{</span><span class="n">blue</span><span class="o">,</span> <span class="n">green</span><span class="o">,</span> <span class="n">red</span><span class="o">}</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Bounds</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+
 <span class="nc">Overlay</span><span class="o">(</span>
   <span class="nc">FunctionPlot</span><span class="o">.</span><span class="n">series</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span><span class="o">,</span> <span class="s">"y = x^2"</span><span class="o">,</span>
-    <span class="n">blue</span><span class="o">,</span> <span class="n">xbounds</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">Bounds</span><span class="o">(-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">))),</span>
+    <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">dodgerBlue</span><span class="o">,</span> <span class="n">xbounds</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">Bounds</span><span class="o">(-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">))),</span>
   <span class="nc">FunctionPlot</span><span class="o">.</span><span class="n">series</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span> <span class="s">"y = x^3"</span><span class="o">,</span>
-    <span class="n">red</span><span class="o">,</span> <span class="n">xbounds</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">Bounds</span><span class="o">(-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">))),</span>
+    <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">crimson</span><span class="o">,</span> <span class="n">xbounds</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">Bounds</span><span class="o">(-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">))),</span>
   <span class="nc">FunctionPlot</span><span class="o">.</span><span class="n">series</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="mi">4</span><span class="o">),</span> <span class="s">"y = x^4"</span><span class="o">,</span>
-    <span class="n">green</span><span class="o">,</span> <span class="n">xbounds</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">Bounds</span><span class="o">(-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">)))</span>
+    <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">green</span><span class="o">,</span> <span class="n">xbounds</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">Bounds</span><span class="o">(-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">)))</span>
 <span class="o">).</span><span class="n">title</span><span class="o">(</span><span class="s">"A bunch of polynomials."</span><span class="o">)</span>
   <span class="o">.</span><span class="n">overlayLegend</span><span class="o">()</span>
   <span class="o">.</span><span class="n">standard</span><span class="o">()</span>
@@ -165,7 +182,10 @@
 <div class="row">
 <div class="col-md-6">
 
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="mi">10</span><span class="o">)(</span><span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextInt</span><span class="o">(</span><span class="mi">30</span><span class="o">))(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">()))</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+<span class="k">import</span> <span class="nn">scala.util.Random</span>
+
+<span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="mi">10</span><span class="o">)(</span><span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextInt</span><span class="o">(</span><span class="mi">30</span><span class="o">))(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">()))</span>
 <span class="nc">BoxPlot</span><span class="o">(</span><span class="n">data</span><span class="o">)</span>
   <span class="o">.</span><span class="n">standard</span><span class="o">(</span><span class="n">xLabels</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">toString</span><span class="o">))</span>
   <span class="o">.</span><span class="n">render</span><span class="o">()</span>
@@ -191,11 +211,7 @@
   <span class="n">points</span><span class="o">,</span>
   <span class="n">pointRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">PointRenderer</span><span class="o">.</span><span class="n">depthColor</span><span class="o">(</span><span class="n">years</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="nc">None</span><span class="o">))</span>
 <span class="o">)</span>
-  <span class="o">.</span><span class="n">frame</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">xGrid</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">yGrid</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">xAxis</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">standard</span><span class="o">()</span>
   <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"x"</span><span class="o">)</span>
   <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"y"</span><span class="o">)</span>
   <span class="o">.</span><span class="n">trend</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">)</span>
@@ -212,8 +228,12 @@
 <div class="row">
 <div class="col-md-6">
 
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry.LineStyle.DashDot</span>
-<span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors.dodgerBlue</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.RGB</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry.Extent</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry.LineStyle.DashDot</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Point</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.PointRenderer</span>
 
 <span class="k">val</span> <span class="n">allYears</span> <span class="k">=</span> <span class="o">(</span><span class="mi">2007</span> <span class="n">to</span> <span class="mi">2013</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">toDouble</span><span class="o">).</span><span class="n">toVector</span>
 <span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="mi">150</span><span class="o">)(</span><span class="nc">Point</span><span class="o">(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">(),</span> <span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">()))</span>
@@ -224,17 +244,13 @@
 <span class="nc">ScatterPlot</span><span class="o">(</span>
   <span class="n">data</span> <span class="k">=</span> <span class="n">data</span><span class="o">,</span>
   <span class="n">pointRenderer</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">PointRenderer</span><span class="o">.</span><span class="n">colorByCategory</span><span class="o">(</span><span class="n">years</span><span class="o">))</span>
-<span class="o">).</span><span class="n">frame</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">topPlot</span><span class="o">(</span><span class="n">xhist</span><span class="o">)</span>
+<span class="o">).</span><span class="n">topPlot</span><span class="o">(</span><span class="n">xhist</span><span class="o">)</span>
   <span class="o">.</span><span class="n">rightPlot</span><span class="o">(</span><span class="n">yhist</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">xGrid</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">yGrid</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">xAxis</span><span class="o">()</span>
-  <span class="o">.</span><span class="n">yAxis</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">standard</span><span class="o">()</span>
   <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"Measured vs Actual"</span><span class="o">)</span>
   <span class="o">.</span><span class="n">xLabel</span><span class="o">(</span><span class="s">"measured"</span><span class="o">)</span>
   <span class="o">.</span><span class="n">yLabel</span><span class="o">(</span><span class="s">"actual"</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">trend</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">color</span> <span class="k">=</span> <span class="n">dodgerBlue</span><span class="o">,</span> <span class="n">lineStyle</span> <span class="k">=</span> <span class="nc">DashDot</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">trend</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">color</span> <span class="k">=</span> <span class="nc">RGB</span><span class="o">(</span><span class="mi">45</span><span class="o">,</span> <span class="mi">45</span><span class="o">,</span> <span class="mi">45</span><span class="o">),</span> <span class="n">lineStyle</span> <span class="k">=</span> <span class="nc">LineStyle</span><span class="o">.</span><span class="nc">DashDot</span><span class="o">)</span>
   <span class="o">.</span><span class="n">overlayLegend</span><span class="o">(</span><span class="n">x</span> <span class="k">=</span> <span class="mf">0.95</span><span class="o">,</span> <span class="n">y</span> <span class="k">=</span> <span class="mf">0.8</span><span class="o">)</span>
   <span class="o">.</span><span class="n">render</span><span class="o">(</span><span class="nc">Extent</span><span class="o">(</span><span class="mi">600</span><span class="o">,</span> <span class="mi">400</span><span class="o">))</span>
 </code></pre></div>    </div>
@@ -248,7 +264,9 @@
 <div class="row">
 <div class="col-md-6">
 
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span> <span class="o">-&gt;</span> <span class="mf">1.5</span><span class="o">,</span> <span class="s">"two"</span> <span class="o">-&gt;</span> <span class="mf">3.5</span><span class="o">,</span> <span class="s">"three"</span> <span class="o">-&gt;</span> <span class="mf">2.0</span><span class="o">)</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+
+<span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">"one"</span> <span class="o">-&gt;</span> <span class="mf">1.5</span><span class="o">,</span> <span class="s">"two"</span> <span class="o">-&gt;</span> <span class="mf">3.5</span><span class="o">,</span> <span class="s">"three"</span> <span class="o">-&gt;</span> <span class="mf">2.0</span><span class="o">)</span>
 <span class="nc">PieChart</span><span class="o">(</span><span class="n">data</span><span class="o">).</span><span class="n">rightLegend</span><span class="o">().</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
   </div>
@@ -262,7 +280,8 @@
 
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Point</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.aesthetics.DefaultTheme._</span>
 <span class="k">import</span> <span class="nn">scala.util.Random</span>
 
@@ -298,7 +317,9 @@
 
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.Color</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Bounds</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.aesthetics.DefaultTheme._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.PathRenderer</span>
 <span class="k">import</span> <span class="nn">scala.util.Random</span>
@@ -342,7 +363,8 @@
 <h2 id="overlapping-histograms">Overlapping Histograms</h2>
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors.</span><span class="o">{</span><span class="n">red</span><span class="o">,</span> <span class="n">green</span><span class="o">}</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors.</span><span class="o">{</span><span class="n">green</span><span class="o">,</span> <span class="n">red</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry.Extent</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.aesthetics.DefaultTheme._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.BarRenderer</span>
@@ -370,18 +392,19 @@
 
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Point</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.aesthetics.DefaultTheme._</span>
 <span class="k">import</span> <span class="nn">scala.util.Random</span>
 
-<span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span> <span class="o">{</span> 
+<span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">fill</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span> <span class="o">{</span>
   <span class="nc">Point</span><span class="o">(</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">()</span> <span class="o">*</span> <span class="mi">20</span><span class="o">,</span> <span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">()</span> <span class="o">*</span> <span class="mi">20</span>
 <span class="o">}</span>
 <span class="nc">ContourPlot</span><span class="o">(</span><span class="n">data</span><span class="o">)</span>
   <span class="o">.</span><span class="n">standard</span><span class="o">()</span>
   <span class="o">.</span><span class="n">xbounds</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">20</span><span class="o">)</span>
   <span class="o">.</span><span class="n">ybounds</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">20</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">render</span><span class="o">(</span><span class="n">plotAreaSize</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
   </div>
 <div class="col-md-6">

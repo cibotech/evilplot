@@ -101,7 +101,7 @@ absolute coordinates.</p>
 
 <h3 id="styling-primitives">Styling Primitives</h3>
 
-<p>Lastly, styling primitives allow us to modify the appearance of scenes.</p>
+<p>Styling primitives allow us to modify the appearance of scenes.</p>
 
 <ul>
   <li><code class="highlighter-rouge">Style</code> colors the inside of a <code class="highlighter-rouge">Drawable</code></li>
@@ -119,12 +119,12 @@ circle, you might write:</p>
 <div class="col-md-6">
     <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
-<span class="k">val</span> <span class="n">rect</span> <span class="k">=</span> <span class="nc">Style</span><span class="o">(</span><span class="nc">Rect</span><span class="o">(</span><span class="mi">400</span><span class="o">,</span> <span class="mi">400</span><span class="o">),</span> <span class="nc">RGB</span><span class="o">(</span><span class="mi">83</span><span class="o">,</span> <span class="mi">87</span><span class="o">,</span> <span class="mi">79</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">rect</span> <span class="k">=</span> <span class="nc">Style</span><span class="o">(</span><span class="nc">Rect</span><span class="o">(</span><span class="mi">400</span><span class="o">,</span> <span class="mi">400</span><span class="o">),</span> <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">red</span><span class="o">)</span>
 <span class="nc">Group</span><span class="o">(</span>
   <span class="nc">Seq</span><span class="o">(</span>
     <span class="nc">Style</span><span class="o">(</span>
       <span class="nc">Translate</span><span class="o">(</span><span class="nc">Disc</span><span class="o">(</span><span class="mi">200</span><span class="o">),</span> <span class="n">x</span> <span class="k">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">extent</span><span class="o">.</span><span class="n">width</span><span class="o">),</span>
-      <span class="nc">RGB</span><span class="o">(</span><span class="mi">78</span><span class="o">,</span> <span class="mi">89</span><span class="o">,</span> <span class="mi">94</span><span class="o">)</span>
+      <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">blue</span>
     <span class="o">),</span>
     <span class="n">rect</span>
   <span class="o">)</span>
@@ -142,8 +142,8 @@ of nesting constructors like we did up there, we can do the following with the s
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
 
-<span class="k">val</span> <span class="n">rect</span> <span class="k">=</span> <span class="nc">Rect</span><span class="o">(</span><span class="mi">400</span><span class="o">,</span> <span class="mi">400</span><span class="o">)</span> <span class="n">filled</span> <span class="nc">RGB</span><span class="o">(</span><span class="mi">83</span><span class="o">,</span> <span class="mi">87</span><span class="o">,</span> <span class="mi">79</span><span class="o">)</span>
-<span class="nc">Disc</span><span class="o">(</span><span class="mi">200</span><span class="o">)</span> <span class="n">transX</span> <span class="n">rect</span><span class="o">.</span><span class="n">extent</span><span class="o">.</span><span class="n">width</span> <span class="n">filled</span> <span class="nc">RGB</span><span class="o">(</span><span class="mi">78</span><span class="o">,</span> <span class="mi">89</span><span class="o">,</span> <span class="mi">94</span><span class="o">)</span> <span class="n">behind</span> <span class="n">rect</span>
+<span class="k">val</span> <span class="n">rect</span> <span class="k">=</span> <span class="nc">Rect</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="mi">40</span><span class="o">)</span> <span class="n">filled</span> <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">red</span>
+<span class="nc">Disc</span><span class="o">(</span><span class="mi">20</span><span class="o">)</span> <span class="n">transX</span> <span class="n">rect</span><span class="o">.</span><span class="n">extent</span><span class="o">.</span><span class="n">width</span> <span class="n">filled</span> <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">blue</span> <span class="n">behind</span> <span class="n">rect</span>
 </code></pre></div></div>
 
 <p>The drawing API gives us the power to describe all of the scenes involved in the plots that EvilPlot can create; at no
@@ -178,11 +178,12 @@ helpful:</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Point</span>
 
 <span class="k">val</span> <span class="n">aligned</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">Drawable</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Align</span><span class="o">.</span><span class="n">right</span><span class="o">(</span>
-  <span class="nc">Rect</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="mi">60</span><span class="o">)</span> <span class="n">filled</span> <span class="n">blue</span><span class="o">,</span>
-  <span class="nc">Disc</span><span class="o">(</span><span class="mi">70</span><span class="o">)</span> <span class="n">filled</span> <span class="n">red</span><span class="o">,</span>
-  <span class="nc">Polygon</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">20</span><span class="o">,</span> <span class="mi">60</span><span class="o">),</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="mi">20</span><span class="o">),</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">30</span><span class="o">,</span> <span class="mi">30</span><span class="o">)))</span> <span class="n">filled</span> <span class="n">green</span>
+  <span class="nc">Polygon</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">30</span><span class="o">),</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">15</span><span class="o">,</span> <span class="mi">0</span><span class="o">),</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">30</span><span class="o">,</span> <span class="mi">30</span><span class="o">)))</span> <span class="n">filled</span> <span class="n">red</span><span class="o">,</span>
+  <span class="nc">Rect</span><span class="o">(</span><span class="mi">50</span><span class="o">,</span> <span class="mi">50</span><span class="o">)</span> <span class="n">filled</span> <span class="n">blue</span><span class="o">,</span>
+  <span class="nc">Disc</span><span class="o">(</span><span class="mi">15</span><span class="o">)</span> <span class="n">filled</span> <span class="n">red</span><span class="o">,</span>
 <span class="o">)</span>
 
 <span class="n">aligned</span><span class="o">.</span><span class="n">reduce</span><span class="o">(</span><span class="k">_</span> <span class="n">below</span> <span class="k">_</span><span class="o">)</span>
@@ -190,7 +191,6 @@ helpful:</p>
 
 <p>The available alignment functions are:<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>.</p>
 
-<!-- ugh fix this alignment -->
 <div class="container">
 <div class="row">
 <div class="col-md-3">
@@ -227,12 +227,12 @@ and two boxes, then centered them vertically and placed them on top of each othe
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.colors.HTMLNamedColors.</span><span class="o">{</span><span class="n">blue</span><span class="o">,</span> <span class="n">white</span><span class="o">}</span>
 
 <span class="c1">// Some values from the outside:
-</span><span class="k">val</span> <span class="n">width</span> <span class="k">=</span> <span class="mi">10</span>
-<span class="k">val</span> <span class="n">topWhisker</span> <span class="k">=</span> <span class="mi">50</span>
-<span class="k">val</span> <span class="n">bottomWhisker</span> <span class="k">=</span> <span class="mi">30</span>
-<span class="k">val</span> <span class="n">upperToMiddle</span> <span class="k">=</span> <span class="mi">40</span>
-<span class="k">val</span> <span class="n">middleToLower</span> <span class="k">=</span> <span class="mi">35</span>
-<span class="k">val</span> <span class="n">strokeWidth</span> <span class="k">=</span> <span class="mi">2</span>
+</span><span class="k">val</span> <span class="n">width</span> <span class="k">=</span> <span class="mi">100</span>
+<span class="k">val</span> <span class="n">topWhisker</span> <span class="k">=</span> <span class="mi">60</span>
+<span class="k">val</span> <span class="n">bottomWhisker</span> <span class="k">=</span> <span class="mi">40</span>
+<span class="k">val</span> <span class="n">upperToMiddle</span> <span class="k">=</span> <span class="mi">50</span>
+<span class="k">val</span> <span class="n">middleToLower</span> <span class="k">=</span> <span class="mi">45</span>
+<span class="k">val</span> <span class="n">strokeWidth</span> <span class="k">=</span> <span class="mi">3</span>
 
 <span class="nc">Align</span><span class="o">.</span><span class="n">center</span><span class="o">(</span>
   <span class="nc">Line</span><span class="o">(</span><span class="n">topWhisker</span><span class="o">,</span> <span class="n">strokeWidth</span><span class="o">).</span><span class="n">rotated</span><span class="o">(</span><span class="mi">90</span><span class="o">),</span>

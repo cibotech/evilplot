@@ -4,8 +4,9 @@
 
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">transparentColor</span> <span class="k">=</span> <span class="nc">HSLA</span><span class="o">(</span><span class="mi">210</span><span class="o">,</span> <span class="mi">100</span><span class="o">,</span> <span class="mi">56</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">)</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
 
+<span class="k">val</span> <span class="n">transparentColor</span> <span class="k">=</span> <span class="nc">HSLA</span><span class="o">(</span><span class="mi">210</span><span class="o">,</span> <span class="mi">100</span><span class="o">,</span> <span class="mi">56</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">color</span> <span class="k">=</span> <span class="nc">HSL</span><span class="o">(</span><span class="mi">210</span><span class="o">,</span> <span class="mi">100</span><span class="o">,</span> <span class="mi">56</span><span class="o">)</span> <span class="c1">// fully opaque
 </span></code></pre></div>    </div>
   </div>
@@ -17,10 +18,10 @@
 <p>You can also use the RGB representation to describe a color. It will be converted to HSL automatically.</p>
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">transparentColor</span> <span class="k">=</span> <span class="nc">RGBA</span><span class="o">(</span><span class="mi">230</span><span class="o">,</span> <span class="mi">126</span><span class="o">,</span> <span class="mi">34</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">)</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
 
+<span class="k">val</span> <span class="n">transparentColor</span> <span class="k">=</span> <span class="nc">RGBA</span><span class="o">(</span><span class="mi">230</span><span class="o">,</span> <span class="mi">126</span><span class="o">,</span> <span class="mi">34</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">color</span> <span class="k">=</span> <span class="nc">RGB</span><span class="o">(</span><span class="mi">230</span><span class="o">,</span> <span class="mi">126</span><span class="o">,</span> <span class="mi">34</span><span class="o">)</span>
-
 <span class="k">val</span> <span class="n">hexColor</span> <span class="k">=</span> <span class="nc">HEX</span><span class="o">(</span><span class="s">"E67E22"</span><span class="o">)</span>
 </code></pre></div>    </div>
   </div>
@@ -147,6 +148,8 @@
     <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.PointRenderer</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry.Extent</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Point</span>
 
 <span class="k">val</span> <span class="n">gradient</span> <span class="k">=</span> <span class="nc">ContinuousColoring</span><span class="o">.</span><span class="n">gradient</span><span class="o">(</span><span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">blue</span><span class="o">,</span> <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">orange</span><span class="o">)</span>
 
@@ -193,6 +196,8 @@
     <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.colors._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.renderers.PointRenderer</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry.Extent</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Point</span>
 
 <span class="k">val</span> <span class="n">gradient</span><span class="k">:</span> <span class="kt">Coloring</span><span class="o">[</span><span class="kt">Double</span><span class="o">]</span> <span class="k">=</span> <span class="nc">CategoricalColoring</span><span class="o">.</span><span class="n">gradient</span><span class="o">(</span>
   <span class="nc">HTMLNamedColors</span><span class="o">.</span><span class="n">blue</span><span class="o">,</span>

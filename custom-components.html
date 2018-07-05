@@ -4,7 +4,10 @@
 
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">LinePlot</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">3</span><span class="o">)))</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Point</span>
+
+<span class="nc">LinePlot</span><span class="o">(</span><span class="nc">Seq</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">),</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">3</span><span class="o">)))</span>
   <span class="o">.</span><span class="n">xAxis</span><span class="o">().</span><span class="n">yAxis</span><span class="o">()</span>
   <span class="o">.</span><span class="n">xGrid</span><span class="o">().</span><span class="n">yGrid</span><span class="o">()</span>
   <span class="o">.</span><span class="n">hline</span><span class="o">(</span><span class="mf">2d</span><span class="o">)</span>
@@ -60,7 +63,11 @@ You can see this in the plot below where three Label components are added, all a
 
 <p>Here’s a sample custom component that adds a marker to the right side of our example plot.</p>
 
-<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">case</span> <span class="k">class</span> <span class="nc">RightSideMarker</span><span class="o">(</span>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.geometry.</span><span class="o">{</span><span class="nc">Align</span><span class="o">,</span> <span class="nc">Drawable</span><span class="o">,</span> <span class="nc">Extent</span><span class="o">,</span> <span class="nc">Polygon</span><span class="o">,</span> <span class="nc">Text</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.aesthetics.Theme</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.components.</span><span class="o">{</span><span class="nc">PlotComponent</span><span class="o">,</span> <span class="nc">Position</span><span class="o">}</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">RightSideMarker</span><span class="o">(</span>
   <span class="n">msg</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
   <span class="n">value</span><span class="k">:</span> <span class="kt">Double</span>
 <span class="o">)</span> <span class="k">extends</span> <span class="nc">PlotComponent</span> <span class="o">{</span>
@@ -89,7 +96,7 @@ You can see this in the plot below where three Label components are added, all a
   <span class="o">.</span><span class="n">hline</span><span class="o">(</span><span class="mf">2d</span><span class="o">)</span>
   <span class="o">.</span><span class="n">title</span><span class="o">(</span><span class="s">"An example plot"</span><span class="o">)</span>
   <span class="o">.</span><span class="n">component</span><span class="o">(</span><span class="nc">RightSideMarker</span><span class="o">(</span><span class="s">"marker at 2"</span><span class="o">,</span> <span class="mi">2</span><span class="o">))</span>
-  <span class="o">.</span><span class="n">render</span><span class="o">(</span><span class="n">plotAreaSize</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">render</span><span class="o">()</span>
 </code></pre></div>    </div>
   </div>
 <div class="col-md-6">
