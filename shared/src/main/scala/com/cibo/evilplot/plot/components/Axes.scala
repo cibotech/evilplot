@@ -223,7 +223,8 @@ object Axes {
       tickCount: Option[Int] = None,
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
-      tickCountRange: Option[Seq[Int]] = None
+      tickCountRange: Option[Seq[Int]] = None,
+      newBounds: Option[Bounds] = None
     )(implicit theme: Theme): Plot = {
       val component = ContinuousXAxisPlotComponent(
         tickCount.getOrElse(theme.elements.xTickCount),
@@ -246,18 +247,18 @@ object Axes {
       labelFormatter: Option[Double => String] = None,
       tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
-      //val component = ContinuousXAxisPlotComponent(
-      //  tickCount.getOrElse(theme.elements.xTickCount),
-      //  tickRenderer.getOrElse(
-      //    TickRenderer.xAxisTickRenderer(
-      //      length = theme.elements.tickLength,
-      //      thickness = theme.elements.tickThickness,
-      //      rotateText = theme.elements.continuousXAxisLabelOrientation
-      //    )),
-      //  labelFormatter,
-      //  tickCountRange
-      //)
-      //component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
+      val component = ContinuousXAxisPlotComponent(
+        tickCount.getOrElse(theme.elements.xTickCount),
+        tickRenderer.getOrElse(
+          TickRenderer.xAxisTickRenderer(
+            length = theme.elements.tickLength,
+            thickness = theme.elements.tickThickness,
+            rotateText = theme.elements.continuousXAxisLabelOrientation
+          )),
+        labelFormatter,
+        tickCountRange
+      )
+      component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
     /** Add an X axis to the plot

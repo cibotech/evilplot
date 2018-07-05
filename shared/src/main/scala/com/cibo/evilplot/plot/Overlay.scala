@@ -66,6 +66,7 @@ object Overlay {
     override def legendContext: LegendContext =
       LegendContext.combine(subplots.map(_.renderer.legendContext))
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
+      //val updatedPlots = Plot.padPlots(Seq(getTransformedSubplots(plot, subplots)), plotExtent, 0, 0).head
       val updatedPlots = updateSubplotBounds(
         subplots = Plot.padPlots(Seq(getTransformedSubplots(plot, subplots)), plotExtent, 0, 0).head,
         xbounds = plot.xbounds,
@@ -76,7 +77,7 @@ object Overlay {
   }
 
   /** Overlay one or more plots. */
-  def apply(plots: Plot*): Plot = {
+  def apply(plots: Plot*)(implicit theme: Theme): Plot = {
     require(plots.nonEmpty, "must have at least one plot for an overlay")
 
     // Update bounds on subplots.
@@ -84,19 +85,24 @@ object Overlay {
     val ybounds = Plot.combineBounds(plots.map(_.ybounds))
     val updatedPlots = updateSubplotBounds(plots, xbounds, ybounds)
 
-    Plot(
+    val result = Plot(
       xbounds = xbounds,
       ybounds = ybounds,
       renderer = OverlayPlotRenderer(updatedPlots)
     )
+
+    updatedPlots.foldLeft(result) { (individual, combined) =>
+      //p.xAxis(p.xbounds).yAxis(p.ybounds)
+      individual.xAxis().yAxis()
+    }
   }
 
   /** Overlay a sequence of plots. */
-  def fromSeq(plots: Seq[Plot]): Plot = apply(plots: _*)
+  def fromSeq(plots: Seq[Plot])(implicit theme: Theme): Plot = apply(plots: _*)
 }
 
 trait OverlayImplicits {
   protected val plot: Plot
 
-  def overlay(plot2: Plot): Plot = Overlay(plot, plot2)
+  def overlay(plot2: Plot)(implicit theme: Theme): Plot = Overlay(plot, plot2)
 }

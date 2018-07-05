@@ -179,7 +179,9 @@ object DemoPlots {
       FunctionPlot.series(x => math.pow(x, 4), "y = x\u2074", three, xbounds = Some(Bounds(-1, 1)))
     ).title("A bunch of polynomials.")
       .overlayLegend()
-      .standard()
+      //.standard()
+      .xGrid().yGrid().frame()
+      //.xAxis().xAxis().xAxis()
       .render(plotAreaSize)
   }
 
