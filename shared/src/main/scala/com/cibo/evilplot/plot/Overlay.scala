@@ -66,12 +66,13 @@ object Overlay {
     override def legendContext: LegendContext =
       LegendContext.combine(subplots.map(_.renderer.legendContext))
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-      //val updatedPlots = Plot.padPlots(Seq(getTransformedSubplots(plot, subplots)), plotExtent, 0, 0).head
-      val updatedPlots = updateSubplotBounds(
-        subplots = Plot.padPlots(Seq(getTransformedSubplots(plot, subplots)), plotExtent, 0, 0).head,
-        xbounds = plot.xbounds,
-        ybounds = plot.ybounds
-      )
+      val updatedPlots = Plot.padPlots(Seq(getTransformedSubplots(plot, subplots)), plotExtent, 0, 0).head
+      //XXX
+      //val updatedPlots = updateSubplotBounds(
+      //  subplots = Plot.padPlots(Seq(getTransformedSubplots(plot, subplots)), plotExtent, 0, 0).head,
+      //  xbounds = plot.xbounds,
+      //  ybounds = plot.ybounds
+      //)
       updatedPlots.map(_.render(plotExtent)).group
     }
   }
@@ -88,13 +89,15 @@ object Overlay {
     val result = Plot(
       xbounds = xbounds,
       ybounds = ybounds,
-      renderer = OverlayPlotRenderer(updatedPlots)
+      //renderer = OverlayPlotRenderer(updatedPlots) //XXX
+      renderer = OverlayPlotRenderer(plots)
     )
+    result
 
-    updatedPlots.foldLeft(result) { (individual, combined) =>
-      //p.xAxis(p.xbounds).yAxis(p.ybounds)
-      individual.xAxis().yAxis()
-    }
+    //updatedPlots.foldLeft(result) { (individual, combined) =>
+    //  //p.xAxis(p.xbounds).yAxis(p.ybounds)
+    //  individual.xAxis().yAxis()
+    //}
   }
 
   /** Overlay a sequence of plots. */

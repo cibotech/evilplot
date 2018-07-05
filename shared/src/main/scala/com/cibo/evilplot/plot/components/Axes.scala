@@ -77,6 +77,7 @@ object Axes {
       ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.height).extent
 
     def bounds(plot: Plot): Bounds = plot.xbounds
+    //def bounds(plot: Plot): Bounds = Bounds(-1, 3)
 
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val descriptor = getDescriptor(plot, fixed = true)
@@ -97,7 +98,8 @@ object Axes {
   }
 
   private sealed trait YAxisPlotComponent extends AxisPlotComponent {
-    final val position: Position = Position.Left
+    //final val position: Position = Position.Left
+    val position: Position = Position.Left
     override def size(plot: Plot): Extent =
       ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.width).extent
 
@@ -122,6 +124,29 @@ object Axes {
         .group
       drawable.translate(x = extent.width - drawable.extent.width)
     }
+  }
+
+  private case class HackedXAxisPlotComponent(
+    bounds: Bounds,
+    tickCount: Int,
+    tickRenderer: TickRenderer,
+    override val labelFormatter: Option[Double => String],
+    tickCountRange: Option[Seq[Int]]
+  ) extends XAxisPlotComponent
+    with ContinuousAxis {
+    override def bounds(plot: Plot): Bounds = bounds
+  }
+
+  private case class HackedYAxisPlotComponent(
+    bounds: Bounds,
+    override val position: Position,
+    tickCount: Int,
+    tickRenderer: TickRenderer,
+    override val labelFormatter: Option[Double => String],
+    tickCountRange: Option[Seq[Int]]
+  ) extends YAxisPlotComponent
+    with ContinuousAxis {
+    override def bounds(plot: Plot): Bounds = bounds
   }
 
   private case class ContinuousXAxisPlotComponent(
@@ -240,14 +265,24 @@ object Axes {
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
+    // What would be convenient for tying axes to data?
+    // manual bounds?
+    // a plot?
+    // sequence of data/points?
+    // ------
+    // manual or plot seem like the easiest jumps from where we are now...
+    // ... but revisit once axes get severed from plots/bounds
+
     def xHackedAxis(
-      scaling: LinearScaling,
+      //scaling: LinearScaling,
+      bounds: Bounds,
       tickCount: Option[Int] = None,
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
       tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
-      val component = ContinuousXAxisPlotComponent(
+      val component = HackedXAxisPlotComponent(
+        bounds,
         tickCount.getOrElse(theme.elements.xTickCount),
         tickRenderer.getOrElse(
           TickRenderer.xAxisTickRenderer(
@@ -258,7 +293,8 @@ object Axes {
         labelFormatter,
         tickCountRange
       )
-      component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
+      //component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
+      component +: plot
     }
 
     /** Add an X axis to the plot
@@ -307,6 +343,29 @@ object Axes {
         tickCountRange
       )
       component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
+    }
+
+    def yHackedAxis(
+      bounds: Bounds,
+      position: Position,
+      tickCount: Option[Int] = None,
+      tickRenderer: Option[TickRenderer] = None,
+      labelFormatter: Option[Double => String] = None,
+      tickCountRange: Option[Seq[Int]] = None
+    )(implicit theme: Theme): Plot = {
+      val component = HackedYAxisPlotComponent(
+        bounds,
+        position,
+        tickCount.getOrElse(theme.elements.xTickCount),
+        tickRenderer.getOrElse(
+          TickRenderer.yAxisTickRenderer(
+            length = theme.elements.tickLength,
+            thickness = theme.elements.tickThickness
+          )),
+        labelFormatter,
+        tickCountRange
+      )
+      component +: plot
     }
 
     /** Add a Y axis to the plot.

@@ -92,7 +92,8 @@ object DemoPlots {
   lazy val axesStuff: Drawable = {
     LinePlot(flipPoints)
       .yAxis()
-      .xHackedAxis(LinearScaling((1, 3), (0, 300)))
+      //.xHackedAxis(LinearScaling((1, 3), (0, 300)))
+      .xHackedAxis(Bounds(0, 4))
       .xGrid().yGrid()
       .frame()
       .render(Extent(300, 300))
@@ -414,6 +415,9 @@ object DemoPlots {
     val colors = theme.colors.stream.take(3)
     val bandwidths = Seq(5d, 2d, 0.5d)
     Overlay(
+      Histogram(data)
+        .xbounds(0, 30)
+        +:
       colors.zip(bandwidths).map {
         case (c, b) =>
           FunctionPlot(
@@ -424,6 +428,7 @@ object DemoPlots {
           )
       }: _*
     ).standard()
+      .yHackedAxis(Bounds(0, 1), Position.Right)
       .xbounds(0, 30)
       .render(plotAreaSize)
   }
