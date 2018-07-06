@@ -32,14 +32,15 @@ package com.cibo.evilplot
 
 import java.awt.{Graphics, Graphics2D}
 
-import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.{Plot}
 import javax.swing.{JFileChooser, JFrame, JPanel}
-import java.awt.event.{ActionEvent, ComponentAdapter, ComponentEvent}
+import java.awt.event.{ActionEvent, ActionListener, ComponentAdapter, ComponentEvent}
 import java.io.File
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme}
 import javax.swing.filechooser.FileNameExtensionFilter
+
 
 object displayPlot {
 
@@ -73,13 +74,12 @@ object displayPlot {
     private def createMenuBar()(implicit theme: Theme): Unit = {
       val menubar = new JMenuBar
       val save = new JMenuItem("Save")
-      save.addActionListener((event: ActionEvent) => {
-        def save(event: ActionEvent) = {
+      val actionListener = new ActionListener {
+        def actionPerformed(e: ActionEvent) = {
           val selectFile = new JFileChooser()
           selectFile.setCurrentDirectory(null)
           selectFile.setFileFilter(new FileNameExtensionFilter("png", "png"))
-          val savedFile: Int = selectFile.showSaveDialog(this)
-
+          val savedFile: Int = selectFile.showSaveDialog(panel)
           if (savedFile == JFileChooser.APPROVE_OPTION) {
             val extensionPattern = "(.*\\.png)".r
             val file: File = selectFile.getSelectedFile.toString match {
@@ -89,8 +89,8 @@ object displayPlot {
             savePlot(file)
           }
         }
-        save(event)
-      })
+      }
+      save.addActionListener(actionListener)
       menubar.add(save)
       setJMenuBar(menubar)
     }
