@@ -11,8 +11,9 @@ Colors in EvilPlot are described by their [HSL](https://en.wikipedia.org/wiki/HS
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-val transparentColor = HSLA(210, 100, 56, 0.8)
+import com.cibo.evilplot.colors._
 
+val transparentColor = HSLA(210, 100, 56, 0.8)
 val color = HSL(210, 100, 56) // fully opaque
 ```
 </div>
@@ -25,10 +26,10 @@ You can also use the RGB representation to describe a color. It will be converte
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
+import com.cibo.evilplot.colors._
+
 val transparentColor = RGBA(230, 126, 34, 0.8)
-
 val color = RGB(230, 126, 34)
-
 val hexColor = HEX("E67E22")
 ```
 </div>
@@ -163,6 +164,8 @@ Data can be colored using a continuous gradient.
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.renderers.PointRenderer
+import com.cibo.evilplot.geometry.Extent
+import com.cibo.evilplot.numeric.Point
 
 val gradient = ContinuousColoring.gradient(HTMLNamedColors.blue, HTMLNamedColors.orange)
 
@@ -211,6 +214,8 @@ Categorical data can be colored using a categorical gradient.
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.renderers.PointRenderer
+import com.cibo.evilplot.geometry.Extent
+import com.cibo.evilplot.numeric.Point
 
 val gradient: Coloring[Double] = CategoricalColoring.gradient(
   HTMLNamedColors.blue,

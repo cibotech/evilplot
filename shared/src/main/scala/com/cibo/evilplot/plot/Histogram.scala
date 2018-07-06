@@ -92,6 +92,10 @@ object Histogram {
         EmptyDrawable()
       }
     }
+
+    override val legendContext: LegendContext =
+      barRenderer.legendContext.getOrElse(LegendContext.empty)
+
   }
 
   /** Create a histogram.

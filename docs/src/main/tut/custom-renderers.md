@@ -63,13 +63,18 @@ You might be familiar with adding random "jitter" to points in a scatter plot fr
 implement that in EvilPlot as a custom point renderer. This adds a bit of jitter in the y dimension.
 
 ```scala
-def jitter(range: Double)(implicit theme: Theme): PointRenderer = new PointRenderer {
-  def render(plot: Plot, extent: Extent, context: Int): Drawable = {
-    import scala.util.Random
-    val yTransform = (y: Double) => plot.xtransform(plot, extent)(y) + plot.xbounds.min
-    Disc.centered(theme.elements.pointSize)
-      .transY(yTransform(range * Random.nextDouble() - .5))
-  }
+import com.cibo.evilplot.geometry.{Disc, Extent}
+import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.renderers.PointRenderer
+import scala.util.Random
+
+def jitter(range: Double)(implicit theme: Theme): PointRenderer = (plot: Plot, extent: Extent, context: Int) => {
+    val scaleY = (y: Double) =>
+      plot.ytransform(plot, extent)(y + plot.ybounds.min) - extent.height
+    Disc
+      .centered(theme.elements.pointSize)
+      .transY(scaleY(range * (Random.nextDouble() - .5)))
 }
 ```
 
@@ -91,6 +96,11 @@ need a renderer for a bar chart that colors the bar based on the value, say red 
 will work for non-stacked bar charts:
 
 ```scala
+import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.geometry.{Drawable, Extent, Rect}
+import com.cibo.evilplot.plot.{Bar, Plot}
+import com.cibo.evilplot.plot.renderers.BarRenderer
+
 def colorBy(fn: Double => Color): BarRenderer = new BarRenderer {
   def render(plot: Plot, extent: Extent, category: Bar): Drawable =
     Rect(extent) filled fn(category.values.head)
@@ -102,7 +112,9 @@ For a stacked bar chart, things might get a bit more complicated. But, we can us
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
-import com.cibo.evilplot.colors.HTMLNamedColors.{crimson, dodgerBlue}
+import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.plot._
+
 val coloring: Double => Color = (d: Double) =>
   if (d <= 0) crimson else dodgerBlue
 BarChart.custom(Seq(-15, 22, -5).map(Bar(_)), Some(colorBy(coloring)))

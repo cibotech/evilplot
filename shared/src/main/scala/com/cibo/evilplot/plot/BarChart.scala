@@ -77,7 +77,8 @@ object BarChart {
     clusterSpacing: Double
   ) extends PlotRenderer {
 
-    override def legendContext: LegendContext = LegendContext.combine(data.map(_.legendContext))
+    override def legendContext: LegendContext =
+      LegendContext.combine(barRenderer.legendContext.toSeq ++ data.map(_.legendContext))
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.isEmpty) {
