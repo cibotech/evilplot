@@ -93,7 +93,7 @@ object DemoPlots {
     LinePlot(flipPoints)
       .yAxis()
       //.xHackedAxis(LinearScaling((1, 3), (0, 300)))
-      .xHackedAxis(Bounds(0, 4))
+      .xHackedAxis(Bounds(0, 4), Position.Bottom)
       .xGrid().yGrid()
       .frame()
       .render(Extent(300, 300))
@@ -412,9 +412,9 @@ object DemoPlots {
 
   lazy val densityPlot: Drawable = {
     val data = Seq.fill(150)(Random.nextDouble() * 30)
-    val colors = theme.colors.stream.take(3)
+    val colors = theme.colors.stream.slice(1, 4)
     val bandwidths = Seq(5d, 2d, 0.5d)
-    Overlay(
+    val plot = Overlay(
       Histogram(data)
         .xbounds(0, 30)
         +:
@@ -427,8 +427,14 @@ object DemoPlots {
             Some(PathRenderer.default(color = Some(c)))
           )
       }: _*
-    ).standard()
-      .yHackedAxis(Bounds(0, 1), Position.Right)
+    )//.standard()
+      .xGrid().yGrid().background().frame()
+    plot
+      //.xAxis()
+      .yHackedAxis(plot.ybounds, Position.Left)
+      .yHackedAxis(Bounds(0, 100), Position.Right)
+      .xHackedAxis(plot.xbounds, Position.Bottom)
+      .xHackedAxis(Bounds(0, 100), Position.Top)
       .xbounds(0, 30)
       .render(plotAreaSize)
   }

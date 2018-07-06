@@ -77,7 +77,6 @@ object Axes {
       ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.height).extent
 
     def bounds(plot: Plot): Bounds = plot.xbounds
-    //def bounds(plot: Plot): Bounds = Bounds(-1, 3)
 
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val descriptor = getDescriptor(plot, fixed = true)
@@ -98,8 +97,7 @@ object Axes {
   }
 
   private sealed trait YAxisPlotComponent extends AxisPlotComponent {
-    //final val position: Position = Position.Left
-    val position: Position = Position.Left
+    final val position: Position = Position.Left
     override def size(plot: Plot): Extent =
       ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.width).extent
 
@@ -126,13 +124,70 @@ object Axes {
     }
   }
 
+  private sealed trait ArbitraryAxisPlotComponent extends AxisPlotComponent {
+    override def size(plot: Plot): Extent = {
+      val extents = ticks(getDescriptor(plot, fixed = true)).map(_.extent)
+      position match {
+        case Position.Left | Position.Right => extents.maxBy(_.width)
+        case Position.Bottom | Position.Top => extents.maxBy(_.height)
+        case _ => Extent(extents.maxBy(_.width).width, extents.maxBy(_.height).height) //XXX does size matter for these cases?
+      }
+    }
+
+    def bounds(plot: Plot): Bounds //XXX note to self: used in Labeling
+
+    def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
+      val descriptor = getDescriptor(plot, fixed = true)
+      //XXX TODO replace with scaling
+      val scale = position match {
+        case Position.Left | Position.Right => extent.height / descriptor.axisBounds.range
+        case Position.Bottom | Position.Top => extent.width / descriptor.axisBounds.range
+        case _ => 1 //XXX
+      }
+      val ts = ticks(descriptor)
+      val maxWidth = ts.maxBy(_.extent.width).extent.width
+      // Move the tick to the center of the range for discrete axes.
+      val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min //XXX band scaling
+      position match {
+        case Position.Left | Position.Right =>
+          val drawable = ts
+            .zip(descriptor.values)
+            .map {
+              case (tick, value) =>
+                val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
+                if (y <= extent.height) {
+                  position match {
+                    case Position.Left  => tick.translate(x = maxWidth - tick.extent.width, y = y)
+                    case _ => tick.translate(y = y)
+                  }
+                } else EmptyDrawable()
+            }
+            .group
+          drawable.translate(x = extent.width - drawable.extent.width)
+        case Position.Bottom | Position.Top =>
+          ts
+            .zip(descriptor.values)
+            .map {
+              case (tick, value) =>
+                val x = offset + value * scale - tick.extent.width / 2
+                if (x <= extent.width) {
+                  tick.translate(x = x)
+                } else EmptyDrawable()
+            }
+            .group
+        case _ => ts.group
+      }
+    }
+  }
+
   private case class HackedXAxisPlotComponent(
     bounds: Bounds,
+    override val position: Position,
     tickCount: Int,
     tickRenderer: TickRenderer,
     override val labelFormatter: Option[Double => String],
     tickCountRange: Option[Seq[Int]]
-  ) extends XAxisPlotComponent
+  ) extends ArbitraryAxisPlotComponent
     with ContinuousAxis {
     override def bounds(plot: Plot): Bounds = bounds
   }
@@ -144,7 +199,7 @@ object Axes {
     tickRenderer: TickRenderer,
     override val labelFormatter: Option[Double => String],
     tickCountRange: Option[Seq[Int]]
-  ) extends YAxisPlotComponent
+  ) extends ArbitraryAxisPlotComponent
     with ContinuousAxis {
     override def bounds(plot: Plot): Bounds = bounds
   }
@@ -265,17 +320,17 @@ object Axes {
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
-    // What would be convenient for tying axes to data?
+    //XXX What would be convenient for tying axes to data?
     // manual bounds?
     // a plot?
     // sequence of data/points?
     // ------
     // manual or plot seem like the easiest jumps from where we are now...
     // ... but revisit once axes get severed from plots/bounds
-
+    //XXX call to scaling version from bounds version (assume linear)
     def xHackedAxis(
-      //scaling: LinearScaling,
       bounds: Bounds,
+      position: Position,
       tickCount: Option[Int] = None,
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
@@ -283,18 +338,18 @@ object Axes {
     )(implicit theme: Theme): Plot = {
       val component = HackedXAxisPlotComponent(
         bounds,
+        position,
         tickCount.getOrElse(theme.elements.xTickCount),
         tickRenderer.getOrElse(
-          TickRenderer.xAxisTickRenderer(
+          TickRenderer.ArbitraryAxisTickRenderer(
+            position,
             length = theme.elements.tickLength,
-            thickness = theme.elements.tickThickness,
-            rotateText = theme.elements.continuousXAxisLabelOrientation
+            thickness = theme.elements.tickThickness
           )),
         labelFormatter,
         tickCountRange
       )
-      //component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
-      component +: plot
+      component +: plot //XXX make prepending component optional?
     }
 
     /** Add an X axis to the plot
@@ -358,7 +413,8 @@ object Axes {
         position,
         tickCount.getOrElse(theme.elements.xTickCount),
         tickRenderer.getOrElse(
-          TickRenderer.yAxisTickRenderer(
+          TickRenderer.ArbitraryAxisTickRenderer(
+            position,
             length = theme.elements.tickLength,
             thickness = theme.elements.tickThickness
           )),

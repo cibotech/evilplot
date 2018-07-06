@@ -32,6 +32,7 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.components.Position
 
 trait TickRenderer {
   def render(label: String): Drawable
@@ -91,6 +92,34 @@ object TickRenderer {
           line.colored(theme.colors.tickLabel)
         )
         .reduce(beside)
+    }
+  }
+
+  def ArbitraryAxisTickRenderer(
+    position: Position,
+    length: Double = defaultTickLength,
+    thickness: Double = defaultTickThickness
+  )(implicit theme: Theme): TickRenderer = new TickRenderer {
+    def render(label: String): Drawable = {
+      val line = Line(length, thickness).colored(theme.colors.tickLabel)
+      val verticalLine = line.rotated(90)
+      val text = Style(
+        Text(label.toString, size = theme.fonts.tickLabelSize, fontFace = theme.fonts.fontFace),
+        theme.colors.tickLabel
+      )
+      //XXX TODO rotated text support
+      position match {
+        case Position.Left =>
+          Align.middle(text.padRight(2).padBottom(2), line).reduce(beside)
+        case Position.Right =>
+          Align.middle(line, text.padLeft(2).padBottom(2)).reduce(beside)
+        case Position.Bottom =>
+          Align.center(verticalLine, text.padTop(2)).reduce(_ above _)
+        case Position.Top =>
+          Align.center(text.padBottom(2), verticalLine).reduce(_ above _)
+        case _ =>
+          text
+      }
     }
   }
 }
