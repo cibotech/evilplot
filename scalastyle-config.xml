@@ -45,11 +45,11 @@
         </parameters>
     </check>
 
-    <check level="warning" class="org.scalastyle.scalariform.CyclomaticComplexityChecker" enabled="true">
-        <parameters>
-            <parameter name="maximum"><![CDATA[10]]></parameter>
-        </parameters>
-    </check>
+    <!--<check level="warning" class="org.scalastyle.scalariform.CyclomaticComplexityChecker" enabled="true">-->
+        <!--<parameters>-->
+            <!--<parameter name="maximum"><![CDATA[10]]></parameter>-->
+        <!--</parameters>-->
+    <!--</check>-->
 
     <check level="warning" class="org.scalastyle.scalariform.IfBraceChecker" enabled="false">
         <parameters>
