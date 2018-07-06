@@ -32,13 +32,14 @@ package com.cibo.evilplot
 
 import java.awt.{Graphics, Graphics2D}
 
-import com.cibo.evilplot.plot.{Plot}
+import com.cibo.evilplot.plot.Plot
 import javax.swing.{JFileChooser, JFrame, JPanel}
 import java.awt.event.{ActionEvent, ComponentAdapter, ComponentEvent}
 import java.io.File
 
-import com.cibo.evilplot.demo.DemoPlots.theme
 import com.cibo.evilplot.geometry.{Drawable, Extent}
+import com.cibo.evilplot.plot.aesthetics.Theme
+import javax.swing.filechooser.FileNameExtensionFilter
 
 object displayPlot {
 
@@ -52,32 +53,39 @@ object displayPlot {
     override def paintComponent(g: Graphics): Unit = {
       super.paintComponent(g)
       val g2 = g.asInstanceOf[Graphics2D]
-      if (!(drawable == None)) {
-        g2.drawImage(drawable.get.asBufferedImage, -30, 0, this)
-
-      }
+      drawable.foreach { d => g2.drawImage(d.asBufferedImage, -30, 0, this) }
     }
   }
 
-  private class DrawableFrame extends JFrame {
+  private class DrawableFrame(drawable: Option[Drawable], plot: Option[Plot])(implicit theme: Theme) extends JFrame {
 
     import javax.swing.JMenuBar
     import javax.swing.JMenuItem
 
-    var drawable: Option[Drawable] = None
-    var plot: Option[Plot] = None
+    val displayable: Either[Plot, Drawable] = (plot, drawable) match {
+      case (None, Some(d)) => Right(d)
+      case (Some(p), None) => Left(p)
+      case _ => throw new IllegalArgumentException
+    }
     val panel: DrawablePanel = new DrawablePanel()
+    init()
 
-    private def createMenuBar(): Unit = {
+    private def createMenuBar()(implicit theme: Theme): Unit = {
       val menubar = new JMenuBar
       val save = new JMenuItem("Save")
       save.addActionListener((event: ActionEvent) => {
         def save(event: ActionEvent) = {
           val selectFile = new JFileChooser()
-          selectFile.setCurrentDirectory(new File("~"))
+          selectFile.setCurrentDirectory(null)
+          selectFile.setFileFilter(new FileNameExtensionFilter("png", "png"))
           val savedFile: Int = selectFile.showSaveDialog(this)
+
           if (savedFile == JFileChooser.APPROVE_OPTION) {
-            val file = selectFile.getSelectedFile
+            val extensionPattern = "(.*\\.png)".r
+            val file: File = selectFile.getSelectedFile.toString match {
+              case extensionPattern(s)=> new File(s)
+              case s => new File(s + ".png")
+            }
             savePlot(file)
           }
         }
@@ -87,15 +95,17 @@ object displayPlot {
       setJMenuBar(menubar)
     }
 
-    private def init(): Unit = {
+    private def init()(implicit theme: Theme): Unit = {
       setTitle("Plot")
-      if (!drawable.isEmpty) {
-        setSize(drawable.get.extent.width.toInt * 2, drawable.get.extent.height.toInt * 2 + 20)
-        panel.setDrawable(drawable.get.scaled(0.5, 0.5))
-      } else {
-        setSize(400, 420)
-        panel.setDrawable(plot.get.render(new Extent(200, 200)).scaled(0.5, 0.5))
+      displayable match {
+        case Right(d) =>
+          setSize(d.extent.width.toInt, d.extent.height.toInt + 20)
+          panel.setDrawable(d.scaled(0.25, 0.25))
+        case Left(p) =>
+          setSize(400, 420)
+          panel.setDrawable(p.render(Extent(400, 400)).scaled(0.25, 0.25))
       }
+
       add(panel)
       createMenuBar()
       addComponentListener(new ComponentAdapter {
@@ -107,38 +117,32 @@ object displayPlot {
     }
 
     def getPlotExtent: Extent = {
-      Extent(this.getWidth / 2, (this.getHeight - 20) / 2)
+      Extent(this.getWidth, (this.getHeight - 20))
     }
 
-    def resizePlot(width: Int, height: Int): Unit = {
-      if (!plot.isEmpty) {
-        panel.setDrawable(plot.get.render(getPlotExtent).scaled(0.5, 0.5))
+    def resizePlot(width: Int, height: Int)(implicit theme: Theme): Unit = {
+      displayable match {
+        case Left(p) => panel.setDrawable(p.render(getPlotExtent).scaled(0.25, 0.25))
+        case _ =>
       }
     }
 
-    def savePlot(result: File): Unit = {
-      if (!plot.isEmpty) {
-        plot.get.render(getPlotExtent).scaled(0.5, 0.5).write(result)
-      } else {
-        drawable.get.write(result)
+    def savePlot(result: File)(implicit theme: Theme): Unit = {
+      displayable match {
+        case Right(d) => d.write(result)
+        case Left(p) => p.render(getPlotExtent).scaled(0.25, 0.25).write(result)
       }
-    }
-
-    def apply(drawnPlot: Option[Drawable], notDrawnPlot: Option[Plot]): Unit = {
-      drawable = drawnPlot
-      plot = notDrawnPlot
-      init()
     }
 
   }
 
-  def apply(plot: Plot): Unit = {
+  def apply(plot: Plot)(implicit theme: Theme): Unit = {
     JFrame.setDefaultLookAndFeelDecorated(true)
-    new DrawableFrame().apply(None, Some(plot))
+    new DrawableFrame(None, Some(plot))
   }
 
-  def apply(drawnPlot: Drawable): Unit = {
+  def apply(drawnPlot: Drawable)(implicit theme: Theme): Unit = {
     JFrame.setDefaultLookAndFeelDecorated(true)
-    new DrawableFrame().apply(Some(drawnPlot), None)
+    new DrawableFrame(Some(drawnPlot), None)
   }
 }
