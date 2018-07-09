@@ -146,6 +146,7 @@ object Axes {
       }
       val ts = ticks(descriptor)
       val maxWidth = ts.maxBy(_.extent.width).extent.width
+      val maxHeight = ts.maxBy(_.extent.height).extent.height
       // Move the tick to the center of the range for discrete axes.
       val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min //XXX band scaling
       position match {
@@ -157,7 +158,7 @@ object Axes {
                 val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
                 if (y <= extent.height) {
                   position match {
-                    case Position.Left  => tick.translate(x = maxWidth - tick.extent.width, y = y)
+                    case Position.Left => tick.translate(x = maxWidth - tick.extent.width, y = y)
                     case _ => tick.translate(y = y)
                   }
                 } else EmptyDrawable()
@@ -171,7 +172,10 @@ object Axes {
               case (tick, value) =>
                 val x = offset + value * scale - tick.extent.width / 2
                 if (x <= extent.width) {
-                  tick.translate(x = x)
+                  position match {
+                    case Position.Top => tick.translate(x = x, y = maxHeight - tick.extent.height)
+                    case _ => tick.translate(x = x)
+                  }
                 } else EmptyDrawable()
             }
             .group

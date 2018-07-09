@@ -112,7 +112,6 @@ object TickRenderer {
         Text(label.toString, size = theme.fonts.tickLabelSize, fontFace = theme.fonts.fontFace),
         theme.colors.tickLabel
       ).rotated(rotateText)
-      //XXX TODO rotated text support
       if (rotateText.toInt % 90 == 0) {
         position match {
           case Position.Left =>
