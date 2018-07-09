@@ -95,10 +95,15 @@ object TickRenderer {
     }
   }
 
+  //XXX TODO consider changing alignment for rotated text so that tick is aligned to "highest" part of text
+  // e.g. left-side for 1-89 & 181 - 269, right-side for 91 - 179 & 271-359
+  // would be breaking unless old behavior is considered a bug
+  // better yet... expose that alignment? <-----
   def ArbitraryAxisTickRenderer(
     position: Position,
     length: Double = defaultTickLength,
-    thickness: Double = defaultTickThickness
+    thickness: Double = defaultTickThickness,
+    rotateText: Double = 0
   )(implicit theme: Theme): TickRenderer = new TickRenderer {
     def render(label: String): Drawable = {
       val line = Line(length, thickness).colored(theme.colors.tickLabel)
@@ -106,19 +111,40 @@ object TickRenderer {
       val text = Style(
         Text(label.toString, size = theme.fonts.tickLabelSize, fontFace = theme.fonts.fontFace),
         theme.colors.tickLabel
-      )
+      ).rotated(rotateText)
       //XXX TODO rotated text support
-      position match {
-        case Position.Left =>
-          Align.middle(text.padRight(2).padBottom(2), line).reduce(beside)
-        case Position.Right =>
-          Align.middle(line, text.padLeft(2).padBottom(2)).reduce(beside)
-        case Position.Bottom =>
-          Align.center(verticalLine, text.padTop(2)).reduce(_ above _)
-        case Position.Top =>
-          Align.center(text.padBottom(2), verticalLine).reduce(_ above _)
-        case _ =>
-          text
+      if (rotateText.toInt % 90 == 0) {
+        position match {
+          case Position.Left =>
+            Align.middle(text.padRight(2).padBottom(2), line).reduce(beside)
+          case Position.Right =>
+            Align.middle(line, text.padLeft(2).padBottom(2)).reduce(beside)
+          case Position.Bottom =>
+            Align.center(verticalLine, text.padTop(2)).reduce(_ above _)
+          case Position.Top =>
+            Align.center(text.padBottom(2), verticalLine).reduce(_ above _)
+          case _ =>
+            text
+        }
+      } else {
+        position match {
+          case Position.Left =>
+            val labelDrawable = text.padRight(2).padBottom(2)
+            labelDrawable.transY(-labelDrawable.extent.height).beside(line)
+            //Align.middle(text.padRight(2).padBottom(2), line).reduce(beside)
+          case Position.Right =>
+            val labelDrawable = text.padLeft(2).padBottom(2)
+            line.beside(labelDrawable.transY(-labelDrawable.extent.height))
+            //Align.middle(line, text.padLeft(2).padBottom(2)).reduce(beside)
+          case Position.Bottom =>
+            verticalLine.above(text.padTop(2)).transX(text.extent.width)
+            //Align.center(verticalLine, text.padTop(2)).reduce(_ above _)
+          case Position.Top =>
+            verticalLine.below(text.padBottom(2)).transX(text.extent.width)
+            //Align.center(text.padBottom(2), verticalLine).reduce(_ above _)
+          case _ =>
+            text
+        }
       }
     }
   }
