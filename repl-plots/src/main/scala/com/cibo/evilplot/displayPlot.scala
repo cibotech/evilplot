@@ -41,7 +41,6 @@ import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import javax.swing.filechooser.FileNameExtensionFilter
 
-
 object displayPlot {
 
   private class DrawablePanel extends JPanel {
@@ -54,11 +53,14 @@ object displayPlot {
     override def paintComponent(g: Graphics): Unit = {
       super.paintComponent(g)
       val g2 = g.asInstanceOf[Graphics2D]
-      drawable.foreach { d => g2.drawImage(d.asBufferedImage, -30, 0, this) }
+      drawable.foreach { d =>
+        g2.drawImage(d.asBufferedImage, -30, 0, this)
+      }
     }
   }
 
-  private class DrawableFrame(displayable: Either[Plot, Drawable])(implicit theme: Theme) extends JFrame {
+  private class DrawableFrame(displayable: Either[Plot, Drawable])(implicit theme: Theme)
+      extends JFrame {
 
     import javax.swing.JMenuBar
     import javax.swing.JMenuItem
@@ -78,8 +80,8 @@ object displayPlot {
           if (savedFile == JFileChooser.APPROVE_OPTION) {
             val extensionPattern = "(.*\\.png)".r
             val file: File = selectFile.getSelectedFile.toString match {
-              case extensionPattern(s)=> new File(s)
-              case s => new File(s + ".png")
+              case extensionPattern(s) => new File(s)
+              case s                   => new File(s + ".png")
             }
             savePlot(file)
           }
@@ -118,14 +120,14 @@ object displayPlot {
     def resizePlot(width: Int, height: Int)(implicit theme: Theme): Unit = {
       displayable match {
         case Left(p) => panel.setDrawable(p.render(getPlotExtent).scaled(0.25, 0.25))
-        case _ =>
+        case _       =>
       }
     }
 
     def savePlot(result: File)(implicit theme: Theme): Unit = {
       displayable match {
         case Right(d) => d.write(result)
-        case Left(p) => p.render(getPlotExtent).scaled(0.25, 0.25).write(result)
+        case Left(p)  => p.render(getPlotExtent).scaled(0.25, 0.25).write(result)
       }
     }
 
