@@ -184,8 +184,8 @@ object Axes {
     }
   }
 
-  private case class HackedXAxisPlotComponent(
-    bounds: Bounds,
+  private case class ContinuousAxisPlotComponent(
+    boundsFn: Plot => Bounds,
     override val position: Position,
     tickCount: Int,
     tickRenderer: TickRenderer,
@@ -193,19 +193,7 @@ object Axes {
     tickCountRange: Option[Seq[Int]]
   ) extends ArbitraryAxisPlotComponent
     with ContinuousAxis {
-    override def bounds(plot: Plot): Bounds = bounds
-  }
-
-  private case class HackedYAxisPlotComponent(
-    bounds: Bounds,
-    override val position: Position,
-    tickCount: Int,
-    tickRenderer: TickRenderer,
-    override val labelFormatter: Option[Double => String],
-    tickCountRange: Option[Seq[Int]]
-  ) extends ArbitraryAxisPlotComponent
-    with ContinuousAxis {
-    override def bounds(plot: Plot): Bounds = bounds
+    override def bounds(plot: Plot): Bounds = boundsFn(plot)
   }
 
   private case class ContinuousXAxisPlotComponent(
@@ -297,6 +285,111 @@ object Axes {
   trait AxesImplicits {
     protected val plot: Plot
 
+    //XXX What would be convenient for tying axes to data?
+    // manual bounds?
+    // a plot?
+    // sequence of data/points?
+    // ------
+    // manual or plot seem like the easiest jumps from where we are now...
+    // ... but revisit once axes get severed from plots/bounds
+    //XXX call to scaling version from bounds version (assume linear)
+    /** Add an axis to the plot.
+      * @param boundsFn       Takes a plot and returns the bounds this axis will display.
+      * @param position       The side of the plot to add the axis.
+      * @param tickCount      The number of tick lines.
+      * @param tickRenderer   Function to draw a tick line/label.
+      * @param labelFormatter Custom function to format tick labels.
+      * @param tickCountRange Allow searching over axis labels with this many ticks.
+      */
+    def boundsAxis(
+      boundsFn: Plot => Bounds,
+      position: Position,
+      tickCount: Option[Int] = None,
+      tickRenderer: Option[TickRenderer] = None,
+      labelFormatter: Option[Double => String] = None,
+      tickCountRange: Option[Seq[Int]] = None,
+      updatePlotBounds: Boolean = false,
+      fixedBounds: Boolean = true
+    )(implicit theme: Theme): Plot = {
+      val component = ContinuousAxisPlotComponent(
+        boundsFn,
+        position,
+        tickCount.getOrElse(theme.elements.xTickCount),
+        tickRenderer.getOrElse(
+          TickRenderer.ArbitraryAxisTickRenderer(
+            position,
+            length = theme.elements.tickLength,
+            thickness = theme.elements.tickThickness,
+            //320 //XXX
+            45 //XXX
+          )),
+        labelFormatter,
+        tickCountRange
+      )
+      //XXX handle x and y bounds
+      if (updatePlotBounds) {
+        //XXX pull back out into x/y methods?
+        position match {
+          case Position.Left | Position.Right =>
+            component +: plot.ybounds(component.getDescriptor(plot, fixedBounds).axisBounds)
+          case Position.Bottom | Position.Top =>
+            component +: plot.xbounds(component.getDescriptor(plot, fixedBounds).axisBounds)
+          case _ =>
+            component +: plot
+        }
+      } else {
+        component +: plot //XXX make prepending component optional?
+      }
+    }
+
+    /** Add an X axis to the plot.
+      * @param boundsFn       Takes a plot and returns the bounds this axis will display.
+      * @param position       The side of the plot to add the axis.
+      * @param tickCount      The number of tick lines.
+      * @param tickRenderer   Function to draw a tick line/label.
+      * @param labelFormatter Custom function to format tick labels.
+      * @param tickCountRange Allow searching over axis labels with this many ticks.
+      */
+    def xBoundsAxis(
+      boundsFn: Plot => Bounds,
+      position: Position = Position.Bottom,
+      tickCount: Option[Int] = None,
+      tickRenderer: Option[TickRenderer] = None,
+      labelFormatter: Option[Double => String] = None,
+      tickCountRange: Option[Seq[Int]] = None,
+      updatePlotBounds: Boolean = false,
+      fixedBounds: Boolean = true
+    )(implicit theme: Theme): Plot = {
+      require(position == Position.Bottom || position == Position.Top, "xAxis expects Position.Bottom or Position.Top.")
+      boundsAxis(
+        boundsFn,
+        position,
+        Some(tickCount.getOrElse(theme.elements.xTickCount)),
+        tickRenderer,
+        labelFormatter,
+        tickCountRange,
+        updatePlotBounds,
+        fixedBounds
+      )
+      //val component = ContinuousAxisPlotComponent(
+      //  bounds,
+      //  position,
+      //  tickCount.getOrElse(theme.elements.xTickCount),
+      //  tickRenderer.getOrElse(
+      //    TickRenderer.ArbitraryAxisTickRenderer(
+      //      position,
+      //      length = theme.elements.tickLength,
+      //      thickness = theme.elements.tickThickness,
+      //      //320 //XXX
+      //      45 //XXX
+      //    )),
+      //  labelFormatter,
+      //  tickCountRange
+      //)
+      //component +: plot //XXX make prepending component optional?
+    }
+
+    //XXX call to new version
     /** Add an X axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
@@ -310,50 +403,30 @@ object Axes {
       tickCountRange: Option[Seq[Int]] = None,
       newBounds: Option[Bounds] = None
     )(implicit theme: Theme): Plot = {
-      val component = ContinuousXAxisPlotComponent(
-        tickCount.getOrElse(theme.elements.xTickCount),
-        tickRenderer.getOrElse(
-          TickRenderer.xAxisTickRenderer(
-            length = theme.elements.tickLength,
-            thickness = theme.elements.tickThickness,
-            rotateText = theme.elements.continuousXAxisLabelOrientation
-          )),
+      boundsAxis(
+        plot.xbounds,
+        Position.Bottom,
+        tickCount,
+        tickRenderer,
         labelFormatter,
-        tickCountRange
+        tickCountRange,
+        true,
+        fixedBounds = plot.xfixed
       )
-      component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
-    }
-
-    //XXX What would be convenient for tying axes to data?
-    // manual bounds?
-    // a plot?
-    // sequence of data/points?
-    // ------
-    // manual or plot seem like the easiest jumps from where we are now...
-    // ... but revisit once axes get severed from plots/bounds
-    //XXX call to scaling version from bounds version (assume linear)
-    def xHackedAxis(
-      bounds: Bounds,
-      position: Position,
-      tickCount: Option[Int] = None,
-      tickRenderer: Option[TickRenderer] = None,
-      labelFormatter: Option[Double => String] = None,
-      tickCountRange: Option[Seq[Int]] = None
-    )(implicit theme: Theme): Plot = {
-      val component = HackedXAxisPlotComponent(
-        bounds,
-        position,
-        tickCount.getOrElse(theme.elements.xTickCount),
-        tickRenderer.getOrElse(
-          TickRenderer.ArbitraryAxisTickRenderer(
-            position,
-            length = theme.elements.tickLength,
-            thickness = theme.elements.tickThickness
-          )),
-        labelFormatter,
-        tickCountRange
-      )
-      component +: plot //XXX make prepending component optional?
+      //val component = ContinuousXAxisPlotComponent(
+      //  tickCount.getOrElse(theme.elements.xTickCount),
+      //  tickRenderer.getOrElse(
+      //    TickRenderer.xAxisTickRenderer(
+      //      length = theme.elements.tickLength,
+      //      thickness = theme.elements.tickThickness,
+      //      //rotateText = theme.elements.continuousXAxisLabelOrientation
+      //      //rotateText = 315
+      //      rotateText = 45
+      //    )),
+      //  labelFormatter,
+      //  tickCountRange
+      //)
+      //component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
     /** Add an X axis to the plot
@@ -379,6 +452,56 @@ object Axes {
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
+    //XXX combine with x into a single axis method?
+    //XXX TODO update plot bounds by default
+    /** Add a Y axis to the plot.
+      * @param boundsFn       Takes a plot and returns the bounds this axis will display.
+      * @param position       The side of the plot to add the axis.
+      * @param tickCount      The number of tick lines.
+      * @param tickRenderer   Function to draw a tick line/label.
+      * @param labelFormatter Custom function to format tick labels.
+      * @param tickCountRange Allow searching over axis labels with this many ticks.
+      */
+    def yBoundsAxis(
+      boundsFn: Plot => Bounds,
+      position: Position = Position.Left,
+      tickCount: Option[Int] = None,
+      tickRenderer: Option[TickRenderer] = None,
+      labelFormatter: Option[Double => String] = None,
+      tickCountRange: Option[Seq[Int]] = None,
+      updatePlotBounds: Boolean = false,
+      fixedBounds: Boolean = true
+    )(implicit theme: Theme): Plot = {
+      require(position == Position.Left || position == Position.Right, "yAxis expects Position.Left or Position.Right.")
+      boundsAxis(
+        boundsFn,
+        position,
+        Some(tickCount.getOrElse(theme.elements.yTickCount)),
+        tickRenderer,
+        labelFormatter,
+        tickCountRange,
+        updatePlotBounds,
+        fixedBounds
+      )
+      //val component = ContinuousAxisPlotComponent(
+      //  bounds,
+      //  position,
+      //  tickCount.getOrElse(theme.elements.yTickCount),
+      //  tickRenderer.getOrElse(
+      //    TickRenderer.ArbitraryAxisTickRenderer(
+      //      position,
+      //      length = theme.elements.tickLength,
+      //      thickness = theme.elements.tickThickness,
+      //      //320 //XXX
+      //      45 //XXX
+      //    )),
+      //  labelFormatter,
+      //  tickCountRange
+      //)
+      //component +: plot
+    }
+
+    //XXX call to new version
     /** Add a Y axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
@@ -391,41 +514,27 @@ object Axes {
       labelFormatter: Option[Double => String] = None,
       tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
-      val component = ContinuousYAxisPlotComponent(
-        tickCount.getOrElse(theme.elements.yTickCount),
-        tickRenderer.getOrElse(
-          TickRenderer.yAxisTickRenderer(
-            length = theme.elements.tickLength,
-            thickness = theme.elements.tickThickness
-          )),
+      boundsAxis(
+        plot.ybounds,
+        Position.Left,
+        tickCount,
+        tickRenderer,
         labelFormatter,
-        tickCountRange
+        tickCountRange,
+        true,
+        fixedBounds = plot.yfixed
       )
-      component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
-    }
-
-    def yHackedAxis(
-      bounds: Bounds,
-      position: Position,
-      tickCount: Option[Int] = None,
-      tickRenderer: Option[TickRenderer] = None,
-      labelFormatter: Option[Double => String] = None,
-      tickCountRange: Option[Seq[Int]] = None
-    )(implicit theme: Theme): Plot = {
-      val component = HackedYAxisPlotComponent(
-        bounds,
-        position,
-        tickCount.getOrElse(theme.elements.xTickCount),
-        tickRenderer.getOrElse(
-          TickRenderer.ArbitraryAxisTickRenderer(
-            position,
-            length = theme.elements.tickLength,
-            thickness = theme.elements.tickThickness
-          )),
-        labelFormatter,
-        tickCountRange
-      )
-      component +: plot
+      //val component = ContinuousYAxisPlotComponent(
+      //  tickCount.getOrElse(theme.elements.yTickCount),
+      //  tickRenderer.getOrElse(
+      //    TickRenderer.yAxisTickRenderer(
+      //      length = theme.elements.tickLength,
+      //      thickness = theme.elements.tickThickness
+      //    )),
+      //  labelFormatter,
+      //  tickCountRange
+      //)
+      //component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
 
     /** Add a Y axis to the plot.
