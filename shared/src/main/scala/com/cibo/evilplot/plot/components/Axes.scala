@@ -201,27 +201,11 @@ object Axes {
     override def bounds(plot: Plot): Bounds = boundsFn(plot)
   }
 
-  private case class ContinuousXAxisPlotComponent(
-    tickCount: Int,
-    tickRenderer: TickRenderer,
-    override val labelFormatter: Option[Double => String],
-    tickCountRange: Option[Seq[Int]]
-  ) extends XAxisPlotComponent
-      with ContinuousAxis
-
   private case class DiscreteXAxisPlotComponent(
     labels: Seq[(String, Double)],
     tickRenderer: TickRenderer
   ) extends XAxisPlotComponent
       with DiscreteAxis
-
-  private case class ContinuousYAxisPlotComponent(
-    tickCount: Int,
-    tickRenderer: TickRenderer,
-    override val labelFormatter: Option[Double => String],
-    tickCountRange: Option[Seq[Int]]
-  ) extends YAxisPlotComponent
-      with ContinuousAxis
 
   private case class DiscreteYAxisPlotComponent(
     labels: Seq[(String, Double)],
@@ -347,7 +331,6 @@ object Axes {
       }
     }
 
-    //XXX call to new version
     /** Add an X axis to the plot.
       * @param tickCount      The number of tick lines.
       * @param tickRenderer   Function to draw a tick line/label.
