@@ -309,7 +309,7 @@ object Axes {
     def boundsAxis(
       boundsFn: Plot => Bounds,
       position: Position,
-      tickCount: Option[Int] = None,
+      tickCount: Int,
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
       tickCountRange: Option[Seq[Int]] = None,
@@ -319,7 +319,7 @@ object Axes {
       val component = ContinuousAxisPlotComponent(
         boundsFn,
         position,
-        tickCount.getOrElse(theme.elements.xTickCount),
+        tickCount,
         tickRenderer.getOrElse(
           TickRenderer.ArbitraryAxisTickRenderer(
             position,
@@ -369,7 +369,7 @@ object Axes {
       boundsAxis(
         _ => bounds,
         position,
-        Some(tickCount.getOrElse(theme.elements.xTickCount)),
+        tickCount.getOrElse(theme.elements.xTickCount),
         tickRenderer,
         labelFormatter,
         tickCountRange,
@@ -400,29 +400,13 @@ object Axes {
       boundsAxis(
         boundsFn,
         position,
-        Some(tickCount.getOrElse(theme.elements.xTickCount)),
+        tickCount.getOrElse(theme.elements.xTickCount),
         tickRenderer,
         labelFormatter,
         tickCountRange,
         updatePlotBounds,
         fixedBounds
       )
-      //val component = ContinuousAxisPlotComponent(
-      //  bounds,
-      //  position,
-      //  tickCount.getOrElse(theme.elements.xTickCount),
-      //  tickRenderer.getOrElse(
-      //    TickRenderer.ArbitraryAxisTickRenderer(
-      //      position,
-      //      length = theme.elements.tickLength,
-      //      thickness = theme.elements.tickThickness,
-      //      //320 //XXX
-      //      45 //XXX
-      //    )),
-      //  labelFormatter,
-      //  tickCountRange
-      //)
-      //component +: plot //XXX make prepending component optional?
     }
 
     //XXX call to new version
@@ -439,30 +423,15 @@ object Axes {
       tickCountRange: Option[Seq[Int]] = None,
       newBounds: Option[Bounds] = None
     )(implicit theme: Theme): Plot = {
-      boundsAxis(
+      xBoundsFnAxis(
         p => p.xbounds,
-        Position.Bottom,
-        tickCount,
-        tickRenderer,
-        labelFormatter,
-        tickCountRange,
-        true,
-        fixedBounds = plot.xfixed
+        tickCount = tickCount,
+        tickRenderer = tickRenderer,
+        labelFormatter = labelFormatter,
+        tickCountRange = tickCountRange,
+        updatePlotBounds = true,
+        fixedBounds = plot.xfixed //XXX Does this need to be lazily evaluated like the plot bounds
       )
-      //val component = ContinuousXAxisPlotComponent(
-      //  tickCount.getOrElse(theme.elements.xTickCount),
-      //  tickRenderer.getOrElse(
-      //    TickRenderer.xAxisTickRenderer(
-      //      length = theme.elements.tickLength,
-      //      thickness = theme.elements.tickThickness,
-      //      //rotateText = theme.elements.continuousXAxisLabelOrientation
-      //      //rotateText = 315
-      //      rotateText = 45
-      //    )),
-      //  labelFormatter,
-      //  tickCountRange
-      //)
-      //component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
     /** Add an X axis to the plot
@@ -488,6 +457,7 @@ object Axes {
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
+    //XXX call to the Fn version?
     /** Add a Y axis to the plot.
       * @param bounds         The bounds this axis will display.
       * @param position       The side of the plot to add the axis.
@@ -510,7 +480,7 @@ object Axes {
       boundsAxis(
         _ => bounds,
         position,
-        Some(tickCount.getOrElse(theme.elements.yTickCount)),
+        tickCount.getOrElse(theme.elements.yTickCount),
         tickRenderer,
         labelFormatter,
         tickCountRange,
@@ -543,32 +513,15 @@ object Axes {
       boundsAxis(
         boundsFn,
         position,
-        Some(tickCount.getOrElse(theme.elements.yTickCount)),
+        tickCount.getOrElse(theme.elements.yTickCount),
         tickRenderer,
         labelFormatter,
         tickCountRange,
         updatePlotBounds,
         fixedBounds
       )
-      //val component = ContinuousAxisPlotComponent(
-      //  bounds,
-      //  position,
-      //  tickCount.getOrElse(theme.elements.yTickCount),
-      //  tickRenderer.getOrElse(
-      //    TickRenderer.ArbitraryAxisTickRenderer(
-      //      position,
-      //      length = theme.elements.tickLength,
-      //      thickness = theme.elements.tickThickness,
-      //      //320 //XXX
-      //      45 //XXX
-      //    )),
-      //  labelFormatter,
-      //  tickCountRange
-      //)
-      //component +: plot
     }
 
-    //XXX call to new version
     /** Add a Y axis to the plot.
       * @param tickCount    The number of tick lines.
       * @param tickRenderer Function to draw a tick line/label.
@@ -581,27 +534,15 @@ object Axes {
       labelFormatter: Option[Double => String] = None,
       tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
-      boundsAxis(
+      yBoundsFnAxis(
         p => p.ybounds,
-        Position.Left,
-        tickCount,
-        tickRenderer,
-        labelFormatter,
-        tickCountRange,
-        true,
+        tickCount = tickCount,
+        tickRenderer = tickRenderer,
+        labelFormatter = labelFormatter,
+        tickCountRange = tickCountRange,
+        updatePlotBounds = true,
         fixedBounds = plot.yfixed
       )
-      //val component = ContinuousYAxisPlotComponent(
-      //  tickCount.getOrElse(theme.elements.yTickCount),
-      //  tickRenderer.getOrElse(
-      //    TickRenderer.yAxisTickRenderer(
-      //      length = theme.elements.tickLength,
-      //      thickness = theme.elements.tickThickness
-      //    )),
-      //  labelFormatter,
-      //  tickCountRange
-      //)
-      //component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
 
     /** Add a Y axis to the plot.
