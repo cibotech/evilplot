@@ -125,8 +125,10 @@ object Axes {
   }
 
   private sealed trait ArbitraryAxisPlotComponent extends AxisPlotComponent {
+    val fixedBounds: Boolean
+
     override def size(plot: Plot): Extent = {
-      val extents = ticks(getDescriptor(plot, fixed = true)).map(_.extent)
+      val extents = ticks(getDescriptor(plot, fixedBounds)).map(_.extent)
       position match {
         case Position.Left | Position.Right => extents.maxBy(_.width)
         case Position.Bottom | Position.Top => extents.maxBy(_.height)
@@ -137,7 +139,7 @@ object Axes {
     def bounds(plot: Plot): Bounds //XXX note to self: used in Labeling
 
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      val descriptor = getDescriptor(plot, fixed = true)
+      val descriptor = getDescriptor(plot, fixedBounds)
       //XXX TODO replace with scaling
       val scale = position match {
         case Position.Left | Position.Right => extent.height / descriptor.axisBounds.range
@@ -190,7 +192,8 @@ object Axes {
     tickCount: Int,
     tickRenderer: TickRenderer,
     override val labelFormatter: Option[Double => String],
-    tickCountRange: Option[Seq[Int]]
+    tickCountRange: Option[Seq[Int]],
+    fixedBounds: Boolean = true
   ) extends ArbitraryAxisPlotComponent
     with ContinuousAxis {
     override def bounds(plot: Plot): Bounds = boundsFn(plot)
@@ -324,7 +327,8 @@ object Axes {
             45 //XXX
           )),
         labelFormatter,
-        tickCountRange
+        tickCountRange,
+        fixedBounds
       )
       //XXX handle x and y bounds
       if (updatePlotBounds) {
