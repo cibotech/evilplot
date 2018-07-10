@@ -332,7 +332,6 @@ object Axes {
         tickCountRange,
         fixedBounds
       )
-      //XXX handle x and y bounds
       if (updatePlotBounds) {
         //XXX pull back out into x/y methods?
         position match {
@@ -344,8 +343,39 @@ object Axes {
             component +: plot
         }
       } else {
-        component +: plot //XXX make prepending component optional?
+        component +: plot //XXX TODO make prepending component optional?
       }
+    }
+
+    /** Add an X axis to the plot.
+      * @param bounds         The bounds this axis will display.
+      * @param position       The side of the plot to add the axis.
+      * @param tickCount      The number of tick lines.
+      * @param tickRenderer   Function to draw a tick line/label.
+      * @param labelFormatter Custom function to format tick labels.
+      * @param tickCountRange Allow searching over axis labels with this many ticks.
+      */
+    def xBoundsAxis(
+      bounds: Bounds,
+      position: Position = Position.Bottom,
+      tickCount: Option[Int] = None,
+      tickRenderer: Option[TickRenderer] = None,
+      labelFormatter: Option[Double => String] = None,
+      tickCountRange: Option[Seq[Int]] = None,
+      updatePlotBounds: Boolean = false,
+      fixedBounds: Boolean = true
+    )(implicit theme: Theme): Plot = {
+      require(position == Position.Bottom || position == Position.Top, "xAxis expects Position.Bottom or Position.Top.")
+      boundsAxis(
+        _ => bounds,
+        position,
+        Some(tickCount.getOrElse(theme.elements.xTickCount)),
+        tickRenderer,
+        labelFormatter,
+        tickCountRange,
+        updatePlotBounds,
+        fixedBounds
+      )
     }
 
     /** Add an X axis to the plot.
@@ -356,7 +386,7 @@ object Axes {
       * @param labelFormatter Custom function to format tick labels.
       * @param tickCountRange Allow searching over axis labels with this many ticks.
       */
-    def xBoundsAxis(
+    def xBoundsFnAxis(
       boundsFn: Plot => Bounds,
       position: Position = Position.Bottom,
       tickCount: Option[Int] = None,
@@ -458,6 +488,37 @@ object Axes {
       component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
+    /** Add a Y axis to the plot.
+      * @param bounds         The bounds this axis will display.
+      * @param position       The side of the plot to add the axis.
+      * @param tickCount      The number of tick lines.
+      * @param tickRenderer   Function to draw a tick line/label.
+      * @param labelFormatter Custom function to format tick labels.
+      * @param tickCountRange Allow searching over axis labels with this many ticks.
+      */
+    def yBoundsAxis(
+      bounds: Bounds,
+      position: Position = Position.Left,
+      tickCount: Option[Int] = None,
+      tickRenderer: Option[TickRenderer] = None,
+      labelFormatter: Option[Double => String] = None,
+      tickCountRange: Option[Seq[Int]] = None,
+      updatePlotBounds: Boolean = false,
+      fixedBounds: Boolean = true
+    )(implicit theme: Theme): Plot = {
+      require(position == Position.Left || position == Position.Right, "yAxis expects Position.Left or Position.Right.")
+      boundsAxis(
+        _ => bounds,
+        position,
+        Some(tickCount.getOrElse(theme.elements.yTickCount)),
+        tickRenderer,
+        labelFormatter,
+        tickCountRange,
+        updatePlotBounds,
+        fixedBounds
+      )
+    }
+
     //XXX combine with x into a single axis method?
     //XXX TODO update plot bounds by default
     /** Add a Y axis to the plot.
@@ -468,7 +529,7 @@ object Axes {
       * @param labelFormatter Custom function to format tick labels.
       * @param tickCountRange Allow searching over axis labels with this many ticks.
       */
-    def yBoundsAxis(
+    def yBoundsFnAxis(
       boundsFn: Plot => Bounds,
       position: Position = Position.Left,
       tickCount: Option[Int] = None,
