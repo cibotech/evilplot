@@ -8,3 +8,5 @@ asset/
 .idea/
 .DS_Store
 node_modules
+repl-plots/src/main/scala/com/cibo/evilplot/test.scala
+
