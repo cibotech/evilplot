@@ -127,6 +127,8 @@ object Axes {
   private sealed trait ArbitraryAxisPlotComponent extends AxisPlotComponent {
     val fixedBounds: Boolean
 
+    //XXX TODO for when component sizing is redone: this only covers one dimension... and doesn't take into account
+    // total size of the group of components (needed for shrinking plot area appropriately)
     override def size(plot: Plot): Extent = {
       val extents = ticks(getDescriptor(plot, fixedBounds)).map(_.extent)
       position match {
