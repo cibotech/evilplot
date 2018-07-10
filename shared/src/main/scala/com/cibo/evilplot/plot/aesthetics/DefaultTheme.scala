@@ -90,6 +90,7 @@ object DefaultTheme {
     contours: Int = 20,
     categoricalXAxisLabelOrientation: Double = 0,
     continuousXAxisLabelOrientation: Double = 0,
+    tickCount: Int = 5,
     xTickCount: Int = 5,
     yTickCount: Int = 5,
     xGridLineCount: Int = 5,

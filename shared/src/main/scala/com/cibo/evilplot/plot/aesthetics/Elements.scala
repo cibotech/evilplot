@@ -44,6 +44,7 @@ trait Elements {
   val contours: Int
   val categoricalXAxisLabelOrientation: Double
   val continuousXAxisLabelOrientation: Double
+  val tickCount: Int
   val xTickCount: Int
   val yTickCount: Int
   val xGridLineCount: Int
