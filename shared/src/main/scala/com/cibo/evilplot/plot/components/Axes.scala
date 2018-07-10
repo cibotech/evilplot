@@ -404,7 +404,7 @@ object Axes {
       newBounds: Option[Bounds] = None
     )(implicit theme: Theme): Plot = {
       boundsAxis(
-        plot.xbounds,
+        p => p.xbounds,
         Position.Bottom,
         tickCount,
         tickRenderer,
@@ -515,7 +515,7 @@ object Axes {
       tickCountRange: Option[Seq[Int]] = None
     )(implicit theme: Theme): Plot = {
       boundsAxis(
-        plot.ybounds,
+        p => p.ybounds,
         Position.Left,
         tickCount,
         tickRenderer,
