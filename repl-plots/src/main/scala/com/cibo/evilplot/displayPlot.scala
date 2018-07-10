@@ -32,13 +32,13 @@ package com.cibo.evilplot
 
 import java.awt.{Graphics, Graphics2D}
 
-import com.cibo.evilplot.plot.{Plot}
+import com.cibo.evilplot.plot.Plot
 import javax.swing.{JFileChooser, JFrame, JPanel}
 import java.awt.event.{ActionEvent, ActionListener, ComponentAdapter, ComponentEvent}
 import java.io.File
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
-import com.cibo.evilplot.plot.aesthetics.{Theme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import javax.swing.filechooser.FileNameExtensionFilter
 
 
@@ -58,16 +58,11 @@ object displayPlot {
     }
   }
 
-  private class DrawableFrame(drawable: Option[Drawable], plot: Option[Plot])(implicit theme: Theme) extends JFrame {
+  private class DrawableFrame(displayable: Either[Plot, Drawable])(implicit theme: Theme) extends JFrame {
 
     import javax.swing.JMenuBar
     import javax.swing.JMenuItem
 
-    val displayable: Either[Plot, Drawable] = (plot, drawable) match {
-      case (None, Some(d)) => Right(d)
-      case (Some(p), None) => Left(p)
-      case _ => throw new IllegalArgumentException
-    }
     val panel: DrawablePanel = new DrawablePanel()
     init()
 
@@ -77,7 +72,7 @@ object displayPlot {
       val actionListener = new ActionListener {
         def actionPerformed(e: ActionEvent) = {
           val selectFile = new JFileChooser()
-          selectFile.setCurrentDirectory(null)
+          selectFile.setCurrentDirectory(null) //scalastyle:ignore
           selectFile.setFileFilter(new FileNameExtensionFilter("png", "png"))
           val savedFile: Int = selectFile.showSaveDialog(panel)
           if (savedFile == JFileChooser.APPROVE_OPTION) {
@@ -117,7 +112,7 @@ object displayPlot {
     }
 
     def getPlotExtent: Extent = {
-      Extent(this.getWidth, (this.getHeight - 20))
+      Extent(this.getWidth, this.getHeight - 20)
     }
 
     def resizePlot(width: Int, height: Int)(implicit theme: Theme): Unit = {
@@ -138,11 +133,11 @@ object displayPlot {
 
   def apply(plot: Plot)(implicit theme: Theme): Unit = {
     JFrame.setDefaultLookAndFeelDecorated(true)
-    new DrawableFrame(None, Some(plot))
+    new DrawableFrame(Left(plot))
   }
 
   def apply(drawnPlot: Drawable)(implicit theme: Theme): Unit = {
     JFrame.setDefaultLookAndFeelDecorated(true)
-    new DrawableFrame(Some(drawnPlot), None)
+    new DrawableFrame(Right(drawnPlot))
   }
 }
