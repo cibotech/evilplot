@@ -43,6 +43,7 @@ trait Elements {
   val boundBuffer: Double
   val contours: Int
   val categoricalXAxisLabelOrientation: Double
+  val categoricalYAxisLabelOrientation: Double
   val continuousXAxisLabelOrientation: Double
   val tickCount: Int
   val xTickCount: Int

@@ -590,11 +590,11 @@ object Axes {
         plot => plot.ybounds,
         position,
         labelsAndValues,
-          TickRenderer.ArbitraryAxisTickRenderer(
-            position,
-            theme.elements.tickLength,
-            theme.elements.tickThickness,
-            theme.elements.categoricalXAxisLabelOrientation
+        TickRenderer.ArbitraryAxisTickRenderer(
+          position,
+          theme.elements.tickLength,
+          theme.elements.tickThickness,
+          theme.elements.categoricalYAxisLabelOrientation
         )
       )
       if (updatePlotBounds) {

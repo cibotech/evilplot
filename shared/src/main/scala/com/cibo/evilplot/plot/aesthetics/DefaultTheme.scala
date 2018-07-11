@@ -89,6 +89,7 @@ object DefaultTheme {
     boxSpacing: Double = 20,
     contours: Int = 20,
     categoricalXAxisLabelOrientation: Double = 0,
+    categoricalYAxisLabelOrientation: Double = 0,
     continuousXAxisLabelOrientation: Double = 0,
     tickCount: Int = 5,
     xTickCount: Int = 5,
