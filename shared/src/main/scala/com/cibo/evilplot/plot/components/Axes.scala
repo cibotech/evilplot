@@ -195,23 +195,22 @@ object Axes {
     tickRenderer: TickRenderer,
     override val labelFormatter: Option[Double => String],
     tickCountRange: Option[Seq[Int]],
-    fixedBounds: Boolean = true
+    fixedBounds: Boolean = true //XXX move to continuous axis?
   ) extends ArbitraryAxisPlotComponent
     with ContinuousAxis {
-    override def bounds(plot: Plot): Bounds = boundsFn(plot)
+    override def bounds(plot: Plot): Bounds = boundsFn(plot) //XXX move to continuous axis?
   }
 
-  private case class DiscreteXAxisPlotComponent(
+  private case class DiscreteAxisPlotComponent(
+    boundsFn: Plot => Bounds,
+    override val position: Position,
     labels: Seq[(String, Double)],
     tickRenderer: TickRenderer
-  ) extends XAxisPlotComponent
-      with DiscreteAxis
-
-  private case class DiscreteYAxisPlotComponent(
-    labels: Seq[(String, Double)],
-    tickRenderer: TickRenderer
-  ) extends YAxisPlotComponent
-      with DiscreteAxis
+  ) extends ArbitraryAxisPlotComponent
+    with DiscreteAxis {
+    override val fixedBounds: Boolean = true //XXX unnecessary for discrete...
+    override def bounds(plot: Plot): Bounds = boundsFn(plot)
+  }
 
   private sealed trait GridComponent extends PlotComponent {
     val lineRenderer: GridLineRenderer
@@ -283,12 +282,14 @@ object Axes {
     // ... but revisit once axes get severed from plots/bounds
     //XXX call to scaling version from bounds version (assume linear)
     /** Add an axis to the plot.
-      * @param boundsFn       Takes a plot and returns the bounds this axis will display.
-      * @param position       The side of the plot to add the axis.
-      * @param tickCount      The number of tick lines.
-      * @param tickRenderer   Function to draw a tick line/label.
-      * @param labelFormatter Custom function to format tick labels.
-      * @param tickCountRange Allow searching over axis labels with this many ticks.
+      * @param boundsFn         Takes a plot and returns the bounds this axis will display.
+      * @param position         The side of the plot to add the axis.
+      * @param tickCount        The number of tick lines.
+      * @param tickRenderer     Function to draw a tick line/label.
+      * @param labelFormatter   Custom function to format tick labels.
+      * @param tickCountRange   Allow searching over axis labels with this many ticks.
+      * @param updatePlotBounds XXX
+      * @param fixedBounds      XXX
       */
     def boundsFnAxis(
       boundsFn: Plot => Bounds,
@@ -343,7 +344,6 @@ object Axes {
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
       tickCountRange: Option[Seq[Int]] = None,
-      newBounds: Option[Bounds] = None,
       position: Position = Position.Bottom
     )(implicit theme: Theme): Plot = {
       require(position == Position.Bottom || position == Position.Top, "xAxis expects Position.Bottom or Position.Top.")
@@ -355,31 +355,116 @@ object Axes {
         labelFormatter,
         tickCountRange,
         true,
-        plot.xfixed //XXX Does this need to be lazily evaluated like the plot bounds
+        plot.xfixed //XXX Does this need to be lazily evaluated like the plot bounds //XXX actually, should this just be true?
       )
     }
 
+    //XXX rather than endless overloads, maybe something like boundsFnAxis but for discrete axes (at least until
+    // everything can be consolidated)
     /** Add an X axis to the plot
       * @param labels The labels. The x values are assumed to start at 0 and increment by one for each label.
       */
     def xAxis(labels: Seq[String])(implicit theme: Theme): Plot =
       xAxis(labels, labels.indices.map(_.toDouble))
 
+    /** Add an X axis to the plot
+      * @param labels   The labels. The x values are assumed to start at 0 and increment by one for each label.
+      * @param position The side of the plot to add the axis.
+      */
+    def xAxis(
+      labels: Seq[String],
+      position: Position
+    )(implicit theme: Theme): Plot =
+      xAxis(labels, labels.indices.map(_.toDouble), position)
+
+    /** Add an X axis to the plot
+      * @param labels The labels. The x values are assumed to start at 0 and increment by one for each label.
+      * @param updatePlotBounds XXX
+      */
+    def xAxis(
+      labels: Seq[String],
+      updatePlotBounds: Boolean
+    )(implicit theme: Theme): Plot =
+      xAxis(labels, labels.indices.map(_.toDouble), updatePlotBounds)
+
+    /** Add an X axis to the plot
+      * @param labels The labels. The x values are assumed to start at 0 and increment by one for each label.
+      * @param position The side of the plot to add the axis.
+      * @param updatePlotBounds XXX
+      */
+    def xAxis(
+      labels: Seq[String],
+      position: Position,
+      updatePlotBounds: Boolean
+    )(implicit theme: Theme): Plot =
+      xAxis(labels, labels.indices.map(_.toDouble), position, updatePlotBounds)
+
     /** Add an X axis to the plot.
       * @param labels The labels.
       * @param values The X value for each label.
       */
-    def xAxis(labels: Seq[String], values: Seq[Double])(implicit theme: Theme): Plot = {
+    def xAxis(
+      labels: Seq[String],
+      values: Seq[Double]
+    )(implicit theme: Theme): Plot = {
+      xAxis(labels, values, Position.Bottom, true)
+    }
+
+    /** Add an X axis to the plot.
+      * @param labels   The labels.
+      * @param values   The X value for each label.
+      * @param position The side of the plot to add the axis.
+      */
+    def xAxis(
+      labels: Seq[String],
+      values: Seq[Double],
+      position: Position
+    )(implicit theme: Theme): Plot = {
+      xAxis(labels, values, position, true)
+    }
+
+    /** Add an X axis to the plot.
+      * @param labels           The labels.
+      * @param values           The X value for each label.
+      * @param updatePlotBounds XXX
+      */
+    def xAxis(
+      labels: Seq[String],
+      values: Seq[Double],
+      updatePlotBounds: Boolean
+    )(implicit theme: Theme): Plot = {
+      xAxis(labels, values, Position.Bottom, updatePlotBounds)
+    }
+
+    /** Add an X axis to the plot.
+      * @param labels The labels.
+      * @param values The X value for each label.
+      * @param position The side of the plot to add the axis.
+      * @param updatePlotBounds XXX
+      */
+    def xAxis(
+      labels: Seq[String],
+      values: Seq[Double],
+      position: Position,
+      updatePlotBounds: Boolean
+    )(implicit theme: Theme): Plot = {
       require(labels.lengthCompare(values.length) == 0)
+      require(position == Position.Bottom || position == Position.Top, "xAxis expects Position.Bottom or Position.Top.")
       val labelsAndValues = labels.zip(values)
-      val component = DiscreteXAxisPlotComponent(
+      val component = DiscreteAxisPlotComponent(
+        plot => plot.xbounds,
+        position,
         labelsAndValues,
         TickRenderer.xAxisTickRenderer(
           length = theme.elements.tickLength,
           thickness = theme.elements.tickThickness,
           rotateText = theme.elements.categoricalXAxisLabelOrientation)
       )
-      component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
+      if (updatePlotBounds) {
+        component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
+      } else {
+        component +: plot
+      }
     }
 
     /** Add a Y axis to the plot.
@@ -416,19 +501,105 @@ object Axes {
       yAxis(labels, labels.indices.map(_.toDouble))
 
     /** Add a Y axis to the plot.
+      * @param labels The label. The y values are assumed to start at 0 and increment by one for each label.
+      * @param position The side of the plot to add the axis.
+      */
+    def yAxis(
+      labels: Seq[String],
+      position: Position
+    )(implicit theme: Theme): Plot =
+      yAxis(labels, labels.indices.map(_.toDouble), position, true)
+
+    /** Add a Y axis to the plot.
+      * @param labels The label. The y values are assumed to start at 0 and increment by one for each label.
+      * @param updatePlotBounds XXX
+      */
+    def yAxis(
+      labels: Seq[String],
+      updatePlotBounds: Boolean
+    )(implicit theme: Theme): Plot =
+      yAxis(labels, labels.indices.map(_.toDouble), Position.Left, updatePlotBounds)
+
+    /** Add a Y axis to the plot.
+      * @param labels The label. The y values are assumed to start at 0 and increment by one for each label.
+      * @param position The side of the plot to add the axis.
+      * @param updatePlotBounds XXX
+      */
+    def yAxis(
+      labels: Seq[String],
+      position: Position,
+      updatePlotBounds: Boolean
+    )(implicit theme: Theme): Plot =
+      yAxis(labels, labels.indices.map(_.toDouble), position, updatePlotBounds)
+
+    /** Add a Y axis to the plot.
       * @param labels The labels.
       * @param values The Y value for each label.
       */
-    def yAxis(labels: Seq[String], values: Seq[Double])(implicit theme: Theme): Plot = {
+    def yAxis(
+      labels: Seq[String],
+      values: Seq[Double]
+    )(implicit theme: Theme): Plot = {
+      yAxis(labels, values, Position.Left, true)
+    }
+
+    /** Add a Y axis to the plot.
+      * @param labels The labels.
+      * @param values The Y value for each label.
+      * @param position The side of the plot to add the axis.
+      */
+    def yAxis(
+      labels: Seq[String],
+      values: Seq[Double],
+      position: Position
+    )(implicit theme: Theme): Plot = {
+      yAxis(labels, values, position, true)
+    }
+
+    /** Add a Y axis to the plot.
+      * @param labels The labels.
+      * @param values The Y value for each label.
+      * @param updatePlotBounds XXX
+      */
+    def yAxis(
+      labels: Seq[String],
+      values: Seq[Double],
+      updatePlotBounds: Boolean
+    )(implicit theme: Theme): Plot = {
+      yAxis(labels, values, Position.Left, updatePlotBounds)
+    }
+
+    //XXX rotate
+    /** Add a Y axis to the plot.
+      * @param labels The labels.
+      * @param values The Y value for each label.
+      * @param position The side of the plot to add the axis.
+      * @param updatePlotBounds XXX
+      */
+    def yAxis(
+      labels: Seq[String],
+      values: Seq[Double],
+      position: Position,
+      updatePlotBounds: Boolean
+    )(implicit theme: Theme): Plot = {
       require(labels.lengthCompare(values.length) == 0)
+      require(position == Position.Left || position == Position.Right, "yAxis expects Position.Left or Position.Right.")
       val labelsAndValues = labels.zip(values)
-      val component = DiscreteYAxisPlotComponent(
+      val component = DiscreteAxisPlotComponent(
+        plot => plot.ybounds,
+        position,
         labelsAndValues,
         TickRenderer.yAxisTickRenderer(
           length = theme.elements.tickLength,
           thickness = theme.elements.tickThickness
-        ))
-      component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
+        )
+          //rotateText = theme.elements.categoricalXAxisLabelOrientation)
+      )
+      if (updatePlotBounds) {
+        component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
+      } else {
+        component +: plot
+      }
     }
 
     /** Add x grid lines to the plot.
