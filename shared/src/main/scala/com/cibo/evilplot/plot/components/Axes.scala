@@ -71,59 +71,6 @@ object Axes {
     def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor = DiscreteAxisDescriptor(labels)
   }
 
-  private sealed trait XAxisPlotComponent extends AxisPlotComponent {
-    final val position: Position = Position.Bottom
-    override def size(plot: Plot): Extent =
-      ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.height).extent
-
-    def bounds(plot: Plot): Bounds = plot.xbounds
-
-    def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      val descriptor = getDescriptor(plot, fixed = true)
-      val scale = extent.width / descriptor.axisBounds.range
-      // Move the tick to the center of the range for discrete axes.
-      val offset = (if (discrete) scale / 2 else 0) - descriptor.axisBounds.min * scale
-      ticks(descriptor)
-        .zip(descriptor.values)
-        .map {
-          case (tick, value) =>
-            val x = offset + value * scale - tick.extent.width / 2
-            if (x <= extent.width) {
-              tick.translate(x = x)
-            } else EmptyDrawable()
-        }
-        .group
-    }
-  }
-
-  private sealed trait YAxisPlotComponent extends AxisPlotComponent {
-    final val position: Position = Position.Left
-    override def size(plot: Plot): Extent =
-      ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.width).extent
-
-    def bounds(plot: Plot): Bounds = plot.ybounds
-
-    def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      val descriptor = getDescriptor(plot, fixed = true)
-      val scale = extent.height / descriptor.axisBounds.range
-      val ts = ticks(descriptor)
-      val maxWidth = ts.maxBy(_.extent.width).extent.width
-      // Move the tick to the center of the range for discrete axes.
-      val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min
-      val drawable = ts
-        .zip(descriptor.values)
-        .map {
-          case (tick, value) =>
-            val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
-            if (y <= extent.height) {
-              tick.translate(x = maxWidth - tick.extent.width, y = y)
-            } else EmptyDrawable()
-        }
-        .group
-      drawable.translate(x = extent.width - drawable.extent.width)
-    }
-  }
-
   private sealed trait ArbitraryAxisPlotComponent extends AxisPlotComponent {
     val fixedBounds: Boolean
 
@@ -138,7 +85,7 @@ object Axes {
       }
     }
 
-    def bounds(plot: Plot): Bounds //XXX note to self: used in Labeling
+    def bounds(plot: Plot): Bounds
 
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val descriptor = getDescriptor(plot, fixedBounds)
@@ -146,7 +93,7 @@ object Axes {
       val scale = position match {
         case Position.Left | Position.Right => extent.height / descriptor.axisBounds.range
         case Position.Bottom | Position.Top => extent.width / descriptor.axisBounds.range
-        case _ => 1 //XXX
+        case _ => 1 //TODO replace with scaling when available
       }
       val ts = ticks(descriptor)
       val maxWidth = ts.maxBy(_.extent.width).extent.width
@@ -273,14 +220,6 @@ object Axes {
   trait AxesImplicits {
     protected val plot: Plot
 
-    //XXX What would be convenient for tying axes to data?
-    // manual bounds?
-    // a plot?
-    // sequence of data/points?
-    // ------
-    // manual or plot seem like the easiest jumps from where we are now...
-    // ... but revisit once axes get severed from plots/bounds
-    //XXX call to scaling version from bounds version (assume linear)
     /** Add a continuous axis to the plot.
       * @param boundsFn         Takes a plot and returns the bounds this axis will display.
       * @param position         The side of the plot to add the axis.
@@ -291,7 +230,7 @@ object Axes {
       * @param updatePlotBounds XXX
       * @param fixedBounds      XXX
       */
-    def boundsFnAxis(
+    def continuousAxis(
       boundsFn: Plot => Bounds,
       position: Position,
       tickCount: Option[Int] = None,
@@ -396,7 +335,7 @@ object Axes {
       position: Position = Position.Bottom
     )(implicit theme: Theme): Plot = {
       require(position == Position.Bottom || position == Position.Top, "xAxis expects Position.Bottom or Position.Top.")
-      boundsFnAxis(
+      continuousAxis(
         p => p.xbounds,
         position,
         Some(tickCount.getOrElse(theme.elements.xTickCount)),
@@ -408,8 +347,6 @@ object Axes {
       )
     }
 
-    //XXX rather than endless overloads, maybe something like boundsFnAxis but for discrete axes (at least until
-    // everything can be consolidated)
     /** Add an X axis to the plot
       * @param labels The labels. The x values are assumed to start at 0 and increment by one for each label.
       */
@@ -516,7 +453,7 @@ object Axes {
       position: Position = Position.Left
     )(implicit theme: Theme): Plot = {
       require(position == Position.Left || position == Position.Right, "yAxis expects Position.Left or Position.Right.")
-      boundsFnAxis(
+      continuousAxis(
         p => p.ybounds,
         position,
         Some(tickCount.getOrElse(theme.elements.yTickCount)),

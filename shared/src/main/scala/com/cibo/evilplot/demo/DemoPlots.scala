@@ -96,7 +96,7 @@ object DemoPlots {
       .yAxis()
       //.xBoundsAxis(LinearScaling((1, 3), (0, 300)))
       //.xBoundsAxis(Bounds(0, 4), Position.Bottom)
-      .boundsFnAxis(_ => Bounds(0, 4), Position.Bottom, updatePlotBounds = true)
+      .continuousAxis(_ => Bounds(0, 4), Position.Bottom, updatePlotBounds = true)
       //.xBoundsAxis(plot.xbounds, Position.Bottom)
       //.xAxis()
       //.xbounds(Bounds(0, 4))
@@ -439,17 +439,17 @@ object DemoPlots {
     plot
       .xAxis()
       //.yBoundsAxis(plot.ybounds, Position.Left)
-      .boundsFnAxis(_ => Bounds(0, 4000000), Position.Left)
+      .continuousAxis(_ => Bounds(0, 4000000), Position.Left)
       .yAxis(position = Position.Right)
       //.yBoundsAxis(Bounds(0, 100), Position.Right)
       //.xBoundsAxis(plot.xbounds, Position.Bottom)
       //.xBoundsAxis(Bounds(0, 90000000), Position.Top)
-      //.boundsFnAxis(_ => Bounds(0, 90), Position.Top)
+      //.continuousAxis(_ => Bounds(0, 90), Position.Top)
       .xAxis(position = Position.Top)
       //.xBoundsAxis(Bounds(1000000, 50000000), Position.Top)
       //.xbounds(0, 30)
       //.xbounds(0, 100)
-      .boundsFnAxis(_ => Bounds(10, 40), Position.Overlay) //XXX kinda useless without range scaling
+      .continuousAxis(_ => Bounds(10, 40), Position.Overlay) //XXX kinda useless without range scaling
       .render(plotAreaSize)
   }
 
