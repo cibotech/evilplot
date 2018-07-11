@@ -43,13 +43,13 @@ object TickRenderer {
   val defaultTickThickness: Double = 1
   val defaultTickLength: Double = 5
 
-  //XXX deprecate?
   /** Create a renderer to render a tick on the x axis.
     *
     * @param length     The length of the tick line.
     * @param thickness  The thickness of the tick line.
     * @param rotateText The rotation of the label.
     */
+  @deprecated("Use AxisTickRenderer", "EvilPlot 0.3.4")
   def xAxisTickRenderer(
     length: Double = defaultTickLength,
     thickness: Double = defaultTickThickness,
@@ -61,12 +61,12 @@ object TickRenderer {
     rotateText
   )
 
-  //XXX deprecate?
   /** Create a renderer to render a tick on the y axis.
     *
     * @param length    The length of the tick line.
     * @param thickness The thickness of the tick line.
     */
+  @deprecated("Use AxisTickRenderer", "EvilPlot 0.3.4")
   def yAxisTickRenderer(
     length: Double = defaultTickLength,
     thickness: Double = defaultTickThickness
@@ -77,9 +77,9 @@ object TickRenderer {
     0
   )
 
-  //XXX TODO revisit alignment for rotated text labels so that tick is aligned to "highest" part of text
-  // e.g. left-side for 1-89 & 181 - 269, right-side for 91 - 179 & 271-359
-  // or expose alignment?
+  //TODO revisit alignment for rotated text labels so that tick is aligned to "highest" part of text
+  //     e.g. left-side for 1-89 & 181 - 269, right-side for 91 - 179 & 271-359
+  //     or expose alignment?
   def AxisTickRenderer(
     position: Position,
     length: Double = defaultTickLength,
