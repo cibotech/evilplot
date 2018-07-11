@@ -71,86 +71,90 @@ object Axes {
     def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor = DiscreteAxisDescriptor(labels)
   }
 
-  private sealed trait XAxisPlotComponent extends AxisPlotComponent {
-    final val position: Position = Position.Bottom
-    override def size(plot: Plot): Extent =
-      ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.height).extent
+  private sealed trait ArbitraryAxisPlotComponent extends AxisPlotComponent {
+    val fixedBounds: Boolean
 
-    def bounds(plot: Plot): Bounds = plot.xbounds
-
-    def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      val descriptor = getDescriptor(plot, fixed = true)
-      val scale = extent.width / descriptor.axisBounds.range
-      // Move the tick to the center of the range for discrete axes.
-      val offset = (if (discrete) scale / 2 else 0) - descriptor.axisBounds.min * scale
-      ticks(descriptor)
-        .zip(descriptor.values)
-        .map {
-          case (tick, value) =>
-            val x = offset + value * scale - tick.extent.width / 2
-            if (x <= extent.width) {
-              tick.translate(x = x)
-            } else EmptyDrawable()
-        }
-        .group
+    override def size(plot: Plot): Extent = {
+      val extents = ticks(getDescriptor(plot, fixedBounds)).map(_.extent)
+      position match {
+        case Position.Left | Position.Right => extents.maxBy(_.width)
+        case Position.Bottom | Position.Top => extents.maxBy(_.height)
+        case _ => Extent(extents.maxBy(_.width).width, extents.maxBy(_.height).height)
+      }
     }
-  }
 
-  private sealed trait YAxisPlotComponent extends AxisPlotComponent {
-    final val position: Position = Position.Left
-    override def size(plot: Plot): Extent =
-      ticks(getDescriptor(plot, fixed = true)).maxBy(_.extent.width).extent
-
-    def bounds(plot: Plot): Bounds = plot.ybounds
+    def bounds(plot: Plot): Bounds
 
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      val descriptor = getDescriptor(plot, fixed = true)
-      val scale = extent.height / descriptor.axisBounds.range
+      val descriptor = getDescriptor(plot, fixedBounds)
+      val scale = position match {
+        case Position.Left | Position.Right => extent.height / descriptor.axisBounds.range
+        case Position.Bottom | Position.Top => extent.width / descriptor.axisBounds.range
+        case _ => 1 //TODO replace with scaling when available
+      }
       val ts = ticks(descriptor)
       val maxWidth = ts.maxBy(_.extent.width).extent.width
+      val maxHeight = ts.maxBy(_.extent.height).extent.height
       // Move the tick to the center of the range for discrete axes.
-      val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min
-      val drawable = ts
-        .zip(descriptor.values)
-        .map {
-          case (tick, value) =>
-            val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
-            if (y <= extent.height) {
-              tick.translate(x = maxWidth - tick.extent.width, y = y)
-            } else EmptyDrawable()
-        }
-        .group
-      drawable.translate(x = extent.width - drawable.extent.width)
+      val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min //TODO band scaling
+      position match {
+        case Position.Left | Position.Right =>
+          val drawable = ts
+            .zip(descriptor.values)
+            .map {
+              case (tick, value) =>
+                val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
+                if (y <= extent.height) {
+                  position match {
+                    case Position.Left => tick.translate(x = maxWidth - tick.extent.width, y = y)
+                    case _ => tick.translate(y = y)
+                  }
+                } else EmptyDrawable()
+            }
+            .group
+          drawable.translate(x = extent.width - drawable.extent.width)
+        case Position.Bottom | Position.Top =>
+          ts
+            .zip(descriptor.values)
+            .map {
+              case (tick, value) =>
+                val x = offset + value * scale - tick.extent.width / 2
+                if (x <= extent.width) {
+                  position match {
+                    case Position.Top => tick.translate(x = x, y = maxHeight - tick.extent.height)
+                    case _ => tick.translate(x = x)
+                  }
+                } else EmptyDrawable()
+            }
+            .group
+        case _ => ts.group
+      }
     }
   }
 
-  private case class ContinuousXAxisPlotComponent(
+  private case class ContinuousAxisPlotComponent(
+    boundsFn: Plot => Bounds,
+    override val position: Position,
     tickCount: Int,
     tickRenderer: TickRenderer,
     override val labelFormatter: Option[Double => String],
-    tickCountRange: Option[Seq[Int]]
-  ) extends XAxisPlotComponent
-      with ContinuousAxis
+    tickCountRange: Option[Seq[Int]],
+    fixedBounds: Boolean = true
+  ) extends ArbitraryAxisPlotComponent
+    with ContinuousAxis {
+    override def bounds(plot: Plot): Bounds = boundsFn(plot)
+  }
 
-  private case class DiscreteXAxisPlotComponent(
+  private case class DiscreteAxisPlotComponent(
+    boundsFn: Plot => Bounds,
+    override val position: Position,
     labels: Seq[(String, Double)],
     tickRenderer: TickRenderer
-  ) extends XAxisPlotComponent
-      with DiscreteAxis
-
-  private case class ContinuousYAxisPlotComponent(
-    tickCount: Int,
-    tickRenderer: TickRenderer,
-    override val labelFormatter: Option[Double => String],
-    tickCountRange: Option[Seq[Int]]
-  ) extends YAxisPlotComponent
-      with ContinuousAxis
-
-  private case class DiscreteYAxisPlotComponent(
-    labels: Seq[(String, Double)],
-    tickRenderer: TickRenderer
-  ) extends YAxisPlotComponent
-      with DiscreteAxis
+  ) extends ArbitraryAxisPlotComponent
+    with DiscreteAxis {
+    override val fixedBounds: Boolean = true
+    override def bounds(plot: Plot): Bounds = boundsFn(plot)
+  }
 
   private sealed trait GridComponent extends PlotComponent {
     val lineRenderer: GridLineRenderer
@@ -213,30 +217,132 @@ object Axes {
   trait AxesImplicits {
     protected val plot: Plot
 
+    /** Add a continuous axis to the plot.
+      * @param boundsFn         Takes a plot and returns the bounds this axis will display.
+      * @param position         The side of the plot to add the axis.
+      * @param tickCount        The number of tick lines.
+      * @param tickRenderer     Function to draw a tick line/label.
+      * @param labelFormatter   Custom function to format tick labels.
+      * @param tickCountRange   Allow searching over axis labels with this many ticks.
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
+      * @param fixedBounds      Force ticks to match bounds.
+      */
+    def continuousAxis(
+      boundsFn: Plot => Bounds,
+      position: Position,
+      tickCount: Option[Int] = None,
+      tickRenderer: Option[TickRenderer] = None,
+      labelFormatter: Option[Double => String] = None,
+      tickCountRange: Option[Seq[Int]] = None,
+      updatePlotBounds: Boolean = true,
+      fixedBounds: Boolean = true
+    )(implicit theme: Theme): Plot = {
+      val defaultRotation = if (position == Position.Bottom || position == Position.Top) {
+        theme.elements.continuousXAxisLabelOrientation
+      } else {
+        theme.elements.continuousYAxisLabelOrientation
+      }
+      val component = ContinuousAxisPlotComponent(
+        boundsFn,
+        position,
+        tickCount.getOrElse(theme.elements.tickCount),
+        tickRenderer.getOrElse(
+          TickRenderer.axisTickRenderer(
+            position,
+            theme.elements.tickLength,
+            theme.elements.tickThickness,
+            defaultRotation
+          )),
+        labelFormatter,
+        tickCountRange,
+        fixedBounds
+      )
+      if (updatePlotBounds) {
+        position match {
+          case Position.Left | Position.Right =>
+            component +: plot.ybounds(component.getDescriptor(plot, fixedBounds).axisBounds)
+          case Position.Bottom | Position.Top =>
+            component +: plot.xbounds(component.getDescriptor(plot, fixedBounds).axisBounds)
+          case _ =>
+            component +: plot
+        }
+      } else {
+        component +: plot //TODO make prepending component optional / exposed?
+      }
+    }
+
+    /** Add a discrete axis to the plot.
+      * @param labels           The labels.
+      * @param values           The X value for each label.
+      * @param position         The side of the plot to add the axis.
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
+      * @param tickRenderer     Function to draw a tick line/label.
+      */
+    def discreteAxis(
+      labels: Seq[String],
+      values: Seq[Double],
+      position: Position,
+      updatePlotBounds: Boolean = true,
+      tickRenderer: Option[TickRenderer] = None
+    )(implicit theme: Theme): Plot = {
+      require(labels.lengthCompare(values.length) == 0)
+      val labelsAndValues = labels.zip(values)
+      val (boundsFn, defaultRotation) = if (position == Position.Bottom || position == Position.Top) {
+        ((plot: Plot) => plot.xbounds, theme.elements.categoricalXAxisLabelOrientation)
+      } else {
+        ((plot: Plot) => plot.ybounds, theme.elements.categoricalYAxisLabelOrientation)
+      }
+      val component = DiscreteAxisPlotComponent(
+        boundsFn,
+        position,
+        labelsAndValues,
+        tickRenderer.getOrElse(
+          TickRenderer.axisTickRenderer(
+            position,
+            theme.elements.tickLength,
+            theme.elements.tickThickness,
+            defaultRotation
+          ))
+      )
+      if (updatePlotBounds) {
+        position match {
+          case Position.Left | Position.Right =>
+            component +: plot.ybounds(component.getDescriptor(plot, true).axisBounds)
+          case Position.Bottom | Position.Top =>
+            component +: plot.xbounds(component.getDescriptor(plot, true).axisBounds)
+          case _ =>
+            component +: plot
+        }
+      } else {
+        component +: plot
+      }
+    }
+
     /** Add an X axis to the plot.
-      * @param tickCount    The number of tick lines.
-      * @param tickRenderer Function to draw a tick line/label.
+      * @param tickCount      The number of tick lines.
+      * @param tickRenderer   Function to draw a tick line/label.
       * @param labelFormatter Custom function to format tick labels.
       * @param tickCountRange Allow searching over axis labels with this many ticks.
+      * @param position       The side of the plot to add the axis.
       */
     def xAxis(
       tickCount: Option[Int] = None,
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
-      tickCountRange: Option[Seq[Int]] = None
+      tickCountRange: Option[Seq[Int]] = None,
+      position: Position = Position.Bottom
     )(implicit theme: Theme): Plot = {
-      val component = ContinuousXAxisPlotComponent(
-        tickCount.getOrElse(theme.elements.xTickCount),
-        tickRenderer.getOrElse(
-          TickRenderer.xAxisTickRenderer(
-            length = theme.elements.tickLength,
-            thickness = theme.elements.tickThickness,
-            rotateText = theme.elements.continuousXAxisLabelOrientation
-          )),
+      require(position == Position.Bottom || position == Position.Top, "xAxis expects Position.Bottom or Position.Top.")
+      continuousAxis(
+        p => p.xbounds,
+        position,
+        Some(tickCount.getOrElse(theme.elements.xTickCount)),
+        tickRenderer,
         labelFormatter,
-        tickCountRange
+        tickCountRange,
+        true,
+        plot.xfixed
       )
-      component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
     }
 
     /** Add an X axis to the plot
@@ -245,46 +351,66 @@ object Axes {
     def xAxis(labels: Seq[String])(implicit theme: Theme): Plot =
       xAxis(labels, labels.indices.map(_.toDouble))
 
+    /** Add an X axis to the plot
+      * @param labels   The labels. The x values are assumed to start at 0 and increment by one for each label.
+      * @param position The side of the plot to add the axis.
+      */
+    def xAxis(
+      labels: Seq[String],
+      position: Position
+    )(implicit theme: Theme): Plot =
+      xAxis(labels, labels.indices.map(_.toDouble), position)
+
     /** Add an X axis to the plot.
       * @param labels The labels.
       * @param values The X value for each label.
       */
-    def xAxis(labels: Seq[String], values: Seq[Double])(implicit theme: Theme): Plot = {
-      require(labels.lengthCompare(values.length) == 0)
-      val labelsAndValues = labels.zip(values)
-      val component = DiscreteXAxisPlotComponent(
-        labelsAndValues,
-        TickRenderer.xAxisTickRenderer(
-          length = theme.elements.tickLength,
-          thickness = theme.elements.tickThickness,
-          rotateText = theme.elements.categoricalXAxisLabelOrientation)
-      )
-      component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
+    def xAxis(
+      labels: Seq[String],
+      values: Seq[Double]
+    )(implicit theme: Theme): Plot = {
+      xAxis(labels, values, Position.Bottom)
+    }
+
+    /** Add an X axis to the plot.
+      * @param labels   The labels.
+      * @param values   The X value for each label.
+      * @param position The side of the plot to add the axis.
+      */
+    def xAxis(
+      labels: Seq[String],
+      values: Seq[Double],
+      position: Position
+    )(implicit theme: Theme): Plot = {
+      require(position == Position.Bottom || position == Position.Top, "xAxis expects Position.Bottom or Position.Top.")
+      discreteAxis(labels, values, position, true)
     }
 
     /** Add a Y axis to the plot.
-      * @param tickCount    The number of tick lines.
-      * @param tickRenderer Function to draw a tick line/label.
+      * @param tickCount      The number of tick lines.
+      * @param tickRenderer   Function to draw a tick line/label.
       * @param labelFormatter Custom function to format tick labels.
       * @param tickCountRange Allow searching over axis labels with this many ticks.
+      * @param position       The side of the plot to add the axis.
       */
     def yAxis(
       tickCount: Option[Int] = None,
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
-      tickCountRange: Option[Seq[Int]] = None
+      tickCountRange: Option[Seq[Int]] = None,
+      position: Position = Position.Left
     )(implicit theme: Theme): Plot = {
-      val component = ContinuousYAxisPlotComponent(
-        tickCount.getOrElse(theme.elements.yTickCount),
-        tickRenderer.getOrElse(
-          TickRenderer.yAxisTickRenderer(
-            length = theme.elements.tickLength,
-            thickness = theme.elements.tickThickness
-          )),
+      require(position == Position.Left || position == Position.Right, "yAxis expects Position.Left or Position.Right.")
+      continuousAxis(
+        p => p.ybounds,
+        position,
+        Some(tickCount.getOrElse(theme.elements.yTickCount)),
+        tickRenderer,
         labelFormatter,
-        tickCountRange
+        tickCountRange,
+        true,
+        plot.yfixed
       )
-      component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
     }
 
     /** Add a Y axis to the plot.
@@ -294,19 +420,38 @@ object Axes {
       yAxis(labels, labels.indices.map(_.toDouble))
 
     /** Add a Y axis to the plot.
+      * @param labels   The label. The y values are assumed to start at 0 and increment by one for each label.
+      * @param position The side of the plot to add the axis.
+      */
+    def yAxis(
+      labels: Seq[String],
+      position: Position
+    )(implicit theme: Theme): Plot =
+      yAxis(labels, labels.indices.map(_.toDouble), position)
+
+    /** Add a Y axis to the plot.
       * @param labels The labels.
       * @param values The Y value for each label.
       */
-    def yAxis(labels: Seq[String], values: Seq[Double])(implicit theme: Theme): Plot = {
-      require(labels.lengthCompare(values.length) == 0)
-      val labelsAndValues = labels.zip(values)
-      val component = DiscreteYAxisPlotComponent(
-        labelsAndValues,
-        TickRenderer.yAxisTickRenderer(
-          length = theme.elements.tickLength,
-          thickness = theme.elements.tickThickness
-        ))
-      component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
+    def yAxis(
+      labels: Seq[String],
+      values: Seq[Double]
+    )(implicit theme: Theme): Plot = {
+      yAxis(labels, values, Position.Left)
+    }
+
+    /** Add a Y axis to the plot.
+      * @param labels   The labels.
+      * @param values   The Y value for each label.
+      * @param position The side of the plot to add the axis.
+      */
+    def yAxis(
+      labels: Seq[String],
+      values: Seq[Double],
+      position: Position
+    )(implicit theme: Theme): Plot = {
+      require(position == Position.Left || position == Position.Right, "yAxis expects Position.Left or Position.Right.")
+      discreteAxis(labels, values, position, true)
     }
 
     /** Add x grid lines to the plot.
