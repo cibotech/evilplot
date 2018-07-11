@@ -281,7 +281,7 @@ object Axes {
     // manual or plot seem like the easiest jumps from where we are now...
     // ... but revisit once axes get severed from plots/bounds
     //XXX call to scaling version from bounds version (assume linear)
-    /** Add an axis to the plot.
+    /** Add a continuous axis to the plot.
       * @param boundsFn         Takes a plot and returns the bounds this axis will display.
       * @param position         The side of the plot to add the axis.
       * @param tickCount        The number of tick lines.
@@ -329,6 +329,55 @@ object Axes {
         }
       } else {
         component +: plot //XXX TODO make prepending component optional?
+      }
+    }
+
+    /** Add a discrete axis to the plot.
+      * @param labels The labels.
+      * @param values The X value for each label.
+      * @param position The side of the plot to add the axis.
+      * @param tickRenderer     Function to draw a tick line/label.
+      * @param updatePlotBounds XXX
+      */
+    def discreteAxis(
+      labels: Seq[String],
+      values: Seq[Double],
+      position: Position,
+      updatePlotBounds: Boolean = false,
+      tickRenderer: Option[TickRenderer] = None
+    )(implicit theme: Theme): Plot = {
+      require(labels.lengthCompare(values.length) == 0)
+      val labelsAndValues = labels.zip(values)
+      val (boundsFn, defaultRotation) = if (position == Position.Bottom || position == Position.Top) {
+        ((plot: Plot) => plot.xbounds, theme.elements.categoricalXAxisLabelOrientation)
+      } else {
+        ((plot: Plot) => plot.ybounds, theme.elements.categoricalYAxisLabelOrientation)
+      }
+      val component = DiscreteAxisPlotComponent(
+        boundsFn,
+        position,
+        labelsAndValues,
+        tickRenderer.getOrElse(
+          TickRenderer.ArbitraryAxisTickRenderer(
+            position,
+            theme.elements.tickLength,
+            theme.elements.tickThickness,
+            //defaultRotation,
+            //320 //XXX
+            45 //XXX
+          ))
+      )
+      if (updatePlotBounds) {
+        position match {
+          case Position.Left | Position.Right =>
+            component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
+          case Position.Bottom | Position.Top =>
+            component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
+          case _ =>
+            component +: plot
+        }
+      } else {
+        component +: plot
       }
     }
 
@@ -448,25 +497,8 @@ object Axes {
       position: Position,
       updatePlotBounds: Boolean
     )(implicit theme: Theme): Plot = {
-      require(labels.lengthCompare(values.length) == 0)
       require(position == Position.Bottom || position == Position.Top, "xAxis expects Position.Bottom or Position.Top.")
-      val labelsAndValues = labels.zip(values)
-      val component = DiscreteAxisPlotComponent(
-        plot => plot.xbounds,
-        position,
-        labelsAndValues,
-        TickRenderer.ArbitraryAxisTickRenderer(
-          position,
-          theme.elements.tickLength,
-          theme.elements.tickThickness,
-          theme.elements.categoricalXAxisLabelOrientation
-        )
-      )
-      if (updatePlotBounds) {
-        component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
-      } else {
-        component +: plot
-      }
+      discreteAxis(labels, values, position, updatePlotBounds)
     }
 
     /** Add a Y axis to the plot.
@@ -583,25 +615,8 @@ object Axes {
       position: Position,
       updatePlotBounds: Boolean
     )(implicit theme: Theme): Plot = {
-      require(labels.lengthCompare(values.length) == 0)
       require(position == Position.Left || position == Position.Right, "yAxis expects Position.Left or Position.Right.")
-      val labelsAndValues = labels.zip(values)
-      val component = DiscreteAxisPlotComponent(
-        plot => plot.ybounds,
-        position,
-        labelsAndValues,
-        TickRenderer.ArbitraryAxisTickRenderer(
-          position,
-          theme.elements.tickLength,
-          theme.elements.tickThickness,
-          theme.elements.categoricalYAxisLabelOrientation
-        )
-      )
-      if (updatePlotBounds) {
-        component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
-      } else {
-        component +: plot
-      }
+      discreteAxis(labels, values, position, updatePlotBounds)
     }
 
     /** Add x grid lines to the plot.
