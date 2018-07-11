@@ -1,6 +1,14 @@
 # Changelog
 
 ## [Changes since last release]
+### Added
+- Axes can now be added to any side of a plot.
+- Axes can use arbitrary tick bounds and be added to plots without impacting the plot bounds (for e.g. plotting data
+on two different scales).
+- `discreteAxis` and `continuousAxis` implicit functions added for adding custom axes.
+
+### Changed
+- Axes implicit functions updated to allow more control over axes.
 
 ## [0.3.3] - 2018-07-02
 Artifacts for both Scala 2.11 and Scala 2.12 are published as a part of this release. There are no changes in functionality.

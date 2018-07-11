@@ -38,7 +38,7 @@ import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.{Marker, Position}
-import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PointRenderer}
+import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PointRenderer, TickRenderer}
 
 import scala.util.Random
 
@@ -85,6 +85,24 @@ object DemoPlots {
       .standard(xLabels = labels)
       .hline(0)
       .render(plotAreaSize)
+  }
+
+  lazy val axesTesting: Drawable = {
+    val points = Seq(Point(1, 1), Point(1.5, 1.1), Point(2.5,1.5), Point(2.9, 2.5), Point(3, 3))
+    val filler = Seq("Lorem", "ipsum", "dolor", "sit", "amet", "consectetur")
+    LinePlot(points)
+      // Note discrete axes are still "banded/boxed" such that ticks don't point to values, but to the center of a
+      // band for that value
+      .discreteAxis(Seq("foo", "bar", "baz"), Seq(1d, 2, 10), Position.Bottom, updatePlotBounds = false)
+      .discreteAxis(filler, filler.indices.map(_.toDouble), Position.Right, updatePlotBounds = false)
+      .continuousAxis(plot => plot.xbounds, Position.Top, tickRenderer = Some(TickRenderer.axisTickRenderer(
+        Position.Top,
+        rotateText = 315
+      )))
+      .continuousAxis(_ => Bounds(0, 100000), Position.Left, updatePlotBounds = false)
+      .xGrid().yGrid()
+      .frame()
+      .render(Extent(400, 300))
   }
 
   lazy val clusteredBarChart: Drawable = {

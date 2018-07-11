@@ -72,6 +72,7 @@ object EvilPlot {
   /** Render the example plots to the specified canvas. */
   @JSExport
   def renderExample(canvasId: String): Unit = {
+    addExample(DemoPlots.axesTesting)
     addExample(DemoPlots.functionPlot)
     addExample(DemoPlots.markerPlot)
     addExample(DemoPlots.marginalHistogram)
