@@ -91,6 +91,7 @@ object DefaultTheme {
     categoricalXAxisLabelOrientation: Double = 0,
     categoricalYAxisLabelOrientation: Double = 0,
     continuousXAxisLabelOrientation: Double = 0,
+    continuousYAxisLabelOrientation: Double = 0,
     tickCount: Int = 5,
     xTickCount: Int = 5,
     yTickCount: Int = 5,

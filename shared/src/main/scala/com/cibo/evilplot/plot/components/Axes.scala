@@ -237,6 +237,11 @@ object Axes {
       updatePlotBounds: Boolean = true,
       fixedBounds: Boolean = true
     )(implicit theme: Theme): Plot = {
+      val defaultRotation = if (position == Position.Bottom || position == Position.Top) {
+        theme.elements.categoricalXAxisLabelOrientation
+      } else {
+        theme.elements.categoricalYAxisLabelOrientation
+      }
       val component = ContinuousAxisPlotComponent(
         boundsFn,
         position,
@@ -244,17 +249,15 @@ object Axes {
         tickRenderer.getOrElse(
           TickRenderer.AxisTickRenderer(
             position,
-            length = theme.elements.tickLength,
-            thickness = theme.elements.tickThickness,
-            //320 //XXX
-            45 //XXX
+            theme.elements.tickLength,
+            theme.elements.tickThickness,
+            defaultRotation
           )),
         labelFormatter,
         tickCountRange,
         fixedBounds
       )
       if (updatePlotBounds) {
-        //XXX pull back out into x/y methods?
         position match {
           case Position.Left | Position.Right =>
             component +: plot.ybounds(component.getDescriptor(plot, fixedBounds).axisBounds)
@@ -264,7 +267,7 @@ object Axes {
             component +: plot
         }
       } else {
-        component +: plot //XXX TODO make prepending component optional?
+        component +: plot //TODO make prepending component optional / exposed?
       }
     }
 
@@ -298,9 +301,7 @@ object Axes {
             position,
             theme.elements.tickLength,
             theme.elements.tickThickness,
-            //defaultRotation,
-            //320 //XXX
-            45 //XXX
+            defaultRotation
           ))
       )
       if (updatePlotBounds) {
@@ -340,7 +341,7 @@ object Axes {
         labelFormatter,
         tickCountRange,
         true,
-        plot.xfixed //XXX Does this need to be lazily evaluated like the plot bounds //XXX actually, should this just be true?
+        plot.xfixed //XXX TODO why is this? Likely made more sense when the axis was constrained to existing plot bounds.
       )
     }
 
@@ -458,7 +459,7 @@ object Axes {
         labelFormatter,
         tickCountRange,
         true,
-        plot.yfixed //XXX lazy?
+        plot.yfixed //XXX TODO
       )
     }
 
