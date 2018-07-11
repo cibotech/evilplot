@@ -43,6 +43,7 @@ object TickRenderer {
   val defaultTickThickness: Double = 1
   val defaultTickLength: Double = 5
 
+  //XXX deprecate?
   /** Create a renderer to render a tick on the x axis.
     *
     * @param length     The length of the tick line.
@@ -53,24 +54,14 @@ object TickRenderer {
     length: Double = defaultTickLength,
     thickness: Double = defaultTickThickness,
     rotateText: Double = 0
-  )(implicit theme: Theme): TickRenderer = new TickRenderer {
-    private def align(tick: Drawable, label: Drawable): Drawable =
-      if (rotateText.toInt % 90 == 0) Align.center(tick, label).reduce(_ above _)
-      else tick.above(label).transX(label.extent.width)
+  )(implicit theme: Theme): TickRenderer = AxisTickRenderer(
+    Position.Bottom,
+    length,
+    thickness,
+    rotateText
+  )
 
-    def render(label: String): Drawable = {
-      val line = Line(length, thickness).rotated(90)
-      align(
-        line.colored(theme.colors.tickLabel),
-        Style(
-          Text(label.toString, size = theme.fonts.tickLabelSize, fontFace = theme.fonts.fontFace),
-          theme.colors.tickLabel)
-          .rotated(rotateText)
-          .padTop(2)
-      )
-    }
-  }
-
+  //XXX deprecate?
   /** Create a renderer to render a tick on the y axis.
     *
     * @param length    The length of the tick line.
@@ -79,27 +70,17 @@ object TickRenderer {
   def yAxisTickRenderer(
     length: Double = defaultTickLength,
     thickness: Double = defaultTickThickness
-  )(implicit theme: Theme): TickRenderer = new TickRenderer {
-    def render(label: String): Drawable = {
-      val line = Line(length, thickness)
-      Align
-        .middle(
-          Style(
-            Text(label.toString, size = theme.fonts.tickLabelSize, fontFace = theme.fonts.fontFace),
-            theme.colors.tickLabel)
-            .padRight(2)
-            .padBottom(2),
-          line.colored(theme.colors.tickLabel)
-        )
-        .reduce(beside)
-    }
-  }
+  )(implicit theme: Theme): TickRenderer = AxisTickRenderer(
+    Position.Left,
+    length,
+    thickness,
+    0
+  )
 
-  //XXX TODO consider changing alignment for rotated text so that tick is aligned to "highest" part of text
+  //XXX TODO revisit alignment for rotated text labels so that tick is aligned to "highest" part of text
   // e.g. left-side for 1-89 & 181 - 269, right-side for 91 - 179 & 271-359
-  // would be breaking unless old behavior is considered a bug
-  // better yet... expose that alignment? <-----
-  def ArbitraryAxisTickRenderer(
+  // or expose alignment?
+  def AxisTickRenderer(
     position: Position,
     length: Double = defaultTickLength,
     thickness: Double = defaultTickThickness,
@@ -130,17 +111,13 @@ object TickRenderer {
           case Position.Left =>
             val labelDrawable = text.padRight(2).padBottom(2)
             labelDrawable.transY(-labelDrawable.extent.height).beside(line)
-            //Align.middle(text.padRight(2).padBottom(2), line).reduce(beside)
           case Position.Right =>
             val labelDrawable = text.padLeft(2).padBottom(2)
             line.beside(labelDrawable.transY(-labelDrawable.extent.height))
-            //Align.middle(line, text.padLeft(2).padBottom(2)).reduce(beside)
           case Position.Bottom =>
             verticalLine.above(text.padTop(2)).transX(text.extent.width)
-            //Align.center(verticalLine, text.padTop(2)).reduce(_ above _)
           case Position.Top =>
             verticalLine.below(text.padBottom(2)).transX(text.extent.width)
-            //Align.center(text.padBottom(2), verticalLine).reduce(_ above _)
           case _ =>
             text
         }

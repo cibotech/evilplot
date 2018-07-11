@@ -245,7 +245,7 @@ object Axes {
         position,
         tickCount.getOrElse(theme.elements.tickCount),
         tickRenderer.getOrElse(
-          TickRenderer.ArbitraryAxisTickRenderer(
+          TickRenderer.AxisTickRenderer(
             position,
             length = theme.elements.tickLength,
             thickness = theme.elements.tickThickness,
@@ -297,7 +297,7 @@ object Axes {
         position,
         labelsAndValues,
         tickRenderer.getOrElse(
-          TickRenderer.ArbitraryAxisTickRenderer(
+          TickRenderer.AxisTickRenderer(
             position,
             theme.elements.tickLength,
             theme.elements.tickThickness,
