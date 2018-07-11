@@ -455,10 +455,12 @@ object Axes {
         plot => plot.xbounds,
         position,
         labelsAndValues,
-        TickRenderer.xAxisTickRenderer(
-          length = theme.elements.tickLength,
-          thickness = theme.elements.tickThickness,
-          rotateText = theme.elements.categoricalXAxisLabelOrientation)
+        TickRenderer.ArbitraryAxisTickRenderer(
+          position,
+          theme.elements.tickLength,
+          theme.elements.tickThickness,
+          theme.elements.categoricalXAxisLabelOrientation
+        )
       )
       if (updatePlotBounds) {
         component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
@@ -569,7 +571,6 @@ object Axes {
       yAxis(labels, values, Position.Left, updatePlotBounds)
     }
 
-    //XXX rotate
     /** Add a Y axis to the plot.
       * @param labels The labels.
       * @param values The Y value for each label.
@@ -589,11 +590,12 @@ object Axes {
         plot => plot.ybounds,
         position,
         labelsAndValues,
-        TickRenderer.yAxisTickRenderer(
-          length = theme.elements.tickLength,
-          thickness = theme.elements.tickThickness
+          TickRenderer.ArbitraryAxisTickRenderer(
+            position,
+            theme.elements.tickLength,
+            theme.elements.tickThickness,
+            theme.elements.categoricalXAxisLabelOrientation
         )
-          //rotateText = theme.elements.categoricalXAxisLabelOrientation)
       )
       if (updatePlotBounds) {
         component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
