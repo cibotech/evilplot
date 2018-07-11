@@ -74,14 +74,12 @@ object Axes {
   private sealed trait ArbitraryAxisPlotComponent extends AxisPlotComponent {
     val fixedBounds: Boolean
 
-    //XXX TODO for when component sizing is redone: this only covers one dimension... and doesn't take into account
-    // total size of the group of components (needed for shrinking plot area appropriately)
     override def size(plot: Plot): Extent = {
       val extents = ticks(getDescriptor(plot, fixedBounds)).map(_.extent)
       position match {
         case Position.Left | Position.Right => extents.maxBy(_.width)
         case Position.Bottom | Position.Top => extents.maxBy(_.height)
-        case _ => Extent(extents.maxBy(_.width).width, extents.maxBy(_.height).height) //XXX does size matter for these cases?
+        case _ => Extent(extents.maxBy(_.width).width, extents.maxBy(_.height).height)
       }
     }
 
@@ -89,7 +87,6 @@ object Axes {
 
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val descriptor = getDescriptor(plot, fixedBounds)
-      //XXX TODO replace with scaling
       val scale = position match {
         case Position.Left | Position.Right => extent.height / descriptor.axisBounds.range
         case Position.Bottom | Position.Top => extent.width / descriptor.axisBounds.range
@@ -99,7 +96,7 @@ object Axes {
       val maxWidth = ts.maxBy(_.extent.width).extent.width
       val maxHeight = ts.maxBy(_.extent.height).extent.height
       // Move the tick to the center of the range for discrete axes.
-      val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min //XXX band scaling
+      val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min //TODO band scaling
       position match {
         case Position.Left | Position.Right =>
           val drawable = ts
@@ -142,10 +139,10 @@ object Axes {
     tickRenderer: TickRenderer,
     override val labelFormatter: Option[Double => String],
     tickCountRange: Option[Seq[Int]],
-    fixedBounds: Boolean = true //XXX move to continuous axis?
+    fixedBounds: Boolean = true
   ) extends ArbitraryAxisPlotComponent
     with ContinuousAxis {
-    override def bounds(plot: Plot): Bounds = boundsFn(plot) //XXX move to continuous axis?
+    override def bounds(plot: Plot): Bounds = boundsFn(plot)
   }
 
   private case class DiscreteAxisPlotComponent(
@@ -155,7 +152,7 @@ object Axes {
     tickRenderer: TickRenderer
   ) extends ArbitraryAxisPlotComponent
     with DiscreteAxis {
-    override val fixedBounds: Boolean = true //XXX unnecessary for discrete...
+    override val fixedBounds: Boolean = true
     override def bounds(plot: Plot): Bounds = boundsFn(plot)
   }
 
@@ -227,8 +224,8 @@ object Axes {
       * @param tickRenderer     Function to draw a tick line/label.
       * @param labelFormatter   Custom function to format tick labels.
       * @param tickCountRange   Allow searching over axis labels with this many ticks.
-      * @param updatePlotBounds XXX
-      * @param fixedBounds      XXX
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
+      * @param fixedBounds      Force ticks to match bounds.
       */
     def continuousAxis(
       boundsFn: Plot => Bounds,
@@ -237,7 +234,7 @@ object Axes {
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
       tickCountRange: Option[Seq[Int]] = None,
-      updatePlotBounds: Boolean = false,
+      updatePlotBounds: Boolean = true,
       fixedBounds: Boolean = true
     )(implicit theme: Theme): Plot = {
       val component = ContinuousAxisPlotComponent(
@@ -276,13 +273,13 @@ object Axes {
       * @param values The X value for each label.
       * @param position The side of the plot to add the axis.
       * @param tickRenderer     Function to draw a tick line/label.
-      * @param updatePlotBounds XXX
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
       */
     def discreteAxis(
       labels: Seq[String],
       values: Seq[Double],
       position: Position,
-      updatePlotBounds: Boolean = false,
+      updatePlotBounds: Boolean = true,
       tickRenderer: Option[TickRenderer] = None
     )(implicit theme: Theme): Plot = {
       require(labels.lengthCompare(values.length) == 0)
@@ -365,7 +362,7 @@ object Axes {
 
     /** Add an X axis to the plot
       * @param labels The labels. The x values are assumed to start at 0 and increment by one for each label.
-      * @param updatePlotBounds XXX
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
       */
     def xAxis(
       labels: Seq[String],
@@ -376,7 +373,7 @@ object Axes {
     /** Add an X axis to the plot
       * @param labels The labels. The x values are assumed to start at 0 and increment by one for each label.
       * @param position The side of the plot to add the axis.
-      * @param updatePlotBounds XXX
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
       */
     def xAxis(
       labels: Seq[String],
@@ -412,7 +409,7 @@ object Axes {
     /** Add an X axis to the plot.
       * @param labels           The labels.
       * @param values           The X value for each label.
-      * @param updatePlotBounds XXX
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
       */
     def xAxis(
       labels: Seq[String],
@@ -426,7 +423,7 @@ object Axes {
       * @param labels The labels.
       * @param values The X value for each label.
       * @param position The side of the plot to add the axis.
-      * @param updatePlotBounds XXX
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
       */
     def xAxis(
       labels: Seq[String],
@@ -479,22 +476,22 @@ object Axes {
       labels: Seq[String],
       position: Position
     )(implicit theme: Theme): Plot =
-      yAxis(labels, labels.indices.map(_.toDouble), position, true)
+      yAxis(labels, labels.indices.map(_.toDouble), position)
 
     /** Add a Y axis to the plot.
       * @param labels The label. The y values are assumed to start at 0 and increment by one for each label.
-      * @param updatePlotBounds XXX
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
       */
     def yAxis(
       labels: Seq[String],
       updatePlotBounds: Boolean
     )(implicit theme: Theme): Plot =
-      yAxis(labels, labels.indices.map(_.toDouble), Position.Left, updatePlotBounds)
+      yAxis(labels, labels.indices.map(_.toDouble), updatePlotBounds)
 
     /** Add a Y axis to the plot.
       * @param labels The label. The y values are assumed to start at 0 and increment by one for each label.
       * @param position The side of the plot to add the axis.
-      * @param updatePlotBounds XXX
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
       */
     def yAxis(
       labels: Seq[String],
@@ -530,7 +527,7 @@ object Axes {
     /** Add a Y axis to the plot.
       * @param labels The labels.
       * @param values The Y value for each label.
-      * @param updatePlotBounds XXX
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
       */
     def yAxis(
       labels: Seq[String],
@@ -544,7 +541,7 @@ object Axes {
       * @param labels The labels.
       * @param values The Y value for each label.
       * @param position The side of the plot to add the axis.
-      * @param updatePlotBounds XXX
+      * @param updatePlotBounds Set plot bounds to match the axis bounds.
       */
     def yAxis(
       labels: Seq[String],
