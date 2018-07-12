@@ -55,7 +55,12 @@ private final case class BoxPlotRenderer(
             val boxHeight = ytransformer(summary.lowerWhisker) - ytransformer(summary.upperWhisker)
             val boxWidth = xtransformer(plot.xbounds.min + index + 1) - x - spacing / 2
 
-            val box = boxRenderer.render(plot, Extent(boxWidth, boxHeight), summary)
+            val box = {
+              if (boxHeight != 0) boxRenderer.render(plot, Extent(boxWidth, boxHeight), summary)
+              else {
+                StrokeStyle(Line(boxWidth, theme.elements.strokeWidth), theme.colors.path)
+              }
+            }
 
             val points = summary.outliers.map { pt =>
               pointRenderer
