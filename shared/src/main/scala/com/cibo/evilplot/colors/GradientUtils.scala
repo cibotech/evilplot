@@ -30,11 +30,16 @@
 
 package com.cibo.evilplot.colors
 
-private[colors] object GradientUtils {
+object GradientUtils {
   import ColorUtils.{interpolate, rgba}
 
-  // Create a gradient of an arbitrary number of colors.
-  private[colors] def multiGradient(
+  /** Create a gradient of an arbitrary number of colors.
+    * @param colors the stops in the gradient
+    * @param min the minimum of the range over which to create the gradient
+    * @param max the maximum of the range over which to create the gradient
+    * @param mode the [[GradientMode]]
+    */
+  def multiGradient(
     colors: Seq[Color],
     min: Double,
     max: Double,
@@ -58,7 +63,9 @@ private[colors] object GradientUtils {
       gradients.reduce(_ orElse _)
     }
   }
-  private[colors] def singleGradient(
+
+  /** Create a gradient between two colors. */
+  def singleGradient(
     minValue: Double,
     maxValue: Double,
     startColor: Color,
