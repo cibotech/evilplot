@@ -421,9 +421,10 @@ object DemoPlots {
 
   lazy val densityPlot: Drawable = {
     val data = Seq.fill(150)(Random.nextDouble() * 30)
-    val colors = theme.colors.stream.take(3)
+    val colors = theme.colors.stream.slice(1, 4)
     val bandwidths = Seq(5d, 2d, 0.5d)
-    Overlay(
+    val hist = Histogram(data).xbounds(0, 30)
+    val densities = Overlay(
       colors.zip(bandwidths).map {
         case (c, b) =>
           FunctionPlot(
@@ -432,9 +433,13 @@ object DemoPlots {
             Some(500),
             Some(PathRenderer.default(color = Some(c)))
           )
-      }: _*
-    ).standard()
-      .xbounds(0, 30)
+      }: _*)
+    // Can provide bounds directly
+    //MixedBoundsOverlay(hist.xbounds, hist.ybounds, hist, densities)
+    // Or use the bounds from the first plot
+    MixedBoundsOverlay(hist, densities)
+      .standard()
+      .continuousAxis(_ => densities.ybounds, Position.Right, updatePlotBounds = false)
       .render(plotAreaSize)
   }
 
