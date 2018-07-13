@@ -50,6 +50,17 @@ class ColoringSpec extends FunSpec with Matchers {
         GradientUtils.multiGradient(Seq(), 0, 100, GradientMode.Linear))
     }
 
+    it("should build multistop gradients") {
+      import HTMLNamedColors.{red, yellow, green}
+      val min = 0
+      val max = 2
+      val colors = Seq(red, yellow, green)
+      val gradient = GradientUtils.multiGradient(colors, min, max, GradientMode.Linear)
+      gradient(min) should ===(colors.head)
+      gradient(1) should ===(colors(1))
+      gradient(max) should ===(colors(2))
+    }
+
     it("should return a function that works between min and max") {
       val data: Seq[Double] = Seq(0, 5, 20, 40, 70, 100)
       val gradient = ContinuousColoring.gradient(HTMLNamedColors.red, HTMLNamedColors.blue)
@@ -60,12 +71,10 @@ class ColoringSpec extends FunSpec with Matchers {
 
     it("should behave properly when asked to render past the edge") {
       val gradient = ContinuousColoring.gradient(HTMLNamedColors.red, HTMLNamedColors.blue)
-      val coloring = gradient(Seq(1.0,5.0))
+      val coloring = gradient(Seq(1.0, 5.0))
       coloring(1.0) shouldBe HTMLNamedColors.red
-     // coloring(0.0) shouldBe HTMLNamedColors.red
       coloring(5.0) shouldBe HTMLNamedColors.blue
       coloring(6.0) shouldBe HTMLNamedColors.blue
-
     }
   }
   describe("coloring from the theme") {

@@ -38,6 +38,8 @@ object GradientUtils {
     * @param min the minimum of the range over which to create the gradient
     * @param max the maximum of the range over which to create the gradient
     * @param mode the [[GradientMode]]
+    * @return a [[Double => Color]] that returns an interpolated color for doubles
+    *         in [min, max] and the respective endpoints for all other doubles.
     */
   def multiGradient(
     colors: Seq[Color],
@@ -60,11 +62,19 @@ object GradientUtils {
           colors(i + 1),
           mode)
       }
-      gradients.reduce(_ orElse _)
+      val complete = gradients.reduce(_ orElse _)
+      (d: Double) =>
+        {
+          if (d < min) colors.head
+          else if (d > max) colors.last
+          else complete(d)
+        }
     }
   }
 
-  /** Create a gradient between two colors. */
+  /** Create a gradient between two colors.
+    * @return A [[PartialFunction[Double, Color]], only defined inside  [minValue, maxValue]
+    *         If a function that is defined for all doubles is desired, use [[singleGradientComplete]] */
   def singleGradient(
     minValue: Double,
     maxValue: Double,
@@ -72,9 +82,8 @@ object GradientUtils {
     endColor: Color,
     mode: GradientMode
   ): PartialFunction[Double, Color] = {
-
     {
-      case d if d > minValue && d < maxValue =>
+      case d if d >= minValue && d <= maxValue =>
         import mode._
         val (r1, g1, b1, a1) = rgba(startColor)
         val (r2, g2, b2, a2) = rgba(endColor)
@@ -85,9 +94,19 @@ object GradientUtils {
         val b = interpolate(inverse(b1), inverse(b2), interpolationCoefficient)
         val a = interpolate(a1, a2, interpolationCoefficient)
         RGBA((255 * forward(r)).toInt, (255 * forward(g)).toInt, (255 * forward(b)).toInt, a)
-      case d if d <= minValue => startColor
-      case d if d >= maxValue => endColor
     }
   }
+
+  /** Create a gradient between two colors on a double range that is defined outside of
+    * the range.
+    * @return a [[Double => Color]] that returns an interpolated color for doubles inside
+    *        the range, or the respective end point for doubles outside the range. */
+  def singleGradientComplete(
+    minValue: Double,
+    maxValue: Double,
+    startColor: Color,
+    endColor: Color,
+    mode: GradientMode): Double => Color =
+    multiGradient(Seq(startColor, endColor), minValue, maxValue, mode)
 
 }
