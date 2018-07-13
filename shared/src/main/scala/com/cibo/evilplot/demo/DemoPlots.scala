@@ -88,19 +88,32 @@ object DemoPlots {
   }
 
   lazy val axesTesting: Drawable = {
-    val points = Seq(Point(1, 1), Point(1.5, 1.1), Point(2.5,1.5), Point(2.9, 2.5), Point(3, 3))
+    val points = Seq(Point(1, 1), Point(1.5, 1.1), Point(2.5, 1.5), Point(2.9, 2.5), Point(3, 3))
     val filler = Seq("Lorem", "ipsum", "dolor", "sit", "amet", "consectetur")
     LinePlot(points)
-      // Note discrete axes are still "banded/boxed" such that ticks don't point to values, but to the center of a
-      // band for that value
-      .discreteAxis(Seq("foo", "bar", "baz"), Seq(1d, 2, 10), Position.Bottom, updatePlotBounds = false)
-      .discreteAxis(filler, filler.indices.map(_.toDouble), Position.Right, updatePlotBounds = false)
-      .continuousAxis(plot => plot.xbounds, Position.Top, tickRenderer = Some(TickRenderer.axisTickRenderer(
+    // Note discrete axes are still "banded/boxed" such that ticks don't point to values, but to the center of a
+    // band for that value
+      .discreteAxis(
+        Seq("foo", "bar", "baz"),
+        Seq(1d, 2, 10),
+        Position.Bottom,
+        updatePlotBounds = false)
+      .discreteAxis(
+        filler,
+        filler.indices.map(_.toDouble),
+        Position.Right,
+        updatePlotBounds = false)
+      .continuousAxis(
+        plot => plot.xbounds,
         Position.Top,
-        rotateText = 315
-      )))
+        tickRenderer = Some(
+          TickRenderer.axisTickRenderer(
+            Position.Top,
+            rotateText = 315
+          )))
       .continuousAxis(_ => Bounds(0, 100000), Position.Left, updatePlotBounds = false)
-      .xGrid().yGrid()
+      .xGrid()
+      .yGrid()
       .frame()
       .render(Extent(400, 300))
   }
@@ -185,8 +198,15 @@ object DemoPlots {
   lazy val scatterPlot: Drawable = {
     val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
     val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
-    ScatterPlot(points, pointRenderer = Some(PointRenderer.depthColor(years, None, None)))
-      .standard()
+    ScatterPlot(
+      points,
+      pointRenderer = Some(
+        PointRenderer.depthColor(
+          years,
+          Some(ContinuousColoring
+            .gradient3(HTMLNamedColors.green, HTMLNamedColors.yellow, HTMLNamedColors.red)),
+          None))
+    ).standard()
       .xLabel("x")
       .yLabel("y")
       .trend(1, 0)
