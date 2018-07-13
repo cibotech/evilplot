@@ -38,7 +38,7 @@ object GradientUtils {
     * @param min the minimum of the range over which to create the gradient
     * @param max the maximum of the range over which to create the gradient
     * @param mode the [[GradientMode]]
-    * @return a [[Double => Color]] that returns an interpolated color for doubles
+    * @return a Double => Color that returns an interpolated color for doubles
     *         in [min, max] and the respective endpoints for all other doubles.
     */
   def multiGradient(
@@ -73,7 +73,7 @@ object GradientUtils {
   }
 
   /** Create a gradient between two colors.
-    * @return A [[PartialFunction[Double, Color]], only defined inside  [minValue, maxValue]
+    * @return A PartialFunction[Double, Color], only defined inside  [minValue, maxValue]
     *         If a function that is defined for all doubles is desired, use [[singleGradientComplete]] */
   def singleGradient(
     minValue: Double,
@@ -99,7 +99,7 @@ object GradientUtils {
 
   /** Create a gradient between two colors on a double range that is defined outside of
     * the range.
-    * @return a [[Double => Color]] that returns an interpolated color for doubles inside
+    * @return a Double => Color that returns an interpolated color for doubles inside
     *        the range, or the respective end point for doubles outside the range. */
   def singleGradientComplete(
     minValue: Double,
