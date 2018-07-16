@@ -54,7 +54,7 @@ trait CategoricalColoring[A] extends Coloring[A] {
     implicit theme: Theme): LegendContext = {
     val (distinct, coloring) = distinctElemsAndColorFunction(dataToColor)
     LegendContext(
-      elements = distinct.map(v => Disc(theme.elements.pointSize) filled coloring(v)),
+      elements = distinct.map(v => legendGlyph(theme.elements.pointSize) filled coloring(v)),
       labels = distinct.map(
         a =>
           Style(
