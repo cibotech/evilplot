@@ -33,6 +33,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
 private final case class BoxPlotRenderer(
@@ -56,7 +57,7 @@ private final case class BoxPlotRenderer(
             val boxWidth = xtransformer(plot.xbounds.min + index + 1) - x - spacing / 2
 
             val box = {
-              if (boxHeight != 0) boxRenderer.render(plot, Extent(boxWidth, boxHeight), summary)
+              if (boxHeight != 0) boxRenderer.render(plot, Extent(boxWidth, boxHeight), BoxRendererContext(summary, index))
               else {
                 StrokeStyle(Line(boxWidth, theme.elements.strokeWidth), theme.colors.path)
               }
@@ -72,6 +73,8 @@ private final case class BoxPlotRenderer(
         }
     }
   }
+
+  override def legendContext: LegendContext = boxRenderer.legendContext
 }
 
 object BoxPlot {
