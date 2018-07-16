@@ -38,7 +38,7 @@ import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.{Marker, Position}
-import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PointRenderer, TickRenderer}
+import com.cibo.evilplot.plot.renderers._
 
 import scala.util.Random
 
@@ -190,8 +190,11 @@ object DemoPlots {
 
   lazy val boxPlot: Drawable = {
     val data = Seq.fill(10)(Seq.fill(Random.nextInt(30))(Random.nextDouble()))
-    BoxPlot(data)
+    val series = Seq.fill(10)(Random.nextInt(2))
+    println(series)
+    BoxPlot(data, boxRenderer = Some(BoxRenderer.colorBy(series)))
       .standard(xLabels = (1 to 10).map(_.toString))
+      .rightLegend()
       .render(plotAreaSize)
   }
 
