@@ -49,6 +49,44 @@ object DemoPlots {
       .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
   )
 
+  lazy val simpleLineData = Seq(Point(1, 1), Point(1.5, 1.1), Point(2.5,1.5), Point(2.9, 2.5), Point(3, 3))
+
+  lazy val simpleLine = LinePlot(simpleLineData)
+
+  lazy val dataRelativeDrawing = Polygon(Seq(Point(0, 20), Point(80, 20), Point(80, 0)))
+
+  lazy val flipTests: Drawable = {
+    //val xhist = borderHist.xAxis()
+    val blah = Text("hi", 14)
+    val borderSelf = simpleLine
+      .xAxis()
+      .component(Marker(Position.Top, _ => dataRelativeDrawing, size = dataRelativeDrawing.extent, x = 1.5))
+      .component(Marker(Position.Top, _ => blah, size = blah.extent, x = 1.5))
+    //.setXTransform(testTransformer(), false)
+    simpleLine
+      //.ybounds(0, .12)
+      //.component(Marker(Position.Top, _ => blah, size = blah.extent, x = 1.5))
+      //.rightPlot(xhist, 50)
+      .rightPlot(borderSelf, 100)
+      .yAxis().xAxis()
+      //.continuousAxis(_ => Bounds(100, 0), Position.Bottom) // freaks out about min > max
+      .xGrid().yGrid()
+      .frame()
+      //.render(plotAreaSize)
+      .render(Extent(300, 300))
+  }
+
+  lazy val unalignedAxis = {
+    val borderSelf = simpleLine
+      .xAxis().yAxis()
+    simpleLine
+      .rightPlot(borderSelf, 50)
+      .yAxis().xAxis()
+      .xGrid().yGrid()
+      .frame()
+      .render(Extent(300, 300))
+  }
+
   val plotAreaSize: Extent = Extent(1000, 600)
   lazy val histogram: Drawable = {
     val data = (0.0 to 3 by .25) ++ (3.0 to 5 by .05) ++ (5.0 to 8 by 1.0)

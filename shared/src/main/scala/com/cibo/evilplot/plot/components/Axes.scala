@@ -86,6 +86,8 @@ object Axes {
     def bounds(plot: Plot): Bounds
 
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
+      val yTransformer = plot.ytransform(plot, extent)
+      val xTransformer = plot.xtransform(plot, extent)
       val descriptor = getDescriptor(plot, fixedBounds)
       val scale = position match {
         case Position.Left | Position.Right => extent.height / descriptor.axisBounds.range
@@ -97,13 +99,15 @@ object Axes {
       val maxHeight = ts.maxBy(_.extent.height).extent.height
       // Move the tick to the center of the range for discrete axes.
       val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min //TODO band scaling
+      val offsetY = 0 - yTransformer(descriptor.axisBounds.min)//descriptor.axisBounds.min
       position match {
         case Position.Left | Position.Right =>
           val drawable = ts
             .zip(descriptor.values)
             .map {
               case (tick, value) =>
-                val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
+                //val y = extent.height - (value * scale + offset) - tick.extent.height / 2.0
+                val y = extent.height - (value * scale + offsetY) - tick.extent.height / 2.0
                 if (y <= extent.height) {
                   position match {
                     case Position.Left => tick.translate(x = maxWidth - tick.extent.width, y = y)
