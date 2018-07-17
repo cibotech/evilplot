@@ -50,64 +50,64 @@ object DefaultTheme {
     HEX("#9d755d"),
     HEX("#bab0ac"))
 
-  case class DefaultFonts(
-    titleSize: Double = 22,
-    labelSize: Double = 20,
-    annotationSize: Double = 10,
-    tickLabelSize: Double = 14,
-    legendLabelSize: Double = 14,
-    facetLabelSize: Double = 14,
-    fontFace: String = "sans-serif"
-  ) extends Fonts
+  val DefaultFonts: Fonts = Fonts(
+    titleSize = 22,
+    labelSize = 20,
+    annotationSize = 10,
+    tickLabelSize = 14,
+    legendLabelSize = 14,
+    facetLabelSize = 14,
+    fontFace = "sans-serif"
+  )
 
-  case class DefaultColors(
-    background: Color = Clear,
-    frame: Color = RGB(30, 30, 30),
-    bar: Color = darkBlue,
-    fill: Color = darkBlue,
-    path: Color = darkGray,
-    point: Color = darkGray,
-    gridLine: Color = lightGray,
-    trendLine: Color = darkGray,
-    title: Color = darkGray,
-    label: Color = darkGray,
-    annotation: Color = darkGray,
-    legendLabel: Color = darkGray,
-    tickLabel: Color = darkGray,
-    stream: Seq[Color] = colorPalette,
-    continuousColoring: ContinuousColoring =
+  val DefaultColors: Colors = Colors(
+    background = Clear,
+    frame = RGB(30, 30, 30),
+    bar = darkBlue,
+    fill = darkBlue,
+    path = darkGray,
+    point = darkGray,
+    gridLine = lightGray,
+    trendLine = darkGray,
+    title = darkGray,
+    label = darkGray,
+    annotation = darkGray,
+    legendLabel = darkGray,
+    tickLabel = darkGray,
+    stream = colorPalette,
+    continuousColoring =
       gradient(HTMLNamedColors.blue, HTMLNamedColors.orange, gradientMode = GradientMode.Natural)
-  ) extends Colors
+  )
 
-  case class DefaultElements(
-    strokeWidth: Double = 2,
-    pointSize: Double = 4,
-    gridLineSize: Double = 0.25,
-    barSpacing: Double = 1,
-    clusterSpacing: Double = 4,
-    boundBuffer: Double = 0.0,
-    boxSpacing: Double = 20,
-    contours: Int = 20,
-    categoricalXAxisLabelOrientation: Double = 0,
-    categoricalYAxisLabelOrientation: Double = 0,
-    continuousXAxisLabelOrientation: Double = 0,
-    continuousYAxisLabelOrientation: Double = 0,
-    tickCount: Int = 5,
-    xTickCount: Int = 5,
-    yTickCount: Int = 5,
-    xGridLineCount: Int = 5,
-    yGridLineCount: Int = 5,
-    tickThickness: Double = 1,
-    tickLength: Double = 5,
-    lineDashStyle: LineStyle = LineStyle.Solid
-  ) extends Elements
+  val DefaultElements: Elements = Elements(
+    strokeWidth = 2,
+    pointSize = 4,
+    gridLineSize = 0.25,
+    barSpacing = 1,
+    clusterSpacing = 4,
+    boundBuffer = 0.0,
+    boxSpacing = 20,
+    contours = 20,
+    categoricalXAxisLabelOrientation = 0,
+    categoricalYAxisLabelOrientation = 0,
+    continuousXAxisLabelOrientation = 0,
+    continuousYAxisLabelOrientation = 0,
+    tickCount = 5,
+    xTickCount = 5,
+    yTickCount = 5,
+    xGridLineCount = 5,
+    yGridLineCount = 5,
+    tickThickness = 1,
+    tickLength = 5,
+    lineDashStyle = LineStyle.Solid
+  )
 
-  case class DefaultTheme(
-    fonts: Fonts = DefaultFonts(),
-    colors: Colors = DefaultColors(),
-    elements: Elements = DefaultElements()
-  ) extends Theme
+  val DefaultTheme = Theme(
+    fonts = DefaultFonts,
+    colors = DefaultColors,
+    elements = DefaultElements
+  )
 
-  implicit val defaultTheme: Theme = DefaultTheme()
+  implicit val defaultTheme: Theme = DefaultTheme
 
 }

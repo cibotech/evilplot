@@ -32,25 +32,25 @@ package com.cibo.evilplot.plot.aesthetics
 
 import com.cibo.evilplot.geometry.LineStyle
 
-trait Elements {
-  val strokeWidth: Double
-  val lineDashStyle: LineStyle
-  val pointSize: Double
-  val gridLineSize: Double
-  val boxSpacing: Double
-  val barSpacing: Double
-  val clusterSpacing: Double
-  val boundBuffer: Double
-  val contours: Int
-  val categoricalXAxisLabelOrientation: Double
-  val categoricalYAxisLabelOrientation: Double
-  val continuousXAxisLabelOrientation: Double
-  val continuousYAxisLabelOrientation: Double
-  val tickCount: Int
-  val xTickCount: Int
-  val yTickCount: Int
-  val xGridLineCount: Int
-  val yGridLineCount: Int
-  val tickThickness: Double
-  val tickLength: Double
-}
+final case class Elements(
+  strokeWidth: Double,
+  lineDashStyle: LineStyle,
+  pointSize: Double,
+  gridLineSize: Double,
+  boxSpacing: Double,
+  barSpacing: Double,
+  clusterSpacing: Double,
+  boundBuffer: Double,
+  contours: Int,
+  categoricalXAxisLabelOrientation: Double,
+  categoricalYAxisLabelOrientation: Double,
+  continuousXAxisLabelOrientation: Double,
+  continuousYAxisLabelOrientation: Double,
+  tickCount: Int,
+  xTickCount: Int,
+  yTickCount: Int,
+  xGridLineCount: Int,
+  yGridLineCount: Int,
+  tickThickness: Double,
+  tickLength: Double
+)

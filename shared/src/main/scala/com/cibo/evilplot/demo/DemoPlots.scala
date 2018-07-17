@@ -35,7 +35,7 @@ import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot
 import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultTheme, DefaultFonts}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.{Marker, Position}
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PointRenderer, TickRenderer}
@@ -44,8 +44,8 @@ import scala.util.Random
 
 /** A number of examples of Evil Plotting */
 object DemoPlots {
-  implicit val theme: DefaultTheme = DefaultTheme().copy(
-    fonts = DefaultFonts()
+  implicit val theme: Theme = DefaultTheme.copy(
+    fonts = DefaultFonts
       .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
   )
 
@@ -424,16 +424,15 @@ object DemoPlots {
     val colors = theme.colors.stream.slice(1, 4)
     val bandwidths = Seq(5d, 2d, 0.5d)
     val hist = Histogram(data).xbounds(0, 30)
-    val densities = Overlay(
-      colors.zip(bandwidths).map {
-        case (c, b) =>
-          FunctionPlot(
-            densityEstimate(data, b),
-            Some(Bounds(0, 30)),
-            Some(500),
-            Some(PathRenderer.default(color = Some(c)))
-          )
-      }: _*)
+    val densities = Overlay(colors.zip(bandwidths).map {
+      case (c, b) =>
+        FunctionPlot(
+          densityEstimate(data, b),
+          Some(Bounds(0, 30)),
+          Some(500),
+          Some(PathRenderer.default(color = Some(c)))
+        )
+    }: _*)
     // Can provide bounds directly
     //MixedBoundsOverlay(hist.xbounds, hist.ybounds, hist, densities)
     // Or use the bounds from the first plot
