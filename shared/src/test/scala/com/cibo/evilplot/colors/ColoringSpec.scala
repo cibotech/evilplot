@@ -79,11 +79,11 @@ class ColoringSpec extends FunSpec with Matchers {
   }
   describe("coloring from the theme") {
     import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultColors => AesColors}
-    implicit val overriddenTheme: Theme = new Theme {
-      val fonts: Fonts = DefaultFonts()
-      val elements: Elements = DefaultElements()
-      val colors: Colors = AesColors().copy(stream = Seq(HTMLNamedColors.red))
-    }
+    implicit val overriddenTheme: Theme = Theme(
+      fonts = DefaultFonts,
+      elements = DefaultElements,
+      colors = AesColors.copy(stream = Seq(HTMLNamedColors.red))
+    )
     it("should fail to color when the theme doesn't have enough colors") {
       val data = 0 to 5
       an[IllegalArgumentException] shouldBe thrownBy(CategoricalColoring.themed[Int].apply(data))

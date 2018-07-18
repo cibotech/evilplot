@@ -32,22 +32,22 @@ package com.cibo.evilplot.plot.aesthetics
 
 import com.cibo.evilplot.colors.{Color, ContinuousColoring}
 
-trait Colors {
-  val background: Color
-  val frame: Color
-  val bar: Color
-  val fill: Color
-  val path: Color
-  val point: Color
-  val gridLine: Color
-  val trendLine: Color
+final case class Colors(
+  background: Color,
+  frame: Color,
+  bar: Color,
+  fill: Color,
+  path: Color,
+  point: Color,
+  gridLine: Color,
+  trendLine: Color,
 
-  val title: Color
-  val label: Color
-  val annotation: Color
-  val legendLabel: Color
-  val tickLabel: Color
+  title: Color,
+  label: Color,
+  annotation: Color,
+  legendLabel: Color,
+  tickLabel: Color,
 
-  val stream: Seq[Color]
-  val continuousColoring: ContinuousColoring
-}
+  stream: Seq[Color],
+  continuousColoring: ContinuousColoring
+)
