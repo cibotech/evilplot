@@ -37,7 +37,7 @@ import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRender
 
 object XyPlot {
 
-  private case class XyPlotRenderer(
+  final case class XyPlotRenderer(
     data: Seq[Point],
     pointRenderer: PointRenderer,
     pathRenderer: PathRenderer

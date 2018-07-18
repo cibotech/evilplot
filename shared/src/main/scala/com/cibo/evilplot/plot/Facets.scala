@@ -61,7 +61,7 @@ object Facets {
     }
   }
 
-  private case class FacetedPlotRenderer(subplots: FacetData) extends PlotRenderer {
+  final case class FacetedPlotRenderer(subplots: FacetData) extends PlotRenderer {
     override def legendContext: LegendContext =
       LegendContext.combine(subplots.flatMap(_.map(_.renderer.legendContext)))
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {

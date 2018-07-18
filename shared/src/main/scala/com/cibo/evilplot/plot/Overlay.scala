@@ -62,7 +62,7 @@ object Overlay {
     }
   }
 
-  private case class OverlayPlotRenderer(subplots: Seq[Plot]) extends PlotRenderer {
+  final case class OverlayPlotRenderer(subplots: Seq[Plot]) extends PlotRenderer {
     override def legendContext: LegendContext =
       LegendContext.combine(subplots.map(_.renderer.legendContext))
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
