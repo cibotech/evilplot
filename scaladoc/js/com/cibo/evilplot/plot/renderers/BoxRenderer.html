@@ -218,7 +218,7 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">BoxRenderer</span><span class="result"> extends <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<a href="../../numeric/BoxPlotSummaryStatistics.html" class="extype" name="com.cibo.evilplot.numeric.BoxPlotSummaryStatistics">BoxPlotSummaryStatistics</a>]</span>
+        <span class="name">BoxRenderer</span><span class="result"> extends <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<a href="BoxRenderer$$BoxRendererContext.html" class="extype" name="com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext">BoxRendererContext</a>]</span>
       </span>
       </h4>
 
@@ -227,7 +227,7 @@
           <span class="toggle">
             Linear Supertypes
           </span>
-          <div class="superTypes hiddenContent"><a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<a href="../../numeric/BoxPlotSummaryStatistics.html" class="extype" name="com.cibo.evilplot.numeric.BoxPlotSummaryStatistics">BoxPlotSummaryStatistics</a>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<a href="BoxRenderer$$BoxRendererContext.html" class="extype" name="com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext">BoxRendererContext</a>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -278,9 +278,9 @@
         <div class="values members">
               <h3>Abstract Value Members</h3>
               <ol><li name="com.cibo.evilplot.plot.renderers.BoxRenderer#render" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="render(plot:com.cibo.evilplot.plot.Plot,extent:com.cibo.evilplot.geometry.Extent,summary:com.cibo.evilplot.numeric.BoxPlotSummaryStatistics):com.cibo.evilplot.geometry.Drawable"></a><a id="render(Plot,Extent,BoxPlotSummaryStatistics):Drawable"></a>
+      <a id="render(plot:com.cibo.evilplot.plot.Plot,extent:com.cibo.evilplot.geometry.Extent,summary:com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext):com.cibo.evilplot.geometry.Drawable"></a><a id="render(Plot,Extent,BoxRendererContext):Drawable"></a>
       <span class="permalink">
-      <a href="../../../../../com/cibo/evilplot/plot/renderers/BoxRenderer.html#render(plot:com.cibo.evilplot.plot.Plot,extent:com.cibo.evilplot.geometry.Extent,summary:com.cibo.evilplot.numeric.BoxPlotSummaryStatistics):com.cibo.evilplot.geometry.Drawable" title="Permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/BoxRenderer.html#render(plot:com.cibo.evilplot.plot.Plot,extent:com.cibo.evilplot.geometry.Extent,summary:com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext):com.cibo.evilplot.geometry.Drawable" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -289,7 +289,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">render</span><span class="params">(<span name="plot">plot: <a href="../Plot.html" class="extype" name="com.cibo.evilplot.plot.Plot">Plot</a></span>, <span name="extent">extent: <a href="../../geometry/Extent.html" class="extype" name="com.cibo.evilplot.geometry.Extent">Extent</a></span>, <span name="summary">summary: <a href="../../numeric/BoxPlotSummaryStatistics.html" class="extype" name="com.cibo.evilplot.numeric.BoxPlotSummaryStatistics">BoxPlotSummaryStatistics</a></span>)</span><span class="result">: <a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>
+        <span class="name">render</span><span class="params">(<span name="plot">plot: <a href="../Plot.html" class="extype" name="com.cibo.evilplot.plot.Plot">Plot</a></span>, <span name="extent">extent: <a href="../../geometry/Extent.html" class="extype" name="com.cibo.evilplot.geometry.Extent">Extent</a></span>, <span name="summary">summary: <a href="BoxRenderer$$BoxRendererContext.html" class="extype" name="com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext">BoxRendererContext</a></span>)</span><span class="result">: <a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>
       </span>
       
       <p class="shortcomment cmt">Render a category within the extent.</p><div class="fullcomment"><div class="comment cmt"><p>Render a category within the extent.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.cibo.evilplot.plot.renderers.BoxRenderer">BoxRenderer</a> → <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a></dd></dl></div>
@@ -495,6 +495,22 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.cibo.evilplot.plot.renderers.BoxRenderer#legendContext" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="legendContext:com.cibo.evilplot.plot.LegendContext"></a><a id="legendContext:LegendContext"></a>
+      <span class="permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/BoxRenderer.html#legendContext:com.cibo.evilplot.plot.LegendContext" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">legendContext</span><span class="result">: <a href="../LegendContext.html" class="extype" name="com.cibo.evilplot.plot.LegendContext">LegendContext</a></span>
+      </span>
+      
+      
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -660,7 +676,7 @@
 
         <div id="inheritedMembers">
         <div class="parent" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">
-              <h3>Inherited from <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<a href="../../numeric/BoxPlotSummaryStatistics.html" class="extype" name="com.cibo.evilplot.numeric.BoxPlotSummaryStatistics">BoxPlotSummaryStatistics</a>]</h3>
+              <h3>Inherited from <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<a href="BoxRenderer$$BoxRendererContext.html" class="extype" name="com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext">BoxRendererContext</a>]</h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
