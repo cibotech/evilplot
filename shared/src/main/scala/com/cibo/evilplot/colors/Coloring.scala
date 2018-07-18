@@ -30,7 +30,7 @@
 
 package com.cibo.evilplot.colors
 
-import com.cibo.evilplot.geometry.{Disc, Rect, Style, Text}
+import com.cibo.evilplot.geometry.{Disc, Drawable, Rect, Style, Text}
 import com.cibo.evilplot.numeric.{AxisDescriptor, Bounds, Labeling}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle}
@@ -47,10 +47,14 @@ trait CategoricalColoring[A] extends Coloring[A] {
     distinctElemsAndColorFunction(dataToColor)._2
   }
 
-  def legendContext(dataToColor: Seq[A])(implicit theme: Theme): LegendContext = {
+  def legendContext(dataToColor: Seq[A])(implicit theme: Theme): LegendContext =
+    legendContext(dataToColor, legendGlyph = (d: Double) => Disc(d))
+
+  def legendContext(dataToColor: Seq[A], legendGlyph: Double => Drawable)(
+    implicit theme: Theme): LegendContext = {
     val (distinct, coloring) = distinctElemsAndColorFunction(dataToColor)
     LegendContext(
-      elements = distinct.map(v => Disc(theme.elements.pointSize) filled coloring(v)),
+      elements = distinct.map(v => legendGlyph(theme.elements.pointSize) filled coloring(v)),
       labels = distinct.map(
         a =>
           Style(
@@ -208,14 +212,16 @@ object ContinuousColoring {
         )
       }
     }
+
   /** Convenience coloring method when we know exactly what the values of the gradients are.
     * @param colors the colors to use as interpolation points
     * @param min min value
     * @param max max override for the data
     */
-  def gradientColoringFunction(colors: Seq[Color],
-               min: Double,
-               max: Double,
-               gradientMode: GradientMode
-              )(implicit theme: Theme) : Double => Color = gradient(colors, Some(min), Some(max), gradientMode)(Seq.empty)
+  def gradientColoringFunction(
+    colors: Seq[Color],
+    min: Double,
+    max: Double,
+    gradientMode: GradientMode)(implicit theme: Theme): Double => Color =
+    gradient(colors, Some(min), Some(max), gradientMode)(Seq.empty)
 }
