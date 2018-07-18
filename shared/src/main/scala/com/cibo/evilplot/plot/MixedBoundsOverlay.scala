@@ -37,7 +37,7 @@ import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object MixedBoundsOverlay {
 
-  private case class MixedBoundsOverlayPlotRenderer(subplots: Seq[Plot]) extends PlotRenderer {
+  final case class MixedBoundsOverlayPlotRenderer(subplots: Seq[Plot]) extends PlotRenderer {
     override def legendContext: LegendContext =
       LegendContext.combine(subplots.map(_.renderer.legendContext))
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable =

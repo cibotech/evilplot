@@ -40,7 +40,7 @@ object Heatmap {
 
   val defaultColorCount: Int = 10
 
-  private case class HeatmapRenderer(
+  final case class HeatmapRenderer(
     data: Seq[Seq[Double]],
     colorBar: ScaledColorBar
   )(implicit theme: Theme)

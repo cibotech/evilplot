@@ -50,13 +50,13 @@ import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
 final case class Plot(
   xbounds: Bounds,
   ybounds: Bounds,
-  private[plot] val renderer: PlotRenderer,
-  private[plot] val componentRenderer: ComponentRenderer = ComponentRenderer.Default(),
+  renderer: PlotRenderer,
+  componentRenderer: ComponentRenderer = ComponentRenderer.Default(),
   xtransform: Plot.Transformer = Plot.DefaultXTransformer(),
   ytransform: Plot.Transformer = Plot.DefaultYTransformer(),
-  private[plot] val xfixed: Boolean = false,
-  private[plot] val yfixed: Boolean = false,
-  private[plot] val components: Seq[FacetedPlotComponent] = Seq.empty
+  xfixed: Boolean = false,
+  yfixed: Boolean = false,
+  components: Seq[FacetedPlotComponent] = Seq.empty
 ) {
   private[plot] def inBounds(point: Point): Boolean =
     xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
@@ -150,7 +150,7 @@ object Plot {
     def apply(plot: Plot, plotExtent: Extent): Double => Double
   }
 
-  private[plot] case class DefaultXTransformer() extends Transformer {
+  final case class DefaultXTransformer() extends Transformer {
     def apply(plot: Plot, plotExtent: Extent): Double => Double = {
       val scale = plotExtent.width / plot.xbounds.range
       (x: Double) =>
@@ -158,7 +158,7 @@ object Plot {
     }
   }
 
-  private[plot] case class DefaultYTransformer() extends Transformer {
+  final case class DefaultYTransformer() extends Transformer {
     def apply(plot: Plot, plotExtent: Extent): Double => Double = {
       val scale = plotExtent.height / plot.ybounds.range
       (y: Double) =>
