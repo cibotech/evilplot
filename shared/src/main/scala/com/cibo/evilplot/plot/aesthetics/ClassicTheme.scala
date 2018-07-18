@@ -34,7 +34,7 @@ import com.cibo.evilplot.colors.{Color, HSL, HTMLNamedColors, RGB}
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultColors, DefaultElements, DefaultFonts}
 
 object ClassicTheme {
-  val ClassicColors: DefaultColors = DefaultColors(
+  val ClassicColors: Colors = DefaultColors.copy(
     background = HSL(0, 0, 92),
     frame = RGB(30, 30, 30),
     bar = HSL(0, 0, 35),
@@ -51,18 +51,18 @@ object ClassicTheme {
     stream = Color.stream
   )
 
-  val ClassicElements: DefaultElements = DefaultElements(
+  val ClassicElements: Elements = DefaultElements.copy(
     pointSize = 2.5,
     gridLineSize = 1,
     categoricalXAxisLabelOrientation = 90
   )
 
-  val ClassicFonts: DefaultFonts = DefaultFonts(
+  val ClassicFonts: Fonts = DefaultFonts.copy(
     tickLabelSize = 10,
     legendLabelSize = 10
   )
 
-  implicit val classicTheme: DefaultTheme.DefaultTheme = DefaultTheme.DefaultTheme(
+  implicit val classicTheme: Theme = Theme(
     colors = ClassicColors,
     elements = ClassicElements,
     fonts = ClassicFonts

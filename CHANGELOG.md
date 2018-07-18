@@ -2,6 +2,9 @@
 
 ## [Changes since last release]
 
+### Changed
+- `Theme`, `Fonts`, `Colors`, and `Elements` have been changed from traits to case classes. The `DefaultTheme`, `DefaultFonts`, `DefaultColors` and `DefaultElements` types have been removed. The default theme is now available as an instance of `Theme` called `DefaultTheme`. This change is intended to make it easier to modify small parts of a theme, without having to first ensure the theme is indeed an instance of `DefaultTheme`.
+
 ## [0.3.4] - 2018-07-13
 ### Added
 - Axes can now be added to any side of a plot.
