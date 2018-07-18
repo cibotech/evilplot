@@ -2,8 +2,14 @@
 
 ## [Changes since last release]
 
+
+## [0.4.0] - 2018-07-18
+### Added
+- `BoxRenderer.colorBy` box renderer for custom coloring on box plots.
 ### Changed
 - `Theme`, `Fonts`, `Colors`, and `Elements` have been changed from traits to case classes. The `DefaultTheme`, `DefaultFonts`, `DefaultColors` and `DefaultElements` types have been removed. The default theme is now available as an instance of `Theme` called `DefaultTheme`. This change is intended to make it easier to modify small parts of a theme, without having to first ensure the theme is indeed an instance of `DefaultTheme`.
+- Plot renderers have been made public.
+- The `renderer` and `components` fields on `Plot` are now public.
 
 ## [0.3.4] - 2018-07-13
 ### Added
@@ -52,7 +58,8 @@ correcting previously incorrect extent calculation.
 - Applying "bound buffers" to plots is no longer part of the default theme.
 - The default number of ticks on continuous axes has been decreased.
 
-[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.3.4...HEAD
+[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/cibotech/evilplot/compare/v0.3.4...v0.4.0
 [0.3.4]: https://github.com/cibotech/evilplot/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/cibotech/evilplot/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/cibotech/evilplot/compare/v0.3.1...v0.3.2
