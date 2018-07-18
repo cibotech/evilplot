@@ -36,7 +36,7 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
-private final case class BoxPlotRenderer(
+final case class BoxPlotRenderer(
   data: Seq[Option[BoxPlotSummaryStatistics]],
   boxRenderer: BoxRenderer,
   pointRenderer: PointRenderer,
