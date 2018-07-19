@@ -62,31 +62,50 @@ trait LegendImplicits {
     position: Position,
     renderer: LegendRenderer,
     x: Double,
-    y: Double
-  ): Plot =
-    if (plot.renderer.legendContext.nonEmpty) {
-      plot :+ Legend(position, plot.renderer.legendContext, renderer, x, y)
-    } else plot
+    y: Double,
+    labels: Option[Seq[String]] = None
+  )(implicit theme: Theme): Plot = {
+    labels match {
+      case Some(names) =>
+        val drawableLabels: Seq[Drawable] = names.map { value =>
+          Style(
+            Text(value.toString, size = theme.fonts.legendLabelSize, fontFace = theme.fonts.fontFace),
+            theme.colors.legendLabel
+          )
+        }
+        plot :+ Legend(position, plot.renderer.legendContext.copy(labels = drawableLabels), renderer, x, y)
+      case _ =>
+        if (plot.renderer.legendContext.nonEmpty) {
+          plot :+ Legend(position, plot.renderer.legendContext, renderer, x, y)
+        } else {
+          plot
+        }
+    }
+  }
 
   /** Place a legend on the right side of the plot. */
   def rightLegend(
-    renderer: LegendRenderer = LegendRenderer.vertical()
-  ): Plot = setLegend(Position.Right, renderer, 0, 0.5)
+    renderer: LegendRenderer = LegendRenderer.vertical(),
+    labels: Option[Seq[String]] = None
+  )(implicit theme: Theme): Plot = setLegend(Position.Right, renderer, 0, 0.5, labels)
 
   /** Place a legend on the left side of the plot. */
   def leftLegend(
-    renderer: LegendRenderer = LegendRenderer.vertical()
-  ): Plot = setLegend(Position.Left, renderer, 0, 0.5)
+    renderer: LegendRenderer = LegendRenderer.vertical(),
+    labels: Option[Seq[String]] = None
+  )(implicit theme: Theme): Plot = setLegend(Position.Left, renderer, 0, 0.5, labels)
 
   /** Place a legend on the top of the plot. */
   def topLegend(
-    renderer: LegendRenderer = LegendRenderer.horizontal()
-  ): Plot = setLegend(Position.Top, renderer, 0.5, 0)
+    renderer: LegendRenderer = LegendRenderer.horizontal(),
+    labels: Option[Seq[String]] = None
+  )(implicit theme: Theme): Plot = setLegend(Position.Top, renderer, 0.5, 0, labels)
 
   /** Place a legend on the bottom of the plot. */
   def bottomLegend(
-    renderer: LegendRenderer = LegendRenderer.horizontal()
-  ): Plot = setLegend(Position.Bottom, renderer, 0.5, 0)
+    renderer: LegendRenderer = LegendRenderer.horizontal(),
+    labels: Option[Seq[String]] = None
+  )(implicit theme: Theme): Plot = setLegend(Position.Bottom, renderer, 0.5, 0, labels)
 
   /** Overlay a legend on the plot.
     * @param x The relative X position (0 to 1).
@@ -96,10 +115,9 @@ trait LegendImplicits {
   def overlayLegend(
     x: Double = 1.0,
     y: Double = 0.0,
-    renderer: LegendRenderer = LegendRenderer.vertical()
-  ): Plot = {
-    setLegend(Position.Overlay, renderer, x, y)
-  }
+    renderer: LegendRenderer = LegendRenderer.vertical(),
+    labels: Option[Seq[String]] = None
+  )(implicit theme: Theme): Plot = setLegend(Position.Overlay, renderer, x, y, labels)
 
   /** Get the legend as a drawable. */
   def renderLegend(

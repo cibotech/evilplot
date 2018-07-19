@@ -37,7 +37,7 @@ import com.cibo.evilplot.plot
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultTheme, DefaultFonts}
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.components.{Marker, Position}
+import com.cibo.evilplot.plot.components.{Legend, Marker, Position}
 import com.cibo.evilplot.plot.renderers._
 
 import scala.util.Random
@@ -58,6 +58,45 @@ object DemoPlots {
       .xbounds(-75, 225)
       .ybounds(0, 15)
       .vline(3.5, HTMLNamedColors.blue)
+      .render(plotAreaSize)
+  }
+
+  lazy val legendFeatures: Drawable = {
+    val allYears = (2007 to 2013).toVector
+    val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
+    val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+
+    val customCategoricalLegend = Legend(
+      Position.Right,
+      LegendContext(
+        Seq(Rect(10), Rect(20), Rect(30)),
+        Seq(Text("one"), Text("two"), Text("three"))
+      ),
+      LegendRenderer.vertical(),
+      x = 0,
+      y = 0.3
+    )
+
+    val customGradientLegend = Legend(
+      Position.Top,
+      LegendContext(
+        theme.colors.stream.slice(1, 4).map(Rect(10) filled _),
+        Seq(Text("one"), Text("two"), Text("three")),
+        LegendStyle.Gradient
+      ),
+      LegendRenderer.vertical(),
+      x = 0.5,
+      y = 0
+    )
+
+    ScatterPlot(
+      data = data,
+      pointRenderer = Some(PointRenderer.colorByCategory(years))
+    ) .standard()
+      .overlayLegend(x = 0.95, y = 0.8)
+      .component(customCategoricalLegend)
+      .component(customGradientLegend)
+      .bottomLegend(labels = Some(allYears.map(_ + " AD")))
       .render(plotAreaSize)
   }
 
