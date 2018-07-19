@@ -73,6 +73,7 @@ object EvilPlot {
   @JSExport
   def renderExample(canvasId: String): Unit = {
     addExample(DemoPlots.densityPlot)
+    addExample(DemoPlots.legendFeatures)
     addExample(DemoPlots.axesTesting)
     addExample(DemoPlots.functionPlot)
     addExample(DemoPlots.markerPlot)

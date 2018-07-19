@@ -51,7 +51,7 @@ case class LegendContext(
   labels: Seq[Drawable] = Seq.empty,
   defaultStyle: LegendStyle = LegendStyle.Categorical
 ) {
-  require(elements.lengthCompare(labels.size) == 0)
+  require(elements.lengthCompare(labels.size) == 0, "Legend requires matching number of elements and labels")
 
   def isEmpty: Boolean = elements.isEmpty
   def nonEmpty: Boolean = !isEmpty
