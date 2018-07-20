@@ -57,5 +57,6 @@ class HistogramSpec extends FunSpec with Matchers {
       val emptyPlot = Histogram(Seq.empty)
       emptyPlot.render(extent).extent shouldBe extent
     }
+
   }
 }
