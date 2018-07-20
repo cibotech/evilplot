@@ -2,6 +2,8 @@
 
 ## [Changes since last release]
 
+### Added
+- Ability to partially update the bounds of a plot using `xbounds` and `ybounds`. Providing only `lower` or `upper` to these functions is now possible.
 
 ## [0.4.0] - 2018-07-18
 ### Added

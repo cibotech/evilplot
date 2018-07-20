@@ -96,4 +96,24 @@ class PlotSpec extends FunSpec with Matchers {
     renderer.plotExtentOpt.get shouldBe extent
   }
 
+  it("xbounds/ybounds without parens should access bounds") {
+    val plot = newPlot(xbounds = Bounds(0, 2), ybounds = Bounds(0, 5))
+
+    plot.xbounds shouldBe Bounds(0, 2)
+    plot.ybounds shouldBe Bounds(0, 5)
+  }
+
+  it("partial xbounds/ybounds update should work") {
+    val plot = newPlot(xbounds = Bounds(0, 2), ybounds = Bounds(0, 5))
+    val updatedX = plot.xbounds(lower = -5)
+    updatedX.xbounds shouldBe Bounds(-5, 2)
+    val doubleUpdatedX = updatedX.xbounds(upper = 5)
+    doubleUpdatedX.xbounds shouldBe Bounds(-5, 5)
+
+    val updatedY = plot.ybounds(lower = -7)
+    updatedY.ybounds shouldBe Bounds(-7, 5)
+    val doubleUpdatedY = updatedY.ybounds(upper = 7)
+    doubleUpdatedY.ybounds shouldBe Bounds(-7, 7)
+  }
+
 }
