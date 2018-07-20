@@ -46,14 +46,23 @@ object Histogram {
     * @return a sequence of points, where the x coordinates represent the left
     *         edge of the bins and the y coordinates represent their heights
     */
-  def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] = {
+  def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
+    createBins(values, xbounds, binCount, normalize = false)
+
+  /** Create binCount bins from the given data and xbounds, normalizing the heights
+    * such that their sum is 1 */
+  def normalize(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
+    createBins(values, xbounds, binCount, normalize = true)
+
+  // Create binCount bins from the given data and xbounds.
+  private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int, normalize: Boolean): Seq[Point] = {
     val binWidth = xbounds.range / binCount
     val grouped = values.groupBy { value =>
       math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
     }
     (0 until binCount).flatMap { i =>
       grouped.get(i).map { vs =>
-        val y = vs.size
+        val y = if (normalize) vs.size.toDouble / values.size else vs.size
         val x = i * binWidth + xbounds.min
         Point(x, y)
       }
@@ -80,7 +89,7 @@ object Histogram {
         // Scaling the bars would show the correct histogram as long as no axis is displayed.  However, if
         // an axis is display, we would end up showing the wrong values. Thus, we clip if the y boundary is
         // fixed, otherwise we scale to make it look pretty.
-        val points = createBins(data, plot.xbounds, binCount)
+        val points = binningFunction(data, plot.xbounds, binCount)
         val maxY = points.maxBy(_.y).y * (1.0 + boundBuffer)
         val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
 
