@@ -77,7 +77,8 @@ final case class Plot(
     * @param lower the new minimum x
     * @param upper the new maximum x
     */
-  def xbounds(lower: Double, upper: Double): Plot = xbounds(Bounds(lower, upper))
+  def xbounds(lower: Double = xbounds.min, upper: Double = xbounds.max): Plot =
+    xbounds(Bounds(lower, upper))
 
   /** Create a copy of this plot with updated y bounds
     * @param newBounds the new bounds.
@@ -88,7 +89,8 @@ final case class Plot(
     * @param lower the new minimum y
     * @param upper the new maximum y
     */
-  def ybounds(lower: Double, upper: Double): Plot = ybounds(Bounds(lower, upper))
+  def ybounds(lower: Double = ybounds.min, upper: Double = ybounds.max): Plot =
+    ybounds(Bounds(lower, upper))
 
   private[plot] def updateBounds(xb: Bounds, yb: Bounds): Plot = copy(xbounds = xb, ybounds = yb)
 
