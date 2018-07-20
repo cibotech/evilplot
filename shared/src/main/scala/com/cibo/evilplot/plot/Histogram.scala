@@ -40,14 +40,14 @@ object Histogram {
   val defaultBinCount: Int = 20
 
   // Create binCount bins from the given data and xbounds.
-  private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] = {
+  private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int, normalize: Boolean = false): Seq[Point] = {
     val binWidth = xbounds.range / binCount
     val grouped = values.groupBy { value =>
       math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
     }
     (0 until binCount).flatMap { i =>
       grouped.get(i).map { vs =>
-        val y = vs.size
+        val y = if (normalize) vs.size.toDouble / values.size else vs.size
         val x = i * binWidth + xbounds.min
         Point(x, y)
       }
@@ -59,7 +59,8 @@ object Histogram {
     barRenderer: BarRenderer,
     binCount: Int,
     spacing: Double,
-    boundBuffer: Double
+    boundBuffer: Double,
+    normalized: Boolean = false
   ) extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.nonEmpty) {
@@ -73,7 +74,7 @@ object Histogram {
         // Scaling the bars would show the correct histogram as long as no axis is displayed.  However, if
         // an axis is display, we would end up showing the wrong values. Thus, we clip if the y boundary is
         // fixed, otherwise we scale to make it look pretty.
-        val points = createBins(data, plot.xbounds, binCount)
+        val points = createBins(data, plot.xbounds, binCount, normalized)
         val maxY = points.maxBy(_.y).y * (1.0 + boundBuffer)
         val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
 
@@ -111,7 +112,8 @@ object Histogram {
     bins: Int = defaultBinCount,
     barRenderer: Option[BarRenderer] = None,
     spacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None
+    boundBuffer: Option[Double] = None,
+    normalized: Boolean = false
   )(implicit theme: Theme): Plot = {
     require(bins > 0, "must have at least one bin")
     val xbounds = Bounds(
@@ -119,7 +121,7 @@ object Histogram {
       values.reduceOption[Double](math.max).getOrElse(0.0)
     )
     val maxY =
-      createBins(values, xbounds, bins).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
+      createBins(values, xbounds, bins, normalized).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
     val binWidth = xbounds.range / bins
     Plot(
       xbounds = xbounds,
