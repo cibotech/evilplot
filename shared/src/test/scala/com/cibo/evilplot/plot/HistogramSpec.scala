@@ -31,7 +31,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.Extent
-import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.numeric.{Bounds, Point}
 import org.scalatest.{FunSpec, Matchers}
 
 class HistogramSpec extends FunSpec with Matchers {
@@ -56,6 +56,29 @@ class HistogramSpec extends FunSpec with Matchers {
       val extent = Extent(100, 200)
       val emptyPlot = Histogram(Seq.empty)
       emptyPlot.render(extent).extent shouldBe extent
+    }
+  }
+
+  describe("Binning") {
+    val data = Seq[Double](1, 1, 1, 3, 3, 4, 4, 5)
+
+    it("works on a simple example") {
+      val bins = Histogram.createBins(data, Bounds(0, 5), 5)
+      bins should contain theSameElementsAs Seq(
+        Point(1, 3),
+        Point(3, 2),
+        Point(4, 3)
+      )
+    }
+
+    it("works when asked to normalize") {
+      val bins = Histogram.normalize(data, Bounds(0, 5), 5)
+      bins.map(_.y) should contain theSameElementsAs Seq(
+        .375,
+        .25,
+        .375
+      )
+      bins.map(_.y).sum shouldBe 1.0 +- 1e-5
     }
   }
 }

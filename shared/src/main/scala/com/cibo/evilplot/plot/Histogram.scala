@@ -39,15 +39,30 @@ object Histogram {
 
   val defaultBinCount: Int = 20
 
+  /** Create binCount bins from the given data and xbounds.
+    * @param values the raw data
+    * @param xbounds the bounds over which to bin
+    * @param binCount the number of bins to create
+    * @return a sequence of points, where the x coordinates represent the left
+    *         edge of the bins and the y coordinates represent their heights
+    */
+  def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
+    createBins(values, xbounds, binCount, normalize = false)
+
+  /** Create binCount bins from the given data and xbounds, normalizing the heights
+    * such that their sum is 1 */
+  def normalize(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
+    createBins(values, xbounds, binCount, normalize = true)
+
   // Create binCount bins from the given data and xbounds.
-  private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] = {
+  private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int, normalize: Boolean): Seq[Point] = {
     val binWidth = xbounds.range / binCount
     val grouped = values.groupBy { value =>
       math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
     }
     (0 until binCount).flatMap { i =>
       grouped.get(i).map { vs =>
-        val y = vs.size
+        val y = if (normalize) vs.size.toDouble / values.size else vs.size
         val x = i * binWidth + xbounds.min
         Point(x, y)
       }
@@ -59,7 +74,8 @@ object Histogram {
     barRenderer: BarRenderer,
     binCount: Int,
     spacing: Double,
-    boundBuffer: Double
+    boundBuffer: Double,
+    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point]
   ) extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.nonEmpty) {
@@ -73,7 +89,7 @@ object Histogram {
         // Scaling the bars would show the correct histogram as long as no axis is displayed.  However, if
         // an axis is display, we would end up showing the wrong values. Thus, we clip if the y boundary is
         // fixed, otherwise we scale to make it look pretty.
-        val points = createBins(data, plot.xbounds, binCount)
+        val points = binningFunction(data, plot.xbounds, binCount)
         val maxY = points.maxBy(_.y).y * (1.0 + boundBuffer)
         val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
 
@@ -104,6 +120,9 @@ object Histogram {
     * @param barRenderer The renderer to render bars for each bin.
     * @param spacing The spacing between bars.
     * @param boundBuffer Extra padding to place at the top of the plot.
+    * @param binningFunction A function taking the raw data, the x bounds, and a bin count
+    *                        that returns a sequence of points with x points representing left
+    *                        bin boundaries and y points representing bin heights
     * @return A histogram plot.
     */
   def apply(
@@ -111,7 +130,8 @@ object Histogram {
     bins: Int = defaultBinCount,
     barRenderer: Option[BarRenderer] = None,
     spacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None
+    boundBuffer: Option[Double] = None,
+    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins
   )(implicit theme: Theme): Plot = {
     require(bins > 0, "must have at least one bin")
     val xbounds = Bounds(
@@ -119,8 +139,7 @@ object Histogram {
       values.reduceOption[Double](math.max).getOrElse(0.0)
     )
     val maxY =
-      createBins(values, xbounds, bins).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
-    val binWidth = xbounds.range / bins
+      binningFunction(values, xbounds, bins).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
     Plot(
       xbounds = xbounds,
       ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
@@ -129,7 +148,8 @@ object Histogram {
         barRenderer.getOrElse(BarRenderer.default()),
         bins,
         spacing.getOrElse(theme.elements.barSpacing),
-        boundBuffer.getOrElse(theme.elements.boundBuffer)
+        boundBuffer.getOrElse(theme.elements.boundBuffer),
+        binningFunction
       )
     )
   }
