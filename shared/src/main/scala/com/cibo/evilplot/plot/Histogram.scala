@@ -39,8 +39,14 @@ object Histogram {
 
   val defaultBinCount: Int = 20
 
-  // Create binCount bins from the given data and xbounds.
-  private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] = {
+  /** Create binCount bins from the given data and xbounds.
+    * @param values the raw data
+    * @param xbounds the bounds over which to bin
+    * @param binCount the number of bins to create
+    * @return a sequence of points, where the x coordinates represent the left
+    *         edge of the bins and the y coordinates represent their heights
+    */
+  def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] = {
     val binWidth = xbounds.range / binCount
     val grouped = values.groupBy { value =>
       math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
@@ -59,7 +65,8 @@ object Histogram {
     barRenderer: BarRenderer,
     binCount: Int,
     spacing: Double,
-    boundBuffer: Double
+    boundBuffer: Double,
+    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point]
   ) extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.nonEmpty) {
@@ -104,6 +111,9 @@ object Histogram {
     * @param barRenderer The renderer to render bars for each bin.
     * @param spacing The spacing between bars.
     * @param boundBuffer Extra padding to place at the top of the plot.
+    * @param binningFunction A function taking the raw data, the x bounds, and a bin count
+    *                        that returns a sequence of points with x points representing left
+    *                        bin boundaries and y points representing bin heights
     * @return A histogram plot.
     */
   def apply(
@@ -111,7 +121,8 @@ object Histogram {
     bins: Int = defaultBinCount,
     barRenderer: Option[BarRenderer] = None,
     spacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None
+    boundBuffer: Option[Double] = None,
+    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins
   )(implicit theme: Theme): Plot = {
     require(bins > 0, "must have at least one bin")
     val xbounds = Bounds(
@@ -119,8 +130,7 @@ object Histogram {
       values.reduceOption[Double](math.max).getOrElse(0.0)
     )
     val maxY =
-      createBins(values, xbounds, bins).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
-    val binWidth = xbounds.range / bins
+      binningFunction(values, xbounds, bins).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
     Plot(
       xbounds = xbounds,
       ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
@@ -129,7 +139,8 @@ object Histogram {
         barRenderer.getOrElse(BarRenderer.default()),
         bins,
         spacing.getOrElse(theme.elements.barSpacing),
-        boundBuffer.getOrElse(theme.elements.boundBuffer)
+        boundBuffer.getOrElse(theme.elements.boundBuffer),
+        binningFunction
       )
     )
   }
