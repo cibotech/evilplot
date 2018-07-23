@@ -106,8 +106,9 @@ object Heatmap {
     * @param data The heatmap data.
     * @param coloring The coloring to use.
     */
-  def apply(data: Seq[Seq[Double]], coloring: Option[Coloring[Double]])(
-    implicit theme: Theme): Plot = {
+
+  def apply(data: Seq[Seq[Double]],
+            coloring: Option[Coloring[Double]])(implicit theme: Theme): Plot = {
     val flattenedData = data.flatten
     val minValue = flattenedData.reduceOption[Double](math.min).getOrElse(0.0)
     val maxValue = flattenedData.reduceOption[Double](math.max).getOrElse(0.0)
