@@ -11,6 +11,7 @@
 ### Fixed
 - Bug resulting in misalignment of axes and gridlines in some faceted plots.
 
+
 ## [0.4.0] - 2018-07-18
 ### Added
 - `BoxRenderer.colorBy` box renderer for custom coloring on box plots.
