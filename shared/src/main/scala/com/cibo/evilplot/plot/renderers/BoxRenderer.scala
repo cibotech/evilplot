@@ -131,8 +131,8 @@ object BoxRenderer {
             .rotated(90)
             .translate(extent.width / 2),
           StrokeStyle(Line(scale * bottomWhisker, useStrokeWidth / 2), useStrokeColor)
-            .translate(extent.width / 2)
             .rotated(90)
+            .translate(extent.width / 2)
         )
         .reduce(_ above _)
 
