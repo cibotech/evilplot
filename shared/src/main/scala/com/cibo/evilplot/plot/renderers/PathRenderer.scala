@@ -33,6 +33,7 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors.{Color, Coloring}
 import com.cibo.evilplot.geometry.{
   Clipping,
+  Disc,
   Drawable,
   EmptyDrawable,
   Extent,
@@ -153,6 +154,7 @@ object PathRenderer {
                 useLineStyle)
         })
         .group
+
     }
 
     override def legendContext: LegendContext =

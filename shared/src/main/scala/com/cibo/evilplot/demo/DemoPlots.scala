@@ -318,6 +318,7 @@ object DemoPlots {
       .standard()
       .ybounds(0, 0.2)
       .rightLegend()
+
       .render(plotAreaSize)
   }
 
