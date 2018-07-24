@@ -33,7 +33,6 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors.{Color, Coloring}
 import com.cibo.evilplot.geometry.{
   Clipping,
-  Disc,
   Drawable,
   EmptyDrawable,
   Extent,
@@ -132,7 +131,6 @@ object PathRenderer {
     * @param coloring The coloring to use.
     * @param strokeWidth The width of the path.
     * @param lineStyle The style of the path (dashed, solid, etc).
-
     */
   def depthColor(
     depths: Seq[Double],
@@ -155,8 +153,6 @@ object PathRenderer {
                 useLineStyle)
         })
         .group
-
-
     }
 
     override def legendContext: LegendContext =
