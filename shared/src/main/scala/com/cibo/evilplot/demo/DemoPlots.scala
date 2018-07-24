@@ -302,16 +302,16 @@ object DemoPlots {
       .map(_.toDouble)
       .zip(
         Seq(
-          0.0, 0.1, 0.0, 0.1, 0.0, 0.1
+          0.0, 0.1, 0.2, 0.1, 0.0, 0.1
         ))
       .map(Point.tupled)
 
-    val pathRenderer = Some(PathRenderer.depthColor(Seq(1,2,3,4,5), Some(ContinuousColoring.gradient(HTMLNamedColors.dodgerBlue, HTMLNamedColors.crimson))))
-    println(pathRenderer)
+    val pathRenderer = Some(PathRenderer.depthColor(Seq(0, 1, 2, 1, 2, 0),
+      Some(ContinuousColoring.gradient(HTMLNamedColors.dodgerBlue, HTMLNamedColors.crimson))))
 
     LinePlot(
-      data
-    ).ybounds(0, .12).standard()
+      data, pathRenderer = pathRenderer
+    ).ybounds(0, .12).standard().ybounds(0, 0.2).rightLegend()
       .render(plotAreaSize)
   }
 
