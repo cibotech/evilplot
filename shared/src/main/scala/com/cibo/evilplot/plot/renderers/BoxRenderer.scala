@@ -31,7 +31,16 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors.{CategoricalColoring, Color}
-import com.cibo.evilplot.geometry.{Align, BorderRect, Drawable, Extent, Line, LineDash, Rect, StrokeStyle}
+import com.cibo.evilplot.geometry.{
+  Align,
+  BorderRect,
+  Drawable,
+  Extent,
+  Line,
+  LineDash,
+  Rect,
+  StrokeStyle
+}
 import com.cibo.evilplot.numeric.BoxPlotSummaryStatistics
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
@@ -87,6 +96,46 @@ object BoxRenderer {
             .rotated(90)
         )
         .reduce(_ above _)
+    }
+  }
+
+  def tufte(
+    fillColor: Option[Color] = None,
+    strokeColor: Option[Color] = None,
+    lineDash: Option[LineDash] = None,
+    strokeWidth: Option[Double] = None
+  )(implicit theme: Theme): BoxRenderer = new BoxRenderer {
+
+    private val useFillColor = fillColor.getOrElse(theme.colors.fill)
+    private val useStrokeColor = strokeColor.getOrElse(theme.colors.path)
+    private val useLineDash = lineDash.getOrElse(theme.elements.lineDashStyle)
+    private val useStrokeWidth = strokeWidth.getOrElse(theme.elements.strokeWidth)
+
+    def render(plot: Plot, extent: Extent, context: BoxRenderer.BoxRendererContext): Drawable = {
+      val summary = context.summaryStatistics
+      val scale = extent.height / (summary.upperWhisker - summary.lowerWhisker)
+      val topWhisker = summary.upperWhisker - summary.upperQuantile
+      val uppperToMiddle = summary.upperQuantile - summary.middleQuantile
+      val middleToLower = summary.middleQuantile - summary.lowerQuantile
+      val bottomWhisker = summary.lowerQuantile - summary.lowerWhisker
+
+      Align
+        .center(
+          StrokeStyle(Line(scale * topWhisker, useStrokeWidth / 2), useStrokeColor)
+            .rotated(90)
+            .translate(extent.width / 2),
+          StrokeStyle(Line(scale * uppperToMiddle, useStrokeWidth), useStrokeColor)
+            .rotated(90)
+            .translate(extent.width / 2),
+          StrokeStyle(Line(scale * middleToLower, useStrokeWidth), useStrokeColor)
+            .rotated(90)
+            .translate(extent.width / 2),
+          StrokeStyle(Line(scale * bottomWhisker, useStrokeWidth / 2), useStrokeColor)
+            .rotated(90)
+            .translate(extent.width / 2)
+        )
+        .reduce(_ above _)
+
     }
   }
 
