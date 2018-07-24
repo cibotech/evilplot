@@ -33,7 +33,6 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors.{Color, Coloring}
 import com.cibo.evilplot.geometry.{
   Clipping,
-  Disc,
   Drawable,
   EmptyDrawable,
   Extent,
@@ -60,6 +59,7 @@ object PathRenderer {
     * @param strokeWidth The width of the path.
     * @param color Point color.
     * @param label A label for this path (for legends).
+    * @param lineStyle The style of the path (dashed, solid, etc).
     */
   def default(
     strokeWidth: Option[Double] = None,
@@ -108,6 +108,7 @@ object PathRenderer {
     * @param name The name of this path.
     * @param color The color of this path.
     * @param strokeWidth The width of the path.
+    * @param lineStyle The style of the path (dashed, solid, etc).
     */
   def named(
     name: String,
@@ -128,8 +129,8 @@ object PathRenderer {
     * Render line with colors based on a third, continuous variable.
     * @param depths The depths for each line segment.
     * @param coloring The coloring to use.
-    * @param strokeWidth The thickness of the line.
-    * @param lineStyle The style of the line
+    * @param strokeWidth The width of the path.
+    * @param lineStyle The style of the path (dashed, solid, etc).
     */
   def depthColor(
     depths: Seq[Double],
@@ -142,13 +143,16 @@ object PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       Clipping
         .clipPath(path, extent)
-        .flatMap(p => p.sliding(2,1).toSeq.zipWithIndex.map { case (section, index) =>
-          LineDash(
-            StrokeStyle(
-              Path(section, strokeWidth.getOrElse(theme.elements.strokeWidth)),
-              colorFunc(depths(index))),
-            useLineStyle)
-        }).group
+        .flatMap(p =>
+          p.sliding(2, 1).toSeq.zipWithIndex.map {
+            case (section, index) =>
+              LineDash(
+                StrokeStyle(
+                  Path(section, strokeWidth.getOrElse(theme.elements.strokeWidth)),
+                  colorFunc(depths(index))),
+                useLineStyle)
+        })
+        .group
     }
 
     override def legendContext: LegendContext =
@@ -165,6 +169,7 @@ object PathRenderer {
     * @param strokeWidth the stroke width
     * @param color the color of the path
     * @param label the label for the legend
+    * @param lineStyle The style of the path (dashed, solid, etc).
     */
   def closed(
     strokeWidth: Option[Double] = None,

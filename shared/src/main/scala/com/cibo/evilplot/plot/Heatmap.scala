@@ -102,6 +102,10 @@ object Heatmap {
     apply(data, colorBar)
   }
 
+  /** Create a heatmap using a continuous coloring.
+    * @param data The heatmap data.
+    * @param coloring The coloring to use.
+    */
   def apply(data: Seq[Seq[Double]], coloring: Option[Coloring[Double]])(
     implicit theme: Theme): Plot = {
     val flattenedData = data.flatten
