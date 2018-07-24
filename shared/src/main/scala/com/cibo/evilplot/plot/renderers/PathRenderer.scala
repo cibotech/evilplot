@@ -30,9 +30,10 @@
 
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.colors.{Color, Coloring}
 import com.cibo.evilplot.geometry.{
   Clipping,
+  Disc,
   Drawable,
   EmptyDrawable,
   Extent,
@@ -122,6 +123,35 @@ object PathRenderer {
         theme.colors.legendLabel),
       lineStyle
     )
+
+  def depthColor(
+    depths: Seq[Double],
+    coloring: Option[Coloring[Double]] = None,
+    strokeWidth: Option[Double] = None,
+    lineStyle: Option[LineStyle] = None)(implicit theme: Theme): PathRenderer = new PathRenderer {
+    private val useColoring = coloring.getOrElse(theme.colors.continuousColoring)
+    private val colorFunc = useColoring(depths)
+    private val useLineStyle: LineStyle = lineStyle.getOrElse(theme.elements.lineDashStyle)
+    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
+      require(Clipping.clipPath(path, extent).length == depths.length)
+      println(Clipping.clipPath(path, extent).length)
+      Clipping
+        .clipPath(path, extent)
+        .zip(depths)
+        .map(
+          segment =>
+            segment._1.sliding(2,1).map(section =>
+            LineDash(
+              StrokeStyle(
+                Path(section, strokeWidth.getOrElse(theme.elements.strokeWidth)),
+                colorFunc(segment._2)),
+              useLineStyle)
+            ).toSeq).head.group
+    }
+
+    override def legendContext: LegendContext =
+      useColoring.legendContext(depths)
+  }
 
   /** Path renderer for closed paths. The first point is connected to the last point.
     * @param color the color of this path.
