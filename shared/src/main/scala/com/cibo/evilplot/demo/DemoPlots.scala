@@ -136,12 +136,14 @@ object DemoPlots {
         Seq("foo", "bar", "baz"),
         Seq(1d, 2, 10),
         Position.Bottom,
-        updatePlotBounds = false)
+        updatePlotBounds = false,
+        align = 0)
       .discreteAxis(
         filler,
         filler.indices.map(_.toDouble),
         Position.Right,
-        updatePlotBounds = false)
+        updatePlotBounds = false,
+        align = 0.5)
       .continuousAxis(
         plot => plot.xbounds,
         Position.Top,

@@ -41,7 +41,6 @@ object Axes {
   private sealed trait AxisPlotComponent extends PlotComponent {
     final override val repeated: Boolean = true
 
-    val discrete: Boolean
     val tickRenderer: TickRenderer
 
     def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor
@@ -51,7 +50,6 @@ object Axes {
   }
 
   private sealed trait ContinuousAxis {
-    final val discrete: Boolean = false
     val tickCount: Int
     val tickCountRange: Option[Seq[Int]]
     val labelFormatter: Option[Double => String] = None
@@ -66,12 +64,12 @@ object Axes {
   }
 
   private sealed trait DiscreteAxis {
-    final val discrete: Boolean = true
     val labels: Seq[(String, Double)]
     def getDescriptor(plot: Plot, fixed: Boolean): AxisDescriptor = DiscreteAxisDescriptor(labels)
   }
 
   private sealed trait ArbitraryAxisPlotComponent extends AxisPlotComponent {
+    val align: Double = 0
     val fixedBounds: Boolean
 
     override def size(plot: Plot): Extent = {
@@ -95,8 +93,8 @@ object Axes {
       val ts = ticks(descriptor)
       val maxWidth = ts.maxBy(_.extent.width).extent.width
       val maxHeight = ts.maxBy(_.extent.height).extent.height
-      // Move the tick to the center of the range for discrete axes.
-      val offset = (if (discrete) scale / 2 else 0) - scale * descriptor.axisBounds.min //TODO band scaling
+      // Move the tick to a position within the range for discrete axes.
+      val offset = scale * align - scale * descriptor.axisBounds.min
       position match {
         case Position.Left | Position.Right =>
           val drawable = ts
@@ -149,7 +147,8 @@ object Axes {
     boundsFn: Plot => Bounds,
     override val position: Position,
     labels: Seq[(String, Double)],
-    tickRenderer: TickRenderer
+    tickRenderer: TickRenderer,
+    override val align: Double
   ) extends ArbitraryAxisPlotComponent
     with DiscreteAxis {
     override val fixedBounds: Boolean = true
@@ -277,15 +276,18 @@ object Axes {
       * @param position         The side of the plot to add the axis.
       * @param updatePlotBounds Set plot bounds to match the axis bounds.
       * @param tickRenderer     Function to draw a tick line/label.
+      * @param align            Where to align ticks as a proportion of their band, e.g. 0 = left, 0.5 = center.
       */
     def discreteAxis(
       labels: Seq[String],
       values: Seq[Double],
       position: Position,
       updatePlotBounds: Boolean = true,
-      tickRenderer: Option[TickRenderer] = None
+      tickRenderer: Option[TickRenderer] = None,
+      align: Double = 0.5
     )(implicit theme: Theme): Plot = {
       require(labels.lengthCompare(values.length) == 0)
+      require(0.0 <= align && align <= 1.0, "discreteAxis requires an align value from 0 to 1")
       val labelsAndValues = labels.zip(values)
       val (boundsFn, defaultRotation) = if (position == Position.Bottom || position == Position.Top) {
         ((plot: Plot) => plot.xbounds, theme.elements.categoricalXAxisLabelOrientation)
@@ -302,7 +304,8 @@ object Axes {
             theme.elements.tickLength,
             theme.elements.tickThickness,
             defaultRotation
-          ))
+          )),
+        align
       )
       if (updatePlotBounds) {
         position match {
