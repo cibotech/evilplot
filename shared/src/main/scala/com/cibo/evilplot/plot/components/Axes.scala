@@ -75,7 +75,7 @@ object Axes {
     val fixedBounds: Boolean
 
     override def size(plot: Plot): Extent = {
-      val extents = ticks(getDescriptor(plot, fixedBounds)).map(_.extent)
+      val extents = ticks(getDescriptor(plot, fixed = true)).map(_.extent)
       position match {
         case Position.Left | Position.Right => extents.maxBy(_.width)
         case Position.Bottom | Position.Top => extents.maxBy(_.height)
@@ -86,7 +86,7 @@ object Axes {
     def bounds(plot: Plot): Bounds
 
     def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      val descriptor = getDescriptor(plot, fixedBounds)
+      val descriptor = getDescriptor(plot, fixed = true)
       val scale = position match {
         case Position.Left | Position.Right => extent.height / descriptor.axisBounds.range
         case Position.Bottom | Position.Top => extent.width / descriptor.axisBounds.range
