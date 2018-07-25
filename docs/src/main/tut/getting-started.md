@@ -11,25 +11,45 @@ resolvers += Resolver.bintrayRepo("cibotech", "public")
 libraryDependencies += "com.cibo" %% "evilplot" % "0.4.0" // Use %%% instead of %% if you're using ScalaJS
 ```
 
+Throughout the getting started guide, we'll assume you're working either in a Scala REPL or the [Ammonite](http://ammonite.io). We publish an additional
+utility to make using EvilPlot from the REPL easier. To import it, add:
+
+```scala
+resolvers += Resolver.bintrayRepo("cibotech", "public")
+"com.cibo" %% "evilplot-repl" % "0.4.0"
+```
+to your build.
+
+Or, if you're using Ammonite, run
+
+```scala
+interp.repositories() ++= Seq(
+	coursier.MavenRepository("https://dl.bintray.com/cibotech/public")
+)
+import $ivy.`com.cibo::evilplot-repl:0.4.0`
+```
+
+prior to beginning.
+
 ## Our first plot
 
 EvilPlot is all about building larger graphical capabilities out of smaller ones. What this means for you is that making
 simple plots is easy, and we don't have to spend a lot of time going over all the features just to get started. So let's make
-our first plot, a simple scatter plot with sequential x-values and random y-values. Then we'll save the plot as an image
-file to disk.
+our first plot, a simple scatter plot with sequential x-values and random y-values. Then we'll open that plot up in a new window
+and take a look at it.
 
 <div class="row">
 <div class="col-md-6" markdown="1">
 ```scala
+import com.cibo.evilplot._
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.numeric.Point
-import java.io.File
 
 val data = Seq.tabulate(100) { i =>
   Point(i.toDouble, scala.util.Random.nextDouble())
 }
-ScatterPlot(data).render().write(new File("/tmp/plot.png"))
+displayPlot(ScatterPlot(data).render())
 ```
 </div>
 <div class="col-md-6">
@@ -45,8 +65,10 @@ we're just using the built-in one, so we import it.
 + `ScatterPlot` returns a `Plot` object, which is a description of how data should be plotted (plot these points as
 little circles on the screen), with what components (like axes, a background etc.). In this case, we've used _no_
 components. All we get is points on the screen!
-+ Finally, `render()` on `Plot` returns a `Drawable` object. Think of a `Drawable` as a fully specified description of a
++ `render()` on `Plot` returns a `Drawable` object. Think of a `Drawable` as a fully specified description of a
 scene. `render` itself does not perform any side-effects, it simply constructs a scene given a plot and a size.
++ Finally, `displayPlot` is an additional utility the opens the plot in a new window. You might not use this inside
+an application, but it's useful for exploring in the REPL!
 
 This plot is not very interesting, of course. We should probably add some axes, so we know the range of the data, and
 some labels, so our audience knows what we're talking about. That's easy as well:
