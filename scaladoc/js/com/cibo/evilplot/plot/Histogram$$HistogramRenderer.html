@@ -176,7 +176,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">HistogramRenderer</span><span class="params">(<span name="data">data: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="barRenderer">barRenderer: <a href="renderers/BarRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.BarRenderer">BarRenderer</a></span>, <span name="binCount">binCount: <span class="extype" name="scala.Int">Int</span></span>, <span name="spacing">spacing: <span class="extype" name="scala.Double">Double</span></span>, <span name="boundBuffer">boundBuffer: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <a href="renderers/PlotRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotRenderer">PlotRenderer</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">HistogramRenderer</span><span class="params">(<span name="data">data: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="barRenderer">barRenderer: <a href="renderers/BarRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.BarRenderer">BarRenderer</a></span>, <span name="binCount">binCount: <span class="extype" name="scala.Int">Int</span></span>, <span name="spacing">spacing: <span class="extype" name="scala.Double">Double</span></span>, <span name="boundBuffer">boundBuffer: <span class="extype" name="scala.Double">Double</span></span>, <span name="binningFunction">binningFunction: (<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>], <a href="../numeric/package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a>, <span class="extype" name="scala.Int">Int</span>) ⇒ <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>)</span><span class="result"> extends <a href="renderers/PlotRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotRenderer">PlotRenderer</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
 
@@ -232,9 +232,9 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.cibo.evilplot.plot.Histogram.HistogramRenderer#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(data:Seq[Double],barRenderer:com.cibo.evilplot.plot.renderers.BarRenderer,binCount:Int,spacing:Double,boundBuffer:Double):com.cibo.evilplot.plot.Histogram.HistogramRenderer"></a><a id="&lt;init&gt;:HistogramRenderer"></a>
+      <a id="&lt;init&gt;(data:Seq[Double],barRenderer:com.cibo.evilplot.plot.renderers.BarRenderer,binCount:Int,spacing:Double,boundBuffer:Double,binningFunction:(Seq[Double],com.cibo.evilplot.numeric.Bounds,Int)=&gt;Seq[com.cibo.evilplot.numeric.Point]):com.cibo.evilplot.plot.Histogram.HistogramRenderer"></a><a id="&lt;init&gt;:HistogramRenderer"></a>
       <span class="permalink">
-      <a href="../../../../com/cibo/evilplot/plot/Histogram$$HistogramRenderer.html#&lt;init&gt;(data:Seq[Double],barRenderer:com.cibo.evilplot.plot.renderers.BarRenderer,binCount:Int,spacing:Double,boundBuffer:Double):com.cibo.evilplot.plot.Histogram.HistogramRenderer" title="Permalink">
+      <a href="../../../../com/cibo/evilplot/plot/Histogram$$HistogramRenderer.html#&lt;init&gt;(data:Seq[Double],barRenderer:com.cibo.evilplot.plot.renderers.BarRenderer,binCount:Int,spacing:Double,boundBuffer:Double,binningFunction:(Seq[Double],com.cibo.evilplot.numeric.Bounds,Int)=&gt;Seq[com.cibo.evilplot.numeric.Point]):com.cibo.evilplot.plot.Histogram.HistogramRenderer" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -243,7 +243,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">HistogramRenderer</span><span class="params">(<span name="data">data: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="barRenderer">barRenderer: <a href="renderers/BarRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.BarRenderer">BarRenderer</a></span>, <span name="binCount">binCount: <span class="extype" name="scala.Int">Int</span></span>, <span name="spacing">spacing: <span class="extype" name="scala.Double">Double</span></span>, <span name="boundBuffer">boundBuffer: <span class="extype" name="scala.Double">Double</span></span>)</span>
+        <span class="name">HistogramRenderer</span><span class="params">(<span name="data">data: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="barRenderer">barRenderer: <a href="renderers/BarRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.BarRenderer">BarRenderer</a></span>, <span name="binCount">binCount: <span class="extype" name="scala.Int">Int</span></span>, <span name="spacing">spacing: <span class="extype" name="scala.Double">Double</span></span>, <span name="boundBuffer">boundBuffer: <span class="extype" name="scala.Double">Double</span></span>, <span name="binningFunction">binningFunction: (<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>], <a href="../numeric/package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a>, <span class="extype" name="scala.Int">Int</span>) ⇒ <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>)</span>
       </span>
       
       
@@ -350,6 +350,22 @@
       </span>
       <span class="symbol">
         <span class="name">binCount</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.plot.Histogram.HistogramRenderer#binningFunction" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="binningFunction:(Seq[Double],com.cibo.evilplot.numeric.Bounds,Int)=&gt;Seq[com.cibo.evilplot.numeric.Point]"></a><a id="binningFunction:(Seq[Double],Bounds,Int)⇒Seq[Point]"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/plot/Histogram$$HistogramRenderer.html#binningFunction:(Seq[Double],com.cibo.evilplot.numeric.Bounds,Int)=&gt;Seq[com.cibo.evilplot.numeric.Point]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">binningFunction</span><span class="result">: (<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>], <a href="../numeric/package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a>, <span class="extype" name="scala.Int">Int</span>) ⇒ <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>
       </span>
       
       

@@ -5,24 +5,42 @@
 <span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">"com.cibo"</span> <span class="o">%%</span> <span class="s">"evilplot"</span> <span class="o">%</span> <span class="s">"0.4.0"</span> <span class="c1">// Use %%% instead of %% if you're using ScalaJS
 </span></code></pre></div></div>
 
+<p>Throughout the getting started guide, we’ll assume you’re working either in a Scala REPL or the <a href="http://ammonite.io">Ammonite</a>. We publish an additional
+utility to make using EvilPlot from the REPL easier. To import it, add:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">resolvers</span> <span class="o">+=</span> <span class="nc">Resolver</span><span class="o">.</span><span class="n">bintrayRepo</span><span class="o">(</span><span class="s">"cibotech"</span><span class="o">,</span> <span class="s">"public"</span><span class="o">)</span>
+<span class="s">"com.cibo"</span> <span class="o">%%</span> <span class="s">"evilplot-repl"</span> <span class="o">%</span> <span class="s">"0.4.0"</span>
+</code></pre></div></div>
+<p>to your build.</p>
+
+<p>Or, if you’re using Ammonite, run</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">interp</span><span class="o">.</span><span class="n">repositories</span><span class="o">()</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(</span>
+	<span class="n">coursier</span><span class="o">.</span><span class="nc">MavenRepository</span><span class="o">(</span><span class="s">"https://dl.bintray.com/cibotech/public"</span><span class="o">)</span>
+<span class="o">)</span>
+<span class="k">import</span> <span class="nn">$ivy.</span><span class="n">`com.cibo::evilplot-repl:0.4.0`</span>
+</code></pre></div></div>
+
+<p>prior to beginning.</p>
+
 <h2 id="our-first-plot">Our first plot</h2>
 
 <p>EvilPlot is all about building larger graphical capabilities out of smaller ones. What this means for you is that making
 simple plots is easy, and we don’t have to spend a lot of time going over all the features just to get started. So let’s make
-our first plot, a simple scatter plot with sequential x-values and random y-values. Then we’ll save the plot as an image
-file to disk.</p>
+our first plot, a simple scatter plot with sequential x-values and random y-values. Then we’ll open that plot up in a new window
+and take a look at it.</p>
 
 <div class="row">
 <div class="col-md-6">
-    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
+    <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.cibo.evilplot._</span>
+<span class="k">import</span> <span class="nn">com.cibo.evilplot.plot._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.plot.aesthetics.DefaultTheme._</span>
 <span class="k">import</span> <span class="nn">com.cibo.evilplot.numeric.Point</span>
-<span class="k">import</span> <span class="nn">java.io.File</span>
 
 <span class="k">val</span> <span class="n">data</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">.</span><span class="n">tabulate</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span> <span class="o">{</span> <span class="n">i</span> <span class="k">=&gt;</span>
   <span class="nc">Point</span><span class="o">(</span><span class="n">i</span><span class="o">.</span><span class="n">toDouble</span><span class="o">,</span> <span class="n">scala</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextDouble</span><span class="o">())</span>
 <span class="o">}</span>
-<span class="nc">ScatterPlot</span><span class="o">(</span><span class="n">data</span><span class="o">).</span><span class="n">render</span><span class="o">().</span><span class="n">write</span><span class="o">(</span><span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"/tmp/plot.png"</span><span class="o">))</span>
+<span class="n">displayPlot</span><span class="o">(</span><span class="nc">ScatterPlot</span><span class="o">(</span><span class="n">data</span><span class="o">).</span><span class="n">render</span><span class="o">())</span>
 </code></pre></div>    </div>
   </div>
 <div class="col-md-6">
@@ -39,8 +57,10 @@ we’re just using the built-in one, so we import it.</li>
   <li><code class="highlighter-rouge">ScatterPlot</code> returns a <code class="highlighter-rouge">Plot</code> object, which is a description of how data should be plotted (plot these points as
 little circles on the screen), with what components (like axes, a background etc.). In this case, we’ve used <em>no</em>
 components. All we get is points on the screen!</li>
-  <li>Finally, <code class="highlighter-rouge">render()</code> on <code class="highlighter-rouge">Plot</code> returns a <code class="highlighter-rouge">Drawable</code> object. Think of a <code class="highlighter-rouge">Drawable</code> as a fully specified description of a
+  <li><code class="highlighter-rouge">render()</code> on <code class="highlighter-rouge">Plot</code> returns a <code class="highlighter-rouge">Drawable</code> object. Think of a <code class="highlighter-rouge">Drawable</code> as a fully specified description of a
 scene. <code class="highlighter-rouge">render</code> itself does not perform any side-effects, it simply constructs a scene given a plot and a size.</li>
+  <li>Finally, <code class="highlighter-rouge">displayPlot</code> is an additional utility the opens the plot in a new window. You might not use this inside
+an application, but it’s useful for exploring in the REPL!</li>
 </ul>
 
 <p>This plot is not very interesting, of course. We should probably add some axes, so we know the range of the data, and
