@@ -2,14 +2,14 @@
 
 <p>To get going with EvilPlot, you’ll need to add it to your build. EvilPlot is published for Scala 2.11 and 2.12.</p>
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">resolvers</span> <span class="o">+=</span> <span class="nc">Resolver</span><span class="o">.</span><span class="n">bintrayRepo</span><span class="o">(</span><span class="s">"cibotech"</span><span class="o">,</span> <span class="s">"public"</span><span class="o">)</span>
-<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">"com.cibo"</span> <span class="o">%%</span> <span class="s">"evilplot"</span> <span class="o">%</span> <span class="s">"0.4.0"</span> <span class="c1">// Use %%% instead of %% if you're using ScalaJS
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">"com.cibo"</span> <span class="o">%%</span> <span class="s">"evilplot"</span> <span class="o">%</span> <span class="s">"0.4.1"</span> <span class="c1">// Use %%% instead of %% if you're using ScalaJS
 </span></code></pre></div></div>
 
 <p>Throughout the getting started guide, we’ll assume you’re working either in a Scala REPL or the <a href="http://ammonite.io">Ammonite</a>. We publish an additional
 utility to make using EvilPlot from the REPL easier. To import it, add:</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">resolvers</span> <span class="o">+=</span> <span class="nc">Resolver</span><span class="o">.</span><span class="n">bintrayRepo</span><span class="o">(</span><span class="s">"cibotech"</span><span class="o">,</span> <span class="s">"public"</span><span class="o">)</span>
-<span class="s">"com.cibo"</span> <span class="o">%%</span> <span class="s">"evilplot-repl"</span> <span class="o">%</span> <span class="s">"0.4.0"</span>
+<span class="s">"com.cibo"</span> <span class="o">%%</span> <span class="s">"evilplot-repl"</span> <span class="o">%</span> <span class="s">"0.4.1"</span>
 </code></pre></div></div>
 <p>to your build.</p>
 
@@ -18,7 +18,7 @@ utility to make using EvilPlot from the REPL easier. To import it, add:</p>
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">interp</span><span class="o">.</span><span class="n">repositories</span><span class="o">()</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(</span>
 	<span class="n">coursier</span><span class="o">.</span><span class="nc">MavenRepository</span><span class="o">(</span><span class="s">"https://dl.bintray.com/cibotech/public"</span><span class="o">)</span>
 <span class="o">)</span>
-<span class="k">import</span> <span class="nn">$ivy.</span><span class="n">`com.cibo::evilplot-repl:0.4.0`</span>
+<span class="k">import</span> <span class="nn">$ivy.</span><span class="n">`com.cibo::evilplot-repl:0.4.1`</span>
 </code></pre></div></div>
 
 <p>prior to beginning.</p>
