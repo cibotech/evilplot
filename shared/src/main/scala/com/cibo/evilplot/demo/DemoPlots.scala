@@ -92,7 +92,7 @@ object DemoPlots {
     ScatterPlot(
       data = data,
       pointRenderer = Some(PointRenderer.colorByCategory(years))
-    ) .standard()
+    ).standard()
       .overlayLegend(x = 0.95, y = 0.8)
       .component(customCategoricalLegend)
       .component(customGradientLegend)
@@ -326,6 +326,7 @@ object DemoPlots {
     Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
   }
 
+
   lazy val facetedPlot: Drawable = {
     val years = 2007 to 2013
     val datas: Seq[Seq[Point]] =
@@ -351,6 +352,8 @@ object DemoPlots {
       .yLabel("y")
       .trend(1.0, 0)
       .topLabels(Seq("A", "B"))
+      .hline(0.6)
+      .vline(0.6)
       .title("Facet Demo")
       .rightLegend()
       .rightLabels(Seq("before", "after"))
