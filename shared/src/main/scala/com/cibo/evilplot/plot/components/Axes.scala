@@ -70,7 +70,6 @@ object Axes {
 
   private sealed trait ArbitraryAxisPlotComponent extends AxisPlotComponent {
     val align: Double = 0
-    val fixedBounds: Boolean
 
     override def size(plot: Plot): Extent = {
       val extents = ticks(getDescriptor(plot, fixed = true)).map(_.extent)
@@ -136,8 +135,7 @@ object Axes {
     tickCount: Int,
     tickRenderer: TickRenderer,
     override val labelFormatter: Option[Double => String],
-    tickCountRange: Option[Seq[Int]],
-    fixedBounds: Boolean = true
+    tickCountRange: Option[Seq[Int]]
   ) extends ArbitraryAxisPlotComponent
     with ContinuousAxis {
     override def bounds(plot: Plot): Bounds = boundsFn(plot)
@@ -151,7 +149,6 @@ object Axes {
     override val align: Double
   ) extends ArbitraryAxisPlotComponent
     with DiscreteAxis {
-    override val fixedBounds: Boolean = true
     override def bounds(plot: Plot): Bounds = boundsFn(plot)
   }
 
@@ -224,7 +221,6 @@ object Axes {
       * @param labelFormatter   Custom function to format tick labels.
       * @param tickCountRange   Allow searching over axis labels with this many ticks.
       * @param updatePlotBounds Set plot bounds to match the axis bounds.
-      * @param fixedBounds      Force ticks to match bounds.
       */
     def continuousAxis(
       boundsFn: Plot => Bounds,
@@ -233,8 +229,7 @@ object Axes {
       tickRenderer: Option[TickRenderer] = None,
       labelFormatter: Option[Double => String] = None,
       tickCountRange: Option[Seq[Int]] = None,
-      updatePlotBounds: Boolean = true,
-      fixedBounds: Boolean = true
+      updatePlotBounds: Boolean = true
     )(implicit theme: Theme): Plot = {
       val defaultRotation = if (position == Position.Bottom || position == Position.Top) {
         theme.elements.continuousXAxisLabelOrientation
@@ -253,15 +248,14 @@ object Axes {
             defaultRotation
           )),
         labelFormatter,
-        tickCountRange,
-        fixedBounds
+        tickCountRange
       )
       if (updatePlotBounds) {
         position match {
           case Position.Left | Position.Right =>
-            component +: plot.ybounds(component.getDescriptor(plot, fixedBounds).axisBounds)
+            component +: plot.ybounds(component.getDescriptor(plot, plot.yfixed).axisBounds)
           case Position.Bottom | Position.Top =>
-            component +: plot.xbounds(component.getDescriptor(plot, fixedBounds).axisBounds)
+            component +: plot.xbounds(component.getDescriptor(plot, plot.xfixed).axisBounds)
           case _ =>
             component +: plot
         }
@@ -343,8 +337,7 @@ object Axes {
         tickRenderer,
         labelFormatter,
         tickCountRange,
-        true,
-        plot.xfixed
+        true
       )
     }
 
@@ -411,8 +404,7 @@ object Axes {
         tickRenderer,
         labelFormatter,
         tickCountRange,
-        true,
-        plot.yfixed
+        true
       )
     }
 
