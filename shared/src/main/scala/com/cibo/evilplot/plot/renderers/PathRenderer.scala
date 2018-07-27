@@ -30,7 +30,7 @@
 
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.colors.{Color, Coloring}
 import com.cibo.evilplot.geometry.{
   Clipping,
   Drawable,
@@ -59,6 +59,7 @@ object PathRenderer {
     * @param strokeWidth The width of the path.
     * @param color Point color.
     * @param label A label for this path (for legends).
+    * @param lineStyle The style of the path (dashed, solid, etc).
     */
   def default(
     strokeWidth: Option[Double] = None,
@@ -107,6 +108,7 @@ object PathRenderer {
     * @param name The name of this path.
     * @param color The color of this path.
     * @param strokeWidth The width of the path.
+    * @param lineStyle The style of the path (dashed, solid, etc).
     */
   def named(
     name: String,
@@ -123,6 +125,40 @@ object PathRenderer {
       lineStyle
     )
 
+  /**
+    * Render line with colors based on a third, continuous variable.
+    * @param depths The depths for each line segment.
+    * @param coloring The coloring to use.
+    * @param strokeWidth The width of the path.
+    * @param lineStyle The style of the path (dashed, solid, etc).
+    */
+  def depthColor(
+    depths: Seq[Double],
+    coloring: Option[Coloring[Double]] = None,
+    strokeWidth: Option[Double] = None,
+    lineStyle: Option[LineStyle] = None)(implicit theme: Theme): PathRenderer = new PathRenderer {
+    private val useColoring = coloring.getOrElse(theme.colors.continuousColoring)
+    private val colorFunc = useColoring(depths)
+    private val useLineStyle: LineStyle = lineStyle.getOrElse(theme.elements.lineDashStyle)
+    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
+      Clipping
+        .clipPath(path, extent)
+        .flatMap(p =>
+          p.sliding(2, 1).toSeq.zipWithIndex.map {
+            case (section, index) =>
+              LineDash(
+                StrokeStyle(
+                  Path(section, strokeWidth.getOrElse(theme.elements.strokeWidth)),
+                  colorFunc(depths(index))),
+                useLineStyle)
+        })
+        .group
+    }
+
+    override def legendContext: LegendContext =
+      useColoring.legendContext(depths)
+  }
+
   /** Path renderer for closed paths. The first point is connected to the last point.
     * @param color the color of this path.
     */
@@ -133,6 +169,7 @@ object PathRenderer {
     * @param strokeWidth the stroke width
     * @param color the color of the path
     * @param label the label for the legend
+    * @param lineStyle The style of the path (dashed, solid, etc).
     */
   def closed(
     strokeWidth: Option[Double] = None,

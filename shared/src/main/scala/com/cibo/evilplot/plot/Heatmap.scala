@@ -30,7 +30,7 @@
 
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.{Color, ScaledColorBar}
+import com.cibo.evilplot.colors.{Color, Coloring, ScaledColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Rect}
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -100,5 +100,24 @@ object Heatmap {
     val maxValue = flattenedData.reduceOption[Double](math.max).getOrElse(0.0)
     val colorBar = ScaledColorBar(colorStream.take(colorCount), minValue, maxValue)
     apply(data, colorBar)
+  }
+
+  /** Create a heatmap using a continuous coloring.
+    * @param data The heatmap data.
+    * @param coloring The coloring to use.
+    */
+
+  def apply(data: Seq[Seq[Double]],
+            coloring: Option[Coloring[Double]])(implicit theme: Theme): Plot = {
+
+    val flattenedData = data.flatten
+    val minValue = flattenedData.reduceOption[Double](math.min).getOrElse(0.0)
+    val maxValue = flattenedData.reduceOption[Double](math.max).getOrElse(0.0)
+    val useColoring = coloring.getOrElse(theme.colors.continuousColoring)
+    val colorFunc = useColoring(flattenedData)
+    val colorBar =
+      ScaledColorBar(flattenedData.map(point => colorFunc.apply(point)), minValue, maxValue)
+    apply(data, colorBar)
+
   }
 }

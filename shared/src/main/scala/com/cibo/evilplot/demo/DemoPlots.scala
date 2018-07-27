@@ -304,17 +304,22 @@ object DemoPlots {
       .map(_.toDouble)
       .zip(
         Seq(
-          0.0, 0.1, 0.0, 0.1, 0.0, 0.1
+          0.0, 0.1, 0.2, 0.1, 0.0, 0.1
         ))
       .map(Point.tupled)
 
+    val pathRenderer = Some(
+      PathRenderer.depthColor(
+        Seq(0, 1, 2, 1, 2, 0),
+        Some(ContinuousColoring.gradient(HTMLNamedColors.dodgerBlue, HTMLNamedColors.crimson))))
+
     LinePlot(
-      data
+      data,
+      pathRenderer = pathRenderer
     ).ybounds(0, .12)
-      .yAxis()
-      .xGrid()
-      .yGrid()
-      .frame()
+      .standard()
+      .ybounds(0, 0.2)
+      .rightLegend()
       .render(plotAreaSize)
   }
 
@@ -324,8 +329,16 @@ object DemoPlots {
       Seq(5, 6, 7, 8),
       Seq(9, 8, 7, 6)
     )
-
-    Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
+    val coloring = ContinuousColoring.gradient3(
+      HTMLNamedColors.dodgerBlue,
+      HTMLNamedColors.crimson,
+      HTMLNamedColors.dodgerBlue)
+    Heatmap(data, Some(coloring))
+      .title("Heatmap Demo")
+      .xAxis()
+      .yAxis()
+      .rightLegend()
+      .render(plotAreaSize)
   }
 
 
