@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Changes since last release]
+### Fixed
+- Bug in the spacing and sizing of bars in clustered bar charts.
 
 ## [0.4.1] - 2018-07-26
 ### Added
