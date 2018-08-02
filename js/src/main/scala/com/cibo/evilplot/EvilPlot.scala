@@ -84,6 +84,7 @@ object EvilPlot {
     addExample(DemoPlots.facetedPlot)
     addExample(DemoPlots.heatmap)
     addExample(DemoPlots.marginalHistogram)
+    addExample(DemoPlots.clusteredBarChart)
     addExample(DemoPlots.stackedBarChart)
     addExample(DemoPlots.clusteredStackedBarChart)
   }

@@ -90,16 +90,23 @@ object BarChart {
         val numGroups = data.map(_.cluster).distinct.size
         val barsPerGroup = if (numGroups > 1) data.groupBy(_.cluster).map(_._2.size).max else 1
 
+        val fullPlotWidth = xtransformer(plot.xbounds.min + 1.0 * numGroups)
+        val clusterWidth = (fullPlotWidth - numGroups * clusterSpacing) / numGroups
+        val barWidth = (clusterWidth - (barsPerGroup - 1) * spacing) / barsPerGroup
+        val firstClusterPadding = clusterSpacing / 2
+
+        def getClusterStartX(clusterIndex: Int): Double =
+          firstClusterPadding + (clusterWidth + clusterSpacing) * clusterIndex
+        def getBarXInCluster(barIndexInCluster: Int): Double = (barWidth + spacing) * barIndexInCluster
+
         val sorted = data.sortBy(_.cluster)
         val initial: (Double, Drawable) = (sorted.head.cluster, EmptyDrawable())
         sorted.zipWithIndex
           .foldLeft(initial) {
             case ((lastCluster, d), (bar, barIndex)) =>
-              // X offset and bar width.
-              val xscale = 1.0 / barsPerGroup
-              val barx = barIndex * xscale
-              val x = xtransformer(plot.xbounds.min + barx)
-              val barWidth = xtransformer(plot.xbounds.min + barx + xscale) - x
+              // X offset
+              val clusterIndex = if (numGroups > 1) bar.cluster else barIndex
+              val x = getClusterStartX(clusterIndex) + getBarXInCluster(barIndex % barsPerGroup)
 
               // Y bar translation and bar height.
               val (transY, barHeight) =
@@ -117,19 +124,12 @@ object BarChart {
                   }
                 }
 
-              val clusterPadding =
-                if (numGroups > 1 && bar.cluster != lastCluster) clusterSpacing else 0
-
-              // Extra X offset to account for the cluster and spacing.
-              val xPadding =
-                if (barIndex == 0) (clusterPadding + spacing) / 2 else clusterPadding + spacing / 2
-
-              val extent = Extent(barWidth - spacing - clusterPadding, barHeight)
+              val extent = Extent(barWidth, barHeight)
               (
                 bar.cluster,
                 d behind barRenderer
                   .render(plot, extent, bar)
-                  .translate(y = transY, x = x + xPadding))
+                  .translate(y = transY, x = x))
           }
           ._2
       }
