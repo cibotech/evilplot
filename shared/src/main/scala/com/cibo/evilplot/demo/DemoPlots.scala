@@ -324,8 +324,8 @@ object DemoPlots {
       Seq(5, 6, 7, 8),
       Seq(9, 8, 7, 6)
     )
-
-    Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
+    val coloring = ContinuousColoring.gradient3(HTMLNamedColors.dodgerBlue, HTMLNamedColors.crimson, HTMLNamedColors.dodgerBlue)
+    Heatmap(data, Some(coloring)).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
   }
 
 
