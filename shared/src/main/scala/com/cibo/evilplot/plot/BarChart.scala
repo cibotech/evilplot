@@ -81,6 +81,19 @@ object BarChart {
     override def legendContext: LegendContext =
       LegendContext.combine(barRenderer.legendContext.toSeq ++ data.map(_.legendContext))
 
+    private val isClustered = clusterSpacing.isDefined
+    private val clusterPadding = clusterSpacing.getOrElse(spacing)
+    private val numGroups = data.map(_.cluster).distinct.size
+    private val barsPerGroup = if (isClustered) data.groupBy(_.cluster).map(_._2.size).max else 1
+
+    private def getBarX(barIndex: Int, cluster: Int, barWidth: Double, clusterWidth: Double): Double = {
+      val clusterIndex = if (isClustered) cluster else barIndex
+      val clusterStartX = clusterWidth / 2 + (clusterWidth + clusterPadding) * clusterIndex
+      val barXInCluster = (barWidth + spacing) * (barIndex % barsPerGroup)
+
+      clusterStartX + barXInCluster
+    }
+
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.isEmpty) {
         EmptyDrawable()
@@ -88,30 +101,16 @@ object BarChart {
         val xtransformer = plot.xtransform(plot, plotExtent)
         val ytransformer = plot.ytransform(plot, plotExtent)
 
-        val isClustered = clusterSpacing.isDefined
-
-        val numGroups = data.map(_.cluster).distinct.size
-        val barsPerGroup = if (isClustered) data.groupBy(_.cluster).map(_._2.size).max else 1
-
         val fullPlotWidth = xtransformer(plot.xbounds.min + numGroups)
-        val clusterPadding = clusterSpacing.getOrElse(spacing)
         val clusterWidth = fullPlotWidth / numGroups - clusterPadding
         val barWidth = (clusterWidth - (barsPerGroup - 1) * spacing) / barsPerGroup
-        val firstClusterPadding = clusterPadding / 2
-
-        def getClusterStartX(clusterIndex: Int): Double =
-          firstClusterPadding + (clusterWidth + clusterPadding) * clusterIndex
-        def getBarXInCluster(barIndexInCluster: Int): Double =
-          (barWidth + spacing) * barIndexInCluster
 
         val sorted = data.sortBy(_.cluster)
         val initial: Drawable = EmptyDrawable()
         sorted.zipWithIndex
           .foldLeft(initial) {
             case (d, (bar, barIndex)) =>
-              // X offset
-              val clusterIndex = if (isClustered) bar.cluster else barIndex
-              val x = getClusterStartX(clusterIndex) + getBarXInCluster(barIndex % barsPerGroup)
+              val x = getBarX(barIndex, bar.cluster, barWidth, clusterWidth)
 
               // Y bar translation and bar height.
               val (transY, barHeight) =
