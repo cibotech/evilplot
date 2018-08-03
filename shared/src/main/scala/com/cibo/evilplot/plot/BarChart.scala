@@ -88,7 +88,7 @@ object BarChart {
 
     private def getBarX(barIndex: Int, cluster: Int, barWidth: Double, clusterWidth: Double): Double = {
       val clusterIndex = if (isClustered) cluster else barIndex
-      val clusterStartX = clusterWidth / 2 + (clusterWidth + clusterPadding) * clusterIndex
+      val clusterStartX = clusterPadding / 2 + (clusterWidth + clusterPadding) * clusterIndex
       val barXInCluster = (barWidth + spacing) * (barIndex % barsPerGroup)
 
       clusterStartX + barXInCluster
