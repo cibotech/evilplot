@@ -169,7 +169,8 @@ object DemoPlots {
     BarChart
       .clustered(
         data,
-        labels = Seq("one", "two", "three")
+        labels = Seq("one", "two", "three"),
+        clusterSpacing = Some(25)
       )
       .title("Clustered Bar Chart Demo")
       .xAxis(Seq("a", "b", "c", "d"))
@@ -207,7 +208,8 @@ object DemoPlots {
     BarChart
       .clusteredStacked(
         data,
-        labels = Seq("one", "two", "three")
+        labels = Seq("one", "two", "three"),
+        clusterSpacing = Some(25)
       )
       .title("Clustered Stacked Bar Chart Demo")
       .standard(Seq("Category 1", "Category 2"))
