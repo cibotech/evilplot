@@ -42,7 +42,8 @@ case class BoxPlotSummaryStatistics(
   middleQuantile: Double,
   upperQuantile: Double,
   outliers: Seq[Double],
-  allPoints: Seq[Double]) {
+  allPoints: Seq[Double],
+  cluster: Int) {
   override def toString: String = {
     s"""lowerWhisker $lowerWhisker lowerQuantile $lowerQuantile middleQuantile
        |$middleQuantile upperQuantile $upperQuantile upperWhisker $upperWhisker
@@ -61,7 +62,8 @@ object BoxPlotSummaryStatistics {
   def apply(
     data: Seq[Double],
     quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
-    includeAllPoints: Boolean = false): BoxPlotSummaryStatistics = {
+    includeAllPoints: Boolean = false,
+    cluster: Int = 0): BoxPlotSummaryStatistics = {
     val sorted = data.sorted
 
     require(
@@ -100,6 +102,7 @@ object BoxPlotSummaryStatistics {
       middleQuantile,
       upperQuantile,
       outliers,
-      data)
+      data,
+      cluster)
   }
 }
