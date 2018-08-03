@@ -169,7 +169,8 @@ object DemoPlots {
     BarChart
       .clustered(
         data,
-        labels = Seq("one", "two", "three")
+        labels = Seq("one", "two", "three"),
+        clusterSpacing = Some(25)
       )
       .title("Clustered Bar Chart Demo")
       .xAxis(Seq("a", "b", "c", "d"))
@@ -207,7 +208,8 @@ object DemoPlots {
     BarChart
       .clusteredStacked(
         data,
-        labels = Seq("one", "two", "three")
+        labels = Seq("one", "two", "three"),
+        clusterSpacing = Some(25)
       )
       .title("Clustered Stacked Bar Chart Demo")
       .standard(Seq("Category 1", "Category 2"))
@@ -339,8 +341,8 @@ object DemoPlots {
       Seq(5, 6, 7, 8),
       Seq(9, 8, 7, 6)
     )
-
-    Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
+    val coloring = ContinuousColoring.gradient3(HTMLNamedColors.dodgerBlue, HTMLNamedColors.crimson, HTMLNamedColors.dodgerBlue)
+    Heatmap(data, Some(coloring)).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
   }
 
 
