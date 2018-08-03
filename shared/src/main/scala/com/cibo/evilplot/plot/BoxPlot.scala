@@ -37,7 +37,7 @@ import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
 final case class BoxPlotRenderer(
-  data: Seq[Option[BoxPlotSummaryStatistics]],
+  data: Seq[Option[BoxRendererContext]],
   boxRenderer: BoxRenderer,
   pointRenderer: PointRenderer,
   spacing: Double,
@@ -69,34 +69,37 @@ final case class BoxPlotRenderer(
     val clusterWidth = fullPlotWidth / numGroups - clusterPadding
     val boxWidth = (clusterWidth - (boxesPerGroup - 1) * spacing) / boxesPerGroup
 
-    data.zipWithIndex.foldLeft(EmptyDrawable(): Drawable) {
-      case (d, (summaryOpt, index)) =>
-        summaryOpt match {
-          case Some(summary) =>
-            val x = getBoxX(index, summary.cluster, boxWidth, clusterWidth)
-            val y = ytransformer(summary.upperWhisker)
+    data.foldLeft(EmptyDrawable(): Drawable) {
+      case (d, boxContextOpt) =>
+        boxContextOpt match {
+          case Some(boxContext) =>
+            import boxContext.{index, cluster, summaryStatistics}
 
-            val boxHeight = ytransformer(summary.lowerWhisker) - ytransformer(summary.upperWhisker)
+            val x = getBoxX(index, cluster, boxWidth, clusterWidth)
+            val y = ytransformer(summaryStatistics.upperWhisker)
+
+            val boxHeight = ytransformer(summaryStatistics.lowerWhisker) - ytransformer(summaryStatistics.upperWhisker)
 
             val box = {
               if (boxHeight != 0)
                 boxRenderer.render(
                   plot,
                   Extent(boxWidth, boxHeight),
-                  BoxRendererContext(summary, index))
+                  BoxRendererContext(summaryStatistics, index))
               else {
                 StrokeStyle(Line(boxWidth, theme.elements.strokeWidth), theme.colors.path)
               }
             }
 
-            val points = summary.outliers.map { pt =>
+            val points = summaryStatistics.outliers.map { pt =>
               pointRenderer
                 .render(plot, plotExtent, index)
                 .translate(x = x + boxWidth / 2, y = ytransformer(pt))
             }
             d behind (box.translate(x = x, y = y) behind points.group)
           case None => d
-        }
+      }
+
     }
   }
 
@@ -123,10 +126,24 @@ object BoxPlot {
     boxRenderer: Option[BoxRenderer] = None,
     pointRenderer: Option[PointRenderer] = None
   )(implicit theme: Theme): Plot = {
-    val summaries =
-      data.map(dist => if (dist.nonEmpty) Some(BoxPlotSummaryStatistics(dist, quantiles)) else None)
-    custom(summaries, boxRenderer, pointRenderer, quantiles, spacing, None, boundBuffer)
+    val boxContexts = data.zipWithIndex.map {
+      case (dist, index) =>
+        if (dist.nonEmpty) {
+          val summary = BoxPlotSummaryStatistics(dist, quantiles)
+          Some(BoxRendererContext(summary, index))
+        } else None
+    }
+    makePlot(
+      data,
+      boxContexts,
+      spacing,
+      None,
+      boundBuffer,
+      boxRenderer,
+      pointRenderer
+    )
   }
+
 
   /** Create clustered box plots for a sequence of distributions.
     *
@@ -136,7 +153,7 @@ object BoxPlot {
     * @param quantiles quantiles to use for summary statistics.
     *                  defaults to 1st, 2nd, 3rd quartiles.
     * @param spacing spacing how much spacing to put between boxes
-    * @param clusterSpacing ho much spacing to put between clusters of boxes
+    * @param clusterSpacing how much spacing to put between clusters of boxes
     * @param boundBuffer expand bounds by this factor
     */
   def clustered(
@@ -148,45 +165,39 @@ object BoxPlot {
     boxRenderer: Option[BoxRenderer] = None,
     pointRenderer: Option[PointRenderer] = None
   )(implicit theme: Theme): Plot = {
-    println(data.length)
-    val summaries = data.zipWithIndex.flatMap {
+    val boxesPerGroup = data.map(_.length).reduce(math.max)
+    val boxContexts = data.zipWithIndex.flatMap {
       case (cluster, clusterIndex) =>
-        cluster.map(
-          dist =>
-            if (dist.nonEmpty) Some(BoxPlotSummaryStatistics(dist, quantiles, cluster = clusterIndex))
-            else None)
+        cluster.zipWithIndex.map {
+          case (dist, index) =>
+            if (dist.nonEmpty) {
+              val barIndex = index + clusterIndex * boxesPerGroup
+              val summary = BoxPlotSummaryStatistics(dist, quantiles)
+              Some(BoxRendererContext(summary, barIndex, clusterIndex))
+            } else None
+        }
     }
-    custom(
-      summaries,
-      boxRenderer,
-      pointRenderer,
-      quantiles,
+    makePlot(
+      data.flatten,
+      boxContexts,
       spacing,
       Some(clusterSpacing.getOrElse(theme.elements.clusterSpacing)),
-      boundBuffer)
+      boundBuffer,
+      boxRenderer,
+      pointRenderer
+    )
   }
 
-  /** Create custom box plots for a sequence of distributions.
-    *
-    * @param data the distributions to plot
-    * @param boxRenderer the `BoxRenderer` to use to display each distribution
-    * @param pointRenderer the `PointRenderer` used to display outliers
-    * @param quantiles quantiles to use for summary statistics.
-    *                  defaults to 1st, 2nd, 3rd quartiles.
-    * @param spacing spacing how much spacing to put between boxes
-    * @param boundBuffer expand bounds by this factor
-    */
-  def custom(
-    summaries: Seq[Option[BoxPlotSummaryStatistics]],
-    boxRenderer: Option[BoxRenderer],
-    pointRenderer: Option[PointRenderer],
-    quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
+  private def makePlot(
+    data: Seq[Seq[Double]],
+    boxContexts: Seq[Option[BoxRendererContext]],
     spacing: Option[Double] = None,
     clusterSpacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None
+    boundBuffer: Option[Double] = None,
+    boxRenderer: Option[BoxRenderer] = None,
+    pointRenderer: Option[PointRenderer] = None
   )(implicit theme: Theme): Plot = {
-    val data = summaries.flatten.map(_.allPoints)
-    val xbounds = Bounds(0, summaries.size)
+    val xbounds = Bounds(0, boxContexts.size)
     val ybounds = Plot.expandBounds(
       Bounds(
         data.flatten.reduceOption[Double](math.min).getOrElse(0),
@@ -198,12 +209,33 @@ object BoxPlot {
       xbounds,
       ybounds,
       BoxPlotRenderer(
-        summaries,
+        boxContexts,
         boxRenderer.getOrElse(BoxRenderer.default()),
         pointRenderer.getOrElse(PointRenderer.default()),
         spacing.getOrElse(theme.elements.boxSpacing),
         clusterSpacing
       )
     )
+  }
+
+  /** Create a box plot for a sequence of distributions.
+    * @param data the distributions to plot
+    * @param boxRenderer the `BoxRenderer` to use to display each distribution
+    * @param pointRenderer the `PointRenderer` used to display outliers
+    * @param quantiles quantiles to use for summary statistics.
+    *                  defaults to 1st, 2nd, 3rd quartiles.
+    * @param spacing spacing how much spacing to put between boxes
+    * @param boundBuffer expand bounds by this factor
+    */
+  @deprecated("use apply", "2018-03-28")
+  def custom(
+    data: Seq[Seq[Double]],
+    boxRenderer: BoxRenderer,
+    pointRenderer: PointRenderer,
+    quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
+    spacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None
+  )(implicit theme: Theme): Plot = {
+    apply(data, quantiles, spacing, boundBuffer, Some(boxRenderer), Some(pointRenderer))
   }
 }
