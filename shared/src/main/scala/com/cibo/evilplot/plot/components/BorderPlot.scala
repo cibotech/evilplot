@@ -32,6 +32,7 @@ package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.Plot.Transformer
 import com.cibo.evilplot.plot.aesthetics.Theme
 
 case class BorderPlot(
@@ -39,7 +40,16 @@ case class BorderPlot(
   borderSize: Double,
   border: Plot
 ) extends PlotComponent {
+  case object InvertXTransformer extends Transformer {
+    def apply(plot: Plot, plotExtent: Extent): Double => Double = {
+      val scale = plotExtent.width / plot.xbounds.range
+      (x: Double) =>
+        plotExtent.width - (x - plot.xbounds.min) * scale
+    }
+  }
+
   override def size(plot: Plot): Extent = Extent(borderSize, borderSize)
+
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
     position match {
       case Position.Top =>
@@ -67,11 +77,10 @@ case class BorderPlot(
         val borderExtent = Extent(extent.height, borderSize)
         border
           .xbounds(plot.ybounds)
-          .copy(xtransform = plot.xtransform)
+          .setXTransform(InvertXTransformer, false)
           .render(borderExtent)
           .resize(borderExtent)
           .rotated(90)
-          .flipY
       case _ =>
         border.render(extent)
     }
