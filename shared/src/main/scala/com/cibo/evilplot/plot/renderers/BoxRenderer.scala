@@ -54,7 +54,8 @@ trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] {
 object BoxRenderer {
   final case class BoxRendererContext(
     summaryStatistics: BoxPlotSummaryStatistics,
-    index: Int
+    index: Int,
+    cluster: Int = 0
   )
 
   def default(

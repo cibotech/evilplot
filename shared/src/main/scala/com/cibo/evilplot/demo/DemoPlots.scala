@@ -240,6 +240,21 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
+  lazy val clusteredBoxPlot: Drawable = {
+    val data = Seq.fill(3)(Seq.fill(3)(Seq.fill(Random.nextInt(30))(Random.nextDouble())))
+    val series = Seq.fill(3)(Seq(0, 1, 2)).flatten
+    BoxPlot
+      .clustered(
+        data,
+        boxRenderer = Some(BoxRenderer.colorBy(series)),
+        spacing = Some(10.0),
+        clusterSpacing = Some(60.0)
+      )
+      .standard(xLabels = (1 to 3).map(_.toString))
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
   lazy val scatterPlot: Drawable = {
     val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
     val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
