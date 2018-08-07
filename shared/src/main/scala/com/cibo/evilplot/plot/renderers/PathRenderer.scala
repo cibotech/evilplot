@@ -30,7 +30,7 @@
 
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.colors.{Color, Coloring}
 import com.cibo.evilplot.geometry.{
   Clipping,
   Drawable,
@@ -122,6 +122,40 @@ object PathRenderer {
         theme.colors.legendLabel),
       lineStyle
     )
+
+  /**
+    * Render line with colors based on a third, continuous variable.
+    * @param depths The depths for each line segment.
+    * @param coloring The coloring to use.
+    * @param strokeWidth The thickness of the line.
+    * @param lineStyle The style of the line
+    */
+  def depthColor(
+    depths: Seq[Double],
+    coloring: Option[Coloring[Double]] = None,
+    strokeWidth: Option[Double] = None,
+    lineStyle: Option[LineStyle] = None)(implicit theme: Theme): PathRenderer = new PathRenderer {
+    private val useColoring = coloring.getOrElse(theme.colors.continuousColoring)
+    private val colorFunc = useColoring(depths)
+    private val useLineStyle: LineStyle = lineStyle.getOrElse(theme.elements.lineDashStyle)
+    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
+      Clipping
+        .clipPath(path, extent)
+        .flatMap(p =>
+          p.sliding(2, 1).toSeq.zipWithIndex.map {
+            case (section, index) =>
+              LineDash(
+                StrokeStyle(
+                  Path(section, strokeWidth.getOrElse(theme.elements.strokeWidth)),
+                  colorFunc(depths(index))),
+                useLineStyle)
+        })
+        .group
+    }
+
+    override def legendContext: LegendContext =
+      useColoring.legendContext(depths)
+  }
 
   /** Path renderer for closed paths. The first point is connected to the last point.
     * @param color the color of this path.
