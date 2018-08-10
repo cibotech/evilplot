@@ -36,6 +36,7 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.demo.DemoPlots
 import com.cibo.evilplot.demo.DemoPlots.plotAreaSize
 import com.cibo.evilplot.geometry._
+import com.cibo.evilplot.interaction.InteractionMaskContext
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -82,7 +83,7 @@ object EvilPlot {
   }
 
   var selectedBar: Option[Double] = None
-  def animatedBarChart(x: Double, ctx: CanvasRenderContext, mouseContext: CollisionRenderingContext): Unit = {
+  def animatedBarChart(x: Double, ctx: CanvasRenderContext, mouseContext: InteractionMaskContext): Unit = {
     implicit val theme: Theme = DefaultTheme.copy(
       fonts = DefaultFonts
         .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
@@ -138,7 +139,7 @@ object EvilPlot {
   val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
 
   var pointMouseoverTarget: Option[Double] = None
-  def animatedScatterPlot(x: Double, ctx: CanvasRenderContext, mouseContext: CollisionRenderingContext): Unit = {
+  def animatedScatterPlot(x: Double, ctx: CanvasRenderContext, mouseContext: InteractionMaskContext): Unit = {
     implicit val theme: Theme = DefaultTheme.copy(
       fonts = DefaultFonts
         .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
@@ -195,9 +196,9 @@ object EvilPlot {
     canvas.setAttribute("id", canvasId)
     dom.document.body.appendChild(canvas)
     val ctx = CanvasRenderContext(prepareCanvas(canvasId, Extent(screenWidth, screenHeight)))
-    val mouseContext = CollisionRenderingContext(prepareCanvas("virtual", Extent(screenWidth, screenHeight)))
+    val mouseContext = InteractionMaskContext(prepareCanvas("virtual", Extent(screenWidth, screenHeight)))
 
-    dom.document.body.appendChild(mouseContext.canvas.canvas)
+//    dom.document.body.appendChild(mouseContext.canvas.canvas)
 
     ctx.canvas.canvas.addEventListener[MouseEvent]("click", { x =>
       val canvasY = x.clientY - ctx.canvas.canvas.getBoundingClientRect().top
@@ -217,11 +218,11 @@ object EvilPlot {
     renderAnim(ctx, mouseContext)
   }
 
-  def renderAnim(ctx: CanvasRenderContext, mouse: CollisionRenderingContext): Int = {
+  def renderAnim(ctx: CanvasRenderContext, mouse: InteractionMaskContext): Int = {
     dom.window.requestAnimationFrame { x =>
       if(x > 3000) {
         ctx.canvas.clearRect(0, 0, ctx.canvas.canvas.width, ctx.canvas.canvas.height)
-        mouse.clearEvents()
+        mouse.clearEventListeners()
         animatedScatterPlot(x, ctx, mouse)
       }
       renderAnim(ctx, mouse)

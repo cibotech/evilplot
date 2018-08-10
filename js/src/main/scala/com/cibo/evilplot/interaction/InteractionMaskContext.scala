@@ -1,41 +1,13 @@
-/*
- * Copyright (c) 2018, CiBO Technologies, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the copyright holder nor the names of its contributors
- *    may be used to endorse or promote products derived from this software without
- *    specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+package com.cibo.evilplot.interaction
 
-package com.cibo.evilplot.geometry
-
-import com.cibo.evilplot.colors.RGBA
+import com.cibo.evilplot.geometry._
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
-import scala.util.Try
+final case class InteractionMaskContext(canvas: CanvasRenderingContext2D)
+  extends RenderContext with CanvasInteractionDetection {
 
-final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends RenderContext {
+
+
   def draw(line: Line): Unit = CanvasOp(canvas) {
     canvas.lineWidth = line.strokeWidth
     canvas.beginPath()
@@ -66,13 +38,27 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
   }
 
   def draw(rect: Rect): Unit = {
-    canvas.fillRect(0, 0, rect.width, rect.height)
+    CanvasOp(canvas) {
+      rect.onClick.map{ fn =>
+        val hex = addEvent(MouseEventable(rect.onClick, rect.onMouseover))
+        canvas.fillStyle = s"#$hex"
+      }.getOrElse{
+        canvas.fillStyle = noInteraction
+      }
+      canvas.fillRect(0, 0, rect.width, rect.height)
+    }
   }
 
   def draw(rect: BorderRect): Unit = canvas.strokeRect(0, 0, rect.width, rect.height)
 
   def draw(disc: Disc): Unit = CanvasOp(canvas) {
     canvas.beginPath()
+    if(disc.onClick.isDefined || disc.onMouseover.isDefined){
+      val hex = addEvent(MouseEventable(disc.onClick, disc.onMouseover))
+      canvas.fillStyle = s"#$hex"
+    } else {
+      canvas.fillStyle = noInteraction
+    }
     canvas.arc(disc.radius, disc.radius, disc.radius, 0, 2 * Math.PI)
     canvas.closePath()
     canvas.fill()
@@ -117,12 +103,12 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
   }
 
   def draw(style: Style): Unit = CanvasOp(canvas) {
-    canvas.fillStyle = style.fill.repr
+    canvas.fillStyle = s"rgba(0, 0, 0, 0)"
     style.r.draw(this)
   }
 
   def draw(style: StrokeStyle): Unit = CanvasOp(canvas) {
-    canvas.strokeStyle = style.fill.repr
+    canvas.strokeStyle = s"rgba(0, 0, 0, 0)"
     style.r.draw(this)
   }
 
