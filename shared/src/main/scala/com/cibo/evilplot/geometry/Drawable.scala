@@ -30,14 +30,27 @@
 
 package com.cibo.evilplot.geometry
 
+import java.util.UUID
+
 import com.cibo.evilplot.JSONUtils.minifyProperties
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.numeric.Point
+import io.circe.Decoder.Result
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
-import io.circe.{Decoder, Encoder}
+import io.circe._
 // scalastyle:off
 
+object EventThings{
+  implicit val clickEncoder: Encoder[Option[() => Unit]] = new Encoder[Option[() => Unit]] {
+    def apply(a: Option[() => Unit]): Json = Json.Null
+  }
+
+  implicit val clickDecoder: Decoder[Option[() => Unit]] = new Decoder[Option[() => Unit]] {
+    def apply(c: HCursor): Result[Option[() => Unit]] = Right(None)
+  }
+}
+import EventThings._
 /**
   * All Drawable objects define a draw method that draws to a 2D canvas, and a bounding box (Extent).
   * The bounding box must not change.
@@ -134,7 +147,9 @@ object Polygon {
   * @param width the width of the rectangle
   * @param height the height of the rectangle
   */
-final case class Rect(width: Double, height: Double) extends Drawable {
+final case class Rect(width: Double, height: Double, onClick: Option[() => Unit] = None, onMouseover: Option[() => Unit] = None) extends Drawable {
+
+  lazy val id = UUID.randomUUID().toString
   lazy val extent: Extent = Extent(width, height)
   def draw(context: RenderContext): Unit = context.draw(this)
 }
@@ -169,7 +184,7 @@ object BorderRect {
   * left corner. Call `Disc.centered` to create a `Disc` that can be positioned
   * from its vertex.
   */
-final case class Disc(radius: Double) extends Drawable {
+final case class Disc(radius: Double, onClick: Option[() => Unit] = None, onMouseover: Option[() => Unit] = None) extends Drawable {
   lazy val extent = Extent(radius * 2, radius * 2)
 
   def draw(context: RenderContext): Unit = context.draw(this)

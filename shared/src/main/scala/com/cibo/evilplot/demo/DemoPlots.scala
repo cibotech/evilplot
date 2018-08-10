@@ -100,7 +100,7 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
-  lazy val barChart: Drawable = {
+  lazy val barChart: Plot = {
     val percentChange = Seq[Double](-10, 5, 12, 68, -22)
     val labels = Seq("one", "two", "three", "four", "five")
 
@@ -123,7 +123,6 @@ object DemoPlots {
       .custom(percentChange.map(Bar.apply), spacing = Some(20), barRenderer = Some(labeledByColor))
       .standard(xLabels = labels)
       .hline(0)
-      .render(plotAreaSize)
   }
 
   lazy val axesTesting: Drawable = {

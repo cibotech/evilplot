@@ -31,17 +31,23 @@
 package com.cibo.evilplot
 
 import java.util.UUID
-import com.cibo.evilplot.colors.{Color, DefaultColors, HEX, HTMLNamedColors}
+
+import com.cibo.evilplot.colors._
 import com.cibo.evilplot.demo.DemoPlots
+import com.cibo.evilplot.demo.DemoPlots.plotAreaSize
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.Point
-import com.cibo.evilplot.plot.{LinePlot, Overlay}
-import com.cibo.evilplot.plot.renderers.PathRenderer
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.components.Label
+import com.cibo.evilplot.plot.{Bar, BarChart, LegendContext, LinePlot, Overlay, Plot, ScatterPlot}
+import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PointRenderer}
 import org.scalajs.dom
 import org.scalajs.dom.CanvasRenderingContext2D
-import org.scalajs.dom.raw.HTMLCanvasElement
+import org.scalajs.dom.raw.{HTMLCanvasElement, MouseEvent, Node}
 
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
+import scala.util.Random
 
 @JSExportTopLevel("EvilPlot")
 object EvilPlot {
@@ -72,22 +78,154 @@ object EvilPlot {
   /** Render the example plots to the specified canvas. */
   @JSExport
   def renderExample(canvasId: String): Unit = {
-    addExample(DemoPlots.densityPlot)
-    addExample(DemoPlots.legendFeatures)
-    addExample(DemoPlots.axesTesting)
-    addExample(DemoPlots.functionPlot)
-    addExample(DemoPlots.markerPlot)
-    addExample(DemoPlots.marginalHistogram)
-    addExample(DemoPlots.scatterPlot)
-    addExample(DemoPlots.barChart)
-    addExample(DemoPlots.boxPlot)
-    addExample(DemoPlots.clusteredBoxPlot)
-    addExample(DemoPlots.facetedPlot)
-    addExample(DemoPlots.heatmap)
-    addExample(DemoPlots.marginalHistogram)
-    addExample(DemoPlots.clusteredBarChart)
-    addExample(DemoPlots.stackedBarChart)
-    addExample(DemoPlots.clusteredStackedBarChart)
+    addAnimatedBarChart()
+  }
+
+  var selectedBar: Option[Double] = None
+  def animatedBarChart(x: Double, ctx: CanvasRenderContext, mouseContext: CollisionRenderingContext): Unit = {
+    implicit val theme: Theme = DefaultTheme.copy(
+      fonts = DefaultFonts
+        .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
+    )
+
+    val magnitude: Double = (x - 3000) / 3000
+
+    val percentChange = Seq[Double](-10, 5, 12, 68, -22).map(x => x * magnitude.min(1.0))
+
+    val labels = Seq("one", "two", "three", "four", "five")
+
+    def labeledByColor(implicit theme: Theme) = new BarRenderer {
+      def render(plot: Plot, extent: Extent, category: Bar): Drawable = {
+        val value = category.values.head
+        val rect = Rect(extent).copy(onClick = Some(() => dom.window.alert(s"${value} %")),
+          onMouseover = Some(() => {
+            println(s"MOUSE OVER ${value}")
+            selectedBar = Some(value)
+          }))
+
+        val positive = HEX("#4c78a8")
+        val negative = HEX("#e45756")
+        val color = if (selectedBar.exists( x => x.toInt == value.toInt)) {
+          HEX("f68619")
+        } else if (value >= 0) positive else negative
+
+        val text = if (selectedBar.exists( x => x.toInt == value.toInt)) {
+          s"${value.toInt}%"
+        } else ""
+
+        Align
+          .center(
+            rect filled color,
+            Text(text, fontFace = theme.fonts.fontFace, size = 20).filled(theme.colors.label))
+          .group
+      }
+    }
+
+    val chart = BarChart
+      .custom(percentChange.map(Bar.apply), spacing = Some(20), barRenderer = Some(labeledByColor))
+      .standard(xLabels = labels)
+      .ybounds(-25.0, 75.0)
+      .hline(0)
+
+    val drawable = chart.render(DemoPlots.plotAreaSize).padAll(10)
+
+    drawable.draw(ctx)
+    drawable.draw(mouseContext)
+
+  }
+
+  val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
+  val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
+
+  var pointMouseoverTarget: Option[Double] = None
+  def animatedScatterPlot(x: Double, ctx: CanvasRenderContext, mouseContext: CollisionRenderingContext): Unit = {
+    implicit val theme: Theme = DefaultTheme.copy(
+      fonts = DefaultFonts
+        .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
+    )
+
+    val coloring = ContinuousColoring
+      .gradient3(
+        RGB(26, 188, 156),
+        RGB(46, 204, 113),
+        RGB(52, 152, 219))
+
+    val depths = years
+    val plot = ScatterPlot(
+      points,
+      pointRenderer = Some(
+        new PointRenderer {
+          private val useColoring = coloring
+          private val colorFunc = useColoring(depths)
+          private val radius = theme.elements.pointSize
+
+          def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+            Disc(radius, onMouseover = Some({ () =>
+              pointMouseoverTarget = Some(depths(index))
+            })).translate(-radius, -radius).filled(colorFunc(depths(index)))
+          }
+
+          override def legendContext: LegendContext =
+            useColoring.legendContext(depths)
+        })
+    ).standard()
+      .xLabel("x")
+      .yLabel("y")
+      .trend(1, 0)
+      .rightLegend().padTop(10)
+
+
+    val drawable = {if(pointMouseoverTarget.isDefined){
+      plot.bottomLabel(s"Value: ${pointMouseoverTarget.get}")
+    } else {
+     plot.bottomLabel("")
+    }}.render(plotAreaSize)
+
+    drawable.draw(ctx)
+    drawable.draw(mouseContext)
+
+  }
+
+  def addAnimatedBarChart(): Unit = {
+
+    val canvasId = UUID.randomUUID().toString
+    val screenWidth = dom.window.innerWidth
+    val screenHeight = dom.window.innerHeight
+    val canvas = dom.document.createElement("canvas").asInstanceOf[HTMLCanvasElement]
+    canvas.setAttribute("id", canvasId)
+    dom.document.body.appendChild(canvas)
+    val ctx = CanvasRenderContext(prepareCanvas(canvasId, Extent(screenWidth, screenHeight)))
+    val mouseContext = CollisionRenderingContext(prepareCanvas("virtual", Extent(screenWidth, screenHeight)))
+
+    dom.document.body.appendChild(mouseContext.canvas.canvas)
+
+    ctx.canvas.canvas.addEventListener[MouseEvent]("click", { x =>
+      val canvasY = x.clientY - ctx.canvas.canvas.getBoundingClientRect().top
+      val canvasX = x.clientX - ctx.canvas.canvas.getBoundingClientRect().left
+      mouseContext.events(canvasX, canvasY).foreach(_.click.foreach(_()))
+    })
+
+    ctx.canvas.canvas.addEventListener[MouseEvent]("mousemove", { x =>
+      val canvasY = x.clientY - ctx.canvas.canvas.getBoundingClientRect().top
+      val canvasX = x.clientX - ctx.canvas.canvas.getBoundingClientRect().left
+      mouseContext.events(canvasX, canvasY).flatMap(_.mouseover.map(_())).getOrElse{
+        selectedBar = None
+        pointMouseoverTarget = None
+      }
+    })
+
+    renderAnim(ctx, mouseContext)
+  }
+
+  def renderAnim(ctx: CanvasRenderContext, mouse: CollisionRenderingContext): Int = {
+    dom.window.requestAnimationFrame { x =>
+      if(x > 3000) {
+        ctx.canvas.clearRect(0, 0, ctx.canvas.canvas.width, ctx.canvas.canvas.height)
+        mouse.clearEvents()
+        animatedScatterPlot(x, ctx, mouse)
+      }
+      renderAnim(ctx, mouse)
+    }
   }
 
   private def addExample(plot: Drawable): Unit = {
@@ -96,7 +234,7 @@ object EvilPlot {
     val screenHeight = dom.window.innerHeight
     val canvas = dom.document.createElement("canvas").asInstanceOf[HTMLCanvasElement]
     canvas.setAttribute("id", canvasId)
-    dom.document.body.appendChild(canvas)
+      dom.document.body.appendChild(canvas)
     val ctx = CanvasRenderContext(prepareCanvas(canvasId, Extent(screenWidth, screenHeight)))
     plot.padAll(10).draw(ctx)
   }
@@ -122,7 +260,14 @@ object EvilPlot {
     id: String,
     extent: Extent
   ): CanvasRenderingContext2D = {
-    val ctx = Utils.getCanvasFromElementId(id)
+    val ctx = if(id == "virtual"){
+      dom.document.createElement("canvas").asInstanceOf[HTMLCanvasElement].getContext("2d")
+        .asInstanceOf[dom.CanvasRenderingContext2D]
+    } else {
+      Utils.getCanvasFromElementId(id)
+    }
+
+
     val canvasResolutionScaleHack = 2
 
     ctx.canvas.style.width = extent.width + "px"
