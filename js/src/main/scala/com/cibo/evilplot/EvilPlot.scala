@@ -198,7 +198,7 @@ object EvilPlot {
     val ctx = CanvasRenderContext(prepareCanvas(canvasId, Extent(screenWidth, screenHeight)))
     val mouseContext = InteractionMaskContext(prepareCanvas("virtual", Extent(screenWidth, screenHeight)))
 
-//    dom.document.body.appendChild(mouseContext.canvas.canvas)
+    dom.document.body.appendChild(mouseContext.canvas.canvas)
 
     ctx.canvas.canvas.addEventListener[MouseEvent]("click", { x =>
       val canvasY = x.clientY - ctx.canvas.canvas.getBoundingClientRect().top
