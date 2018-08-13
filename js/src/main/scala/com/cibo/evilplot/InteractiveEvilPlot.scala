@@ -52,6 +52,10 @@ import scala.util.Random
 @JSExportTopLevel("InteractiveEvilPlot")
 object InteractiveEvilPlot {
 
+  /* TODO  get rid of these, for demo purposes only*/
+  private var selectedBar: Option[Double] = None
+  private var pointMouseoverTarget: Option[Double] = None
+
   /** Render a plot definition to the specified canvas. */
   @JSExport
   def renderEvilPlot(json: String, canvasId: String, width: Double, height: Double): Unit = {
@@ -78,17 +82,16 @@ object InteractiveEvilPlot {
   /** Render the example plots to the specified canvas. */
   @JSExport
   def renderExample(canvasId: String): Unit = {
-    addAnimatedBarChart()
+    addAnimatedChart()
   }
 
-  var selectedBar: Option[Double] = None
-  def animatedBarChart(x: Double, ctx: CanvasRenderContext, mouseContext: InteractionMaskContext): Unit = {
+  def animatedBarChart(ms: Double, ctx: CanvasRenderContext, mouseContext: InteractionMaskContext): Unit = {
     implicit val theme: Theme = DefaultTheme.copy(
       fonts = DefaultFonts
         .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
     )
 
-    val magnitude: Double = (x - 3000) / 3000
+    val magnitude: Double = (ms - 3000) / 3000
 
     val percentChange = Seq[Double](-10, 5, 12, 68, -22).map(x => x * magnitude.min(1.0))
 
@@ -137,8 +140,7 @@ object InteractiveEvilPlot {
   val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
   val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
 
-  var pointMouseoverTarget: Option[Double] = None
-  def animatedScatterPlot(x: Double, ctx: CanvasRenderContext, mouseContext: InteractionMaskContext): Unit = {
+  def interactiveScatterPlot(x: Double, ctx: CanvasRenderContext, mouseContext: InteractionMaskContext): Unit = {
     implicit val theme: Theme = DefaultTheme.copy(
       fonts = DefaultFonts
         .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
@@ -186,7 +188,7 @@ object InteractiveEvilPlot {
 
   }
 
-  def addAnimatedBarChart(): Unit = {
+  def addAnimatedChart(): Unit = {
 
     val canvasId = UUID.randomUUID().toString
     val screenWidth = dom.window.innerWidth
@@ -196,8 +198,6 @@ object InteractiveEvilPlot {
     dom.document.body.appendChild(canvas)
     val ctx = CanvasRenderContext(prepareCanvas(canvasId, Extent(screenWidth, screenHeight)))
     val mouseContext = InteractionMaskContext(prepareCanvas("virtual", Extent(screenWidth, screenHeight)))
-
-    dom.document.body.appendChild(mouseContext.canvas.canvas)
 
     ctx.canvas.canvas.addEventListener[MouseEvent]("click", { x =>
       val canvasY = x.clientY - ctx.canvas.canvas.getBoundingClientRect().top
@@ -217,44 +217,23 @@ object InteractiveEvilPlot {
     renderAnim(ctx, mouseContext)
   }
 
+  /*
+    These are some significant performance enhancements that need to take place.
+    - Separate animation layers
+    - Stop render cycle when animation is not in progress
+    - Separate re-render for interaction
+   */
+
   def renderAnim(ctx: CanvasRenderContext, mouse: InteractionMaskContext): Int = {
-    dom.window.requestAnimationFrame { x =>
-      if(x > 3000) {
-        ctx.canvas.clearRect(0, 0, ctx.canvas.canvas.width, ctx.canvas.canvas.height)
-        mouse.clearEventListeners()
-        animatedScatterPlot(x, ctx, mouse)
-      }
+    dom.window.requestAnimationFrame { msSinceInit =>
+      ctx.canvas.clearRect(0, 0, ctx.canvas.canvas.width, ctx.canvas.canvas.height)
+      mouse.clearEventListeners()
+      interactiveScatterPlot(msSinceInit, ctx, mouse)
+
       renderAnim(ctx, mouse)
     }
   }
 
-  private def addExample(plot: Drawable): Unit = {
-    val canvasId = UUID.randomUUID().toString
-    val screenWidth = dom.window.innerWidth
-    val screenHeight = dom.window.innerHeight
-    val canvas = dom.document.createElement("canvas").asInstanceOf[HTMLCanvasElement]
-    canvas.setAttribute("id", canvasId)
-      dom.document.body.appendChild(canvas)
-    val ctx = CanvasRenderContext(prepareCanvas(canvasId, Extent(screenWidth, screenHeight)))
-    plot.padAll(10).draw(ctx)
-  }
-
-  def renderPaletteExample(colors: Seq[Color]): Unit = {
-    println("Rendering palette")
-    val paletteID = "palette"
-    val div = dom.document.getElementById(paletteID)
-    colors.foreach { color =>
-      val element = dom.document.createElement("div")
-      element.setAttribute(
-        "style",
-        s"width: 40px; " +
-          s"height: 40px; " +
-          s"display: inline-block;" +
-          s"background-color: ${color.repr};")
-
-      div.appendChild(element)
-    }
-  }
 
   private def prepareCanvas(
     id: String,
