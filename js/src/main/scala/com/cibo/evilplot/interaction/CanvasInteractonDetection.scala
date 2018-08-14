@@ -1,6 +1,8 @@
 package com.cibo.evilplot.interaction
 
-import org.scalajs.dom.raw.CanvasRenderingContext2D
+import com.cibo.evilplot.InteractiveEvilPlot.{pointMouseoverTarget, selectedBar}
+import com.cibo.evilplot.geometry.CanvasRenderContext
+import org.scalajs.dom.raw.{CanvasRenderingContext2D, MouseEvent}
 
 case class MouseEventable(click: Option[() => Unit] = None, mouseover: Option[() => Unit] = None)
 trait CanvasInteractionDetection {
@@ -35,6 +37,22 @@ trait CanvasInteractionDetection {
 
       eventListeners.get(idx)
     } else None
+  }
+
+  def attachListeners(ctx: CanvasRenderContext,
+                      defaultClick: () => Unit = () => (),
+                      defaultMove: () => Unit = () => ()): Unit = {
+    ctx.canvas.canvas.addEventListener[MouseEvent]("click", { x =>
+      val canvasY = x.clientY - ctx.canvas.canvas.getBoundingClientRect().top
+      val canvasX = x.clientX - ctx.canvas.canvas.getBoundingClientRect().left
+      events(canvasX, canvasY).flatMap(_.click).getOrElse(defaultClick).apply()
+    })
+
+    ctx.canvas.canvas.addEventListener[MouseEvent]("mousemove", { x =>
+      val canvasY = x.clientY - ctx.canvas.canvas.getBoundingClientRect().top
+      val canvasX = x.clientX - ctx.canvas.canvas.getBoundingClientRect().left
+      events(canvasX, canvasY).flatMap(_.mouseover).getOrElse(defaultMove).apply()
+    })
   }
 
 }

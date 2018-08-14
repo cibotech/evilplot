@@ -199,19 +199,9 @@ object InteractiveEvilPlot {
     val ctx = CanvasRenderContext(prepareCanvas(canvasId, Extent(screenWidth, screenHeight)))
     val mouseContext = InteractionMaskContext(prepareCanvas("virtual", Extent(screenWidth, screenHeight)))
 
-    ctx.canvas.canvas.addEventListener[MouseEvent]("click", { x =>
-      val canvasY = x.clientY - ctx.canvas.canvas.getBoundingClientRect().top
-      val canvasX = x.clientX - ctx.canvas.canvas.getBoundingClientRect().left
-      mouseContext.events(canvasX, canvasY).foreach(_.click.foreach(_()))
-    })
-
-    ctx.canvas.canvas.addEventListener[MouseEvent]("mousemove", { x =>
-      val canvasY = x.clientY - ctx.canvas.canvas.getBoundingClientRect().top
-      val canvasX = x.clientX - ctx.canvas.canvas.getBoundingClientRect().left
-      mouseContext.events(canvasX, canvasY).flatMap(_.mouseover.map(_())).getOrElse{
-        selectedBar = None
-        pointMouseoverTarget = None
-      }
+    mouseContext.attachListeners(ctx, defaultMove = { () =>
+      selectedBar = None
+      pointMouseoverTarget = None
     })
 
     renderAnim(ctx, mouseContext)

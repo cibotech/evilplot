@@ -6,8 +6,6 @@ import org.scalajs.dom.raw.CanvasRenderingContext2D
 final case class InteractionMaskContext(canvas: CanvasRenderingContext2D)
   extends RenderContext with CanvasInteractionDetection {
 
-
-
   def draw(line: Line): Unit = CanvasOp(canvas) {
     canvas.lineWidth = line.strokeWidth
     canvas.beginPath()
@@ -73,6 +71,8 @@ final case class InteractionMaskContext(canvas: CanvasRenderingContext2D)
     canvas.fill()
   }
 
+  val x : Int = 1
+  x.toString
   def draw(translate: Translate): Unit = CanvasOp(canvas) {
     canvas.translate(translate.x, translate.y)
     translate.r.draw(this)
