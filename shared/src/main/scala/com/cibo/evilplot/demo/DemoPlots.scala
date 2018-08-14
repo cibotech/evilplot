@@ -255,9 +255,36 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
+  def pointToDisc(point: Point): Disc = {
+    ???
+  }
+
+  lazy val simpleScatterPlot: Drawable = {
+    val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
+    val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
+
+
+    SimpleScatterPlot(
+      points,
+      pointRenderer = Some(
+        PointRenderer.depthColor(
+          years,
+          Some(ContinuousColoring
+            .gradient3(HTMLNamedColors.green, HTMLNamedColors.yellow, HTMLNamedColors.red)),
+          None))
+    ).standard()
+      .xLabel("x")
+      .yLabel("y")
+      .trend(1, 0)
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
   lazy val scatterPlot: Drawable = {
     val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
     val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
+
+
     ScatterPlot(
       points,
       pointRenderer = Some(
