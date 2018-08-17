@@ -37,7 +37,12 @@ import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
 trait PointRenderer extends PlotElementRenderer[Int] {
   def legendContext: LegendContext = LegendContext()
-  def render(plot: Plot, extent: Extent, index: Int): Drawable
+
+  /** Render a category within the extent. */
+  def render(plot: Plot, extent: Extent, context: Int): Drawable = render(context)
+
+  def render(index: Int): Drawable
+
 }
 
 object PointRenderer {
@@ -60,7 +65,7 @@ object PointRenderer {
         val size = pointSize.getOrElse(theme.elements.pointSize)
         LegendContext.single(Disc.centered(size).filled(color.getOrElse(theme.colors.point)), d)
     }
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+    def render(index: Int): Drawable = {
       val size = pointSize.getOrElse(theme.elements.pointSize)
       Disc.centered(size).filled(color.getOrElse(theme.colors.point))
     }
@@ -81,7 +86,7 @@ object PointRenderer {
     private val colorFunc = useColoring(depths)
     private val radius = size.getOrElse(theme.elements.pointSize)
 
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+    def render(index: Int): Drawable = {
       Disc.centered(radius).filled(colorFunc(depths(index)))
     }
 
@@ -106,7 +111,7 @@ object PointRenderer {
     private val colorFunc = useColoring(colorDimension)
     private val radius = size.getOrElse(theme.elements.pointSize)
 
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+    def render(index: Int): Drawable = {
       Disc.centered(radius).filled(colorFunc(colorDimension(index)))
     }
 
@@ -117,7 +122,7 @@ object PointRenderer {
     * A no-op renderer for when you don't want to render points (such as on a line)
     */
   def empty(): PointRenderer = new PointRenderer {
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = EmptyDrawable()
+    def render(index: Int): Drawable = EmptyDrawable()
   }
 
   /** Render points with colors based on depth.
@@ -212,7 +217,7 @@ object PointRenderer {
         )
       }
 
-      def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+      def render(index: Int): Drawable = {
         Disc.centered(pointSize) filled bar.getColor(depths(index))
       }
     }

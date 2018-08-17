@@ -37,9 +37,18 @@ import io.circe.generic.semiauto._
 package object numeric {
   type Grid = Vector[Vector[Double]]
 
-  final case class Point(x: Double, y: Double) {
-    def -(that: Point): Point = Point(x - that.x, y - that.y)
+  trait Point2d[A <: Point2d[A]] { self =>
+    val x: Double
+    val y: Double
+    def setXY(x: Double = this.x, y: Double = this.y): A
   }
+
+  final case class Point(x: Double, y: Double) extends Point2d[Point] {
+    def -(that: Point): Point = Point(x - that.x, y - that.y)
+
+    def setXY(x: Double = this.x, y: Double = this.y): Point = this.copy(x = x, y = y)
+  }
+
   object Point {
     implicit val encoder: Encoder[Point] = io.circe.generic.semiauto.deriveEncoder[Point]
     implicit val decoder: Decoder[Point] = io.circe.generic.semiauto.deriveDecoder[Point]

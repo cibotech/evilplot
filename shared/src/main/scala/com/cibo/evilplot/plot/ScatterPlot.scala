@@ -30,57 +30,39 @@
 
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text}
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.colors.{Color, RGB}
+import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text, Wedge}
+import com.cibo.evilplot.numeric.{Point, Point2d}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
-object SimpleScatterPlot {
+object PizzaPlot {
 
-  def transformToDrawSpace(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-    val xtransformer = plot.xtransform(plot, plotExtent)
-    val ytransformer = plot.ytransform(plot, plotExtent)
-    val xformedPoints = data.map { point =>
-      val x = xtransformer(point.x)
-      val y = ytransformer(point.y)
-      Point(x, y)
-    }
-    val points = xformedPoints.zipWithIndex
-      .withFilter(p => plotExtent.contains(p._1))
-      .flatMap {
-        case (point, index) =>
-          val r = pointRenderer.render(plot, plotExtent, index)
-          if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
-      }
-      .group
+  case class PizzaPoint(x: Double, y: Double, amountLeft: Double) extends Point2d[PizzaPoint] {
 
-    points
+    def setXY(x: Double, y: Double): PizzaPoint = this.copy(x = x, y = y)
   }
 
-  def default(
-               color: Option[Color] = None,
-               pointSize: Option[Double] = None,
-               label: Drawable = EmptyDrawable()
-             )(implicit theme: Theme): PointRenderer = new PointRenderer {
-    override def legendContext: LegendContext = label match {
-      case _: EmptyDrawable => LegendContext.empty
-      case d =>
-        val size = pointSize.getOrElse(theme.elements.pointSize)
-        LegendContext.single(Disc.centered(size).filled(color.getOrElse(theme.colors.point)), d)
-    }
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
-      val size = pointSize.getOrElse(theme.elements.pointSize)
-      Disc.centered(size).filled(color.getOrElse(theme.colors.point))
-    }
+  def pizza(amountLeft: Double) = {
+
+    val part = 360 * amountLeft
+    val crust = Style(Wedge(part, 10), fill = RGB(214,153, 65)) center(10) middle(10)
+    val sauce = Style(Wedge(part, 8), fill = RGB(255, 0, 0)) center(10) middle(10)
+    val cheese = Style(Wedge(part, 7), fill = RGB(252, 240,204)) center(10) middle(10)
+
+    crust behind sauce behind cheese
   }
 
   def apply(
-             data: Seq[Point],
+             data: Seq[PizzaPoint],
              pointRenderer: Option[PointRenderer] = None,
              boundBuffer: Option[Double] = None
            )(implicit theme: Theme): Plot = {
-    PointPlot(data, pointRenderer, boundBuffer, boundBuffer)
+    PointPlot(data, None,
+      { x: PizzaPoint =>
+        pizza(x.amountLeft)
+      }
+      ,  boundBuffer, boundBuffer)
   }
 }
 

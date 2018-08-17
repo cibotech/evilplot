@@ -30,32 +30,56 @@
 
 package com.cibo.evilplot.plot
 
+import com.cibo.evilplot.colors.{Color, RGB}
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.numeric.{Bounds, Point, Point2d}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 
+object TransformWorldToScreen {
+  type Transformer = Double => Double
+
+  def createTransformers(plot: Plot, plotExtent: Extent): (Double => Double, Double => Double) = {
+    val xtransformer = plot.xtransform(plot, plotExtent)
+    val ytransformer = plot.ytransform(plot, plotExtent)
+
+    (xtransformer, ytransformer)
+  }
+
+  def transformPointToWorld[X <: Point2d[X]](point: X, xtransformer: Transformer, ytransformer: Transformer): X = {
+    val x = xtransformer(point.x)
+    val y = ytransformer(point.y)
+    point.setXY(x = x,y = y)
+  }
+
+  def transformPointsToPlotSpace[X <: Point2d[X]](data: Seq[X], xtransformer: Transformer, ytransformer: Transformer): Seq[X]
+  = {
+    data.map( p => transformPointToWorld(p, xtransformer, ytransformer))
+  }
+}
 object PointPlot{
 
-  final case class XyPlotRenderer(
-                                   data: Seq[Point],
-                                   pointRenderer: PointRenderer,
+  import TransformWorldToScreen._
+  final case class XyPlotRenderer[X <: Point2d[X]](
+                                   data: Seq[X],
+                                   pointToDiscFn: X => Drawable,
+                                   pointRenderer: PointRenderer
                                  ) extends PlotRenderer {
     override def legendContext: LegendContext = pointRenderer.legendContext
 
+
+
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-      val xtransformer = plot.xtransform(plot, plotExtent)
-      val ytransformer = plot.ytransform(plot, plotExtent)
-      val xformedPoints = data.map { point =>
-        val x = xtransformer(point.x)
-        val y = ytransformer(point.y)
-        Point(x, y)
-      }
+
+      val (xtransformer, ytransformer) = createTransformers(plot, plotExtent)
+
+      val xformedPoints = transformPointsToPlotSpace(data, xtransformer, ytransformer)
+
       val points = xformedPoints.zipWithIndex
         .withFilter(p => plotExtent.contains(p._1))
         .flatMap {
           case (point, index) =>
-            val r = pointRenderer.render(plot, plotExtent, index)
+            val r = pointToDiscFn(point)
             if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
         }
         .group
@@ -73,9 +97,10 @@ object PointPlot{
     * @param yboundBuffer   Extra padding to add to bounds as a fraction.
     * @return A Plot representing an XY plot.
     */
-  def apply(
-             data: Seq[Point],
+  def apply[X <: Point2d[X]](
+             data: Seq[X],
              pointRenderer: Option[PointRenderer] = None,
+             dataToDrawable: X => Drawable,
              xboundBuffer: Option[Double] = None,
              yboundBuffer: Option[Double] = None
            )(implicit theme: Theme): Plot = {
@@ -102,6 +127,7 @@ object PointPlot{
       ybounds,
       XyPlotRenderer(
         data,
+        dataToDrawable,
         pointRenderer.getOrElse(PointRenderer.default())
       )
     )

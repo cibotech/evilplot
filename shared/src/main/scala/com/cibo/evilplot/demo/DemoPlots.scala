@@ -34,8 +34,9 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot
+import com.cibo.evilplot.plot.PizzaPlot.PizzaPoint
 import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultTheme, DefaultFonts}
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.{Legend, Marker, Position}
 import com.cibo.evilplot.plot.renderers._
@@ -258,20 +259,15 @@ object DemoPlots {
   def pointToDisc(point: Point): Disc = {
     ???
   }
+  def randomInt = (Math.random() * 256).toInt
 
   lazy val simpleScatterPlot: Drawable = {
     val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
-    val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
+    val amountLeft = Seq.fill(150)(Math.random())
 
 
-    SimpleScatterPlot(
-      points,
-      pointRenderer = Some(
-        PointRenderer.depthColor(
-          years,
-          Some(ContinuousColoring
-            .gradient3(HTMLNamedColors.green, HTMLNamedColors.yellow, HTMLNamedColors.red)),
-          None))
+    PizzaPlot(
+      points.zip(amountLeft).map(thing => PizzaPoint(thing._1.x, thing._1.y, thing._2))
     ).standard()
       .xLabel("x")
       .yLabel("y")

@@ -31,7 +31,7 @@
 package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.JSONUtils
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.numeric.{Point, Point2d}
 import io.circe.generic.extras.Configuration
 import io.circe.{Decoder, Encoder}
 
@@ -49,7 +49,7 @@ case class Extent(width: Double, height: Double) {
   def *(scale: Double): Extent = Extent(scale * width, scale * height)
   def -(w: Double = 0.0, h: Double = 0.0): Extent = Extent(width - w, height - h)
 
-  private[evilplot] def contains(p: Point): Boolean = {
+  private[evilplot] def contains(p: Point2d[_]): Boolean = {
     p.x >= 0 && p.x <= width && p.y >= 0 && p.y <= height
   }
 }
