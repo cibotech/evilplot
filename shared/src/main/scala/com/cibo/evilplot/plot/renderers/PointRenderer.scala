@@ -41,6 +41,8 @@ trait PointRenderer extends PlotElementRenderer[Int] {
   /** Render a category within the extent. */
   def render(plot: Plot, extent: Extent, context: Int): Drawable = render(context)
 
+  def render(extent: Extent, context: Int): Drawable = render(context)
+
   def render(index: Int): Drawable
 
 }

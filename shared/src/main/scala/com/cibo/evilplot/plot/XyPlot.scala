@@ -77,7 +77,7 @@ object CartesianPlot {
           contextToDrawable: (CartesianDataRenderer[X] => PlotContext => Drawable)*,
   )(implicit theme: Theme): Plot = {
 
-    val (xbounds, ybounds) = PlotUtils.bounds(data, xboundBuffer, yboundBuffer, theme.elements.boundBuffer)
+    val (xbounds, ybounds) = PlotUtils.bounds(data, theme.elements.boundBuffer, xboundBuffer, yboundBuffer)
 
     val cartesianDataRenderer = CartesianDataRenderer(data)
 

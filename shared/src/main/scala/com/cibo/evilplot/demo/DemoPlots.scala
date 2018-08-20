@@ -260,19 +260,30 @@ object DemoPlots {
     def setXY(x: Double, y: Double): PizzaPoint = this.copy(x = x, y = y)
   }
 
+  def cluster(values: Seq[Double], binCount: Int, xbounds: Bounds, normalize: Boolean): Seq[Seq[Double]] = {
+    val binWidth = xbounds.range / binCount
+    val grouped = values.groupBy { value =>
+      math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
+    }
+    (0 until binCount).flatMap { i =>
+      grouped.get(i).map { vs =>
+        vs
+      }
+    }
+  }
+
   lazy val simpleScatterPlot: Drawable = {
     val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0) :+ Point(1.0, 0.0) :+ Point(0.0, 1.0) :+ Point(1.0, 1.0)
-    val amountLeft = Seq.fill(150)(Math.random())
-
-    def dataToDrawable = { x: PizzaPoint =>
-      Disc.centered(2)
-    }
 
     val pizzaData = points.sortBy(_.x).map(thing => PizzaPoint(thing.x, thing.y, Math.random()))
 
+    val xbounds = PlotUtils.bounds(pizzaData, theme.elements.boundBuffer)._1
+
     CartesianPlot(pizzaData)(
-      _.scatter( x => Style(Disc.centered(5), fill = RGB.random)),
-      _.filter(_.amountLeft > 0.5).line(color = Some(RGB(255, 0, 0)))
+      _.scatter( _ => Style(Disc.centered(2), fill = RGB.random)),
+      _.filter(_.amountLeft > 0.5).line(color = Some(RGB(255, 0, 0))),
+      _.filter(_.amountLeft <= 0.5).line(color = Some(RGB(0, 0, 255))),
+      _.boxAndWhisker(x => cluster(x.map(_.x), 6, xbounds, false))
     ).standard()
       .xLabel("x")
       .yLabel("y")

@@ -32,6 +32,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
+import com.cibo.evilplot.plot.PlotUtils.PlotContext
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
@@ -61,11 +62,13 @@ final case class BoxPlotRenderer(
     clusterStartX + boxXInCluster
   }
 
-  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-    val xtransformer = plot.xtransform(plot, plotExtent)
-    val ytransformer = plot.ytransform(plot, plotExtent)
+  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = render(PlotContext.fromPlotExtent(plot, plotExtent))
 
-    val fullPlotWidth = xtransformer(plot.xbounds.min + numGroups)
+  def render(pCtx: PlotContext)(implicit theme: Theme): Drawable = {
+    val xtransformer = pCtx.xCartesianTransform
+    val ytransformer = pCtx.yCartesianTransform
+
+    val fullPlotWidth = xtransformer(pCtx.xBounds.min + numGroups)
     val clusterWidth = fullPlotWidth / numGroups - clusterPadding
     val boxWidth = (clusterWidth - (boxesPerGroup - 1) * spacing) / boxesPerGroup
 
@@ -83,7 +86,6 @@ final case class BoxPlotRenderer(
             val box = {
               if (boxHeight != 0)
                 boxRenderer.render(
-                  plot,
                   Extent(boxWidth, boxHeight),
                   BoxRendererContext(summaryStatistics, index))
               else {
@@ -93,7 +95,7 @@ final case class BoxPlotRenderer(
 
             val points = summaryStatistics.outliers.map { pt =>
               pointRenderer
-                .render(plot, plotExtent, index)
+                .render(pCtx.plotExtent, index)
                 .translate(x = x + boxWidth / 2, y = ytransformer(pt))
             }
             d behind (box.translate(x = x, y = y) behind points.group)

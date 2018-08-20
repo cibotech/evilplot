@@ -2,9 +2,11 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Clipping, Drawable, EmptyDrawable, Extent, LineDash, LineStyle, Path, StrokeStyle}
-import com.cibo.evilplot.numeric.{Bounds, Datum2d, Point, Point2d}
+import com.cibo.evilplot.numeric._
+import com.cibo.evilplot.plot.BoxPlot.makePlot
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.renderers.PathRenderer
+import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
+import com.cibo.evilplot.plot.renderers.{BoxRenderer, PathRenderer, PointRenderer}
 import com.cibo.evilplot.plot.renderers.PathRenderer.calcLegendStrokeLength
 
 trait TransformWorldToScreen {
@@ -47,11 +49,10 @@ object TransformWorldToScreen extends TransformWorldToScreen
 
 object PlotUtils extends TransformWorldToScreen {
 
-  def bounds[X <: Datum2d[X]](
-                               data: Seq[X],
-                               xboundBuffer: Option[Double] = None,
-                               yboundBuffer: Option[Double] = None,
-                               defaultBoundBuffer: Double): (Bounds, Bounds) = {
+  def bounds[X <: Datum2d[X]](data: Seq[X],
+                              defaultBoundBuffer: Double,
+                              xboundBuffer: Option[Double] = None,
+                              yboundBuffer: Option[Double] = None): (Bounds, Bounds) = {
     require(xboundBuffer.getOrElse(0.0) >= 0.0)
     require(yboundBuffer.getOrElse(0.0) >= 0.0)
     val xs = data.map(_.x)
@@ -76,7 +77,14 @@ object PlotUtils extends TransformWorldToScreen {
 
   case class PlotContext(xBounds: Bounds,
                           yBounds: Bounds,
-                          plotExtent: Extent)
+                          plotExtent: Extent){
+    def xCartesianTransform: Double => Double = TransformWorldToScreen.xCartesianTransformer(xBounds, plotExtent)
+    def yCartesianTransform: Double => Double = TransformWorldToScreen.yCartesianTransformer(yBounds, plotExtent)
+  }
+
+  object PlotContext {
+    def fromPlotExtent(plot: Plot, extent: Extent): PlotContext = apply(plot.xbounds, plot.ybounds, extent)
+  }
 
   case class CartesianDataRenderer[X <: Datum2d[X]](data: Seq[X]){
 
@@ -98,7 +106,6 @@ object PlotUtils extends TransformWorldToScreen {
         .group
 
       points
-
     }
 
     def manipulate(x: Seq[X] => Seq[X]): Seq[X] = x(data)
@@ -124,6 +131,86 @@ object PlotUtils extends TransformWorldToScreen {
         )
         .group
     }
+
+
+
+    def boxAndWhisker(
+      dataGroupFn: Seq[X] => Seq[Seq[Double]],
+      quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
+      spacing: Option[Double] = None,
+      boundBuffer: Option[Double] = None,
+      boxRenderer: Option[BoxRenderer] = None,
+      pointRenderer: Option[PointRenderer] = None
+      )(pCtx: PlotContext)(implicit theme: Theme): Drawable = {
+        val groupedData = dataGroupFn(data)
+        val boxContexts = dataGroupFn(data).zipWithIndex.map {
+          case (dist, index) =>
+            if (dist.nonEmpty) {
+              val summary = BoxPlotSummaryStatistics(dist, quantiles)
+              Some(BoxRendererContext(summary, index))
+            } else None
+        }
+        makePlot(
+          dataGroupFn(data),
+          boxContexts,
+          spacing,
+          None,
+          boundBuffer,
+          boxRenderer,
+          pointRenderer
+        ).render(pCtx.plotExtent)
+      }
+
+    private def makePlot(
+                          data: Seq[Seq[Double]],
+                          boxContexts: Seq[Option[BoxRendererContext]],
+                          spacing: Option[Double] = None,
+                          clusterSpacing: Option[Double] = None,
+                          boundBuffer: Option[Double] = None,
+                          boxRenderer: Option[BoxRenderer] = None,
+                          pointRenderer: Option[PointRenderer] = None
+                        )(implicit theme: Theme): Plot = {
+      val xbounds = Bounds(0, boxContexts.size)
+      val ybounds = Plot.expandBounds(
+        Bounds(
+          data.flatten.reduceOption[Double](math.min).getOrElse(0),
+          data.flatten.reduceOption[Double](math.max).getOrElse(0)
+        ),
+        boundBuffer.getOrElse(theme.elements.boundBuffer)
+      )
+      Plot(
+        xbounds,
+        ybounds,
+        BoxPlotRenderer(
+          boxContexts,
+          boxRenderer.getOrElse(BoxRenderer.default()),
+          pointRenderer.getOrElse(PointRenderer.default()),
+          spacing.getOrElse(theme.elements.boxSpacing),
+          clusterSpacing
+        )
+      )
+    }
+//    def boxAndWhisker(spacing: Double,
+//                      clusterSpacing: Option[Double],
+//                      groupFn: Seq[X] => Seq[Seq[Double]],
+//                      fillColor: Option[Color] = None,
+//                      strokeColor: Option[Color] = None,
+//                      lineDash: Option[LineDash] = None,
+//                      strokeWidth: Option[Double] = None,
+//                      quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75)
+//                     )(pCtx: PlotContext)(implicit theme: Theme) = {
+//
+//      val boxContexts = groupFn(data).zipWithIndex.map {
+//        case (dist, index) =>
+//          if (dist.nonEmpty) {
+//            val summary = BoxPlotSummaryStatistics(dist, quantiles)
+//            Some(BoxRendererContext(summary, index))
+//          } else None
+//      }
+//      BoxRenderer.default(fillColor = fillColor, strokeColor = strokeColor, lineDash = lineDash, strokeWidth = strokeWidth).render(pCtx.plotExtent, boxContexts)
+//
+//    }
+
   }
 
 
