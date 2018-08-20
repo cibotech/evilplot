@@ -34,7 +34,6 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot
-import com.cibo.evilplot.plot.PizzaPlot.PizzaPoint
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -256,13 +255,24 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
+  case class PizzaPoint(x: Double, y: Double, amountLeft: Double) extends Datum2d[PizzaPoint] {
+
+    def setXY(x: Double, y: Double): PizzaPoint = this.copy(x = x, y = y)
+  }
+
   lazy val simpleScatterPlot: Drawable = {
     val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0) :+ Point(1.0, 0.0) :+ Point(0.0, 1.0) :+ Point(1.0, 1.0)
     val amountLeft = Seq.fill(150)(Math.random())
 
+    def dataToDrawable = { x: PizzaPoint =>
+      Disc.centered(2)
+    }
 
-    PizzaPlot(
-      points.sortBy(_.x).map(thing => PizzaPoint(thing.x, thing.y, Math.random()))
+    val pizzaData = points.sortBy(_.x).map(thing => PizzaPoint(thing.x, thing.y, Math.random()))
+
+    CartesianPlot(pizzaData)(
+      _.scatter( x => Style(Disc.centered(5), fill = RGB.random)),
+      _.filter(_.amountLeft > 0.5).line(color = Some(RGB(255, 0, 0)))
     ).standard()
       .xLabel("x")
       .yLabel("y")

@@ -36,31 +36,6 @@ import com.cibo.evilplot.numeric.{Datum2d, Point, Point2d}
 import com.cibo.evilplot.plot.PlotUtils.CartesianDataRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
-
-object PizzaPlot {
-
-  case class PizzaPoint(x: Double, y: Double, amountLeft: Double) extends Datum2d[PizzaPoint] {
-
-    def setXY(x: Double, y: Double): PizzaPoint = this.copy(x = x, y = y)
-  }
-
-  def dataToDrawable = { x: PizzaPoint =>
-    Disc.centered(2)
-  }
-
-  def apply(
-             data: Seq[PizzaPoint],
-             pointRenderer: Option[PointRenderer] = None,
-             boundBuffer: Option[Double] = None
-           )(implicit theme: Theme): Plot = {
-
-    CartesianPlot[PizzaPoint](data, boundBuffer, boundBuffer)(
-      _.scatter(dataToDrawable),
-      _.filter(_.amountLeft > 0.5).line(color = Some(RGB(255, 0, 0)))
-    )
-  }
-}
-
 object ScatterPlot {
 
   /** Create a scatter plot from some data.
