@@ -32,25 +32,20 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, RGB}
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text, Wedge}
-import com.cibo.evilplot.numeric.{Point, Point2d}
+import com.cibo.evilplot.numeric.{Datum2d, Point, Point2d}
+import com.cibo.evilplot.plot.PlotUtils.CartesianDataRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
+import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 
 object PizzaPlot {
 
-  case class PizzaPoint(x: Double, y: Double, amountLeft: Double) extends Point2d[PizzaPoint] {
+  case class PizzaPoint(x: Double, y: Double, amountLeft: Double) extends Datum2d[PizzaPoint] {
 
     def setXY(x: Double, y: Double): PizzaPoint = this.copy(x = x, y = y)
   }
 
-  def pizza(amountLeft: Double) = {
-
-    val part = 360 * amountLeft
-    val crust = Style(Wedge(part, 10), fill = RGB(214,153, 65)) center(10) middle(10)
-    val sauce = Style(Wedge(part, 8), fill = RGB(255, 0, 0)) center(10) middle(10)
-    val cheese = Style(Wedge(part, 7), fill = RGB(252, 240,204)) center(10) middle(10)
-
-    crust behind sauce behind cheese
+  def dataToDrawable = { x: PizzaPoint =>
+    Disc.centered(2)
   }
 
   def apply(
@@ -58,14 +53,13 @@ object PizzaPlot {
              pointRenderer: Option[PointRenderer] = None,
              boundBuffer: Option[Double] = None
            )(implicit theme: Theme): Plot = {
-    PointPlot(data, None,
-      { x: PizzaPoint =>
-        pizza(x.amountLeft)
-      }
-      ,  boundBuffer, boundBuffer)
+
+    CartesianPlot[PizzaPoint](data, boundBuffer, boundBuffer)(
+      _.scatter(dataToDrawable),
+      _.filter(_.amountLeft > 0.5).line(color = Some(RGB(255, 0, 0)))
+    )
   }
 }
-
 
 object ScatterPlot {
 

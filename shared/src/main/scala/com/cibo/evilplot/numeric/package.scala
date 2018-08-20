@@ -37,13 +37,20 @@ import io.circe.generic.semiauto._
 package object numeric {
   type Grid = Vector[Vector[Double]]
 
-  trait Point2d[A <: Point2d[A]] { self =>
+  trait Point2d {
+    val x: Double
+    val y: Double
+    def setXY(x: Double = this.x, y: Double = this.y): Point2d
+
+  }
+
+  trait Datum2d[A <: Datum2d[A]] extends Point2d { self =>
     val x: Double
     val y: Double
     def setXY(x: Double = this.x, y: Double = this.y): A
   }
 
-  final case class Point(x: Double, y: Double) extends Point2d[Point] {
+  final case class Point(x: Double, y: Double) extends Point2d {
     def -(that: Point): Point = Point(x - that.x, y - that.y)
 
     def setXY(x: Double = this.x, y: Double = this.y): Point = this.copy(x = x, y = y)

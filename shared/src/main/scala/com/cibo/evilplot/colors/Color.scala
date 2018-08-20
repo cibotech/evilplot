@@ -80,6 +80,13 @@ object RGBA {
 }
 
 object RGB {
+
+  def random: Color = RGB(
+    (Math.random() * 256).toInt,
+    (Math.random() * 256).toInt,
+    (Math.random() * 256).toInt
+  )
+
   def apply(r: Int, g: Int, b: Int): HSLA = ColorUtils.rgbaToHsla(r, g, b, 1.0)
 }
 

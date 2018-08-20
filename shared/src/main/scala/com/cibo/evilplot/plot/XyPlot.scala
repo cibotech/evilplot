@@ -32,59 +32,31 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, RGB}
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{Bounds, Point, Point2d}
+import com.cibo.evilplot.numeric.{Bounds, Datum2d, Point, Point2d}
+import com.cibo.evilplot.plot.Plot.Transformer
+import com.cibo.evilplot.plot.PlotUtils.{CartesianDataRenderer, PlotContext}
+import com.cibo.evilplot.plot.TransformWorldToScreen.{createTransformers, transformPointsToPlotSpace}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 
-object TransformWorldToScreen {
-  type Transformer = Double => Double
-
-  def createTransformers(plot: Plot, plotExtent: Extent): (Double => Double, Double => Double) = {
-    val xtransformer = plot.xtransform(plot, plotExtent)
-    val ytransformer = plot.ytransform(plot, plotExtent)
-
-    (xtransformer, ytransformer)
-  }
-
-  def transformPointToWorld[X <: Point2d[X]](point: X, xtransformer: Transformer, ytransformer: Transformer): X = {
-    val x = xtransformer(point.x)
-    val y = ytransformer(point.y)
-    point.setXY(x = x,y = y)
-  }
-
-  def transformPointsToPlotSpace[X <: Point2d[X]](data: Seq[X], xtransformer: Transformer, ytransformer: Transformer): Seq[X]
-  = {
-    data.map( p => transformPointToWorld(p, xtransformer, ytransformer))
-  }
-}
-object PointPlot{
+object CartesianPlot {
 
   import TransformWorldToScreen._
-  final case class XyPlotRenderer[X <: Point2d[X]](
-                                   data: Seq[X],
-                                   pointToDiscFn: X => Drawable,
-                                   pointRenderer: PointRenderer
-                                 ) extends PlotRenderer {
-    override def legendContext: LegendContext = pointRenderer.legendContext
-
+  final case class XyPlotRenderer[X <: Datum2d[X]](dataToDrawables: Seq[PlotContext => Drawable],
+                                                    xBounds: Bounds,
+                                                    yBounds: Bounds) extends PlotRenderer {
+    override def legendContext: LegendContext = LegendContext()
 
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
+      render(PlotContext(xBounds, yBounds, plotExtent))
+    }
 
-      val (xtransformer, ytransformer) = createTransformers(plot, plotExtent)
+    def render(plotContext: PlotContext)(implicit theme: Theme): Drawable = {
 
-      val xformedPoints = transformPointsToPlotSpace(data, xtransformer, ytransformer)
-
-      val points = xformedPoints.zipWithIndex
-        .withFilter(p => plotExtent.contains(p._1))
-        .flatMap {
-          case (point, index) =>
-            val r = pointToDiscFn(point)
-            if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
-        }
-        .group
-
-      points
+      dataToDrawables.foldLeft(EmptyDrawable() : Drawable){ case (accum, dr) =>
+        dr(plotContext) behind accum
+      }
     }
   }
 
@@ -97,43 +69,29 @@ object PointPlot{
     * @param yboundBuffer   Extra padding to add to bounds as a fraction.
     * @return A Plot representing an XY plot.
     */
-  def apply[X <: Point2d[X]](
-             data: Seq[X],
-             pointRenderer: Option[PointRenderer] = None,
-             dataToDrawable: X => Drawable,
-             xboundBuffer: Option[Double] = None,
-             yboundBuffer: Option[Double] = None
-           )(implicit theme: Theme): Plot = {
-    require(xboundBuffer.getOrElse(0.0) >= 0.0)
-    require(yboundBuffer.getOrElse(0.0) >= 0.0)
-    val xs = data.map(_.x)
-    val xbuffer = xboundBuffer.getOrElse(theme.elements.boundBuffer)
-    val ybuffer = yboundBuffer.getOrElse(theme.elements.boundBuffer)
-    val xbounds = Plot.expandBounds(
-      Bounds(
-        xs.reduceOption[Double](math.min).getOrElse(0.0),
-        xs.reduceOption[Double](math.max).getOrElse(0.0)),
-      if (data.length == 1 && xbuffer == 0) 0.1 else xbuffer
-    )
-    val ys = data.map(_.y)
-    val ybounds = Plot.expandBounds(
-      Bounds(
-        ys.reduceOption[Double](math.min).getOrElse(0.0),
-        ys.reduceOption[Double](math.max).getOrElse(0.0)),
-      if (data.length == 1 && ybuffer == 0) 0.1 else xbuffer
-    )
+  def apply[X <: Datum2d[X]](
+                              data: Seq[X],
+                              xboundBuffer: Option[Double] = None,
+                              yboundBuffer: Option[Double] = None
+                            )(
+          contextToDrawable: (CartesianDataRenderer[X] => PlotContext => Drawable)*,
+  )(implicit theme: Theme): Plot = {
+
+    val (xbounds, ybounds) = PlotUtils.bounds(data, xboundBuffer, yboundBuffer, theme.elements.boundBuffer)
+
+    val cartesianDataRenderer = CartesianDataRenderer(data)
+
     Plot(
       xbounds,
       ybounds,
       XyPlotRenderer(
-        data,
-        dataToDrawable,
-        pointRenderer.getOrElse(PointRenderer.default())
+        contextToDrawable.map(x => x(cartesianDataRenderer)),
+        xbounds,
+        ybounds
       )
     )
   }
 }
-
 
 object XyPlot {
 

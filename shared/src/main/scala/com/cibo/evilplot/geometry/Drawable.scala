@@ -32,7 +32,7 @@ package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.JSONUtils.minifyProperties
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.numeric.{Point, Point2d}
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
 import io.circe.{Decoder, Encoder}
@@ -92,7 +92,7 @@ final case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable 
 }
 object Path {
 
-  def apply(points: Seq[Point], strokeWidth: Double) : Drawable = {
+  def apply(points: Seq[Point2d], strokeWidth: Double) : Drawable = {
     val minX = points.map(_.x).min
     val minY = points.map(_.y).min
     Translate(new Path(points.map{x=> Point(x.x - minX, x.y - minY)},strokeWidth), minX, minY)
@@ -123,7 +123,7 @@ object Polygon {
     Polygon(Clipping.clipPolygon(boundary, extent))
   }
 
-  def apply(boundary: Seq[Point]) :Drawable = {
+  def apply(boundary: Seq[Point2d]) :Drawable = {
       val minX = boundary.map(_.x).min
       val minY = boundary.map(_.y).min
       Translate(new Polygon(boundary.map{x=> Point(x.x - minX, x.y - minY)}), minX, minY)

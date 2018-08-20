@@ -256,18 +256,13 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
-  def pointToDisc(point: Point): Disc = {
-    ???
-  }
-  def randomInt = (Math.random() * 256).toInt
-
   lazy val simpleScatterPlot: Drawable = {
-    val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
+    val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0) :+ Point(1.0, 0.0) :+ Point(0.0, 1.0) :+ Point(1.0, 1.0)
     val amountLeft = Seq.fill(150)(Math.random())
 
 
     PizzaPlot(
-      points.zip(amountLeft).map(thing => PizzaPoint(thing._1.x, thing._1.y, thing._2))
+      points.sortBy(_.x).map(thing => PizzaPoint(thing.x, thing.y, Math.random()))
     ).standard()
       .xLabel("x")
       .yLabel("y")
