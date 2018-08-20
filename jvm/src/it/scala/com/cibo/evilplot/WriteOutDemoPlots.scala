@@ -3,6 +3,7 @@ package com.cibo.evilplot
 import java.io.File
 import java.nio.file.{Files, Paths}
 
+import com.cibo.evilplot.geometry.fit
 import com.cibo.evilplot.demo.DemoPlots
 import javax.imageio.ImageIO
 import org.scalatest.{FunSpec, Matchers}
@@ -33,7 +34,7 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
   describe("Demo Plots") {
     it("is generated") {
       for { (plot, name) <- plots } {
-        val bi = plot.asBufferedImage
+        val bi = fit(plot.padAll(10), plot.extent * 4).asBufferedImage(plot.extent * 4)
         ImageIO.write(bi, "png", new File(s"${tmpPath.toAbsolutePath.toString}/$name.png"))
       }
     }
