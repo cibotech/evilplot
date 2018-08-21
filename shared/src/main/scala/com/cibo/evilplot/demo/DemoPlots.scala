@@ -277,19 +277,11 @@ object DemoPlots {
 
     val pizzaData = points.sortBy(_.x).map(thing => PizzaPoint(thing.x, thing.y, Math.random()))
 
-    Overlay(
-      Histogram(pizzaData.map(_.x), barRenderer = Some(
-        BarRenderer.custom({ (ctx, bar) =>
-          Text(bar.values.head.toString).center(ctx.extent.width).padTop(10).inFrontOf(
-            Rect(ctx.extent.width, ctx.extent.height).filled(color = RGB(255, 0, 0))
-          )
-        })
-      )),
       CartesianPlot(pizzaData)(
         _.scatter({ _: PizzaPoint => Style(Disc.centered(2), fill = RGB.random) }),
+        _.filter(_.amountLeft > 0.5).scatter({ x: PizzaPoint => Style(Disc.centered(6), fill = RGB(0, 0, 255))}),
         _.line(color = Some(RGB(255, 0, 0)))
-      )
-    ).standard()
+      ).standard()
       .xLabel("x")
       .yLabel("y")
       .trend(1, 0)

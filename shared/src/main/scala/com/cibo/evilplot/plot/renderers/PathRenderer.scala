@@ -34,7 +34,7 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Clipping, Drawable, EmptyDrawable, Extent, LineDash, LineStyle, Path, StrokeStyle, Style, Text}
 import com.cibo.evilplot.numeric.{Datum2d, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.{LegendContext, Plot}
+import com.cibo.evilplot.plot.{LegendContext, Plot, RenderContext}
 
 trait PathRenderer[X <: Datum2d[X]] extends PlotElementRenderer[Seq[X]] {
   def legendContext: LegendContext = LegendContext.empty
@@ -43,6 +43,16 @@ trait PathRenderer[X <: Datum2d[X]] extends PlotElementRenderer[Seq[X]] {
 
 object PathRenderer {
   private[renderers] val baseLegendStrokeLength: Double = 8.0
+
+  def custom[X <: Datum2d[X]]( pathFn: (RenderContext, Seq[X]) => Drawable,
+                               legendCtx: Option[LegendContext] = None
+                             ): PathRenderer[X] = new PathRenderer[X] {
+    def render(plot: Plot, extent: Extent, path: Seq[X]): Drawable = {
+      pathFn(RenderContext.from(plot, extent), path)
+    }
+
+    override def legendContext: LegendContext = legendCtx.getOrElse(super.legendContext)
+  }
 
   /** The default path renderer.
     * @param strokeWidth The width of the path.

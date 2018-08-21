@@ -34,7 +34,7 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text}
 import com.cibo.evilplot.numeric.{Datum2d, Point2d}
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
+import com.cibo.evilplot.plot.{Bar, LegendContext, LegendStyle, Plot, RenderContext}
 
 trait PointRenderer[X <: Point2d] extends PlotElementRenderer[X]{
   def legendContext: LegendContext = LegendContext()
@@ -44,13 +44,22 @@ trait PointRenderer[X <: Point2d] extends PlotElementRenderer[X]{
 
   def render(extent: Extent, context: X): Drawable = render(context)
 
-  def render(index: X): Drawable
+  def render(datum: X): Drawable
 
 }
-
 object PointRenderer {
 
   val defaultColorCount: Int = 10
+
+  def custom[X <: Point2d](renderFn: X => Drawable,
+                           legendCtx: Option[LegendContext] = None): PointRenderer[X] = new PointRenderer[X] {
+
+    def render(datum: X): Drawable = {
+      renderFn(datum)
+    }
+
+    override def legendContext: LegendContext = legendCtx.getOrElse(super.legendContext)
+  }
 
   /** The default point renderer to render a disc.
     * @param color The color of the point.
