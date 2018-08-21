@@ -107,35 +107,10 @@ object PointRenderer {
     * @param size The size of the points.
     * @tparam A the type of the categorical variable.
     */
-  def colorByCategory[A: Ordering, X <: Datum2d[X]](
-    colorDimension: Map[X, A],
-    coloring: Option[Coloring[A]] = None,
-    size: Option[Double] = None
-  )(implicit theme: Theme): PointRenderer[X] = new PointRenderer[X] {
-    private val useColoring = coloring.getOrElse(CategoricalColoring.themed[A])
-    private val colorFunc = useColoring(colorDimension.values.toSeq)
-    private val radius = size.getOrElse(theme.elements.pointSize)
-
-    def render(index: X): Drawable = {
-      Disc.centered(radius).filled(colorFunc(colorDimension(index)))
-    }
-
-    override def legendContext: LegendContext = useColoring.legendContext(colorDimension.values.toSeq)
-  }
-
-  /**
-    * Render points with colors based on a third, categorical variable.
-    * @param colorDimension Categories for each point.
-    * @param coloring The coloring to use. If not provided, one based on the
-    *                 color stream from the theme is used.
-    * @param size The size of the points.
-    * @tparam A the type of the categorical variable.
-    */
-  def colorByCategories[X <: Datum2d[X], A: Ordering](
-                                                     data: Seq[X],
-                                                     categoryExtract:  X => A,
-                                                     coloring: Option[Coloring[A]] = None,
-                                                     size: Option[Double] = None
+  def colorByCategory[X <: Datum2d[X], A: Ordering](data: Seq[X],
+                                                    categoryExtract:  X => A,
+                                                    coloring: Option[Coloring[A]] = None,
+                                                    size: Option[Double] = None
                                                    )(implicit theme: Theme): PointRenderer[X] = new PointRenderer[X] {
     val categories = data.map(categoryExtract)
     private val useColoring = coloring.getOrElse(CategoricalColoring.themed[A])

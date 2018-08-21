@@ -34,6 +34,7 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot
+import com.cibo.evilplot.plot.Histogram.HistogramRenderer
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -90,7 +91,7 @@ object DemoPlots {
 
     ScatterPlot(
       data = data,
-      pointRenderer = Some(PointRenderer.colorByCategories(data, { x: Point3d[Int] => x.z }))
+      pointRenderer = Some(PointRenderer.colorByCategory(data, { x: Point3d[Int] => x.z }))
     ).standard()
       .overlayLegend(x = 0.95, y = 0.8)
       .component(customCategoricalLegend)
@@ -272,13 +273,22 @@ object DemoPlots {
   }
 
   lazy val simpleScatterPlot: Drawable = {
-    val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0) :+ Point(1.0, 0.0) :+ Point(0.0, 1.0) :+ Point(1.0, 1.0)
+    val points = Seq.fill(150)(Point(Random.nextDouble() * 2, Random.nextDouble())) :+ Point(0.0, 0.0) :+ Point(1.0, 0.0) :+ Point(0.0, 1.0) :+ Point(1.0, 1.0)
 
     val pizzaData = points.sortBy(_.x).map(thing => PizzaPoint(thing.x, thing.y, Math.random()))
 
-    CartesianPlot(pizzaData)(
-      _.scatter({ x: PizzaPoint => Style(Disc.centered(2), fill = RGB.random) }),
-      _.line(color = Some(RGB(255, 0, 0)))
+    Overlay(
+      Histogram(pizzaData.map(_.x), barRenderer = Some(
+        BarRenderer.custom({ (ctx, bar) =>
+          Text(bar.values.head.toString).center(ctx.extent.width).padTop(10).inFrontOf(
+            Rect(ctx.extent.width, ctx.extent.height).filled(color = RGB(255, 0, 0))
+          )
+        })
+      )),
+      CartesianPlot(pizzaData)(
+        _.scatter({ _: PizzaPoint => Style(Disc.centered(2), fill = RGB.random) }),
+        _.line(color = Some(RGB(255, 0, 0)))
+      )
     ).standard()
       .xLabel("x")
       .yLabel("y")
@@ -317,14 +327,13 @@ object DemoPlots {
 
     // Make up some data...
     val allYears = (2007 to 2013).toVector
-    val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
-    val years = data.map(x => x -> allYears(Random.nextInt(allYears.length))).toMap
+    val data = Seq.fill(150)(Point3d(Random.nextDouble(), Random.nextDouble(), allYears(Random.nextInt(allYears.length))))
 
     val xhist = Histogram(data.map(_.x), bins = 50)
     val yhist = Histogram(data.map(_.y), bins = 40)
     ScatterPlot(
       data = data,
-      pointRenderer = Some(PointRenderer.colorByCategory(years))
+      pointRenderer = Some(PointRenderer.colorByCategory(data, {x: Point3d[Int] => x.z}))
     ).topPlot(xhist)
       .rightPlot(yhist)
       .standard()
@@ -428,7 +437,7 @@ object DemoPlots {
     val yhist = Histogram(data.map(_.y), bins = 40)
     val plot = ScatterPlot(
       data = data,
-      pointRenderer = Some(PointRenderer.colorByCategories(data, { x: Point3d[Int] => x.z }))
+      pointRenderer = Some(PointRenderer.colorByCategory(data, { x: Point3d[Int] => x.z }))
     ).xAxis()
       .topPlot(xhist)
       .rightPlot(yhist)

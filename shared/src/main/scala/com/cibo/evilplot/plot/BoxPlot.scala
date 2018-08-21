@@ -67,9 +67,9 @@ final case class BoxPlotRenderer(
     clusterStartX + boxXInCluster
   }
 
-  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = render(PlotContext.fromPlotExtent(plot, plotExtent))
+  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = render(RenderContext.from(plot, plotExtent))
 
-  def render(pCtx: PlotContext)(implicit theme: Theme): Drawable = {
+  def render(pCtx: RenderContext)(implicit theme: Theme): Drawable = {
     val xtransformer = pCtx.xCartesianTransform
     val ytransformer = pCtx.yCartesianTransform
 
@@ -100,7 +100,7 @@ final case class BoxPlotRenderer(
 
             val points = summaryStatistics.outliers.map { pt =>
               pointRenderer
-                .render(pCtx.plotExtent, BoxPlotPoint(x, y, boxContext))
+                .render(pCtx.extent, BoxPlotPoint(x, y, boxContext))
                 .translate(x = x + boxWidth / 2, y = ytransformer(pt))
             }
             d behind (box.translate(x = x, y = y) behind points.group)

@@ -45,7 +45,7 @@ object ScatterPlot extends TransformWorldToScreen {
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
 
-      val plotContext = PlotContext(plot, plotExtent)
+      val plotContext = RenderContext(plot, plotExtent)
       val xformedPoints: Seq[X] = transformDatumToPlotSpace(data, plotContext.xCartesianTransform, plotContext.yCartesianTransform)
       val points = xformedPoints.filter(p => plotExtent.contains(p))
         .flatMap {
@@ -74,22 +74,7 @@ object ScatterPlot extends TransformWorldToScreen {
   )(implicit theme: Theme): Plot = {
     require(xBoundBuffer.getOrElse(0.0) >= 0.0)
     require(yBoundBuffer.getOrElse(0.0) >= 0.0)
-    val xs = data.map(_.x)
-    val xbuffer = xBoundBuffer.getOrElse(theme.elements.boundBuffer)
-    val ybuffer = yBoundBuffer.getOrElse(theme.elements.boundBuffer)
-    val xbounds = Plot.expandBounds(
-      Bounds(
-        xs.reduceOption[Double](math.min).getOrElse(0.0),
-        xs.reduceOption[Double](math.max).getOrElse(0.0)),
-      if (data.length == 1 && xbuffer == 0) 0.1 else xbuffer
-    )
-    val ys = data.map(_.y)
-    val ybounds = Plot.expandBounds(
-      Bounds(
-        ys.reduceOption[Double](math.min).getOrElse(0.0),
-        ys.reduceOption[Double](math.max).getOrElse(0.0)),
-      if (data.length == 1 && ybuffer == 0) 0.1 else xbuffer
-    )
+    val (xbounds, ybounds) = PlotUtils.bounds(data, theme.elements.boundBuffer, xBoundBuffer, yBoundBuffer)
     Plot(
       xbounds,
       ybounds,

@@ -14,19 +14,19 @@ import com.cibo.evilplot.plot.renderers.PathRenderer.calcLegendStrokeLength
 trait TransformWorldToScreen {
   type Transformer = Double => Double
 
-  def xCartesianTransformer(xBounds: Bounds, plotExtent: Extent): Double => Double = {
-    val scale = plotExtent.width / xBounds.range
+  def xCartesianTransformer(xBounds: Bounds, extent: Extent): Double => Double = {
+    val scale = extent.width / xBounds.range
     (x: Double) => (x - xBounds.min) * scale
   }
 
-  def yCartesianTransformer(yBounds: Bounds, plotExtent: Extent): Double => Double = {
-    val scale = plotExtent.height / yBounds.range
-    (y: Double) => { plotExtent.height - (y - yBounds.min) * scale}
+  def yCartesianTransformer(yBounds: Bounds, extent: Extent): Double => Double = {
+    val scale = extent.height / yBounds.range
+    (y: Double) => { extent.height - (y - yBounds.min) * scale}
   }
 
-  def createTransformers(yBounds: Bounds, xBounds: Bounds, plotExtent: Extent): (Double => Double, Double => Double) = {
-    val xtransformer = xCartesianTransformer(xBounds, plotExtent)
-    val ytransformer = yCartesianTransformer(yBounds, plotExtent)
+  def createTransformers(yBounds: Bounds, xBounds: Bounds, extent: Extent): (Double => Double, Double => Double) = {
+    val xtransformer = xCartesianTransformer(xBounds, extent)
+    val ytransformer = yCartesianTransformer(yBounds, extent)
 
     (xtransformer, ytransformer)
   }
@@ -50,22 +50,22 @@ trait TransformWorldToScreen {
 
 object TransformWorldToScreen extends TransformWorldToScreen
 
-case class PlotContext(plot: Plot,
-                       plotExtent: Extent){
+case class RenderContext(plot: Plot,
+                         extent: Extent){
 
   lazy val xBounds: Bounds = plot.xbounds
   lazy val yBounds: Bounds = plot.ybounds
 
-  def xCartesianTransform: Double => Double = TransformWorldToScreen.xCartesianTransformer(xBounds, plotExtent)
-  def yCartesianTransform: Double => Double = TransformWorldToScreen.yCartesianTransformer(yBounds, plotExtent)
+  def xCartesianTransform: Double => Double = TransformWorldToScreen.xCartesianTransformer(xBounds, extent)
+  def yCartesianTransform: Double => Double = TransformWorldToScreen.yCartesianTransformer(yBounds, extent)
 
   def transformDatumToWorld[X <: Datum2d[X]](point: X): X = TransformWorldToScreen.transformDatumToWorld(point, xCartesianTransform, yCartesianTransform)
   def transformDatumsToWorld[X <: Datum2d[X]](points: Seq[X]): Seq[X] = points.map(transformDatumToWorld)
 
 }
 
-object PlotContext {
-  def fromPlotExtent(plot: Plot, extent: Extent): PlotContext = apply(plot, extent)
+object RenderContext {
+  def from(plot: Plot, extent: Extent): RenderContext = apply(plot, extent)
 }
 
 object PlotUtils {
