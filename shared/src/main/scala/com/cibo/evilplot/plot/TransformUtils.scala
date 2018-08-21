@@ -4,6 +4,9 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Clipping, Drawable, EmptyDrawable, Extent, LineDash, LineStyle, Path, StrokeStyle}
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot.BoxPlot.makePlot
+import com.cibo.evilplot.plot.LinePlot.LinePlotRenderer
+import com.cibo.evilplot.plot.PlotUtils.{PlotContext}
+import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PathRenderer, PlotRenderer, PointRenderer}
@@ -29,7 +32,7 @@ trait TransformWorldToScreen {
     (xtransformer, ytransformer)
   }
 
-  def transformPointToWorld[X <: Datum2d[X]](point: X,
+  def transformDatumToWorld[X <: Datum2d[X]](point: X,
                                              xtransformer: Transformer,
                                              ytransformer: Transformer): X = {
     val x = xtransformer(point.x)
@@ -37,17 +40,19 @@ trait TransformWorldToScreen {
     point.setXY(x = x,y = y)
   }
 
-  def transformPointsToPlotSpace[X <: Datum2d[X]](data: Seq[X],
-                                                  xtransformer: Transformer,
-                                                  ytransformer: Transformer): Seq[X] = {
+  def transformDatumToPlotSpace[X <: Datum2d[X]](data: Seq[X],
+                                                 xtransformer: Transformer,
+                                                 ytransformer: Transformer): Seq[X] = {
 
-    data.map( p => transformPointToWorld(p, xtransformer, ytransformer))
+    data.map( p => transformDatumToWorld(p, xtransformer, ytransformer))
   }
+
 }
 
 object TransformWorldToScreen extends TransformWorldToScreen
 
-object PlotUtils extends TransformWorldToScreen {
+object PlotUtils {
+
 
   def bounds[X <: Datum2d[X]](data: Seq[X],
                               defaultBoundBuffer: Double,
@@ -89,10 +94,10 @@ object PlotUtils extends TransformWorldToScreen {
     def fromPlotExtent(plot: Plot, extent: Extent): PlotContext = apply(plot, extent)
   }
 
-  case class CartesianDataRenderer[X <: Datum2d[X]](data: Seq[X]){
+  case class CartesianDataRenderer[X <: Datum2d[X]](data: Seq[X]) extends TransformWorldToScreen {
 
     def transformWTS(plotContext: PlotContext): Seq[X] = {
-      val transformed = transformPointsToPlotSpace(
+      val transformed = transformDatumToPlotSpace(
         data,
         plotContext.xCartesianTransform,
         plotContext.yCartesianTransform)
@@ -100,24 +105,34 @@ object PlotUtils extends TransformWorldToScreen {
     }
 
     def scatter(pointToDrawable: X => Drawable,
-                legendCtx: LegendContext = LegendContext.empty)(pCtx: PlotContext): PlotRenderer = new PlotRenderer {
-
-      override def legendContext: LegendContext = legendCtx
-
-      def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-        val points = transformWTS(pCtx).zipWithIndex
-          .withFilter(p => pCtx.plotExtent.contains(p._1))
-          .flatMap {
-            case (point, index) =>
-              val r = pointToDrawable(point)
-              if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
-          }
-          .group
-
-        points
-      }
-
+                legendCtx: LegendContext = LegendContext.empty)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+      ScatterPlotRenderer(data, new PointRenderer[X] {
+        def render(index: X): Drawable = pointToDrawable(index)
+      })
     }
+
+    def scatter(pointRenderer: PointRenderer[X])(pCtx: PlotContext)(implicit theme: Theme): ScatterPlotRenderer[X] = {
+      ScatterPlotRenderer(data, pointRenderer)
+    }
+
+//      new PlotRenderer {
+//
+//      override def legendContext: LegendContext = legendCtx
+//
+//      def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
+//        val points = transformWTS(pCtx).zipWithIndex
+//          .withFilter(p => pCtx.plotExtent.contains(p._1))
+//          .flatMap {
+//            case (point, index) =>
+//              val r = pointToDrawable(point)
+//              if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
+//          }
+//          .group
+//
+//        points
+//      }
+//
+//    }
 
     def manipulate(x: Seq[X] => Seq[X]): Seq[X] = x(data)
 
@@ -129,24 +144,12 @@ object PlotUtils extends TransformWorldToScreen {
             label: Drawable = EmptyDrawable(),
             lineStyle: Option[LineStyle] = None,
             legendCtx: LegendContext = LegendContext.empty
-           )(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = new PlotRenderer{
+           )(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+        LinePlotRenderer(data, PathRenderer.default(strokeWidth, color, label, lineStyle))
+    }
 
-      override def legendContext: LegendContext = legendCtx
-
-      def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-        Clipping
-          .clipPath(transformWTS(pCtx), pCtx.plotExtent)
-          .map(
-            segment =>
-              LineDash(
-                StrokeStyle(
-                  Path(segment, strokeWidth.getOrElse(theme.elements.strokeWidth)),
-                  color.getOrElse(theme.colors.path)),
-                lineStyle.getOrElse(theme.elements.lineDashStyle)
-              )
-          )
-          .group
-      }
+    def line(pathRenderer: PathRenderer)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+      LinePlotRenderer(data, pathRenderer)
     }
 
     def boxAndWhisker(
@@ -155,7 +158,7 @@ object PlotUtils extends TransformWorldToScreen {
       spacing: Option[Double] = None,
       boundBuffer: Option[Double] = None,
       boxRenderer: Option[BoxRenderer] = None,
-      pointRenderer: Option[PointRenderer] = None
+      pointRenderer: Option[PointRenderer[BoxPlotPoint]] = None
       )(pCtx: PlotContext)(implicit theme: Theme): Drawable = {
         val groupedData = dataGroupFn(data)
         val boxContexts = dataGroupFn(data).zipWithIndex.map {
@@ -183,7 +186,7 @@ object PlotUtils extends TransformWorldToScreen {
                           clusterSpacing: Option[Double] = None,
                           boundBuffer: Option[Double] = None,
                           boxRenderer: Option[BoxRenderer] = None,
-                          pointRenderer: Option[PointRenderer] = None
+                          pointRenderer: Option[PointRenderer[BoxPlotPoint]] = None
                         )(implicit theme: Theme): Plot = {
       val xbounds = Bounds(0, boxContexts.size)
       val ybounds = Plot.expandBounds(
@@ -199,7 +202,7 @@ object PlotUtils extends TransformWorldToScreen {
         BoxPlotRenderer(
           boxContexts,
           boxRenderer.getOrElse(BoxRenderer.default()),
-          pointRenderer.getOrElse(PointRenderer.default()),
+          pointRenderer.getOrElse(PointRenderer.default[BoxPlotPoint]()),
           spacing.getOrElse(theme.elements.boxSpacing),
           clusterSpacing
         )

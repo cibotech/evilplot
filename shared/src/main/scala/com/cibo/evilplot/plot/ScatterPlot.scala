@@ -32,11 +32,33 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{Color, RGB}
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text, Wedge}
-import com.cibo.evilplot.numeric.{Datum2d, Point, Point2d}
-import com.cibo.evilplot.plot.PlotUtils.CartesianDataRenderer
+import com.cibo.evilplot.numeric.{Bounds, Datum2d, Point, Point2d}
+import com.cibo.evilplot.plot.PlotUtils.{CartesianDataRenderer, PlotContext}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
-object ScatterPlot {
+object ScatterPlot extends TransformWorldToScreen {
+
+  case class ScatterPlotRenderer[X <: Datum2d[X]](data: Seq[X],
+                                 pointRenderer: PointRenderer[X],
+                                ) extends PlotRenderer {
+
+    override def legendContext: LegendContext = pointRenderer.legendContext
+
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
+
+      val plotContext = PlotContext(plot, plotExtent)
+      val xformedPoints: Seq[X] = transformDatumToPlotSpace(data, plotContext.xCartesianTransform, plotContext.yCartesianTransform)
+      val points = xformedPoints.filter(p => plotExtent.contains(p))
+        .flatMap {
+          case point =>
+            val r = pointRenderer.render(plot, plotExtent, point)
+            if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
+        }
+        .group
+
+      points
+    }
+  }
 
   /** Create a scatter plot from some data.
     * @param data The points to plot.
@@ -44,12 +66,39 @@ object ScatterPlot {
     * @param boundBuffer Extra padding to add to the bounds as a fraction.
     * @return A Plot representing a scatter plot.
     */
-  def apply(
-    data: Seq[Point],
-    pointRenderer: Option[PointRenderer] = None,
-    boundBuffer: Option[Double] = None
+
+  def apply[X <: Datum2d[X]](
+    data: Seq[X],
+    pointRenderer: Option[PointRenderer[X]] = None,
+    xBoundBuffer: Option[Double] = None,
+    yBoundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    XyPlot(data, pointRenderer, Some(PathRenderer.empty()), boundBuffer, boundBuffer)
+    require(xBoundBuffer.getOrElse(0.0) >= 0.0)
+    require(yBoundBuffer.getOrElse(0.0) >= 0.0)
+    val xs = data.map(_.x)
+    val xbuffer = xBoundBuffer.getOrElse(theme.elements.boundBuffer)
+    val ybuffer = yBoundBuffer.getOrElse(theme.elements.boundBuffer)
+    val xbounds = Plot.expandBounds(
+      Bounds(
+        xs.reduceOption[Double](math.min).getOrElse(0.0),
+        xs.reduceOption[Double](math.max).getOrElse(0.0)),
+      if (data.length == 1 && xbuffer == 0) 0.1 else xbuffer
+    )
+    val ys = data.map(_.y)
+    val ybounds = Plot.expandBounds(
+      Bounds(
+        ys.reduceOption[Double](math.min).getOrElse(0.0),
+        ys.reduceOption[Double](math.max).getOrElse(0.0)),
+      if (data.length == 1 && ybuffer == 0) 0.1 else xbuffer
+    )
+    Plot(
+      xbounds,
+      ybounds,
+      ScatterPlotRenderer(
+        data,
+        pointRenderer.getOrElse(PointRenderer.default())
+      )
+    )
   }
 
   /** Create a scatter plot with the specified name and color.
@@ -90,8 +139,7 @@ object ScatterPlot {
     pointSize: Option[Double],
     boundBuffer: Option[Double]
   )(implicit theme: Theme): Plot = {
-    val pointRenderer = PointRenderer.default(Some(color), pointSize, name)
-    val pathRenderer = PathRenderer.empty()
-    XyPlot(data, Some(pointRenderer), Some(pathRenderer), boundBuffer, boundBuffer)
+    val pointRenderer = PointRenderer.default[Point](Some(color), pointSize, name)
+    ScatterPlot(data, Some(pointRenderer), boundBuffer, boundBuffer)
   }
 }

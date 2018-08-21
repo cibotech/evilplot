@@ -31,13 +31,33 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.Drawable
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.geometry.{Drawable, Extent}
+import com.cibo.evilplot.numeric.{Bounds, Point, Point2d}
+import com.cibo.evilplot.plot.LinePlot.LinePlotRenderer
+import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
+import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 
 object LinePlot {
 
+  case class LinePlotRenderer(data: Seq[Point2d],
+                              pathRenderer: PathRenderer,
+                                ) extends PlotRenderer {
+
+    override def legendContext: LegendContext = pathRenderer.legendContext
+
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
+      val xtransformer = plot.xtransform(plot, plotExtent)
+      val ytransformer = plot.ytransform(plot, plotExtent)
+      val xformedPoints = data.map { point =>
+        val x = xtransformer(point.x)
+        val y = ytransformer(point.y)
+        Point(x, y)
+      }
+
+      pathRenderer.render(plot, plotExtent, xformedPoints)
+    }
+  }
   /** Create a line plot from some data.  Convenience method on top of XyPlot
     *
     * @param data          The points to plot.
@@ -47,18 +67,36 @@ object LinePlot {
     * @param yboundBuffer Extra padding to add to y bounds as a fraction.
     */
   def apply(
-    data: Seq[Point],
-    pointRenderer: Option[PointRenderer] = None,
+    data: Seq[Point2d],
     pathRenderer: Option[PathRenderer] = None,
-    xboundBuffer: Option[Double] = None,
-    yboundBuffer: Option[Double] = None
+    xBoundBuffer: Option[Double] = None,
+    yBoundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    XyPlot(
-      data,
-      pointRenderer = Some(pointRenderer.getOrElse(PointRenderer.empty())),
-      pathRenderer = Some(pathRenderer.getOrElse(PathRenderer.default())),
-      xboundBuffer.orElse(Some(0)),
-      yboundBuffer
+    require(xBoundBuffer.getOrElse(0.0) >= 0.0)
+    require(yBoundBuffer.getOrElse(0.0) >= 0.0)
+    val xs = data.map(_.x)
+    val xbuffer = xBoundBuffer.getOrElse(theme.elements.boundBuffer)
+    val ybuffer = yBoundBuffer.getOrElse(theme.elements.boundBuffer)
+    val xbounds = Plot.expandBounds(
+      Bounds(
+        xs.reduceOption[Double](math.min).getOrElse(0.0),
+        xs.reduceOption[Double](math.max).getOrElse(0.0)),
+      if (data.length == 1 && xbuffer == 0) 0.1 else xbuffer
+    )
+    val ys = data.map(_.y)
+    val ybounds = Plot.expandBounds(
+      Bounds(
+        ys.reduceOption[Double](math.min).getOrElse(0.0),
+        ys.reduceOption[Double](math.max).getOrElse(0.0)),
+      if (data.length == 1 && ybuffer == 0) 0.1 else xbuffer
+    )
+    Plot(
+      xbounds,
+      ybounds,
+      LinePlotRenderer(
+        data,
+        pathRenderer.getOrElse(PathRenderer.default())
+      )
     )
   }
 
@@ -72,13 +110,13 @@ object LinePlot {
     */
   @deprecated("Use apply", "2018-03-15")
   def custom(
-    data: Seq[Point],
-    pointRenderer: PointRenderer,
+    data: Seq[Point2d],
+    pointRenderer: PointRenderer[Point2d],
     pathRenderer: PathRenderer,
     xboundBuffer: Double,
     yboundBuffer: Double
   )(implicit theme: Theme): Plot = {
-    XyPlot(data, Some(pointRenderer), Some(pathRenderer), Some(xboundBuffer), Some(yboundBuffer))
+    LinePlot(data, Some(pathRenderer), Some(xboundBuffer), Some(yboundBuffer))
   }
 
   /** Create a line plot with the specified name and color.
@@ -90,18 +128,16 @@ object LinePlot {
     * @param yboundBuffer Extra padding to add to y bounds as a fraction.
     */
   def series(
-    data: Seq[Point],
+    data: Seq[Point2d],
     name: String,
     color: Color,
     strokeWidth: Option[Double] = None,
     xboundBuffer: Option[Double] = None,
     yboundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    val pointRenderer = PointRenderer.empty()
     val pathRenderer = PathRenderer.named(name, color, strokeWidth)
-    XyPlot(
+    LinePlot(
       data,
-      Some(pointRenderer),
       Some(pathRenderer),
       xboundBuffer,
       yboundBuffer
@@ -117,15 +153,14 @@ object LinePlot {
     * @param yboundBuffer Extra padding to add to y bounds as a fraction.
     */
   def series(
-    data: Seq[Point],
+    data: Seq[Point2d],
     label: Drawable,
     color: Color,
     strokeWidth: Option[Double],
     xboundBuffer: Option[Double],
     yboundBuffer: Option[Double]
   )(implicit theme: Theme): Plot = {
-    val pointRenderer = PointRenderer.empty()
     val pathRenderer = PathRenderer.default(strokeWidth, Some(color), label)
-    XyPlot(data, Some(pointRenderer), Some(pathRenderer), xboundBuffer, yboundBuffer)
+    LinePlot(data, Some(pathRenderer), xboundBuffer, yboundBuffer)
   }
 }

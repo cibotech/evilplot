@@ -32,7 +32,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.Drawable
-import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.FunctionPlotLine
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
@@ -52,7 +52,7 @@ object FunctionPlot {
     xbounds: Option[Bounds] = None,
     numPoints: Option[Int] = None,
     pathRenderer: Option[PathRenderer] = None,
-    pointRenderer: Option[PointRenderer] = None,
+    pointRenderer: Option[PointRenderer[Point]] = None,
     xBoundBuffer: Option[Double] = None,
     yBoundBuffer: Option[Double] = None)(implicit theme: Theme): Plot = {
     require(numPoints.forall(_ != 0), "Cannot make a function plot using zero points.")
@@ -61,12 +61,10 @@ object FunctionPlot {
       xbounds.getOrElse(defaultBounds),
       numPoints.getOrElse(defaultNumPoints))
 
-    XyPlot(
-      pts,
-      pointRenderer.orElse(Some(PointRenderer.empty())),
-      pathRenderer,
-      xBoundBuffer,
-      yBoundBuffer)
+    CartesianPlot(pts, xBoundBuffer, yBoundBuffer)(
+      _.line(pathRenderer.getOrElse(PathRenderer.empty())),
+      _.scatter(pointRenderer.getOrElse(PointRenderer.empty()))
+    )
   }
 
   /** Plot a function using a name for the legend.

@@ -63,8 +63,7 @@ object DemoPlots {
 
   lazy val legendFeatures: Drawable = {
     val allYears = (2007 to 2013).toVector
-    val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
-    val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+    val data = Seq.fill(150)(DemoPlots.Point3d(Random.nextDouble(), Random.nextDouble(), allYears(Random.nextInt(allYears.length))))
 
     val customCategoricalLegend = Legend(
       Position.Right,
@@ -91,7 +90,7 @@ object DemoPlots {
 
     ScatterPlot(
       data = data,
-      pointRenderer = Some(PointRenderer.colorByCategory(years))
+      pointRenderer = Some(PointRenderer.colorByCategories(data, { x: Point3d[Int] => x.z }))
     ).standard()
       .overlayLegend(x = 0.95, y = 0.8)
       .component(customCategoricalLegend)
@@ -278,7 +277,7 @@ object DemoPlots {
     val pizzaData = points.sortBy(_.x).map(thing => PizzaPoint(thing.x, thing.y, Math.random()))
 
     CartesianPlot(pizzaData)(
-      _.scatter( _ => Style(Disc.centered(2), fill = RGB.random)),
+      _.scatter({ x: PizzaPoint => Style(Disc.centered(2), fill = RGB.random) }),
       _.line(color = Some(RGB(255, 0, 0)))
     ).standard()
       .xLabel("x")
@@ -288,16 +287,19 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
+  case class Point3d[Z: Numeric](x: Double, y: Double, z: Z) extends Datum2d[Point3d[Z]]{
+    def setXY(x: Double, y: Double): Point3d[Z] = this.copy(x, y, z)
+  }
   lazy val scatterPlot: Drawable = {
-    val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
-    val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
-
+    val points = Seq.fill(150)(Point3d(Random.nextDouble(), Random.nextDouble(), Random.nextDouble())) :+ Point3d(0.0, 0.0, Random.nextDouble())
 
     ScatterPlot(
       points,
       pointRenderer = Some(
-        PointRenderer.depthColor(
-          years,
+        PointRenderer.depthColor[Point3d[Double]](
+          x => x.z,
+          points.map(_.z).min,
+          points.map(_.z).max,
           Some(ContinuousColoring
             .gradient3(HTMLNamedColors.green, HTMLNamedColors.yellow, HTMLNamedColors.red)),
           None))
@@ -316,7 +318,7 @@ object DemoPlots {
     // Make up some data...
     val allYears = (2007 to 2013).toVector
     val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
-    val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+    val years = data.map(x => x -> allYears(Random.nextInt(allYears.length))).toMap
 
     val xhist = Histogram(data.map(_.x), bins = 50)
     val yhist = Histogram(data.map(_.y), bins = 40)
@@ -420,14 +422,13 @@ object DemoPlots {
 
     // Make up some data...
     val allYears = (2007 to 2013).toVector
-    val data = Seq.fill(150)(Point(6 * Random.nextDouble(), Random.nextDouble()))
-    val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+    val data = Seq.fill(150)(Point3d(6 * Random.nextDouble(), Random.nextDouble(), allYears(Random.nextInt(allYears.length))))
 
     val xhist = Histogram(data.map(_.x), bins = 50)
     val yhist = Histogram(data.map(_.y), bins = 40)
     val plot = ScatterPlot(
       data = data,
-      pointRenderer = Some(PointRenderer.colorByCategory(years))
+      pointRenderer = Some(PointRenderer.colorByCategories(data, { x: Point3d[Int] => x.z }))
     ).xAxis()
       .topPlot(xhist)
       .rightPlot(yhist)

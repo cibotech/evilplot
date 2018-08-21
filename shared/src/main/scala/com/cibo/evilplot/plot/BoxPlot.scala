@@ -30,17 +30,23 @@
 
 package com.cibo.evilplot.plot
 
+import java.awt.geom.Point2D
+
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
+import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics, Datum2d, Point2d}
 import com.cibo.evilplot.plot.PlotUtils.PlotContext
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
+case class BoxPlotPoint(x: Double, y: Double, ctx: BoxRendererContext) extends Datum2d[BoxPlotPoint] {
+  def setXY(x: Double, y: Double): BoxPlotPoint = this.copy(x = x, y = y)
+}
+
 final case class BoxPlotRenderer(
   data: Seq[Option[BoxRendererContext]],
   boxRenderer: BoxRenderer,
-  pointRenderer: PointRenderer,
+  pointRenderer: PointRenderer[BoxPlotPoint],
   spacing: Double,
   clusterSpacing: Option[Double]
 ) extends PlotRenderer {
@@ -95,7 +101,7 @@ final case class BoxPlotRenderer(
 
             val points = summaryStatistics.outliers.map { pt =>
               pointRenderer
-                .render(pCtx.plotExtent, index)
+                .render(pCtx.plotExtent, BoxPlotPoint(x, y, boxContext))
                 .translate(x = x + boxWidth / 2, y = ytransformer(pt))
             }
             d behind (box.translate(x = x, y = y) behind points.group)
@@ -126,7 +132,7 @@ object BoxPlot {
     spacing: Option[Double] = None,
     boundBuffer: Option[Double] = None,
     boxRenderer: Option[BoxRenderer] = None,
-    pointRenderer: Option[PointRenderer] = None
+    pointRenderer: Option[PointRenderer[BoxPlotPoint]] = None
   )(implicit theme: Theme): Plot = {
     val boxContexts = data.zipWithIndex.map {
       case (dist, index) =>
@@ -165,7 +171,7 @@ object BoxPlot {
     clusterSpacing: Option[Double] = None,
     boundBuffer: Option[Double] = None,
     boxRenderer: Option[BoxRenderer] = None,
-    pointRenderer: Option[PointRenderer] = None
+    pointRenderer: Option[PointRenderer[BoxPlotPoint]] = None
   )(implicit theme: Theme): Plot = {
     val boxesPerGroup = data.map(_.length).reduce(math.max)
     val boxContexts = data.zipWithIndex.flatMap {
@@ -197,7 +203,7 @@ object BoxPlot {
     clusterSpacing: Option[Double] = None,
     boundBuffer: Option[Double] = None,
     boxRenderer: Option[BoxRenderer] = None,
-    pointRenderer: Option[PointRenderer] = None
+    pointRenderer: Option[PointRenderer[BoxPlotPoint]] = None
   )(implicit theme: Theme): Plot = {
     val xbounds = Bounds(0, boxContexts.size)
     val ybounds = Plot.expandBounds(
@@ -213,31 +219,11 @@ object BoxPlot {
       BoxPlotRenderer(
         boxContexts,
         boxRenderer.getOrElse(BoxRenderer.default()),
-        pointRenderer.getOrElse(PointRenderer.default()),
+        pointRenderer.getOrElse(PointRenderer.default[BoxPlotPoint]()),
         spacing.getOrElse(theme.elements.boxSpacing),
         clusterSpacing
       )
     )
   }
 
-  /** Create a box plot for a sequence of distributions.
-    * @param data the distributions to plot
-    * @param boxRenderer the `BoxRenderer` to use to display each distribution
-    * @param pointRenderer the `PointRenderer` used to display outliers
-    * @param quantiles quantiles to use for summary statistics.
-    *                  defaults to 1st, 2nd, 3rd quartiles.
-    * @param spacing spacing how much spacing to put between boxes
-    * @param boundBuffer expand bounds by this factor
-    */
-  @deprecated("use apply", "2018-03-28")
-  def custom(
-    data: Seq[Seq[Double]],
-    boxRenderer: BoxRenderer,
-    pointRenderer: PointRenderer,
-    quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75),
-    spacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None
-  )(implicit theme: Theme): Plot = {
-    apply(data, quantiles, spacing, boundBuffer, Some(boxRenderer), Some(pointRenderer))
-  }
 }

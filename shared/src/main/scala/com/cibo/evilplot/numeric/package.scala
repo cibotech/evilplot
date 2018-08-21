@@ -50,7 +50,7 @@ package object numeric {
     def setXY(x: Double = this.x, y: Double = this.y): A
   }
 
-  final case class Point(x: Double, y: Double) extends Point2d {
+  final case class Point(x: Double, y: Double) extends Datum2d[Point] {
     def -(that: Point): Point = Point(x - that.x, y - that.y)
 
     def setXY(x: Double = this.x, y: Double = this.y): Point = this.copy(x = x, y = y)
