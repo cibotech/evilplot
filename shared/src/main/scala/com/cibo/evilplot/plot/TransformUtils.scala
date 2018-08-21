@@ -6,7 +6,7 @@ import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot.BoxPlot.makePlot
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
-import com.cibo.evilplot.plot.renderers.{BoxRenderer, PathRenderer, PointRenderer}
+import com.cibo.evilplot.plot.renderers.{BoxRenderer, PathRenderer, PlotRenderer, PointRenderer}
 import com.cibo.evilplot.plot.renderers.PathRenderer.calcLegendStrokeLength
 
 trait TransformWorldToScreen {
@@ -75,64 +75,79 @@ object PlotUtils extends TransformWorldToScreen {
     (xbounds, ybounds)
   }
 
-  case class PlotContext(xBounds: Bounds,
-                          yBounds: Bounds,
-                          plotExtent: Extent){
+  case class PlotContext(plot: Plot,
+                         plotExtent: Extent){
+
+    lazy val xBounds: Bounds = plot.xbounds
+    lazy val yBounds: Bounds = plot.ybounds
+
     def xCartesianTransform: Double => Double = TransformWorldToScreen.xCartesianTransformer(xBounds, plotExtent)
     def yCartesianTransform: Double => Double = TransformWorldToScreen.yCartesianTransformer(yBounds, plotExtent)
   }
 
   object PlotContext {
-    def fromPlotExtent(plot: Plot, extent: Extent): PlotContext = apply(plot.xbounds, plot.ybounds, extent)
+    def fromPlotExtent(plot: Plot, extent: Extent): PlotContext = apply(plot, extent)
   }
 
   case class CartesianDataRenderer[X <: Datum2d[X]](data: Seq[X]){
 
     def transformWTS(plotContext: PlotContext): Seq[X] = {
-      val (xtransformer, ytransformer) = createTransformers(plotContext.xBounds, plotContext.yBounds, plotContext.plotExtent)
-      val transformed = transformPointsToPlotSpace(data, xtransformer, ytransformer)
+      val transformed = transformPointsToPlotSpace(
+        data,
+        plotContext.xCartesianTransform,
+        plotContext.yCartesianTransform)
       transformed
     }
 
-    def scatter(pointToDrawable: X => Drawable)(pCtx: PlotContext): Drawable = {
+    def scatter(pointToDrawable: X => Drawable,
+                legendCtx: LegendContext = LegendContext.empty)(pCtx: PlotContext): PlotRenderer = new PlotRenderer {
 
-      val points = transformWTS(pCtx).zipWithIndex
-        .withFilter(p => pCtx.plotExtent.contains(p._1))
-        .flatMap {
-          case (point, index) =>
-            val r = pointToDrawable(point)
-            if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
-        }
-        .group
+      override def legendContext: LegendContext = legendCtx
 
-      points
+      def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
+        val points = transformWTS(pCtx).zipWithIndex
+          .withFilter(p => pCtx.plotExtent.contains(p._1))
+          .flatMap {
+            case (point, index) =>
+              val r = pointToDrawable(point)
+              if (r.isEmpty) None else Some(r.translate(x = point.x, y = point.y))
+          }
+          .group
+
+        points
+      }
+
     }
 
     def manipulate(x: Seq[X] => Seq[X]): Seq[X] = x(data)
+
     def filter(x: X => Boolean): CartesianDataRenderer[X] = this.copy(data.filter(x))
 
     def line(
             strokeWidth: Option[Double] = None,
             color: Option[Color] = None,
             label: Drawable = EmptyDrawable(),
-            lineStyle: Option[LineStyle] = None
-           )(pCtx: PlotContext)(implicit theme: Theme): Drawable = {
+            lineStyle: Option[LineStyle] = None,
+            legendCtx: LegendContext = LegendContext.empty
+           )(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = new PlotRenderer{
 
-      Clipping
-        .clipPath(transformWTS(pCtx), pCtx.plotExtent)
-        .map(
-          segment =>
-            LineDash(
-              StrokeStyle(
-                Path(segment, strokeWidth.getOrElse(theme.elements.strokeWidth)),
-                color.getOrElse(theme.colors.path)),
-              lineStyle.getOrElse(theme.elements.lineDashStyle)
-            )
-        )
-        .group
+      override def legendContext: LegendContext = legendCtx
+
+      def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
+        Clipping
+          .clipPath(transformWTS(pCtx), pCtx.plotExtent)
+          .map(
+            segment =>
+              LineDash(
+                StrokeStyle(
+                  Path(segment, strokeWidth.getOrElse(theme.elements.strokeWidth)),
+                  color.getOrElse(theme.colors.path)),
+                lineStyle.getOrElse(theme.elements.lineDashStyle)
+              )
+          )
+          .group
+      }
     }
-
-
 
     def boxAndWhisker(
       dataGroupFn: Seq[X] => Seq[Seq[Double]],
@@ -190,26 +205,6 @@ object PlotUtils extends TransformWorldToScreen {
         )
       )
     }
-//    def boxAndWhisker(spacing: Double,
-//                      clusterSpacing: Option[Double],
-//                      groupFn: Seq[X] => Seq[Seq[Double]],
-//                      fillColor: Option[Color] = None,
-//                      strokeColor: Option[Color] = None,
-//                      lineDash: Option[LineDash] = None,
-//                      strokeWidth: Option[Double] = None,
-//                      quantiles: (Double, Double, Double) = (0.25, 0.50, 0.75)
-//                     )(pCtx: PlotContext)(implicit theme: Theme) = {
-//
-//      val boxContexts = groupFn(data).zipWithIndex.map {
-//        case (dist, index) =>
-//          if (dist.nonEmpty) {
-//            val summary = BoxPlotSummaryStatistics(dist, quantiles)
-//            Some(BoxRendererContext(summary, index))
-//          } else None
-//      }
-//      BoxRenderer.default(fillColor = fillColor, strokeColor = strokeColor, lineDash = lineDash, strokeWidth = strokeWidth).render(pCtx.plotExtent, boxContexts)
-//
-//    }
 
   }
 

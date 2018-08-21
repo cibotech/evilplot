@@ -59,6 +59,14 @@ object BoxRenderer {
     cluster: Int = 0
   )
 
+  def custom(renderFn: (Extent, BoxRendererContext) => Drawable
+            )(implicit theme: Theme): BoxRenderer = new BoxRenderer {
+
+    def render(extent: Extent,
+               context: BoxRendererContext
+              ): Drawable = renderFn(extent, context)
+  }
+
   def default(
     fillColor: Option[Color] = None,
     strokeColor: Option[Color] = None,

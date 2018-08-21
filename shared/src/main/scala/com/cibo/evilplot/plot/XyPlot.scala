@@ -42,39 +42,27 @@ import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRender
 object CartesianPlot {
 
   import TransformWorldToScreen._
-  final case class XyPlotRenderer[X <: Datum2d[X]](dataToDrawables: Seq[PlotContext => Drawable],
-                                                    xBounds: Bounds,
-                                                    yBounds: Bounds) extends PlotRenderer {
+  final case class CartesianPlotRenderer(drawablesToPlot: Seq[PlotContext => PlotRenderer],
+                                         xBounds: Bounds,
+                                         yBounds: Bounds) extends PlotRenderer {
     override def legendContext: LegendContext = LegendContext()
 
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-      render(PlotContext(xBounds, yBounds, plotExtent))
-    }
-
-    def render(plotContext: PlotContext)(implicit theme: Theme): Drawable = {
-
-      dataToDrawables.foldLeft(EmptyDrawable() : Drawable){ case (accum, dr) =>
-        dr(plotContext) behind accum
+      drawablesToPlot.foldLeft(EmptyDrawable() : Drawable){ case (accum, dr) =>
+        dr(PlotContext(plot, plotExtent)).render(plot, plotExtent) behind accum
       }
     }
   }
 
-  /** Create an XY plot (ScatterPlot, LinePlot are both special cases) from some data.
-    *
-    * @param data           The points to plot.
-    * @param pointRenderer  A function to create a Drawable for each point to plot.
-    * @param pathRenderer   A function to create a Drawable for all the points (such as a path)
-    * @param xboundBuffer   Extra padding to add to bounds as a fraction.
-    * @param yboundBuffer   Extra padding to add to bounds as a fraction.
-    * @return A Plot representing an XY plot.
-    */
+  type ContextToDrawable[X <: Datum2d[X]] = CartesianDataRenderer[X] => PlotContext => PlotRenderer
+
   def apply[X <: Datum2d[X]](
                               data: Seq[X],
                               xboundBuffer: Option[Double] = None,
                               yboundBuffer: Option[Double] = None
                             )(
-          contextToDrawable: (CartesianDataRenderer[X] => PlotContext => Drawable)*,
+          contextToDrawable: ContextToDrawable[X]*,
   )(implicit theme: Theme): Plot = {
 
     val (xbounds, ybounds) = PlotUtils.bounds(data, theme.elements.boundBuffer, xboundBuffer, yboundBuffer)
@@ -84,7 +72,7 @@ object CartesianPlot {
     Plot(
       xbounds,
       ybounds,
-      XyPlotRenderer(
+      CartesianPlotRenderer(
         contextToDrawable.map(x => x(cartesianDataRenderer)),
         xbounds,
         ybounds

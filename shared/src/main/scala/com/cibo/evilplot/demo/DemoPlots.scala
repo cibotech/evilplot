@@ -277,13 +277,9 @@ object DemoPlots {
 
     val pizzaData = points.sortBy(_.x).map(thing => PizzaPoint(thing.x, thing.y, Math.random()))
 
-    val xbounds = PlotUtils.bounds(pizzaData, theme.elements.boundBuffer)._1
-
     CartesianPlot(pizzaData)(
       _.scatter( _ => Style(Disc.centered(2), fill = RGB.random)),
-      _.filter(_.amountLeft > 0.5).line(color = Some(RGB(255, 0, 0))),
-      _.filter(_.amountLeft <= 0.5).line(color = Some(RGB(0, 0, 255))),
-      _.boxAndWhisker(x => cluster(x.map(_.x), 6, xbounds, false))
+      _.line(color = Some(RGB(255, 0, 0)))
     ).standard()
       .xLabel("x")
       .yLabel("y")
