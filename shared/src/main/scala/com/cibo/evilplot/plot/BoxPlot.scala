@@ -34,7 +34,6 @@ import java.awt.geom.Point2D
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics, Datum2d, Point2d}
-import com.cibo.evilplot.plot.PlotUtils.PlotContext
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}

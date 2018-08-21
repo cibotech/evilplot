@@ -31,25 +31,14 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{
-  Clipping,
-  Drawable,
-  EmptyDrawable,
-  Extent,
-  LineDash,
-  LineStyle,
-  Path,
-  StrokeStyle,
-  Style,
-  Text
-}
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.geometry.{Clipping, Drawable, EmptyDrawable, Extent, LineDash, LineStyle, Path, StrokeStyle, Style, Text}
+import com.cibo.evilplot.numeric.{Datum2d, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
-trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
+trait PathRenderer[X <: Datum2d[X]] extends PlotElementRenderer[Seq[X]] {
   def legendContext: LegendContext = LegendContext.empty
-  def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable
+  def render(plot: Plot, extent: Extent, path: Seq[X]): Drawable
 }
 
 object PathRenderer {
@@ -60,12 +49,12 @@ object PathRenderer {
     * @param color Point color.
     * @param label A label for this path (for legends).
     */
-  def default(
+  def default[X <: Datum2d[X]](
     strokeWidth: Option[Double] = None,
     color: Option[Color] = None,
     label: Drawable = EmptyDrawable(),
     lineStyle: Option[LineStyle] = None
-  )(implicit theme: Theme): PathRenderer = new PathRenderer {
+  )(implicit theme: Theme): PathRenderer[X] = new PathRenderer[X] {
     private val useLineStyle: LineStyle = lineStyle
       .getOrElse(theme.elements.lineDashStyle)
     private val legendStrokeLength: Double = calcLegendStrokeLength(useLineStyle)
@@ -87,7 +76,7 @@ object PathRenderer {
         )
     }
 
-    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
+    def render(plot: Plot, extent: Extent, path: Seq[X]): Drawable = {
       Clipping
         .clipPath(path, extent)
         .map(
@@ -108,12 +97,12 @@ object PathRenderer {
     * @param color The color of this path.
     * @param strokeWidth The width of the path.
     */
-  def named(
+  def named[X <: Datum2d[X]](
     name: String,
     color: Color,
     strokeWidth: Option[Double] = None,
     lineStyle: Option[LineStyle] = None
-  )(implicit theme: Theme): PathRenderer =
+  )(implicit theme: Theme): PathRenderer[X] =
     default(
       strokeWidth,
       Some(color),
@@ -127,20 +116,20 @@ object PathRenderer {
     * @param color the color of this path.
     */
   @deprecated("Use the overload taking a strokeWidth, color, label and lineStyle", "2 April 2018")
-  def closed(color: Color)(implicit theme: Theme): PathRenderer = closed(color = Some(color))
+  def closed[X <: Datum2d[X]](color: Color)(implicit theme: Theme): PathRenderer[X] = closed(color = Some(color))
 
   /** Path renderer for closed paths. The first point is connected to the last point.
     * @param strokeWidth the stroke width
     * @param color the color of the path
     * @param label the label for the legend
     */
-  def closed(
+  def closed[X <: Datum2d[X]](
     strokeWidth: Option[Double] = None,
     color: Option[Color] = None,
     label: Drawable = EmptyDrawable(),
     lineStyle: Option[LineStyle] = None
-  )(implicit theme: Theme): PathRenderer = new PathRenderer {
-    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
+  )(implicit theme: Theme): PathRenderer[X] = new PathRenderer[X] {
+    def render(plot: Plot, extent: Extent, path: Seq[X]): Drawable = {
       path.headOption.fold(EmptyDrawable(): Drawable) { head =>
         default(strokeWidth, color, label, lineStyle).render(plot, extent, path :+ head)
       }
@@ -150,8 +139,8 @@ object PathRenderer {
   /**
     * A no-op renderer for when you don't want to render paths (such as on a scatter plot)
     */
-  def empty(): PathRenderer = new PathRenderer {
-    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = EmptyDrawable()
+  def empty[X <: Datum2d[X]](): PathRenderer[X] = new PathRenderer[X] {
+    def render(plot: Plot, extent: Extent, path: Seq[X]): Drawable = EmptyDrawable()
   }
 
   // Need to use a multiple of the pattern array so the legend looks accurate.

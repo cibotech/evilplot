@@ -51,7 +51,7 @@ object FunctionPlot {
     function: Double => Double,
     xbounds: Option[Bounds] = None,
     numPoints: Option[Int] = None,
-    pathRenderer: Option[PathRenderer] = None,
+    pathRenderer: Option[PathRenderer[Point]] = None,
     pointRenderer: Option[PointRenderer[Point]] = None,
     xBoundBuffer: Option[Double] = None,
     yBoundBuffer: Option[Double] = None)(implicit theme: Theme): Plot = {
@@ -83,7 +83,7 @@ object FunctionPlot {
     xBoundBuffer: Option[Double] = None,
     yBoundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    val renderer = Some(PathRenderer.named(name, color, strokeWidth))
+    val renderer = Some(PathRenderer.named[Point](name, color, strokeWidth))
     apply(function, xbounds, numPoints, renderer, None, xBoundBuffer, yBoundBuffer)
   }
 
@@ -102,7 +102,7 @@ object FunctionPlot {
     strokeWidth: Option[Double],
     xBoundBuffer: Option[Double],
     yBoundBuffer: Option[Double])(implicit theme: Theme): Plot = {
-    val renderer = Some(PathRenderer.default(strokeWidth, Some(color), label))
+    val renderer = Some(PathRenderer.default[Point](strokeWidth, Some(color), label))
     apply(function, xbounds, numPoints, renderer, None, xBoundBuffer, yBoundBuffer)
   }
 }

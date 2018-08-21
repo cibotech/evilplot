@@ -33,7 +33,6 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, RGB}
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text, Wedge}
 import com.cibo.evilplot.numeric.{Bounds, Datum2d, Point, Point2d}
-import com.cibo.evilplot.plot.PlotUtils.{CartesianDataRenderer, PlotContext}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 object ScatterPlot extends TransformWorldToScreen {
