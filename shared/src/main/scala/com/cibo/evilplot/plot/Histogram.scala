@@ -57,6 +57,7 @@ object Histogram {
   // Create binCount bins from the given data and xbounds.
   private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int, normalize: Boolean): Seq[Point] = {
     val binWidth = xbounds.range / binCount
+    println("bin bounds", xbounds.range)
     val grouped = values.groupBy { value =>
       math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
     }
@@ -79,6 +80,8 @@ object Histogram {
   ) extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.nonEmpty) {
+        println("histogram bounds", plot.xbounds)
+
         val xtransformer = plot.xtransform(plot, plotExtent)
         val ytransformer = plot.ytransform(plot, plotExtent)
 
@@ -99,7 +102,54 @@ object Histogram {
           val x = xtransformer(point.x) + spacing / 2.0
           val clippedY = math.min(point.y * yscale, plot.ybounds.max)
           val y = ytransformer(clippedY)
+          println(point.x)
           val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
+          val bar = Bar(clippedY)
+          val barHeight = yintercept - y
+          barRenderer.render(plot, Extent(barWidth, barHeight), bar).translate(x = x, y = y)
+        }.group
+      } else {
+        EmptyDrawable()
+      }
+    }
+
+    override val legendContext: LegendContext =
+      barRenderer.legendContext.getOrElse(LegendContext.empty)
+
+  }
+
+  case class ContinuousBinRenderer(
+                                bins: Seq[ContinuousBin],
+                                barRenderer: BarRenderer,
+                                spacing: Double,
+                                boundBuffer: Double,
+                              ) extends PlotRenderer {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
+      if (bins.nonEmpty) {
+        val xbounds = plot.xbounds
+        println("continuous bounds", plot.xbounds)
+        val xtransformer = plot.xtransform(plot, plotExtent)
+        val ytransformer = plot.ytransform(plot, plotExtent)
+
+        // The x bounds might have changed here, which could lead to a different binning of the data. If that
+        // happens, it's possible for us to exceed our boundary. Thus we have two options:
+        //  1. Clip at the boundary
+        //  2. Scale all bars to have the correct relative heights.
+        // Scaling the bars would show the correct histogram as long as no axis is displayed.  However, if
+        // an axis is display, we would end up showing the wrong values. Thus, we clip if the y boundary is
+        // fixed, otherwise we scale to make it look pretty.
+        val maxY = bins.maxBy(_.y).y * (1.0 + boundBuffer)
+        val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
+
+        val binWidth = xbounds.range / bins.length
+        val yintercept = ytransformer(0)
+
+        bins.map { bin =>
+          val x = xtransformer(bin.x.min) + spacing / 2.0
+          val clippedY = math.min(bin.y * yscale, plot.ybounds.max)
+          val y = ytransformer(clippedY)
+          val barWidth = math.max(xtransformer(bin.x.range + xbounds.min) - spacing, 0)
+          println(barWidth)
           val bar = Bar(clippedY)
           val barHeight = yintercept - y
           barRenderer.render(plot, Extent(barWidth, barHeight), bar).translate(x = x, y = y)
@@ -126,13 +176,13 @@ object Histogram {
     * @return A histogram plot.
     */
   def apply(
-    values: Seq[Double],
-    bins: Int = defaultBinCount,
-    barRenderer: Option[BarRenderer] = None,
-    spacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None,
-    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins
-  )(implicit theme: Theme): Plot = {
+             values: Seq[Double],
+             bins: Int = defaultBinCount,
+             barRenderer: Option[BarRenderer] = None,
+             spacing: Option[Double] = None,
+             boundBuffer: Option[Double] = None,
+             binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins
+           )(implicit theme: Theme): Plot = {
     require(bins > 0, "must have at least one bin")
     val xbounds = Bounds(
       values.reduceOption[Double](math.min).getOrElse(0.0),
@@ -140,6 +190,7 @@ object Histogram {
     )
     val maxY =
       binningFunction(values, xbounds, bins).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
+    println("Histogram x bounds", xbounds)
     Plot(
       xbounds = xbounds,
       ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
@@ -150,6 +201,29 @@ object Histogram {
         spacing.getOrElse(theme.elements.barSpacing),
         boundBuffer.getOrElse(theme.elements.boundBuffer),
         binningFunction
+      )
+    )
+  }
+
+  def continuous(
+             bins: Seq[ContinuousBin],
+             barRenderer: Option[BarRenderer] = None,
+             spacing: Option[Double] = None,
+             boundBuffer: Option[Double] = None,
+             binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins
+           )(implicit theme: Theme): Plot = {
+    require(bins.nonEmpty, "must have at least one bin")
+    val xbounds = Bounds.union(bins.map(_.x))
+    val maxY = bins.map(_.y).max
+
+    Plot(
+      xbounds = xbounds,
+      ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
+      renderer = ContinuousBinRenderer(
+        bins,
+        barRenderer.getOrElse(BarRenderer.default()),
+        spacing.getOrElse(theme.elements.barSpacing),
+        boundBuffer.getOrElse(theme.elements.boundBuffer)
       )
     )
   }

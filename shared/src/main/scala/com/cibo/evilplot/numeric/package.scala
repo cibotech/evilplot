@@ -44,6 +44,10 @@ package object numeric {
 
   }
 
+  case class Point3d[Z: Numeric](x: Double, y: Double, z: Z) extends Datum2d[Point3d[Z]]{
+    def setXY(x: Double, y: Double): Point3d[Z] = this.copy(x, y, z)
+  }
+
   trait Datum2d[A <: Datum2d[A]] extends Point2d { self =>
     val x: Double
     val y: Double
@@ -78,6 +82,8 @@ package object numeric {
     ySpacing: Double)
 
   final case class Bounds(min: Double, max: Double) {
+    require(min <= max, s"Bounds min must be <= max, $min !<= $max")
+
     lazy val range: Double = max - min
 
     def isInBounds(x: Double): Boolean = x >= min && x <= max
@@ -94,6 +100,13 @@ package object numeric {
       } catch {
         case _: Exception => None
       }
+    }
+
+    def union(bounds: Seq[Bounds]): Bounds = {
+      Bounds(
+        min = bounds.map(_.min).min,
+        max = bounds.map(_.max).max
+      )
     }
 
     def getBy[T](data: Seq[T])(f: T => Double): Option[Bounds] = {

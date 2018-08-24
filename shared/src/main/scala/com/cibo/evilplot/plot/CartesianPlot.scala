@@ -12,20 +12,6 @@ import com.cibo.evilplot.plot.renderers._
 
 object CartesianPlot {
 
-  import TransformWorldToScreen._
-  final case class CartesianPlotRenderer(drawablesToPlot: Seq[RenderContext => PlotRenderer],
-                                         xBounds: Bounds,
-                                         yBounds: Bounds) extends PlotRenderer {
-    override def legendContext: LegendContext = LegendContext()
-
-
-    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-      drawablesToPlot.foldLeft(EmptyDrawable() : Drawable){ case (accum, dr) =>
-        dr(RenderContext(plot, plotExtent)).render(plot, plotExtent) behind accum
-      }
-    }
-  }
-
   type ContextToDrawable[X <: Datum2d[X]] = CartesianDataRenderer[X] => RenderContext => PlotRenderer
 
   def apply[X <: Datum2d[X]](
@@ -43,7 +29,7 @@ object CartesianPlot {
     Plot(
       xbounds,
       ybounds,
-      CartesianPlotRenderer(
+      CompoundPlotRenderer(
         contextToDrawable.map(x => x(cartesianDataRenderer)),
         xbounds,
         ybounds
@@ -53,12 +39,11 @@ object CartesianPlot {
 }
 
 
-case class CartesianDataRenderer[X <: Datum2d[X]](data: Seq[X]) extends TransformWorldToScreen {
+case class CartesianDataRenderer[X <: Datum2d[X]](data: Seq[X]) {
 
   def manipulate(x: Seq[X] => Seq[X]): Seq[X] = x(data)
 
   def filter(x: X => Boolean): CartesianDataRenderer[X] = this.copy(data.filter(x))
-
 
   def scatter(pointToDrawable: X => Drawable,
               legendCtx: LegendContext = LegendContext.empty)(pCtx: RenderContext)(implicit theme: Theme): PlotRenderer = {

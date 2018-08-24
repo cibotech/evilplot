@@ -70,7 +70,6 @@ object RenderContext {
 
 object PlotUtils {
 
-
   def bounds[X <: Datum2d[X]](data: Seq[X],
                               defaultBoundBuffer: Double,
                               xboundBuffer: Option[Double] = None,
@@ -80,20 +79,15 @@ object PlotUtils {
     val xs = data.map(_.x)
     val xbuffer = xboundBuffer.getOrElse(defaultBoundBuffer)
     val ybuffer = yboundBuffer.getOrElse(defaultBoundBuffer)
-    val xbounds = Plot.expandBounds(
-      Bounds(
+    val xbounds = Bounds(
         xs.reduceOption[Double](math.min).getOrElse(0.0),
-        xs.reduceOption[Double](math.max).getOrElse(0.0)),
-      if (data.length == 1 && xbuffer == 0) 0.1 else xbuffer
-    )
+        xs.reduceOption[Double](math.max).getOrElse(0.0))
 
     val ys = data.map(_.y)
-    val ybounds = Plot.expandBounds(
-      Bounds(
+    val ybounds = Bounds(
         ys.reduceOption[Double](math.min).getOrElse(0.0),
-        ys.reduceOption[Double](math.max).getOrElse(0.0)),
-      if (data.length == 1 && ybuffer == 0) 0.1 else xbuffer
-    )
+        ys.reduceOption[Double](math.max).getOrElse(0.0))
+
     (xbounds, ybounds)
   }
 

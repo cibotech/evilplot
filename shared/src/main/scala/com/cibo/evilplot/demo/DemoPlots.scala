@@ -64,7 +64,7 @@ object DemoPlots {
 
   lazy val legendFeatures: Drawable = {
     val allYears = (2007 to 2013).toVector
-    val data = Seq.fill(150)(DemoPlots.Point3d(Random.nextDouble(), Random.nextDouble(), allYears(Random.nextInt(allYears.length))))
+    val data = Seq.fill(150)(Point3d(Random.nextDouble(), Random.nextDouble(), allYears(Random.nextInt(allYears.length))))
 
     val customCategoricalLegend = Legend(
       Position.Right,
@@ -255,11 +255,6 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
-  case class PizzaPoint(x: Double, y: Double, amountLeft: Double) extends Datum2d[PizzaPoint] {
-
-    def setXY(x: Double, y: Double): PizzaPoint = this.copy(x = x, y = y)
-  }
-
   def cluster(values: Seq[Double], binCount: Int, xbounds: Bounds, normalize: Boolean): Seq[Seq[Double]] = {
     val binWidth = xbounds.range / binCount
     val grouped = values.groupBy { value =>
@@ -272,15 +267,21 @@ object DemoPlots {
     }
   }
 
-  lazy val simpleScatterPlot: Drawable = {
-    val points = Seq.fill(150)(Point(Random.nextDouble() * 2, Random.nextDouble())) :+ Point(0.0, 0.0) :+ Point(1.0, 0.0) :+ Point(0.0, 1.0) :+ Point(1.0, 1.0)
-
-    val pizzaData = points.sortBy(_.x).map(thing => PizzaPoint(thing.x, thing.y, Math.random()))
-
-      CartesianPlot(pizzaData)(
-        _.scatter({ _: PizzaPoint => Style(Disc.centered(2), fill = RGB.random) }),
-        _.filter(_.amountLeft > 0.5).scatter({ x: PizzaPoint => Style(Disc.centered(6), fill = RGB(0, 0, 255))}),
-        _.line(color = Some(RGB(255, 0, 0)))
+  lazy val simpleGroupedPlot: Drawable = {
+    val nums = Seq.fill(25)(Random.nextDouble() * 10)
+    val pts = Seq.fill(25)(Point(Random.nextDouble() * 12, Random.nextDouble() * 12))
+      Overlay(
+        Histogram(nums),
+        GroupedPlot(nums, { (x: Seq[Double], ctx) =>
+          Binning.histogramBinsFromContext(x, ctx)
+        })(
+          _.histogram(barRenderer = Some(BarRenderer.custom{(ctx, bar) =>
+            Rect(ctx.extent.width, ctx.extent.height).filled(RGBA(0, 0, 255, 0.5))
+          }))
+        ),
+        CartesianPlot(pts)(
+          _.scatter
+        )
       ).standard()
       .xLabel("x")
       .yLabel("y")
@@ -289,9 +290,26 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
-  case class Point3d[Z: Numeric](x: Double, y: Double, z: Z) extends Datum2d[Point3d[Z]]{
-    def setXY(x: Double, y: Double): Point3d[Z] = this.copy(x, y, z)
+  lazy val simpleCartesianPlot: Drawable = {
+    val points = Seq.fill(150)(Point(Random.nextDouble() * 2, Random.nextDouble())) :+ Point(0.0, 0.0) :+ Point(1.0, 0.0) :+ Point(0.0, 1.0) :+ Point(1.0, 1.0)
+
+    val pointData = points.sortBy(_.x).map(thing => Point3d(thing.x, thing.y, Math.random()))
+
+      CartesianPlot(pointData)(
+        _.scatter({ pt: Point3d[Double] =>
+          if(pt.z > 0.6) {
+            Text("\uD83D\uDE00", size = 20).translate(-10, -10)
+          } else {
+            Style(Disc.centered(2), fill = RGB.random)
+          }})
+      ).standard()
+      .xLabel("x")
+      .yLabel("y")
+      .trend(1, 0)
+      .rightLegend()
+      .render(plotAreaSize)
   }
+
   lazy val scatterPlot: Drawable = {
     val points = Seq.fill(150)(Point3d(Random.nextDouble(), Random.nextDouble(), Random.nextDouble())) :+ Point3d(0.0, 0.0, Random.nextDouble())
 
