@@ -126,14 +126,14 @@ object Binning {
 
 object GroupedPlot {
 
-  type ContextToDrawable[T] = ContinuousDataRenderer[T] => RenderContext => PlotRenderer
+  type ContextToDrawableContinuous[T] = ContinuousDataRenderer[T] => RenderContext => PlotRenderer
 
-  def apply[T]( data: Seq[T],
+  def continuous[T]( data: Seq[T],
                 binFn: (Seq[T], Option[RenderContext]) => Seq[ContinuousBin],
                 xboundBuffer: Option[Double] = None,
                 yboundBuffer: Option[Double] = None
               )(
-                contextToDrawable: ContextToDrawable[T]*,
+                contextToDrawable: ContextToDrawableContinuous[T]*,
               )(implicit theme: Theme): Plot = {
     val bins: Seq[ContinuousBin] = binFn(data, None)
 
@@ -152,6 +152,50 @@ object GroupedPlot {
         ybounds
       )
     )
+  }
+
+  type ContextToDrawableCategorical[T, CAT] = CategoricalDataRenderer[T, CAT] => RenderContext => PlotRenderer
+
+  def categorical[T, CAT]( data: Seq[T],
+                      binFn: Seq[T] => Seq[CategoryBin[CAT]],
+                      catLabel: CAT => String,
+                      xboundBuffer: Option[Double] = None,
+                      yboundBuffer: Option[Double] = None
+                    )(
+                      contextToDrawable: ContextToDrawableCategorical[T, CAT]*,
+                    )(implicit theme: Theme): Plot = {
+    val bins: Seq[CategoryBin[CAT]] = binFn(data)
+
+    val xbounds = Bounds(0, bins.length)
+    val ybounds = Bounds(0, bins.map(_.y).max)
+
+    val groupedDataRenderer = plot.CategoricalDataRenderer[T, CAT](data, binFn)
+
+    println("GROUPED PLOT XBOUNDS",xbounds)
+    Plot(
+      xbounds,
+      ybounds,
+      CompoundPlotRenderer(
+        contextToDrawable.map(x => x(groupedDataRenderer)),
+        xbounds,
+        ybounds
+      )
+    )
+  }
+
+}
+
+case class CategoricalDataRenderer[T, CAT](data: Seq[T], binFn: Seq[T] => Seq[CategoryBin[CAT]]) {
+
+  def manipulate(x: Seq[T] => Seq[T]): Seq[T] = x(data)
+
+  def filter(x: T => Boolean): CategoricalDataRenderer[T, CAT] = this.copy(data.filter(x))
+
+  def barChart(barRenderer: Option[BarRenderer] = None,
+                spacing: Option[Double] = None,
+                boundBuffer: Option[Double] = None,
+               )(pCtx: RenderContext)(implicit theme: Theme): PlotRenderer = {
+    BarChart(binFn(data).map(_.y)).renderer
   }
 
 }

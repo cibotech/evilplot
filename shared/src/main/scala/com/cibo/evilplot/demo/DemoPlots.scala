@@ -270,28 +270,35 @@ object DemoPlots {
   lazy val simpleGroupedPlot: Drawable = {
     val nums = Seq.fill(25)(Random.nextDouble() * 10)
     val pts = Seq.fill(25)(Point(Random.nextDouble() * 12, Random.nextDouble() * 12))
-      Overlay(
-        Histogram(nums),
-        GroupedPlot(nums, { (x: Seq[Double], ctx) =>
-          Binning.histogramBinsFromContext(x, ctx)
-        })(
-          _.histogram(barRenderer = Some(BarRenderer.custom{(ctx, bar) =>
-            Rect(ctx.extent.width, ctx.extent.height).filled(RGBA(0, 0, 255, 0.5))
-          }))
-        ),
-        CartesianPlot(pts)(
-          _.scatter
-        )
-      ).standard()
+
+    val categoricalData = Seq.fill(60)(Person((Math.random() * 100).toInt, randomMood()))
+
+    val groupPlot = GroupedPlot.categorical[Person, String](
+      categoricalData,
+      { x: Seq[Person] =>
+        x.groupBy(_.mood).map( y => CategoryBin[String](y._2.map(_.age.toDouble), y._1)).toSeq
+      },
+      catLabel = x => x
+    )(
+      _.barChart()
+    )
+
+    Overlay(groupPlot)
+      .standard()
       .xLabel("x")
       .yLabel("y")
-      .trend(1, 0)
       .rightLegend()
       .render(plotAreaSize)
   }
 
+  case class Person(age: Int, mood: String)
+  def randomMood() = {
+    Random.shuffle(Seq("happy", "happy", "sad", "angry", "neutral")).head
+  }
+
   lazy val simpleCartesianPlot: Drawable = {
     val points = Seq.fill(150)(Point(Random.nextDouble() * 2, Random.nextDouble())) :+ Point(0.0, 0.0) :+ Point(1.0, 0.0) :+ Point(0.0, 1.0) :+ Point(1.0, 1.0)
+
 
     val pointData = points.sortBy(_.x).map(thing => Point3d(thing.x, thing.y, Math.random()))
 
