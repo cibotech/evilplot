@@ -41,14 +41,13 @@ package object numeric {
     val x: Double
     val y: Double
     def setXY(x: Double = this.x, y: Double = this.y): Point2d
-
   }
 
   case class Point3d[Z: Numeric](x: Double, y: Double, z: Z) extends Datum2d[Point3d[Z]]{
     def setXY(x: Double, y: Double): Point3d[Z] = this.copy(x, y, z)
   }
 
-  trait Datum2d[A <: Datum2d[A]] extends Point2d { self =>
+  trait Datum2d[A <: Datum2d[A]] extends Point2d {
     val x: Double
     val y: Double
     def setXY(x: Double = this.x, y: Double = this.y): A

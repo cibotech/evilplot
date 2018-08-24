@@ -43,6 +43,10 @@ object LegendRenderer {
   val leftPadding: Double = 4
   val spacing: Double = 4
 
+  def custom(fn: LegendContext => Drawable): LegendRenderer = new LegendRenderer {
+    def render(context: LegendContext): Drawable = fn(context)
+  }
+
   /** Create a legend for discrete components.
     * @param reduction Function to combine multiple legends.
     */

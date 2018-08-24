@@ -35,7 +35,7 @@ import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, LineStyle, P
 import com.cibo.evilplot.numeric.{Bounds, Point, Point3}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext
-import com.cibo.evilplot.plot.{LegendContext, Plot}
+import com.cibo.evilplot.plot.{LegendContext, Plot, RenderContext}
 
 trait SurfaceRenderer extends PlotElementRenderer[SurfaceRenderContext] {
   def legendContext(levels: Seq[Double]): LegendContext = LegendContext.empty
@@ -49,6 +49,16 @@ object SurfaceRenderer {
     levels: Seq[Double],
     currentLevelPaths: Seq[Seq[Point]],
     currentLevel: Double)
+
+  def custom(fn: (RenderContext, SurfaceRenderContext) => Drawable,
+             legendCtx: Option[Seq[Double] => LegendContext] = None): SurfaceRenderer = new SurfaceRenderer {
+
+    def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable =
+      fn(RenderContext.from(plot, extent), surface)
+
+    override def legendContext(levels: Seq[Double]): LegendContext =
+      legendCtx.map(_(levels)).getOrElse(super.legendContext(levels))
+  }
 
   def contours(
     color: Option[Color] = None,

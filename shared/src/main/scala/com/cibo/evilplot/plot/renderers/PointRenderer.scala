@@ -32,11 +32,11 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text}
-import com.cibo.evilplot.numeric.{Datum2d, Point2d}
+import com.cibo.evilplot.numeric.{Datum2d}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{Bar, LegendContext, LegendStyle, Plot, RenderContext}
 
-trait PointRenderer[X <: Point2d] extends PlotElementRenderer[X]{
+trait PointRenderer[X <: Datum2d[X]] extends PlotElementRenderer[X]{
   def legendContext: LegendContext = LegendContext()
 
   /** Render a category within the extent. */
@@ -51,7 +51,7 @@ object PointRenderer {
 
   val defaultColorCount: Int = 10
 
-  def custom[X <: Point2d](renderFn: X => Drawable,
+  def custom[X <: Datum2d[X]](renderFn: X => Drawable,
                            legendCtx: Option[LegendContext] = None): PointRenderer[X] = new PointRenderer[X] {
 
     def render(datum: X): Drawable = {
@@ -66,7 +66,7 @@ object PointRenderer {
     * @param pointSize The size of the point.
     * @param label Label to be shown in a legend.
     */
-  def default[X <: Point2d](
+  def default[X <: Datum2d[X]](
     color: Option[Color] = None,
     pointSize: Option[Double] = None,
     label: Drawable = EmptyDrawable()
@@ -136,13 +136,13 @@ object PointRenderer {
   /**
     * A no-op renderer for when you don't want to render points (such as on a line)
     */
-  def empty[X <: Point2d](): PointRenderer[X] = new PointRenderer[X] {
+  def empty[X <: Datum2d[X]](): PointRenderer[X] = new PointRenderer[X] {
     def render(index: X): Drawable = EmptyDrawable()
   }
 
   // Old `depthColor` implementation, called to by all deprecated `depthColor`
   // methods.
-  private[this] def oldDepthColor[X <: Point2d](
+  private[this] def oldDepthColor[X <: Datum2d[X]](
    depth: X => Double,
    labels: Seq[Drawable],
     bar: ScaledColorBar,

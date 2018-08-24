@@ -298,7 +298,7 @@ object DemoPlots {
       CartesianPlot(pointData)(
         _.scatter({ pt: Point3d[Double] =>
           if(pt.z > 0.6) {
-            Text("\uD83D\uDE00", size = 20).translate(-10, -10)
+            Text("\uD83D\uDC10", size = 20).translate(-10, -10)
           } else {
             Style(Disc.centered(2), fill = RGB.random)
           }})
