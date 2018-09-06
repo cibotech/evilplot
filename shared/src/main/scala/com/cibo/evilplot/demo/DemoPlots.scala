@@ -234,7 +234,7 @@ object DemoPlots {
   lazy val boxPlot: Drawable = {
     val data = Seq.fill(10)(Seq.fill(Random.nextInt(30))(Random.nextDouble()))
     val series = Seq.fill(10)(Random.nextInt(2))
-    BoxPlot(data, boxRenderer = Some(BoxRenderer.colorBy(series)))
+    BoxPlot(data, boxRenderer = Some(BoxRenderer.colorBy(series).withMeanLine()))
       .standard(xLabels = (1 to 10).map(_.toString))
       .rightLegend()
       .render(plotAreaSize)

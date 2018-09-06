@@ -3,6 +3,7 @@
 ## [Changes since last release]
 ### Added
 - Support for clustered box plots.
+- Option to display the data's mean as a dashed line on box plots.
 ### Fixed
 - Bug in the spacing and sizing of bars in clustered bar charts.
 
