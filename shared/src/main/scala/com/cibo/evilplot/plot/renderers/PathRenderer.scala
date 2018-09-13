@@ -65,43 +65,12 @@ object PathRenderer {
     color: Option[Color] = None,
     label: Drawable = EmptyDrawable(),
     lineStyle: Option[LineStyle] = None
-  )(implicit theme: Theme): PathRenderer = new PathRenderer {
-    private val useLineStyle: LineStyle = lineStyle
-      .getOrElse(theme.elements.lineDashStyle)
-    private val legendStrokeLength: Double = calcLegendStrokeLength(useLineStyle)
-    override def legendContext: LegendContext = label match {
-      case _: EmptyDrawable => LegendContext.empty
-      case d =>
-        LegendContext.single(
-          LineDash(
-            StrokeStyle(
-              Path(
-                Seq(Point(0, 0), Point(legendStrokeLength, 0)),
-                strokeWidth.getOrElse(theme.elements.strokeWidth)
-              ),
-              color.getOrElse(theme.colors.path)
-            ),
-            useLineStyle
-          ),
-          d
-        )
-    }
-
-    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
-      Clipping
-        .clipPath(path, extent)
-        .map(
-          segment =>
-            LineDash(
-              StrokeStyle(
-                Path(segment, strokeWidth.getOrElse(theme.elements.strokeWidth)),
-                color.getOrElse(theme.colors.path)),
-              useLineStyle
-          )
-        )
-        .group
-    }
-  }
+  )(implicit theme: Theme): PathRenderer =
+    new DefaultPathRenderer(
+      strokeWidth.getOrElse(theme.elements.strokeWidth),
+      color.getOrElse(theme.colors.path),
+      label,
+      lineStyle.getOrElse(theme.elements.lineDashStyle))
 
   /** Path renderer for named paths (to be shown in legends).
     * @param name The name of this path.
@@ -167,4 +136,43 @@ object PathRenderer {
         minimumLength + (patternLength * math.max((diff / patternLength).toInt, 1))
       } else minimumLength
     }
+}
+
+class DefaultPathRenderer (strokeWidth: Double,
+  color: Color,
+  label: Drawable = EmptyDrawable(),
+  lineStyle: LineStyle) extends PathRenderer {
+  private val legendStrokeLength: Double = PathRenderer.calcLegendStrokeLength(lineStyle)
+  override def legendContext: LegendContext = label match {
+    case _: EmptyDrawable => LegendContext.empty
+    case d =>
+      LegendContext.single(
+        LineDash(
+          StrokeStyle(
+            Path(
+              Seq(Point(0, 0), Point(legendStrokeLength, 0)),
+              strokeWidth
+            ),
+            color
+          ),
+          lineStyle
+        ),
+        d
+      )
+  }
+
+  def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
+    Clipping
+      .clipPath(path, extent)
+      .map(
+        segment =>
+          LineDash(
+            StrokeStyle(
+              Path(segment, strokeWidth),
+              color),
+            lineStyle
+          )
+      )
+      .group
+  }
 }
