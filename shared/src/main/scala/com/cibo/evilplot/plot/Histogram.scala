@@ -81,11 +81,13 @@ object Histogram {
     val grouped = values.groupBy { value =>
       math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
     }
-    val pts = (0 until binCount).flatMap { i =>
-      grouped.get(i).map { vs =>
-        val y = if (normalize) vs.size.toDouble / values.size else vs.size
-        val x = i * binWidth + xbounds.min
-        Point(x, y)
+    val pts = (0 until binCount).map { i =>
+      val x = i * binWidth + xbounds.min
+      grouped.get(i) match {
+        case Some(vs) =>
+          val y = if (normalize) vs.size.toDouble / values.size else vs.size
+          Point(x, y)
+        case _ => Point(x, 0)
       }
     }
     if (cumulative) {
