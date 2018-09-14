@@ -49,9 +49,7 @@ import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
 trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] { br =>
-  def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable = render(extent, summary)
-
-  def render(extent: Extent, summary: BoxRendererContext): Drawable
+  def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable
 
   def legendContext: LegendContext = LegendContext.empty
 
@@ -64,8 +62,6 @@ trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] { br =>
   def withMeanLine(
     color: Color = HTMLNamedColors.darkRed
    )(implicit theme: Theme): BoxRenderer = new BoxRenderer {
-
-    def render(extent: Extent, summary: BoxRendererContext): Drawable = ???
 
     override def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable = {
       val box = br.render(plot, extent, summary)
@@ -92,9 +88,11 @@ object BoxRenderer {
   def custom(renderFn: (Extent, BoxRendererContext) => Drawable
             )(implicit theme: Theme): BoxRenderer = new BoxRenderer {
 
-    def render(extent: Extent,
-               context: BoxRendererContext
-              ): Drawable = renderFn(extent, context)
+
+    def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable = {
+      renderFn(extent, summary)
+    }
+
   }
 
   def default(
@@ -108,10 +106,9 @@ object BoxRenderer {
     private val useLineDash = lineDash.getOrElse(theme.elements.lineDashStyle)
     private val useStrokeWidth = strokeWidth.getOrElse(theme.elements.strokeWidth)
 
-    def render(
-      extent: Extent,
-      context: BoxRendererContext
-    ): Drawable = {
+
+    def render(plot: Plot, extent: Extent, context: BoxRendererContext): Drawable = {
+
       val summary = context.summaryStatistics
       val scale = extent.height / (summary.upperWhisker - summary.lowerWhisker)
       val topWhisker = summary.upperWhisker - summary.upperQuantile
@@ -150,7 +147,8 @@ object BoxRenderer {
     private val useLineDash = lineDash.getOrElse(theme.elements.lineDashStyle)
     private val useStrokeWidth = strokeWidth.getOrElse(theme.elements.strokeWidth)
 
-    def render(extent: Extent, context: BoxRenderer.BoxRendererContext): Drawable = {
+    def render(plot: Plot, extent: Extent, context: BoxRendererContext): Drawable = {
+
       val summary = context.summaryStatistics
       val scale = extent.height / (summary.upperWhisker - summary.lowerWhisker)
       val topWhisker = summary.upperWhisker - summary.upperQuantile
@@ -188,9 +186,10 @@ object BoxRenderer {
     private val useColoring = fillColoring.getOrElse(CategoricalColoring.themed[A])
     private val colorFunc = useColoring(colorDimension)
 
-    def render(extent: Extent, summary: BoxRendererContext): Drawable = BoxRenderer
+
+    def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable = BoxRenderer
       .default(fillColor = Some(colorFunc(colorDimension(summary.index))))
-      .render(extent, summary)
+      .render(plot, extent, summary)
 
     override def legendContext: LegendContext = {
       useColoring.legendContext(colorDimension, legendGlyph = d => Rect(d))

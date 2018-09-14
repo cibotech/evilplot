@@ -57,7 +57,7 @@ object Histogram {
   // Create binCount bins from the given data and xbounds.
   private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int, normalize: Boolean): Seq[Point] = {
     val binWidth = xbounds.range / binCount
-    println("bin bounds", xbounds.range)
+
     val grouped = values.groupBy { value =>
       math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
     }
@@ -80,7 +80,6 @@ object Histogram {
   ) extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.nonEmpty) {
-        println("histogram bounds", plot.xbounds)
 
         val xtransformer = plot.xtransform(plot, plotExtent)
         val ytransformer = plot.ytransform(plot, plotExtent)
@@ -102,7 +101,7 @@ object Histogram {
           val x = xtransformer(point.x) + spacing / 2.0
           val clippedY = math.min(point.y * yscale, plot.ybounds.max)
           val y = ytransformer(clippedY)
-          println(point.x)
+
           val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
           val bar = Bar(clippedY)
           val barHeight = yintercept - y
@@ -127,7 +126,7 @@ object Histogram {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (bins.nonEmpty) {
         val xbounds = plot.xbounds
-        println("continuous bounds", plot.xbounds)
+
         val xtransformer = plot.xtransform(plot, plotExtent)
         val ytransformer = plot.ytransform(plot, plotExtent)
 
@@ -149,7 +148,7 @@ object Histogram {
           val clippedY = math.min(bin.y * yscale, plot.ybounds.max)
           val y = ytransformer(clippedY)
           val barWidth = math.max(xtransformer(bin.x.range + xbounds.min) - spacing, 0)
-          println(barWidth)
+
           val bar = Bar(clippedY)
           val barHeight = yintercept - y
           barRenderer.render(plot, Extent(barWidth, barHeight), bar).translate(x = x, y = y)
@@ -190,7 +189,7 @@ object Histogram {
     )
     val maxY =
       binningFunction(values, xbounds, bins).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
-    println("Histogram x bounds", xbounds)
+
     Plot(
       xbounds = xbounds,
       ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),

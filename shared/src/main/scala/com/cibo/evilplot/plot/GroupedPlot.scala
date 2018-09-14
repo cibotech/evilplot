@@ -142,7 +142,6 @@ object GroupedPlot {
 
     val groupedDataRenderer = ContinuousDataRenderer[T](data, binFn)
 
-    println("GROUPED PLOT XBOUNDS",xbounds)
     Plot(
       xbounds,
       ybounds,
@@ -171,7 +170,6 @@ object GroupedPlot {
 
     val groupedDataRenderer = plot.CategoricalDataRenderer[T, CAT](data, binFn)
 
-    println("GROUPED PLOT XBOUNDS",xbounds)
     Plot(
       xbounds,
       ybounds,

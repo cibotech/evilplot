@@ -91,6 +91,7 @@ final case class BoxPlotRenderer(
             val box = {
               if (boxHeight != 0)
                 boxRenderer.render(
+                  pCtx.plot,
                   Extent(boxWidth, boxHeight),
                   BoxRendererContext(summaryStatistics, index))
               else {
