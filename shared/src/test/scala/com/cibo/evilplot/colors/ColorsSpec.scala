@@ -48,6 +48,20 @@ class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
     }
   }
 
+  describe("toRGBA cfunctions") {
+    it("should make clear transparent") {
+      val baseColor = Clear
+      baseColor.rgba._4 shouldBe 0.0
+    }
+    it("should recover a rgba color") {
+      val baseColor = RGBA(77,255,22,1.0)
+      println(baseColor)
+      println(ColorUtils.hslaToRgba(baseColor))
+
+      baseColor.rgba shouldBe (75, 255,20,1.0)
+    }
+  }
+
   describe("HSLA functions") {
     it("should darken and lighten") {
       val baseColor = HSLA(0, 0, 0, 0)
