@@ -30,7 +30,7 @@
 
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.{CategoricalColoring, Color}
+import com.cibo.evilplot.colors.{CategoricalColoring, Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{
   Align,
   BorderRect,
@@ -38,18 +38,48 @@ import com.cibo.evilplot.geometry.{
   Extent,
   Line,
   LineDash,
+  LineStyle,
   Rect,
-  StrokeStyle
+  StrokeStyle,
+  Translate
 }
 import com.cibo.evilplot.numeric.BoxPlotSummaryStatistics
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
-trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] {
+trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] { br =>
   def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable = render(extent, summary)
+
   def render(extent: Extent, summary: BoxRendererContext): Drawable
+
   def legendContext: LegendContext = LegendContext.empty
+
+  /** Construct a new [[BoxRenderer]] whose `render` method wraps [[render]],
+    * adding a dashed line at the data's mean.
+    *
+    * @param color  color of line at mean
+    * @return       a new [[BoxRenderer]] that adds a line at the mean
+    * */
+  def withMeanLine(
+    color: Color = HTMLNamedColors.darkRed
+   )(implicit theme: Theme): BoxRenderer = new BoxRenderer {
+
+    def render(extent: Extent, summary: BoxRendererContext): Drawable = ???
+
+    override def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable = {
+      val box = br.render(plot, extent, summary)
+
+      val data = summary.summaryStatistics.allPoints
+      val avg = data.sum / data.length
+
+      val dashedLine = Line(extent.width, theme.elements.strokeWidth).dashed(LineStyle.Dashed)
+      val y = plot.ytransform(plot, extent)(avg) - theme.elements.strokeWidth / 2d
+      val meanLine = StrokeStyle(Translate(dashedLine, y = y), color)
+
+      box behind meanLine
+    }
+  }
 }
 
 object BoxRenderer {
