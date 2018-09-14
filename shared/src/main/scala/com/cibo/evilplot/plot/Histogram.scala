@@ -47,25 +47,51 @@ object Histogram {
     *         edge of the bins and the y coordinates represent their heights
     */
   def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
-    createBins(values, xbounds, binCount, normalize = false)
+    createBins(values, xbounds, binCount, normalize = false, cumulative = false)
 
   /** Create binCount bins from the given data and xbounds, normalizing the heights
     * such that their sum is 1 */
   def normalize(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
-    createBins(values, xbounds, binCount, normalize = true)
+    createBins(values, xbounds, binCount, normalize = true, cumulative = false)
+
+  /** Create binCount bins from the given data and xbounds, cumulatively
+   * such that each bin includes the data in all previous bins */
+  def cumulative(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
+    createBins(values, xbounds, binCount, normalize = false, cumulative = true)
+
+  /** Create binCount bins from the given data and xbounds, computing the bin
+   * heights such that they represent the average probability density over each
+   * bin interval */
+  def density(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] = {
+    val binWidth = xbounds.range / binCount
+    createBins(values, xbounds, binCount, normalize = true, cumulative = false)
+      .map { case Point(x, y) => Point(x, y / binWidth) }
+  }
+
+  /** Create binCount bins from the given data and xbounds, cumulatively
+   * such that each bin includes the data in all previous bins, and normalized
+   * so that bins approximate a CDF */
+  def cumulativeDensity(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
+    createBins(values, xbounds, binCount, normalize = true, cumulative = true)
 
   // Create binCount bins from the given data and xbounds.
-  private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int, normalize: Boolean): Seq[Point] = {
+  private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int,
+    normalize: Boolean, cumulative: Boolean): Seq[Point] = {
     val binWidth = xbounds.range / binCount
     val grouped = values.groupBy { value =>
       math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
     }
-    (0 until binCount).flatMap { i =>
+    val pts = (0 until binCount).flatMap { i =>
       grouped.get(i).map { vs =>
         val y = if (normalize) vs.size.toDouble / values.size else vs.size
         val x = i * binWidth + xbounds.min
         Point(x, y)
       }
+    }
+    if (cumulative) {
+      pts.scanLeft(Point(0, 0)) { case (Point(_, t), Point(x, y)) => Point(x, y + t) }.drop(1)
+    } else {
+      pts
     }
   }
 
