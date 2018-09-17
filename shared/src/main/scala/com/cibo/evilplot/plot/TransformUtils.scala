@@ -50,8 +50,8 @@ trait TransformWorldToScreen {
 
 object TransformWorldToScreen extends TransformWorldToScreen
 
-case class RenderContext(plot: Plot,
-                         extent: Extent){
+case class PlotContext(plot: Plot,
+                       extent: Extent){
 
   lazy val xBounds: Bounds = plot.xbounds
   lazy val yBounds: Bounds = plot.ybounds
@@ -64,8 +64,8 @@ case class RenderContext(plot: Plot,
 
 }
 
-object RenderContext {
-  def from(plot: Plot, extent: Extent): RenderContext = apply(plot, extent)
+object PlotContext {
+  def from(plot: Plot, extent: Extent): PlotContext = apply(plot, extent)
 }
 
 object PlotUtils {

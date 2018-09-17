@@ -67,9 +67,9 @@ final case class BoxPlotRenderer(
     clusterStartX + boxXInCluster
   }
 
-  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = render(RenderContext.from(plot, plotExtent))
+  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = render(PlotContext.from(plot, plotExtent))
 
-  def render(pCtx: RenderContext)(implicit theme: Theme): Drawable = {
+  def render(pCtx: PlotContext)(implicit theme: Theme): Drawable = {
     val xtransformer = pCtx.xCartesianTransform
     val ytransformer = pCtx.yCartesianTransform
 

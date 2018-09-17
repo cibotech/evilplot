@@ -34,7 +34,7 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text}
 import com.cibo.evilplot.numeric.{Datum2d}
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.{Bar, LegendContext, LegendStyle, Plot, RenderContext}
+import com.cibo.evilplot.plot.{Bar, LegendContext, LegendStyle, Plot, PlotContext}
 
 trait PointRenderer[X <: Datum2d[X]] extends PlotElementRenderer[X]{
   def legendContext: LegendContext = LegendContext()

@@ -4,7 +4,6 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, LineStyle}
 import com.cibo.evilplot.numeric.{Bounds, Datum2d, Point}
 import com.cibo.evilplot.plot
-import com.cibo.evilplot.plot.Histogram.{HistogramRenderer, createBins, defaultBinCount}
 import com.cibo.evilplot.plot.LinePlot.LinePlotRenderer
 import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -12,14 +11,14 @@ import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PlotRenderer
 
 import scala.reflect.ClassTag
 
-final case class CompoundPlotRenderer(drawablesToPlot: Seq[RenderContext => PlotRenderer],
+final case class CompoundPlotRenderer(drawablesToPlot: Seq[PlotContext => PlotRenderer],
                                       xBounds: Bounds,
                                       yBounds: Bounds) extends PlotRenderer {
   override def legendContext: LegendContext = LegendContext()
 
   def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
     drawablesToPlot.foldLeft(EmptyDrawable() : Drawable){ case (accum, dr) =>
-      dr(RenderContext(plot, plotExtent)).render(plot, plotExtent) behind accum
+      dr(PlotContext(plot, plotExtent)).render(plot, plotExtent) behind accum
     }
   }
 }
@@ -41,7 +40,7 @@ case class CategoryBin[T](values: Seq[Double], category: T, agg: Seq[Double] => 
 
 object Binning {
 
-  def histogramBinsFromContext(seq: Seq[Double], ctx: Option[RenderContext], numBins: Int = 20, normalize: Boolean = false): Seq[ContinuousBin] = {
+  def histogramBinsFromContext(seq: Seq[Double], ctx: Option[PlotContext], numBins: Int = 20, normalize: Boolean = false): Seq[ContinuousBin] = {
     ctx match {
       case Some(rctx) => Binning.histogramBins(seq, rctx.xBounds)
       case None => Binning.histogramBinsDataBounds(seq)
@@ -67,71 +66,14 @@ object Binning {
   }
 }
 
-//object CategoricalGroupedPlot {
-//
-//  type ContextToDrawable[T, A <: Bin[T], CAT] = ContinuousDataRenderer[T, A, CAT] => RenderContext => PlotRenderer
-//
-//  def continuous[T]( data: Seq[T],
-//                     binFn: Seq[T] => Seq[ContinuousBin],
-//                     xboundBuffer: Option[Double] = None,
-//                     yboundBuffer: Option[Double] = None
-//                   )(
-//                     contextToDrawable: ContextToDrawable[T, ContinuousBin, Double]*,
-//                   )(implicit theme: Theme): Plot = {
-//    val bins: Seq[ContinuousBin] = binFn(data)
-//
-//    val xbounds = Bounds.union(bins.map(_.x))
-//    val ybounds = Bounds.get(bins.map(_.y)).get
-//
-//    val groupedDataRenderer = ContinuousDataRenderer[T, ContinuousBin, Double](data, binFn)
-//
-//    Plot(
-//      xbounds,
-//      ybounds,
-//      CompoundPlotRenderer(
-//        contextToDrawable.map(x => x(groupedDataRenderer)),
-//        xbounds,
-//        ybounds
-//      )
-//    )
-//  }
-//
-//  def categorical[T, CAT](
-//                           data: Seq[T],
-//                           binFn: Seq[T] => Seq[CategoryBin[CAT]],
-//                           xboundBuffer: Option[Double] = None,
-//                           yboundBuffer: Option[Double] = None
-//                         )(
-//                           contextToDrawable: ContextToDrawable[T, CategoryBin[CAT], CAT]*,
-//                         )(implicit theme: Theme): Plot = {
-//
-//    val bins: Seq[CategoryBin[CAT]] = binFn(data)
-//
-//    val xbounds = Bounds(0, bins.length.toDouble)
-//    val ybounds = Bounds.get(bins.map(_.y)).get
-//
-//    val groupedDataRenderer = ContinuousDataRenderer[T, CategoryBin[CAT], CAT](data, binFn)
-//
-//    Plot(
-//      xbounds,
-//      ybounds,
-//      CompoundPlotRenderer(
-//        contextToDrawable.map(x => x(groupedDataRenderer)),
-//        xbounds,
-//        ybounds
-//      )
-//    )
-//  }
-//}
-
 object GroupedPlot {
 
-  type ContextToDrawableContinuous[T] = ContinuousDataRenderer[T] => RenderContext => PlotRenderer
+  type ContextToDrawableContinuous[T] = ContinuousDataRenderer[T] => PlotContext => PlotRenderer
 
-  def continuous[T]( data: Seq[T],
-                binFn: (Seq[T], Option[RenderContext]) => Seq[ContinuousBin],
-                xboundBuffer: Option[Double] = None,
-                yboundBuffer: Option[Double] = None
+  def continuous[T](data: Seq[T],
+                    binFn: (Seq[T], Option[PlotContext]) => Seq[ContinuousBin],
+                    xboundBuffer: Option[Double] = None,
+                    yboundBuffer: Option[Double] = None
               )(
                 contextToDrawable: ContextToDrawableContinuous[T]*,
               )(implicit theme: Theme): Plot = {
@@ -153,7 +95,7 @@ object GroupedPlot {
     )
   }
 
-  type ContextToDrawableCategorical[T, CAT] = CategoricalDataRenderer[T, CAT] => RenderContext => PlotRenderer
+  type ContextToDrawableCategorical[T, CAT] = CategoricalDataRenderer[T, CAT] => PlotContext => PlotRenderer
 
   def categorical[T, CAT]( data: Seq[T],
                       binFn: Seq[T] => Seq[CategoryBin[CAT]],
@@ -192,13 +134,13 @@ case class CategoricalDataRenderer[T, CAT](data: Seq[T], binFn: Seq[T] => Seq[Ca
   def barChart(barRenderer: Option[BarRenderer] = None,
                 spacing: Option[Double] = None,
                 boundBuffer: Option[Double] = None,
-               )(pCtx: RenderContext)(implicit theme: Theme): PlotRenderer = {
+               )(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
     BarChart(binFn(data).map(_.y)).renderer
   }
 
 }
 
-case class ContinuousDataRenderer[T](data: Seq[T], binFn: (Seq[T], Option[RenderContext]) => Seq[ContinuousBin]) {
+case class ContinuousDataRenderer[T](data: Seq[T], binFn: (Seq[T], Option[PlotContext]) => Seq[ContinuousBin]) {
 
   def manipulate(x: Seq[T] => Seq[T]): Seq[T] = x(data)
 
@@ -207,9 +149,9 @@ case class ContinuousDataRenderer[T](data: Seq[T], binFn: (Seq[T], Option[Render
   def histogram(barRenderer: Option[BarRenderer] = None,
                 spacing: Option[Double] = None,
                 boundBuffer: Option[Double] = None,
-               )(pCtx: RenderContext)(implicit theme: Theme) = {
+               )(pCtx: PlotContext)(implicit theme: Theme) = {
     val bins = binFn(data, Some(pCtx))
-    Histogram.continuous(bins, barRenderer, spacing, boundBuffer).renderer
+    Histogram.fromBins(bins, barRenderer, spacing, boundBuffer).renderer
   }
 
 }

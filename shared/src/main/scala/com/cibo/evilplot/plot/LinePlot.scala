@@ -48,7 +48,7 @@ object LinePlot {
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
 
-      val xformedPoints: Seq[X] = RenderContext.from(plot, plotExtent).transformDatumsToWorld(data)
+      val xformedPoints: Seq[X] = PlotContext.from(plot, plotExtent).transformDatumsToWorld(data)
 
 
 

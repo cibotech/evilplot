@@ -125,29 +125,20 @@ object Histogram {
                               ) extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (bins.nonEmpty) {
-        val xbounds = plot.xbounds
 
         val xtransformer = plot.xtransform(plot, plotExtent)
         val ytransformer = plot.ytransform(plot, plotExtent)
 
-        // The x bounds might have changed here, which could lead to a different binning of the data. If that
-        // happens, it's possible for us to exceed our boundary. Thus we have two options:
-        //  1. Clip at the boundary
-        //  2. Scale all bars to have the correct relative heights.
-        // Scaling the bars would show the correct histogram as long as no axis is displayed.  However, if
-        // an axis is display, we would end up showing the wrong values. Thus, we clip if the y boundary is
-        // fixed, otherwise we scale to make it look pretty.
         val maxY = bins.maxBy(_.y).y * (1.0 + boundBuffer)
         val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
 
-        val binWidth = xbounds.range / bins.length
         val yintercept = ytransformer(0)
 
         bins.map { bin =>
           val x = xtransformer(bin.x.min) + spacing / 2.0
           val clippedY = math.min(bin.y * yscale, plot.ybounds.max)
           val y = ytransformer(clippedY)
-          val barWidth = math.max(xtransformer(bin.x.range + xbounds.min) - spacing, 0)
+          val barWidth = math.max(xtransformer(bin.x.range + plot.xbounds.min) - spacing, 0)
 
           val bar = Bar(clippedY)
           val barHeight = yintercept - y
@@ -204,7 +195,7 @@ object Histogram {
     )
   }
 
-  def continuous(
+  def fromBins(
              bins: Seq[ContinuousBin],
              barRenderer: Option[BarRenderer] = None,
              spacing: Option[Double] = None,

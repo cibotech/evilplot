@@ -34,7 +34,6 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot
-import com.cibo.evilplot.plot.Histogram.HistogramRenderer
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -284,6 +283,27 @@ object DemoPlots {
     )
 
     Overlay(groupPlot)
+      .standard()
+      .xLabel("x")
+      .yLabel("y")
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
+  lazy val simpleContinuousPlot: Drawable = {
+
+    val continuousData = Seq.fill(60)(Math.random() * 100)
+
+    val histogramPlot = GroupedPlot.continuous[Double](
+      continuousData,
+      { case (x: Seq[Double], ctx: Option[PlotContext]) =>
+        Binning.histogramBinsDataBounds(continuousData)
+      }
+    )(
+      _.histogram()
+    )
+
+    Overlay(histogramPlot)
       .standard()
       .xLabel("x")
       .yLabel("y")

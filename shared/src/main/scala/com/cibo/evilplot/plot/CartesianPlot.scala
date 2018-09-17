@@ -3,7 +3,6 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, LineStyle}
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics, Datum2d, Point}
-import com.cibo.evilplot.plot.Histogram.{HistogramRenderer, createBins, defaultBinCount}
 import com.cibo.evilplot.plot.LinePlot.LinePlotRenderer
 import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -12,7 +11,7 @@ import com.cibo.evilplot.plot.renderers._
 
 object CartesianPlot {
 
-  type ContextToDrawable[X <: Datum2d[X]] = CartesianDataRenderer[X] => RenderContext => PlotRenderer
+  type ContextToDrawable[X <: Datum2d[X]] = CartesianDataRenderer[X] => PlotContext => PlotRenderer
 
   def apply[X <: Datum2d[X]](
                               data: Seq[X],
@@ -46,15 +45,15 @@ case class CartesianDataRenderer[X <: Datum2d[X]](data: Seq[X]) {
   def filter(x: X => Boolean): CartesianDataRenderer[X] = this.copy(data.filter(x))
 
   def scatter(pointToDrawable: X => Drawable,
-              legendCtx: LegendContext = LegendContext.empty)(pCtx: RenderContext)(implicit theme: Theme): PlotRenderer = {
+              legendCtx: LegendContext = LegendContext.empty)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
     ScatterPlotRenderer(data, PointRenderer.custom(pointToDrawable, Some(legendCtx)))
   }
 
-  def scatter(pCtx: RenderContext)(implicit theme: Theme): ScatterPlotRenderer[X] = {
+  def scatter(pCtx: PlotContext)(implicit theme: Theme): ScatterPlotRenderer[X] = {
     ScatterPlotRenderer(data, PointRenderer.default())
   }
 
-  def scatter(pointRenderer: PointRenderer[X])(pCtx: RenderContext)(implicit theme: Theme): ScatterPlotRenderer[X] = {
+  def scatter(pointRenderer: PointRenderer[X])(pCtx: PlotContext)(implicit theme: Theme): ScatterPlotRenderer[X] = {
     ScatterPlotRenderer(data, pointRenderer)
   }
 
@@ -64,15 +63,15 @@ case class CartesianDataRenderer[X <: Datum2d[X]](data: Seq[X]) {
             label: Drawable = EmptyDrawable(),
             lineStyle: Option[LineStyle] = None,
             legendCtx: LegendContext = LegendContext.empty
-          )(pCtx: RenderContext)(implicit theme: Theme): PlotRenderer = {
+          )(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
     LinePlotRenderer(data, PathRenderer.default(strokeWidth, color, label, lineStyle))
   }
 
-  def line(pCtx: RenderContext)(implicit theme: Theme): PlotRenderer = {
+  def line(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
     LinePlotRenderer(data, PathRenderer.default())
   }
 
-  def line(pathRenderer: PathRenderer[X])(pCtx: RenderContext)(implicit theme: Theme): PlotRenderer = {
+  def line(pathRenderer: PathRenderer[X])(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
     LinePlotRenderer(data, pathRenderer)
   }
 

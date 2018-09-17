@@ -45,7 +45,7 @@ object ScatterPlot extends TransformWorldToScreen {
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
 
-      val plotContext = RenderContext(plot, plotExtent)
+      val plotContext = PlotContext(plot, plotExtent)
       val xformedPoints: Seq[X] = transformDatumToPlotSpace(data, plotContext.xCartesianTransform, plotContext.yCartesianTransform)
       val points = xformedPoints.filter(p => plotExtent.contains(p))
         .flatMap {
