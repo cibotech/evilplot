@@ -37,6 +37,7 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
 /** Data for a bar in a bar chart.
+  *
   * @param values The values (one per stack, starting at the bottom).
   * @param colors Colors for each bar segment (optional).
   * @param labels Labels for each bar segment (optional, for legends).
@@ -74,11 +75,24 @@ object BarChart {
     data: Seq[Bar],
     barRenderer: BarRenderer,
     spacing: Double,
-    clusterSpacing: Double
+    clusterSpacing: Option[Double]
   ) extends PlotRenderer {
 
     override def legendContext: LegendContext =
       LegendContext.combine(barRenderer.legendContext.toSeq ++ data.map(_.legendContext))
+
+    private val isClustered = clusterSpacing.isDefined
+    private val clusterPadding = clusterSpacing.getOrElse(spacing)
+    private val numGroups = data.map(_.cluster).distinct.size
+    private val barsPerGroup = if (isClustered) data.groupBy(_.cluster).map(_._2.size).max else 1
+
+    private def getBarX(barIndex: Int, cluster: Int, barWidth: Double, clusterWidth: Double): Double = {
+      val clusterIndex = if (isClustered) cluster else barIndex
+      val clusterStartX = clusterPadding / 2 + (clusterWidth + clusterPadding) * clusterIndex
+      val barXInCluster = (barWidth + spacing) * (barIndex % barsPerGroup)
+
+      clusterStartX + barXInCluster
+    }
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.isEmpty) {
@@ -87,19 +101,16 @@ object BarChart {
         val xtransformer = plot.xtransform(plot, plotExtent)
         val ytransformer = plot.ytransform(plot, plotExtent)
 
-        val numGroups = data.map(_.cluster).distinct.size
-        val barsPerGroup = if (numGroups > 1) data.groupBy(_.cluster).map(_._2.size).max else 1
+        val fullPlotWidth = xtransformer(plot.xbounds.min + numGroups)
+        val clusterWidth = fullPlotWidth / numGroups - clusterPadding
+        val barWidth = (clusterWidth - (barsPerGroup - 1) * spacing) / barsPerGroup
 
         val sorted = data.sortBy(_.cluster)
-        val initial: (Double, Drawable) = (sorted.head.cluster, EmptyDrawable())
+        val initial: Drawable = EmptyDrawable()
         sorted.zipWithIndex
           .foldLeft(initial) {
-            case ((lastCluster, d), (bar, barIndex)) =>
-              // X offset and bar width.
-              val xscale = 1.0 / barsPerGroup
-              val barx = barIndex * xscale
-              val x = xtransformer(plot.xbounds.min + barx)
-              val barWidth = xtransformer(plot.xbounds.min + barx + xscale) - x
+            case (d, (bar, barIndex)) =>
+              val x = getBarX(barIndex, bar.cluster, barWidth, clusterWidth)
 
               // Y bar translation and bar height.
               val (transY, barHeight) =
@@ -117,26 +128,18 @@ object BarChart {
                   }
                 }
 
-              val clusterPadding =
-                if (numGroups > 1 && bar.cluster != lastCluster) clusterSpacing else 0
+              val extent = Extent(barWidth, barHeight)
 
-              // Extra X offset to account for the cluster and spacing.
-              val xPadding =
-                if (barIndex == 0) (clusterPadding + spacing) / 2 else clusterPadding + spacing / 2
-
-              val extent = Extent(barWidth - spacing - clusterPadding, barHeight)
-              (
-                bar.cluster,
-                d behind barRenderer
-                  .render(plot, extent, bar)
-                  .translate(y = transY, x = x + xPadding))
+              d behind barRenderer
+                .render(plot, extent, bar)
+                .translate(y = transY, x = x)
           }
-          ._2
       }
     }
   }
 
   /** Create a bar chart where the bars differ only by height
+    *
     * @param values The height values for the bars.
     * @param color Bar color.
     * @param spacing Bar spacing.
@@ -187,10 +190,16 @@ object BarChart {
             )
         }
     }
-    custom(bars, Some(barRenderer), spacing, clusterSpacing, boundBuffer)
+    custom(
+      bars,
+      Some(barRenderer),
+      spacing,
+      Some(clusterSpacing.getOrElse(theme.elements.clusterSpacing)),
+      boundBuffer)
   }
 
   /** Create a stacked bar chart.
+    *
     * @param values A sequence of bars where each bar is a sequence of values.
     * @param colors The color to use for each slice.
     * @param labels Labels for each slice.
@@ -215,6 +224,7 @@ object BarChart {
   }
 
   /** Create a clustered bar chart of stacked bars.
+    *
     * @param values A sequence of clusters of bars where each bar is a sequence of values.
     * @param colors The color to use for each slice of a stacked bar.
     * @param labels Labels for each color in the stacked bar.
@@ -246,10 +256,16 @@ object BarChart {
             )
         }
     }
-    custom(bars, Some(barRenderer), spacing, clusterSpacing, boundBuffer)
+    custom(
+      bars,
+      Some(barRenderer),
+      spacing,
+      Some(clusterSpacing.getOrElse(theme.elements.clusterSpacing)),
+      boundBuffer)
   }
 
   /** Create a custom bar chart.
+    *
     * @param bars The bars to render.
     * @param barRenderer The renderer to use.
     * @param spacing Spacing between bars within a cluster.
@@ -278,7 +294,7 @@ object BarChart {
         bars,
         barRenderer.getOrElse(BarRenderer.default()),
         spacing.getOrElse(theme.elements.barSpacing),
-        clusterSpacing.getOrElse(theme.elements.clusterSpacing)
+        clusterSpacing
       )
     )
   }

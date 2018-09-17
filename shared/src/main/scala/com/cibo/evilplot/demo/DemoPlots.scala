@@ -92,7 +92,7 @@ object DemoPlots {
     ScatterPlot(
       data = data,
       pointRenderer = Some(PointRenderer.colorByCategory(years))
-    ) .standard()
+    ).standard()
       .overlayLegend(x = 0.95, y = 0.8)
       .component(customCategoricalLegend)
       .component(customGradientLegend)
@@ -136,12 +136,14 @@ object DemoPlots {
         Seq("foo", "bar", "baz"),
         Seq(1d, 2, 10),
         Position.Bottom,
-        updatePlotBounds = false)
+        updatePlotBounds = false,
+        align = 0)
       .discreteAxis(
         filler,
         filler.indices.map(_.toDouble),
         Position.Right,
-        updatePlotBounds = false)
+        updatePlotBounds = false,
+        align = 0.5)
       .continuousAxis(
         plot => plot.xbounds,
         Position.Top,
@@ -167,7 +169,8 @@ object DemoPlots {
     BarChart
       .clustered(
         data,
-        labels = Seq("one", "two", "three")
+        labels = Seq("one", "two", "three"),
+        clusterSpacing = Some(25)
       )
       .title("Clustered Bar Chart Demo")
       .xAxis(Seq("a", "b", "c", "d"))
@@ -205,7 +208,8 @@ object DemoPlots {
     BarChart
       .clusteredStacked(
         data,
-        labels = Seq("one", "two", "three")
+        labels = Seq("one", "two", "three"),
+        clusterSpacing = Some(25)
       )
       .title("Clustered Stacked Bar Chart Demo")
       .standard(Seq("Category 1", "Category 2"))
@@ -230,8 +234,23 @@ object DemoPlots {
   lazy val boxPlot: Drawable = {
     val data = Seq.fill(10)(Seq.fill(Random.nextInt(30))(Random.nextDouble()))
     val series = Seq.fill(10)(Random.nextInt(2))
-    BoxPlot(data, boxRenderer = Some(BoxRenderer.colorBy(series)))
+    BoxPlot(data, boxRenderer = Some(BoxRenderer.colorBy(series).withMeanLine()))
       .standard(xLabels = (1 to 10).map(_.toString))
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
+  lazy val clusteredBoxPlot: Drawable = {
+    val data = Seq.fill(3)(Seq.fill(3)(Seq.fill(Random.nextInt(30))(Random.nextDouble())))
+    val series = Seq.fill(3)(Seq(0, 1, 2)).flatten
+    BoxPlot
+      .clustered(
+        data,
+        boxRenderer = Some(BoxRenderer.colorBy(series)),
+        spacing = Some(10.0),
+        clusterSpacing = Some(60.0)
+      )
+      .standard(xLabels = (1 to 3).map(_.toString))
       .rightLegend()
       .render(plotAreaSize)
   }
@@ -322,9 +341,10 @@ object DemoPlots {
       Seq(5, 6, 7, 8),
       Seq(9, 8, 7, 6)
     )
-
-    Heatmap(data).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
+    val coloring = ContinuousColoring.gradient3(HTMLNamedColors.dodgerBlue, HTMLNamedColors.crimson, HTMLNamedColors.dodgerBlue)
+    Heatmap(data, Some(coloring)).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
   }
+
 
   lazy val facetedPlot: Drawable = {
     val years = 2007 to 2013
@@ -351,6 +371,8 @@ object DemoPlots {
       .yLabel("y")
       .trend(1.0, 0)
       .topLabels(Seq("A", "B"))
+      .hline(0.6)
+      .vline(0.6)
       .title("Facet Demo")
       .rightLegend()
       .rightLabels(Seq("before", "after"))
