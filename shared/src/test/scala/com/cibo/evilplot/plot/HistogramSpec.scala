@@ -65,7 +65,9 @@ class HistogramSpec extends FunSpec with Matchers {
     it("works on a simple example") {
       val bins = Histogram.createBins(data, Bounds(0, 5), 5)
       bins should contain theSameElementsAs Seq(
+        Point(0, 0),
         Point(1, 3),
+        Point(2, 0),
         Point(3, 2),
         Point(4, 3)
       )
@@ -74,7 +76,9 @@ class HistogramSpec extends FunSpec with Matchers {
     it("works when asked to normalize") {
       val bins = Histogram.normalize(data, Bounds(0, 5), 5)
       bins.map(_.y) should contain theSameElementsAs Seq(
+        0,
         .375,
+        0,
         .25,
         .375
       )
@@ -84,7 +88,9 @@ class HistogramSpec extends FunSpec with Matchers {
     it("works for cumulative binner") {
       val bins = Histogram.cumulative(data, Bounds(0, 5), 5)
       bins should contain theSameElementsAs Seq(
+        Point(0, 0),
         Point(1, 3),
+        Point(2, 3),
         Point(3, 5),
         Point(4, 8)
       )
@@ -93,7 +99,9 @@ class HistogramSpec extends FunSpec with Matchers {
     it("works for density binner") {
       val bins = Histogram.density(data, Bounds(0, 5), 5)
       bins.map(_.y) should contain theSameElementsAs Seq(
+        0,
         0.375,
+        0,
         0.25,
         0.375
       )
@@ -102,6 +110,8 @@ class HistogramSpec extends FunSpec with Matchers {
     it("works for cumulativeDensity binner") {
       val bins = Histogram.cumulativeDensity(data, Bounds(0, 5), 5)
       bins.map(_.y) should contain theSameElementsAs Seq(
+        0,
+        0.375,
         0.375,
         0.625,
         1.000
