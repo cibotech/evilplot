@@ -55,8 +55,6 @@ class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
     }
     it("should recover a rgba color") {
       val baseColor = RGBA(77,255,22,1.0)
-      println(baseColor)
-      println(ColorUtils.hslaToRgba(baseColor))
 
       baseColor.rgba shouldBe (75, 255,20,1.0)
     }
