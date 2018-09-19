@@ -35,16 +35,16 @@ import com.cibo.evilplot.geometry.Drawable
 import com.cibo.evilplot.plot.aesthetics.Theme
 
 /** implicits and methods for jupyter-scala */
-object jupyterScala {
+object JupyterScala {
   /** enhanced methods on Drawable objects for jupyter-scala */
-  implicit class jupyterScalaDrawableMethods(drawable: Drawable) {
+  implicit class JupyterScalaDrawableMethods(drawable: Drawable) {
     /** display this Drawable object directly in the jupyter-scala output cell */
     def show(implicit publish: jupyter.api.Publish) =
       publish.png(drawable.asBufferedImage)
   }
 
   /** enhanced methods on Plot objects for jupyter-scala */
-  implicit class jupyterScalaPlotMethods(plot: Plot) {
+  implicit class JupyterScalaPlotMethods(plot: Plot) {
     /** display this Plot object directly in the jupyter-scala output cell */
     def show(implicit publish: jupyter.api.Publish, theme: Theme) =
       publish.png(plot.render()(theme).asBufferedImage)
