@@ -1,12 +1,24 @@
 # Changelog
 
 ## [Changes since last release]
+
+## [0.5.0] - 2018-09-21
 ### Added
+- `ComponentGroup` for combining plot components
+- RGBA extractors on colors
+- Cumulative and density binning for histograms
+- Ability to display a box plot with a mean line
+- Support for rendering plots in Jupyter Scala
+- `displayPlot` now remembers the last save directory.
 - Support for clustered box plots.
 - Option to display the data's mean as a dashed line on box plots.
 - `MultilineText` utility to respect newlines in text.
+# Changed
+- `BoxPlotRenderer` now takes `clusterSpacing` parameter (_breaking_)
+-  Broken `fixedBounds` option no longer on `continuousAxis` (_breaking_)
 ### Fixed
 - Bug in the spacing and sizing of bars in clustered bar charts.
+
 
 ## [0.4.1] - 2018-07-26
 ### Added
@@ -72,7 +84,8 @@ correcting previously incorrect extent calculation.
 - Applying "bound buffers" to plots is no longer part of the default theme.
 - The default number of ticks on continuous axes has been decreased.
 
-[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.4.1...HEAD
+[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/cibotech/evilplot/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/cibotech/evilplot/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/cibotech/evilplot/compare/v0.3.4...v0.4.0
 [0.3.4]: https://github.com/cibotech/evilplot/compare/v0.3.3...v0.3.4
