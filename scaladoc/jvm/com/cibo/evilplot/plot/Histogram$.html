@@ -496,6 +496,41 @@
       
       <p class="shortcomment cmt">Create binCount bins from the given data and xbounds.</p><div class="fullcomment"><div class="comment cmt"><p>Create binCount bins from the given data and xbounds.</p></div><dl class="paramcmts block"><dt class="param">values</dt><dd class="cmt"><p>the raw data</p></dd><dt class="param">xbounds</dt><dd class="cmt"><p>the bounds over which to bin</p></dd><dt class="param">binCount</dt><dd class="cmt"><p>the number of bins to create</p></dd><dt>returns</dt><dd class="cmt"><p>a sequence of points, where the x coordinates represent the left
         edge of the bins and the y coordinates represent their heights</p></dd></dl></div>
+    </li><li name="com.cibo.evilplot.plot.Histogram#cumulative" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="cumulative(values:Seq[Double],xbounds:com.cibo.evilplot.numeric.Bounds,binCount:Int):Seq[com.cibo.evilplot.numeric.Point]"></a><a id="cumulative(Seq[Double],Bounds,Int):Seq[Point]"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/plot/Histogram$.html#cumulative(values:Seq[Double],xbounds:com.cibo.evilplot.numeric.Bounds,binCount:Int):Seq[com.cibo.evilplot.numeric.Point]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">cumulative</span><span class="params">(<span name="values">values: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="xbounds">xbounds: <a href="../numeric/package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="binCount">binCount: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Create binCount bins from the given data and xbounds, cumulatively
+such that each bin includes the data in all previous bins</p>
+    </li><li name="com.cibo.evilplot.plot.Histogram#cumulativeDensity" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="cumulativeDensity(values:Seq[Double],xbounds:com.cibo.evilplot.numeric.Bounds,binCount:Int):Seq[com.cibo.evilplot.numeric.Point]"></a><a id="cumulativeDensity(Seq[Double],Bounds,Int):Seq[Point]"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/plot/Histogram$.html#cumulativeDensity(values:Seq[Double],xbounds:com.cibo.evilplot.numeric.Bounds,binCount:Int):Seq[com.cibo.evilplot.numeric.Point]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">cumulativeDensity</span><span class="params">(<span name="values">values: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="xbounds">xbounds: <a href="../numeric/package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="binCount">binCount: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Create binCount bins from the given data and xbounds, cumulatively
+such that each bin includes the data in all previous bins, and normalized
+so that bins approximate a CDF</p>
     </li><li name="com.cibo.evilplot.plot.Histogram#defaultBinCount" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="defaultBinCount:Int"></a>
       <span class="permalink">
@@ -512,6 +547,24 @@
       </span>
       
       
+    </li><li name="com.cibo.evilplot.plot.Histogram#density" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="density(values:Seq[Double],xbounds:com.cibo.evilplot.numeric.Bounds,binCount:Int):Seq[com.cibo.evilplot.numeric.Point]"></a><a id="density(Seq[Double],Bounds,Int):Seq[Point]"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/plot/Histogram$.html#density(values:Seq[Double],xbounds:com.cibo.evilplot.numeric.Bounds,binCount:Int):Seq[com.cibo.evilplot.numeric.Point]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">density</span><span class="params">(<span name="values">values: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="xbounds">xbounds: <a href="../numeric/package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="binCount">binCount: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Create binCount bins from the given data and xbounds, computing the bin
+heights such that they represent the average probability density over each
+bin interval</p>
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
       <span class="permalink">
