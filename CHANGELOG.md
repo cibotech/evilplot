@@ -4,6 +4,7 @@
 ### Added
 - Support for clustered box plots.
 - Option to display the data's mean as a dashed line on box plots.
+- `MultilineText` utility to respect newlines in text.
 ### Fixed
 - Bug in the spacing and sizing of bars in clustered bar charts.
 
