@@ -34,15 +34,15 @@ import io.circe.{Decoder, Encoder}
 
 sealed trait Color {
   val repr: String
-  def rgba: (Int,Int,Int,Double)
+  def rgba: (Int, Int, Int, Double)
 }
 
 case object Clear extends Color {
   val repr = "hsla(0, 0%, 0%, 0)"
-  def rgba:(Int,Int,Int,Double) = (0,0,0,0.0)
+  def rgba: (Int, Int, Int, Double) = (0, 0, 0, 0.0)
 }
 
-case class HSLA(hue: Int, saturation: Int, lightness: Int, opacity: Double) extends Color {
+case class HSLA(hue: Double, saturation: Double, lightness: Double, opacity: Double) extends Color {
   require(hue >= 0 && hue < 360, s"hue must be within [0, 360) {was $hue}")
   require(
     saturation >= 0 && saturation <= 100,
@@ -50,32 +50,33 @@ case class HSLA(hue: Int, saturation: Int, lightness: Int, opacity: Double) exte
   require(lightness >= 0 && lightness <= 100, s"lightness must be within [0, 100] {was $lightness}")
   require(opacity >= 0 && opacity <= 1.0, s"transparency must be within [0, 1.0] {was $opacity}")
 
-  private def boundHue(hue: Int) = if (hue < 0) hue + 360 else if (hue >= 360) hue - 360 else hue
+  private def boundHue(hue: Double) = if (hue < 0) hue + 360 else if (hue >= 360) hue - 360 else hue
 
-  private def floorCeiling(value: Int)(floor: Int, ceiling: Int) = value.min(ceiling).max(floor)
+  private def floorCeiling(value: Double)(floor: Double, ceiling: Double) = value.min(ceiling).max(floor)
 
   def triadic: (HSLA, HSLA) = (
     this.copy(hue = boundHue(this.hue - 120)),
     this.copy(hue = boundHue(this.hue + 120))
   )
 
-  def analogous(offsetDegrees: Int = 14): (HSLA, HSLA) = (
+  def analogous(offsetDegrees: Double = 14): (HSLA, HSLA) = (
     this.copy(hue = boundHue(this.hue - offsetDegrees)),
     this.copy(hue = boundHue(this.hue + offsetDegrees))
   )
 
-  def darken(percent: Int): HSLA = {
+  def darken(percent: Double): HSLA = {
     val newLightness = floorCeiling(lightness - percent)(0, 100)
     this.copy(lightness = newLightness)
   }
 
-  def lighten(percent: Int): HSLA = {
+  def lighten(percent: Double): HSLA = {
     val newLightness = floorCeiling(lightness + percent)(0, 100)
     this.copy(lightness = newLightness)
   }
 
   val repr = s"hsla($hue, $saturation%, $lightness%, $opacity)"
-  def rgba:(Int,Int,Int,Double) = {
+
+  def rgba: (Int, Int, Int, Double) = {
     val allDouble = ColorUtils.hslaToRgba(this)
     (
       (allDouble._1 * 255.0).toInt,
@@ -114,7 +115,7 @@ object Color {
   implicit val encoder: Encoder[Color] = io.circe.generic.extras.semiauto.deriveEncoder[Color]
   implicit val decoder: Decoder[Color] = io.circe.generic.extras.semiauto.deriveDecoder[Color]
 
-  def stream: Seq[Color] = {
+  def stream: Seq[HSLA] = {
     val hueSpan = 7
     Stream.from(0).map { i =>
       // if hueSpan = 8, for instance:
@@ -155,15 +156,15 @@ object Color {
     }
   }
 
-  def getGradientSeq(nColors: Int, startHue: Int = 0, endHue: Int = 359): Seq[Color] = {
+  def getGradientSeq(nColors: Int, startHue: Int = 0, endHue: Int = 359): Seq[HSLA] = {
     require(endHue > startHue, "End hue not greater than start hue")
     require(endHue <= 359, "End hue must be <= 359")
     val deltaH = (endHue - startHue) / nColors.toFloat
-    val colors: Seq[Color] = Seq.tabulate(nColors)(x => HSL(startHue + (x * deltaH).toInt, 90, 54))
+    val colors: Seq[HSLA] = Seq.tabulate(nColors)(x => HSL(startHue + (x * deltaH).toInt, 90, 54))
     colors
   }
 
-  def getDefaultPaletteSeq(nColors: Int): Seq[Color] = {
+  def getDefaultPaletteSeq(nColors: Int): Seq[HSLA] = {
     val stream = Stream.continually(DefaultColors.lightPalette.toStream)
     stream.flatten.take(nColors)
   }
@@ -172,14 +173,14 @@ object Color {
     analogGrow(seed, depth)
   }
 
-  def analogGrow(node: HSLA, depth: Int): Seq[Color] = {
+  def analogGrow(node: HSLA, depth: Int): Seq[HSLA] = {
     val left = node.analogous()._1
     val right = node.analogous()._2
     if (depth > 0) node +: (triadGrow(left, depth - 1) ++ triadGrow(right, depth - 1))
     else Seq()
   }
 
-  def triadGrow(node: HSLA, depth: Int): Seq[Color] = {
+  def triadGrow(node: HSLA, depth: Int): Seq[HSLA] = {
     val left = node.triadic._1
     val right = node.triadic._2
     if (depth > 0) node +: (analogGrow(left, depth - 1) ++ analogGrow(right, depth - 1))

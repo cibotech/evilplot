@@ -112,6 +112,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
   }
 
   def draw(style: Style): Unit = CanvasOp(canvas) {
+    canvas.createLinearGradient()
     canvas.fillStyle = style.fill.repr
     style.r.draw(this)
   }
