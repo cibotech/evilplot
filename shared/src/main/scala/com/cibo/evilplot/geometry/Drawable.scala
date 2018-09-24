@@ -35,7 +35,7 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.numeric.{Point, Point2d}
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, Encoder, ObjectEncoder}
 // scalastyle:off
 
 /**
@@ -311,6 +311,74 @@ final case class Style(r: Drawable, fill: Color) extends Drawable {
 object Style {
   implicit val encoder: Encoder[Style] = deriveEncoder[Style]
   implicit val decoder: Decoder[Style] = deriveDecoder[Style]
+}
+
+sealed trait GradientFill
+object GradientFill {
+    implicit val decoder: Decoder[GradientFill] = deriveDecoder[GradientFill]
+    implicit val encoder: Encoder[GradientFill] = deriveEncoder[GradientFill]
+}
+
+case class GradientStop(offset: Double, color: Color)
+object GradientStop {
+    implicit val decoder: Decoder[GradientStop] = deriveDecoder[GradientStop]
+    implicit val encoder: Encoder[GradientStop] = deriveEncoder[GradientStop]
+}
+
+case class LinearGradient(x0: Double, y0: Double,
+                          x1: Double, y1: Double, stops: Seq[GradientStop]) extends GradientFill
+
+object LinearGradient {
+  implicit val decoder: Decoder[LinearGradient] = deriveDecoder[LinearGradient]
+  implicit val encoder: Encoder[LinearGradient] = deriveEncoder[LinearGradient]
+
+  def horizontal(ex: Extent, stops: Seq[GradientStop]) = LinearGradient(
+    0,
+    ex.height / 2,
+    ex.width,
+    ex.height / 2,
+    stops
+  )
+
+  def vertical(ex: Extent, stops: Seq[GradientStop]) = LinearGradient(
+    0,
+    ex.height / 2,
+    ex.width,
+    ex.height / 2,
+    stops
+  )
+}
+
+case class RadialGradient(x0: Double, y0: Double, r0: Double,
+                          x1: Double, y1: Double, stops: Seq[GradientStop]) extends GradientFill
+
+object RadialGradient {
+  implicit val decoder: Decoder[RadialGradient] = deriveDecoder[RadialGradient]
+  implicit val encoder: Encoder[RadialGradient] = deriveEncoder[RadialGradient]
+
+  def withinExtent(extent: Extent, stops: Seq[GradientStop]) = {
+    val radius = extent.height.min(extent.width) / 2
+
+    RadialGradient(
+      extent.width / 2,
+      extent.height / 2,
+      radius,
+      extent.width / 2,
+      extent.height / 2,
+      stops
+    )
+  }
+}
+
+/** Apply a gradient fill to a fillable Drawable. */
+final case class Gradient(r: Drawable, fill: GradientFill) extends Drawable {
+  lazy val extent: Extent = r.extent
+  def draw(context: RenderContext): Unit = context.draw(this)
+}
+
+object Gradient {
+  implicit val encoder: Encoder[Gradient] = deriveEncoder[Gradient]
+  implicit val decoder: Decoder[Gradient] = deriveDecoder[Gradient]
 }
 
 /** Apply a border color to a strokable Drawable. */

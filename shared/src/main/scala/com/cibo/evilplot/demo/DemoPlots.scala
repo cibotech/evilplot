@@ -34,6 +34,7 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot
+import com.cibo.evilplot.plot.GroupedPlot.BinArgs
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -272,14 +273,17 @@ object DemoPlots {
 
     val categoricalData = Seq.fill(60)(Person((Math.random() * 100).toInt, randomMood()))
 
-    val groupPlot = GroupedPlot.categorical[Person, String](
+    val groupPlot = GroupedPlot.continuous[Person](
       categoricalData,
-      { x: Seq[Person] =>
-        x.groupBy(_.mood).map( y => CategoryBin[String](y._2.map(_.age.toDouble), y._1)).toSeq
-      },
-      catLabel = x => x
+      { x: BinArgs[Person] =>
+        Binning.histogramBinsDataBounds(x.data.map(_.age.toDouble))
+      }
     )(
-      _.barChart()
+      _.histogram(Some(BarRenderer.custom({ case (context, bar) =>
+        val extent = context.extent
+        val gradient = LinearGradient(0, 0, 0, extent.height, Seq(GradientStop(0.0, HTMLNamedColors.red), GradientStop(1.0, HTMLNamedColors.green)))
+        Rect(extent.width, extent.height).filled(gradient)
+      })))
     )
 
     Overlay(groupPlot)
@@ -296,8 +300,8 @@ object DemoPlots {
 
     val histogramPlot = GroupedPlot.continuous[Double](
       continuousData,
-      { case (x: Seq[Double], ctx: Option[PlotContext]) =>
-        Binning.histogramBinsDataBounds(continuousData)
+      { x =>
+        Binning.histogramBinsDataBounds(x.data)
       }
     )(
       _.histogram()

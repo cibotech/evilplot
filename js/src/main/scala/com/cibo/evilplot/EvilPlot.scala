@@ -77,23 +77,10 @@ object EvilPlot {
 
     addExample(DemoPlots.simpleGroupedPlot)
     addExample(DemoPlots.simpleContinuousPlot)
+    val gradientTest = LinearGradient(0, 0, 20, 20, Seq(GradientStop(0.0, HTMLNamedColors.red), GradientStop(1.0, HTMLNamedColors.green)))
 
-    addExample(DemoPlots.simpleCartesianPlot)
-    addExample(DemoPlots.densityPlot)
-    addExample(DemoPlots.legendFeatures)
-    addExample(DemoPlots.axesTesting)
-    addExample(DemoPlots.functionPlot)
-    addExample(DemoPlots.markerPlot)
-    addExample(DemoPlots.scatterPlot)
-    addExample(DemoPlots.barChart)
-    addExample(DemoPlots.boxPlot)
-    addExample(DemoPlots.clusteredBoxPlot)
-    addExample(DemoPlots.facetedPlot)
-    addExample(DemoPlots.heatmap)
-    addExample(DemoPlots.marginalHistogram)
-    addExample(DemoPlots.clusteredBarChart)
-    addExample(DemoPlots.stackedBarChart)
-    addExample(DemoPlots.clusteredStackedBarChart)
+    addExample(Rect(20, 20).filled(gradientTest) beside Rect(20, 20).filled(HTMLNamedColors.red))
+
   }
 
   private def addExample(plot: Drawable): Unit = {

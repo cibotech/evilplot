@@ -112,7 +112,6 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
   }
 
   def draw(style: Style): Unit = CanvasOp(canvas) {
-    canvas.createLinearGradient()
     canvas.fillStyle = style.fill.repr
     style.r.draw(this)
   }
@@ -149,6 +148,26 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
       TextMetrics.withStyle(text.size, text.fontFace) { c =>
         c.fillText(text.msg, 0, 0)
       }(canvas)
+    }
+  }
+
+  def draw(gradient: Gradient): Unit = {
+    gradient.fill match {
+      case lg: LinearGradient =>
+        val gradientFill = canvas.createLinearGradient(lg.x0, lg.y0, lg.x1, lg.y1)
+        lg.stops.foreach{ stop =>
+          gradientFill.addColorStop(stop.offset, stop.color.repr)
+        }
+        canvas.fillStyle = gradientFill
+
+      case rg: RadialGradient =>
+        val gradientFill = canvas.createRadialGradient(rg.x0, rg.y0, rg.r0, rg.x1, rg.y1, rg.r0)
+        rg.stops.foreach{ stop =>
+          gradientFill.addColorStop(stop.offset, stop.color.repr)
+        }
+        canvas.fillStyle = gradientFill
+
+      case _ => throw new Exception("Unknown gradient type")
     }
   }
 }

@@ -30,6 +30,7 @@
 
 package com.cibo.evilplot.geometry
 
+import java.awt.MultipleGradientPaint.CycleMethod
 import java.awt.geom.GeneralPath
 import java.awt.{Color => _, _}
 
@@ -227,6 +228,38 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     // EvilPlot assumes all objects start at upper left,
     // but baselines for java.awt.Font do not refer to the top.
     graphics.drawString(text.msg, 0, baseExtent.height.toInt)
+  }
+
+  def draw(gradient: Gradient): Unit = {
+    gradient.fill match {
+      case lg: LinearGradient =>
+        val gradientFill = new LinearGradientPaint(
+          lg.x0.toFloat,
+          lg.y0.toFloat,
+          lg.x1.toFloat,
+          lg.y1.toFloat,
+          lg.stops.map(_.offset.toFloat).toArray,
+          lg.stops.map(_.color.asJava).toArray
+        )
+
+        fillColor = gradientFill
+        gradient.r.draw(this)
+
+      case rg: RadialGradient =>
+        val gradientFill = new RadialGradientPaint(
+          rg.x0.toFloat,
+          rg.y0.toFloat,
+          rg.r0.toFloat,
+          rg.x1.toFloat,
+          rg.y1.toFloat,
+          rg.stops.map(_.offset.toFloat).toArray,
+          rg.stops.map(_.color.asJava).toArray,
+          CycleMethod.NO_CYCLE
+        )
+
+        fillColor = gradientFill
+        gradient.r.draw(this)
+    }
   }
 }
 

@@ -4,6 +4,8 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, LineStyle}
 import com.cibo.evilplot.numeric.{Bounds, Datum2d, Point}
 import com.cibo.evilplot.plot
+import com.cibo.evilplot.plot.BarChart.BarChartRenderer
+import com.cibo.evilplot.plot.GroupedPlot.BinArgs
 import com.cibo.evilplot.plot.LinePlot.LinePlotRenderer
 import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -70,14 +72,15 @@ object GroupedPlot {
 
   type ContextToDrawableContinuous[T] = ContinuousDataRenderer[T] => PlotContext => PlotRenderer
 
+  case class BinArgs[T](data: Seq[T], ctx: Option[PlotContext])
   def continuous[T](data: Seq[T],
-                    binFn: (Seq[T], Option[PlotContext]) => Seq[ContinuousBin],
+                    binFn: BinArgs[T] => Seq[ContinuousBin],
                     xboundBuffer: Option[Double] = None,
                     yboundBuffer: Option[Double] = None
               )(
                 contextToDrawable: ContextToDrawableContinuous[T]*,
               )(implicit theme: Theme): Plot = {
-    val bins: Seq[ContinuousBin] = binFn(data, None)
+    val bins: Seq[ContinuousBin] = binFn(BinArgs(data, None))
 
     val xbounds = Bounds.union(bins.map(_.x))
     val ybounds = Bounds(0, bins.map(_.y).max)
@@ -134,13 +137,20 @@ case class CategoricalDataRenderer[T, CAT](data: Seq[T], binFn: Seq[T] => Seq[Ca
   def barChart(barRenderer: Option[BarRenderer] = None,
                 spacing: Option[Double] = None,
                 boundBuffer: Option[Double] = None,
+               clusterSpacing: Option[Double] = None
                )(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
-    BarChart(binFn(data).map(_.y)).renderer
+
+    BarChart.custom(
+      ???,
+      barRenderer,
+      spacing,
+      clusterSpacing
+    ).renderer
   }
 
 }
 
-case class ContinuousDataRenderer[T](data: Seq[T], binFn: (Seq[T], Option[PlotContext]) => Seq[ContinuousBin]) {
+case class ContinuousDataRenderer[T](data: Seq[T], binFn: BinArgs[T] => Seq[ContinuousBin]) {
 
   def manipulate(x: Seq[T] => Seq[T]): Seq[T] = x(data)
 
@@ -150,7 +160,7 @@ case class ContinuousDataRenderer[T](data: Seq[T], binFn: (Seq[T], Option[PlotCo
                 spacing: Option[Double] = None,
                 boundBuffer: Option[Double] = None,
                )(pCtx: PlotContext)(implicit theme: Theme) = {
-    val bins = binFn(data, Some(pCtx))
+    val bins = binFn(BinArgs(data, Some(pCtx)))
     Histogram.fromBins(bins, barRenderer, spacing, boundBuffer).renderer
   }
 
