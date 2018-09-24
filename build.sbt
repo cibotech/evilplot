@@ -8,7 +8,7 @@ scalacOptions in ThisBuild ++= Settings.scalacOptions
 
 lazy val `evilplot-root` = project
   .in(file("."))
-  .aggregate(evilplotJVM, evilplotJS, evilplotRepl, assetJVM, evilplotRunner)
+  .aggregate(evilplotJVM, evilplotJS, evilplotRepl, evilplotJupyterScala, assetJVM, evilplotRunner)
   .settings(
     publishArtifact := false,
     publish := {},
@@ -103,6 +103,16 @@ lazy val evilplotRepl = project
   .settings(licenseSettings)
   .settings(
     name := "evilplot-repl"
+  )
+
+lazy val evilplotJupyterScala = project
+  .in(file("jupyter-scala"))
+  .dependsOn(evilplotJVM)
+  .settings(commonSettings)
+  .settings(licenseSettings)
+  .settings(
+    name := "evilplot-jupyter-scala",
+    libraryDependencies ++= Settings.jupyterScalaDependencies.value
   )
 
 val EvilPlotJVM = config("jvm")

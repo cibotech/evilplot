@@ -34,10 +34,12 @@ import io.circe.{Decoder, Encoder}
 
 sealed trait Color {
   val repr: String
+  def rgba: (Int,Int,Int,Double)
 }
 
 case object Clear extends Color {
   val repr = "hsla(0, 0%, 0%, 0)"
+  def rgba:(Int,Int,Int,Double) = (0,0,0,0.0)
 }
 
 case class HSLA(hue: Int, saturation: Int, lightness: Int, opacity: Double) extends Color {
@@ -73,6 +75,15 @@ case class HSLA(hue: Int, saturation: Int, lightness: Int, opacity: Double) exte
   }
 
   val repr = s"hsla($hue, $saturation%, $lightness%, $opacity)"
+  def rgba:(Int,Int,Int,Double) = {
+    val allDouble = ColorUtils.hslaToRgba(this)
+    (
+      (allDouble._1 * 255.0).toInt,
+      (allDouble._2 * 255.0).toInt,
+      (allDouble._3 * 255.0).toInt,
+      allDouble._4
+    )
+  }
 }
 
 object RGBA {
