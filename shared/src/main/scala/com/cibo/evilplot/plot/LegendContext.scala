@@ -30,8 +30,8 @@
 
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.{HTMLNamedColors, ScaledColorBar}
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, GradientStop, LinearGradient, Rect, Style, Text}
+import com.cibo.evilplot.colors.{FillGradients, HTMLNamedColors, ScaledColorBar}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, GradientFill, GradientStop, LinearGradient, Rect, Style, Text}
 import com.cibo.evilplot.plot.aesthetics.Theme
 
 sealed trait LegendStyle
@@ -120,14 +120,16 @@ object LegendContext {
 
   def continuousGradientFromColorBar(colorBar: ScaledColorBar
                                     )(implicit theme: Theme): LegendContext = {
-    val stops = (0 until colorBar.nColors - 1).zipWithIndex.map { case (c, idx) =>
-      GradientStop(idx / colorBar.nColors, colorBar.getColor(c))
-    } :+ GradientStop(1.0, colorBar.getColor(colorBar.nColors - 1))
+
+    val stops = FillGradients.distributeEvenly(colorBar.colorSeq)
 
     val gradientBarSize = Extent(10, 100)
     val gradient = LinearGradient.topToBottom(gradientBarSize, stops)
 
-    val gradientLegend = Rect(gradientBarSize).filled(gradient)
+    val minText = Text(colorBar.zMin.toString, theme.fonts.legendLabelSize).padAll(2).center(14)
+    val maxText = Text(colorBar.zMax.toString, theme.fonts.legendLabelSize).padAll(2).center(14)
+
+    val gradientLegend = (minText above Rect(gradientBarSize).filled(gradient).center(14) above maxText)
 
     LegendContext(
       elements = Seq(EmptyDrawable()), // this is crazy

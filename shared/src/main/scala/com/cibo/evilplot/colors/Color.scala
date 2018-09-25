@@ -37,11 +37,13 @@ import scala.util.Random
 sealed trait Color {
   val repr: String
   def rgba: (Int, Int, Int, Double)
+  def hsla: HSLA
 }
 
 case object Clear extends Color {
   val repr = "hsla(0, 0%, 0%, 0)"
   def rgba: (Int, Int, Int, Double) = (0, 0, 0, 0.0)
+  def hsla: HSLA = HSLA(0, 0, 0, 0)
 }
 
 case class HSLA(hue: Double, saturation: Double, lightness: Double, opacity: Double) extends Color {
@@ -55,6 +57,8 @@ case class HSLA(hue: Double, saturation: Double, lightness: Double, opacity: Dou
   private def boundHue(hue: Double) = if (hue < 0) hue + 360 else if (hue >= 360) hue - 360 else hue
 
   private def floorCeiling(value: Double)(floor: Double, ceiling: Double) = value.min(ceiling).max(floor)
+
+  def hsla: HSLA = this
 
   def triadic: (HSLA, HSLA) = (
     this.copy(hue = boundHue(this.hue - 120)),
@@ -95,7 +99,7 @@ object RGBA {
 
 object RGB {
 
-  def random: Color = RGB(
+  def random: HSLA = RGB(
     Random.nextInt(256),
     Random.nextInt(256),
     Random.nextInt(256)

@@ -7,7 +7,9 @@ import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
 import io.circe.{Decoder, Encoder, ObjectEncoder}
 
-sealed trait Gradient2d
+sealed trait Gradient2d {
+  val stops: Seq[GradientStop]
+}
 object Gradient2d {
   implicit val decoder: Decoder[Gradient2d] = deriveDecoder[Gradient2d]
   implicit val encoder: Encoder[Gradient2d] = deriveEncoder[Gradient2d]
@@ -29,8 +31,15 @@ object LinearGradient {
   def leftToRight(ex: Extent, stops: Seq[GradientStop]): LinearGradient =
     LinearGradient(0, 0, x1 = ex.width, 0, stops)
 
+  def rightToLeft(ex: Extent, stops: Seq[GradientStop]): LinearGradient =
+    LinearGradient(x0 = ex.width, 0, 0, 0, stops)
+
   def topToBottom(ex: Extent, stops: Seq[GradientStop]): LinearGradient =
     LinearGradient(0, 0, 0, y1 = ex.height, stops)
+
+  def bottomToTop(ex: Extent, stops: Seq[GradientStop]): LinearGradient = {
+    LinearGradient(0, y0 = ex.height, 0, 0, stops)
+  }
 }
 
 case class RadialGradient(x0: Double, y0: Double, r0: Double,

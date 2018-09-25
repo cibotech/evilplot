@@ -70,23 +70,34 @@ object PlotContext {
 
 object PlotUtils {
 
+  def boundsWithBuffer(xs: Seq[Double], buffer: Double): Bounds = {
+
+      val min = xs.reduceOption[Double](math.min).getOrElse(0.0)
+      val max = xs.reduceOption[Double](math.max).getOrElse(0.0)
+
+      val bufferValue = (max - min) * buffer
+
+      Bounds(
+        min - bufferValue,
+        max - bufferValue
+      )
+  }
+
   def bounds[X <: Datum2d[X]](data: Seq[X],
                               defaultBoundBuffer: Double,
                               xboundBuffer: Option[Double] = None,
                               yboundBuffer: Option[Double] = None): (Bounds, Bounds) = {
     require(xboundBuffer.getOrElse(0.0) >= 0.0)
     require(yboundBuffer.getOrElse(0.0) >= 0.0)
-    val xs = data.map(_.x)
     val xbuffer = xboundBuffer.getOrElse(defaultBoundBuffer)
     val ybuffer = yboundBuffer.getOrElse(defaultBoundBuffer)
-    val xbounds = Bounds(
-        xs.reduceOption[Double](math.min).getOrElse(0.0),
-        xs.reduceOption[Double](math.max).getOrElse(0.0))
+
+    val xs = data.map(_.x)
+    val xbounds = boundsWithBuffer(xs, xbuffer)
 
     val ys = data.map(_.y)
-    val ybounds = Bounds(
-        ys.reduceOption[Double](math.min).getOrElse(0.0),
-        ys.reduceOption[Double](math.max).getOrElse(0.0))
+    val ybounds = boundsWithBuffer(ys, ybuffer)
+
 
     (xbounds, ybounds)
   }

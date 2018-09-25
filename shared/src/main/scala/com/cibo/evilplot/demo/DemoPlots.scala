@@ -270,28 +270,24 @@ object DemoPlots {
 
   lazy val simpleGroupedPlot: Drawable = {
 
-    val continuousData = Seq.fill(60)(Record(Math.random() * 50))
+    val continuousData = Seq.fill(60)(Record(Math.random() * 100))
 
-    val colorBar = ScaledColorBar(Seq(HTMLNamedColors.red, HTMLNamedColors.green), 0, 100)
+    val colorBar = ScaledColorBar(ColorGradients.magma, 0, 100)
+    val gradientFn = GradientUtils.multiGradient(ColorGradients.magma, 0, 100, GradientMode.Linear)
     val groupPlot = BinnedPlot.continuous[Record](
       continuousData,
-      _.continuousBins(_.value),
+      _.continuousBins(_.value, numBins = 30),
       legendContext = LegendContext.continuousGradientFromColorBar(colorBar)
     )(
-      _.histogram(Some(BarRenderer.custom({ case (context, bar) =>
+      _.histogram(Some(ContinuousBinRenderer.custom({ case (context, bin) =>
         val extent = context.extent
-        val gradient = LinearGradient.topToBottom(extent, Seq(
-          GradientStop(0.0, HTMLNamedColors.red),
-          GradientStop(1.0, RGB(46, 204, 113)))
-        )
-        Rect(extent.width, extent.height).filled(gradient)
+        Rect(extent.width, extent.height).filled(gradientFn(bin.bounds.midpoint))
       })))
     )
 
     groupPlot
       .standard()
-      .xLabel("x")
-      .yLabel("y")
+      .xLabel("Value")
       .rightLegend()
       .render(plotAreaSize)
   }

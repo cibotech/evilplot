@@ -68,4 +68,5 @@ object DefaultColors {
   )
   val nicePalette: Seq[HSLA] = lightPalette ++ darkPalette
 
+
 }

@@ -81,9 +81,11 @@ package object numeric {
     ySpacing: Double)
 
   final case class Bounds(min: Double, max: Double) {
-    require(min <= max, s"Bounds min must be <= max, $min !<= $max")
+    require(!(min > max), s"Bounds min must be <= max, $min !<= $max")
 
     lazy val range: Double = max - min
+
+    lazy val midpoint: Double = (max + min) / 2.0
 
     def isInBounds(x: Double): Boolean = x >= min && x <= max
   }

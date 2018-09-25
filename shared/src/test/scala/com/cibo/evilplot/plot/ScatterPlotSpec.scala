@@ -40,7 +40,7 @@ class ScatterPlotSpec extends FunSpec with Matchers {
   describe("ScatterPlot") {
     it("sets adheres to bound buffers") {
       val data = Seq(Point(-1, 10), Point(20, -5))
-      val plot = ScatterPlot(data, boundBuffer = Some(0.1))
+      val plot = ScatterPlot(data, xBoundBuffer = Some(0.1), yBoundBuffer = Some(0.1))
 
       plot.xbounds.min should be < -1.0
       plot.xbounds.max should be > 20.0

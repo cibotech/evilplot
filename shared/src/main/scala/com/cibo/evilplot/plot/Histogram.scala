@@ -32,6 +32,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.plot.Histogram.ContinuousBinPlotRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
@@ -145,11 +146,11 @@ object Histogram {
 
   }
 
-  case class ContinuousBinRenderer(
-                                bins: Seq[ContinuousBin],
-                                barRenderer: BarRenderer,
-                                spacing: Double,
-                                boundBuffer: Double,
+  case class ContinuousBinPlotRenderer(
+                                        bins: Seq[ContinuousBin],
+                                        binRenderer: ContinuousBinRenderer,
+                                        spacing: Double,
+                                        boundBuffer: Double,
                               ) extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (bins.nonEmpty) {
@@ -168,9 +169,8 @@ object Histogram {
           val y = ytransformer(clippedY)
           val barWidth = math.max(xtransformer(bin.x.range + plot.xbounds.min) - spacing, 0)
 
-          val bar = Bar(clippedY)
           val barHeight = yintercept - y
-          barRenderer.render(plot, Extent(barWidth, barHeight), bar).translate(x = x, y = y)
+          binRenderer.render(plot, Extent(barWidth, barHeight), bin).translate(x = x, y = y)
         }.group
       } else {
         EmptyDrawable()
@@ -178,7 +178,7 @@ object Histogram {
     }
 
     override val legendContext: LegendContext =
-      barRenderer.legendContext.getOrElse(LegendContext.empty)
+      binRenderer.legendContext.getOrElse(LegendContext.empty)
 
   }
 
@@ -224,11 +224,11 @@ object Histogram {
   }
 
   def fromBins(
-             bins: Seq[ContinuousBin],
-             barRenderer: Option[BarRenderer] = None,
-             spacing: Option[Double] = None,
-             boundBuffer: Option[Double] = None,
-             binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins
+                bins: Seq[ContinuousBin],
+                binRenderer: Option[ContinuousBinRenderer] = None,
+                spacing: Option[Double] = None,
+                boundBuffer: Option[Double] = None,
+                binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins
            )(implicit theme: Theme): Plot = {
     require(bins.nonEmpty, "must have at least one bin")
     val xbounds = Bounds.union(bins.map(_.x))
@@ -237,9 +237,9 @@ object Histogram {
     Plot(
       xbounds = xbounds,
       ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
-      renderer = ContinuousBinRenderer(
+      renderer = ContinuousBinPlotRenderer(
         bins,
-        barRenderer.getOrElse(BarRenderer.default()),
+        binRenderer.getOrElse(ContinuousBinRenderer.default()),
         spacing.getOrElse(theme.elements.barSpacing),
         boundBuffer.getOrElse(theme.elements.boundBuffer)
       )

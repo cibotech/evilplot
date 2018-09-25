@@ -1,14 +1,14 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, LineStyle}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, LineStyle, Rect}
 import com.cibo.evilplot.numeric.{Bounds, Datum2d, Point}
 import com.cibo.evilplot.plot
 import com.cibo.evilplot.plot.BarChart.BarChartRenderer
 import com.cibo.evilplot.plot.LinePlot.LinePlotRenderer
 import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.renderers.{BarRenderer, PathRenderer, PlotRenderer, PointRenderer}
+import com.cibo.evilplot.plot.renderers._
 
 import scala.reflect.ClassTag
 
@@ -31,11 +31,45 @@ sealed abstract class Bin[T] {
   def y: Double
 }
 
-case class ContinuousBin(values: Seq[Double], bounds: Bounds, agg: Seq[Double] => Double = _.length) extends Bin[Double] {
+case class ContinuousBin(values: Seq[Double], bounds: Bounds, y: Double) extends Bin[Double] {
   lazy val x: Bounds = bounds
-  lazy val y: Double = agg(values)
 }
 
+object ContinuousBin {
+
+  def apply(values: Seq[Double],
+            bounds: Bounds,
+            agg: Seq[Double] => Double = _.length): ContinuousBin = {
+    new ContinuousBin(values, bounds, agg(values))
+  }
+}
+
+trait ContinuousBinRenderer extends PlotElementRenderer[ContinuousBin] {
+  def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable
+  def legendContext: Option[LegendContext] = None
+}
+
+object ContinuousBinRenderer {
+
+  def custom(renderFn: (PlotContext, ContinuousBin) => Drawable,
+             legendCtx: Option[LegendContext] = None): ContinuousBinRenderer = new ContinuousBinRenderer {
+
+    def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable = {
+      renderFn(PlotContext.from(plot, extent), bin)
+    }
+
+    override def legendContext: Option[LegendContext] = legendCtx
+  }
+
+  /** Default bar renderer. */
+  def default(
+               color: Option[Color] = None
+             )(implicit theme: Theme): ContinuousBinRenderer = new ContinuousBinRenderer {
+    def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable = {
+      Rect(extent.width, extent.height).filled(color.getOrElse(theme.colors.bar))
+    }
+  }
+}
 object Binning {
 
   def histogramBins(seq: Seq[Double],
@@ -43,8 +77,8 @@ object Binning {
                     numBins: Int = 20,
                     normalize: Boolean = false): Seq[ContinuousBin] = {
     ctx match {
-      case Some(rctx) => Binning.histogramBinsWithBounds(seq, rctx.xBounds)
-      case None => Binning.histogramBinsDataBounds(seq)
+      case Some(rctx) => Binning.histogramBinsWithBounds(seq, rctx.xBounds, numBins = numBins, normalize = normalize)
+      case None => Binning.histogramBinsDataBounds(seq, numBins = numBins, normalize = normalize)
     }
   }
 
@@ -132,7 +166,7 @@ case class ContinuousDataRenderer[T](data: Seq[T], binFn: BinArgs[T] => Seq[Cont
 
   def filter(x: T => Boolean): ContinuousDataRenderer[T] = this.copy(data.filter(x))
 
-  def histogram(barRenderer: Option[BarRenderer] = None,
+  def histogram(barRenderer: Option[ContinuousBinRenderer] = None,
                 spacing: Option[Double] = None,
                 boundBuffer: Option[Double] = None,
                )(pCtx: PlotContext)(implicit theme: Theme) = {
