@@ -14,8 +14,10 @@ import scala.reflect.ClassTag
 
 final case class CompoundPlotRenderer(drawablesToPlot: Seq[PlotContext => PlotRenderer],
                                       xBounds: Bounds,
-                                      yBounds: Bounds) extends PlotRenderer {
-  override def legendContext: LegendContext = LegendContext()
+                                      yBounds: Bounds,
+                                      legend: LegendContext = LegendContext()) extends PlotRenderer {
+
+  override def legendContext: LegendContext = legend
 
   def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
     drawablesToPlot.foldLeft(EmptyDrawable() : Drawable){ case (accum, dr) =>
@@ -99,7 +101,8 @@ object BinnedPlot {
   def continuous[T](data: Seq[T],
                     binFn: BinArgs[T] => Seq[ContinuousBin],
                     xboundBuffer: Option[Double] = None,
-                    yboundBuffer: Option[Double] = None
+                    yboundBuffer: Option[Double] = None,
+                    legendContext: LegendContext = LegendContext()
               )(
                 contextToDrawable: ContextToDrawableContinuous[T]*,
               )(implicit theme: Theme): Plot = {
@@ -116,7 +119,8 @@ object BinnedPlot {
       CompoundPlotRenderer(
         contextToDrawable.map(x => x(groupedDataRenderer)),
         xbounds,
-        ybounds
+        ybounds,
+        legendContext
       )
     )
   }

@@ -16,7 +16,8 @@ object CartesianPlot {
   def apply[X <: Datum2d[X]](
                               data: Seq[X],
                               xboundBuffer: Option[Double] = None,
-                              yboundBuffer: Option[Double] = None
+                              yboundBuffer: Option[Double] = None,
+                              legendContext: LegendContext = LegendContext()
                             )(
                               contextToDrawable: ContextToDrawable[X]*,
                             )(implicit theme: Theme): Plot = {
@@ -31,7 +32,8 @@ object CartesianPlot {
       CompoundPlotRenderer(
         contextToDrawable.map(x => x(cartesianDataRenderer)),
         xbounds,
-        ybounds
+        ybounds,
+        legendContext
       )
     )
   }

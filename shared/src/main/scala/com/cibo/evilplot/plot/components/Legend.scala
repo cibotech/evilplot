@@ -48,6 +48,7 @@ case class Legend(
   override def size(plot: Plot): Extent = drawable.extent
 
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
+    println("RENDERING LEGEND")
     drawable.translate(
       x = (extent.width - drawable.extent.width) * x,
       y = (extent.height - drawable.extent.height) * y
@@ -76,8 +77,10 @@ trait LegendImplicits {
         plot :+ Legend(position, plot.renderer.legendContext.copy(labels = drawableLabels), renderer, x, y)
       case _ =>
         if (plot.renderer.legendContext.nonEmpty) {
+          println("ADDING LEGEND")
           plot :+ Legend(position, plot.renderer.legendContext, renderer, x, y)
         } else {
+          println("NOT ADDING LEGEND")
           plot
         }
     }

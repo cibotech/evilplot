@@ -30,8 +30,8 @@
 
 package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.colors.ScaledColorBar
-import com.cibo.evilplot.geometry.{Drawable, Rect, Style, Text}
+import com.cibo.evilplot.colors.{HTMLNamedColors, ScaledColorBar}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, GradientStop, LinearGradient, Rect, Style, Text}
 import com.cibo.evilplot.plot.aesthetics.Theme
 
 sealed trait LegendStyle
@@ -39,6 +39,7 @@ sealed trait LegendStyle
 object LegendStyle {
   case object Gradient extends LegendStyle // A legend of levels represented using a gradient.
   case object Categorical extends LegendStyle // A legend with distinct categories.
+  case object ContinuousGradient extends LegendStyle
 }
 
 /** Context information used to render a legend for a plot.
@@ -49,8 +50,9 @@ object LegendStyle {
 case class LegendContext(
   elements: Seq[Drawable] = Seq.empty,
   labels: Seq[Drawable] = Seq.empty,
-  defaultStyle: LegendStyle = LegendStyle.Categorical
-) {
+  defaultStyle: LegendStyle = LegendStyle.Categorical,
+  gradientLegends: Seq[Drawable] = Seq.empty // move this eventually will break api if done now
+ ) {
   require(elements.lengthCompare(labels.size) == 0, "Legend requires matching number of elements and labels")
 
   def isEmpty: Boolean = elements.isEmpty
@@ -113,6 +115,25 @@ object LegendContext {
       elements = elements,
       labels = labels,
       defaultStyle = LegendStyle.Gradient
+    )
+  }
+
+  def continuousGradientFromColorBar(colorBar: ScaledColorBar
+                                    )(implicit theme: Theme): LegendContext = {
+    val stops = (0 until colorBar.nColors - 1).zipWithIndex.map { case (c, idx) =>
+      GradientStop(idx / colorBar.nColors, colorBar.getColor(c))
+    } :+ GradientStop(1.0, colorBar.getColor(colorBar.nColors - 1))
+
+    val gradientBarSize = Extent(10, 100)
+    val gradient = LinearGradient.topToBottom(gradientBarSize, stops)
+
+    val gradientLegend = Rect(gradientBarSize).filled(gradient)
+
+    LegendContext(
+      elements = Seq(EmptyDrawable()), // this is crazy
+      labels = Seq(EmptyDrawable()),
+      gradientLegends = Seq(gradientLegend),
+      defaultStyle = LegendStyle.ContinuousGradient
     )
   }
 

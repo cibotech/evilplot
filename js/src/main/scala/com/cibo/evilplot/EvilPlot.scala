@@ -76,24 +76,7 @@ object EvilPlot {
   def renderExample(canvasId: String): Unit = {
 
     addExample(DemoPlots.simpleGroupedPlot)
-    addExample(DemoPlots.simpleContinuousPlot)
 
-    addExample(DemoPlots.simpleCartesianPlot)
-    addExample(DemoPlots.densityPlot)
-    addExample(DemoPlots.legendFeatures)
-    addExample(DemoPlots.axesTesting)
-    addExample(DemoPlots.functionPlot)
-    addExample(DemoPlots.markerPlot)
-    addExample(DemoPlots.scatterPlot)
-    addExample(DemoPlots.barChart)
-    addExample(DemoPlots.boxPlot)
-    addExample(DemoPlots.clusteredBoxPlot)
-    addExample(DemoPlots.facetedPlot)
-    addExample(DemoPlots.heatmap)
-    addExample(DemoPlots.marginalHistogram)
-    addExample(DemoPlots.clusteredBarChart)
-    addExample(DemoPlots.stackedBarChart)
-    addExample(DemoPlots.clusteredStackedBarChart)
   }
 
   private def addExample(plot: Drawable): Unit = {

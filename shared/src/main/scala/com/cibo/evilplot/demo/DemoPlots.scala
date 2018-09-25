@@ -272,9 +272,11 @@ object DemoPlots {
 
     val continuousData = Seq.fill(60)(Record(Math.random() * 50))
 
+    val colorBar = ScaledColorBar(Seq(HTMLNamedColors.red, HTMLNamedColors.green), 0, 100)
     val groupPlot = BinnedPlot.continuous[Record](
       continuousData,
-      _.continuousBins(_.value)
+      _.continuousBins(_.value),
+      legendContext = LegendContext.continuousGradientFromColorBar(colorBar)
     )(
       _.histogram(Some(BarRenderer.custom({ case (context, bar) =>
         val extent = context.extent
@@ -286,7 +288,7 @@ object DemoPlots {
       })))
     )
 
-    Overlay(groupPlot)
+    groupPlot
       .standard()
       .xLabel("x")
       .yLabel("y")
@@ -301,9 +303,7 @@ object DemoPlots {
     val histogramPlot = BinnedPlot.continuous[Double](
       continuousData,
       _.continuousBins(identity)
-    )(
-      _.histogram()
-    )
+    )(_.histogram())
 
     Overlay(histogramPlot)
       .standard()
