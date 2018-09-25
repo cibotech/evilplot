@@ -71,7 +71,7 @@ package object geometry {
 
     def colored(color: Color): Drawable = StrokeStyle(r, fill = color)
     def filled(color: Color): Drawable = Style(r, fill = color)
-    def filled(gradient: GradientFill): Drawable = Gradient(r, fill = gradient)
+    def filled(gradient: Gradient2d): Drawable = GradientFill(r, fill = gradient)
     def weighted(weight: Double): Drawable = StrokeWeight(r, weight = weight)
     def dashed(dashLength: Double): Drawable = LineDash(r, LineStyle.evenlySpaced(dashLength))
     def dashed(lineStyle: LineStyle): Drawable = LineDash(r, style = lineStyle)

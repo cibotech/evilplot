@@ -47,5 +47,5 @@ trait RenderContext {
   def draw(weight: StrokeWeight): Unit
   def draw(lineDash: LineDash): Unit
   def draw(text: Text): Unit
-  def draw(gradient: Gradient): Unit
+  def draw(gradient: GradientFill): Unit
 }

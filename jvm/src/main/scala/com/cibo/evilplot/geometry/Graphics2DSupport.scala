@@ -230,7 +230,7 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     graphics.drawString(text.msg, 0, baseExtent.height.toInt)
   }
 
-  def draw(gradient: Gradient): Unit = {
+  def draw(gradient: GradientFill): Unit = {
     gradient.fill match {
       case lg: LinearGradient =>
         val gradientFill = new LinearGradientPaint(

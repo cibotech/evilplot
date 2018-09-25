@@ -30,6 +30,7 @@
 
 package com.cibo.evilplot.geometry
 
+import com.cibo.evilplot.colors.HTMLNamedColors
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends RenderContext {
@@ -151,7 +152,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
     }
   }
 
-  def draw(gradient: Gradient): Unit = {
+  def draw(gradient: GradientFill): Unit = {
     gradient.fill match {
       case lg: LinearGradient =>
         val gradientFill = canvas.createLinearGradient(lg.x0, lg.y0, lg.x1, lg.y1)
@@ -159,6 +160,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
           gradientFill.addColorStop(stop.offset, stop.color.repr)
         }
         canvas.fillStyle = gradientFill
+        gradient.r.draw(this)
 
       case rg: RadialGradient =>
         val gradientFill = canvas.createRadialGradient(rg.x0, rg.y0, rg.r0, rg.x1, rg.y1, rg.r0)
@@ -166,6 +168,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
           gradientFill.addColorStop(stop.offset, stop.color.repr)
         }
         canvas.fillStyle = gradientFill
+        gradient.r.draw(this)
 
       case _ => throw new Exception("Unknown gradient type")
     }

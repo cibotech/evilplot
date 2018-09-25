@@ -313,10 +313,10 @@ object Style {
   implicit val decoder: Decoder[Style] = deriveDecoder[Style]
 }
 
-sealed trait GradientFill
-object GradientFill {
-    implicit val decoder: Decoder[GradientFill] = deriveDecoder[GradientFill]
-    implicit val encoder: Encoder[GradientFill] = deriveEncoder[GradientFill]
+sealed trait Gradient2d
+object Gradient2d {
+    implicit val decoder: Decoder[Gradient2d] = deriveDecoder[Gradient2d]
+    implicit val encoder: Encoder[Gradient2d] = deriveEncoder[Gradient2d]
 }
 
 case class GradientStop(offset: Double, color: Color)
@@ -326,7 +326,7 @@ object GradientStop {
 }
 
 case class LinearGradient(x0: Double, y0: Double,
-                          x1: Double, y1: Double, stops: Seq[GradientStop]) extends GradientFill
+                          x1: Double, y1: Double, stops: Seq[GradientStop]) extends Gradient2d
 
 object LinearGradient {
   implicit val decoder: Decoder[LinearGradient] = deriveDecoder[LinearGradient]
@@ -350,7 +350,7 @@ object LinearGradient {
 }
 
 case class RadialGradient(x0: Double, y0: Double, r0: Double,
-                          x1: Double, y1: Double, stops: Seq[GradientStop]) extends GradientFill
+                          x1: Double, y1: Double, stops: Seq[GradientStop]) extends Gradient2d
 
 object RadialGradient {
   implicit val decoder: Decoder[RadialGradient] = deriveDecoder[RadialGradient]
@@ -371,14 +371,14 @@ object RadialGradient {
 }
 
 /** Apply a gradient fill to a fillable Drawable. */
-final case class Gradient(r: Drawable, fill: GradientFill) extends Drawable {
+final case class GradientFill(r: Drawable, fill: Gradient2d) extends Drawable {
   lazy val extent: Extent = r.extent
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 
-object Gradient {
-  implicit val encoder: Encoder[Gradient] = deriveEncoder[Gradient]
-  implicit val decoder: Decoder[Gradient] = deriveDecoder[Gradient]
+object GradientFill {
+  implicit val encoder: Encoder[GradientFill] = deriveEncoder[GradientFill]
+  implicit val decoder: Decoder[GradientFill] = deriveDecoder[GradientFill]
 }
 
 /** Apply a border color to a strokable Drawable. */

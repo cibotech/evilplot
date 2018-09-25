@@ -34,7 +34,6 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric._
 import com.cibo.evilplot.plot
-import com.cibo.evilplot.plot.GroupedPlot.BinArgs
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -268,16 +267,12 @@ object DemoPlots {
   }
 
   lazy val simpleGroupedPlot: Drawable = {
-    val nums = Seq.fill(25)(Random.nextDouble() * 10)
-    val pts = Seq.fill(25)(Point(Random.nextDouble() * 12, Random.nextDouble() * 12))
 
     val categoricalData = Seq.fill(60)(Person((Math.random() * 100).toInt, randomMood()))
 
-    val groupPlot = GroupedPlot.continuous[Person](
+    val groupPlot = BinnedPlot.continuous[Person](
       categoricalData,
-      { x: BinArgs[Person] =>
-        Binning.histogramBinsDataBounds(x.data.map(_.age.toDouble))
-      }
+      _.histogramBins(_.age)
     )(
       _.histogram(Some(BarRenderer.custom({ case (context, bar) =>
         val extent = context.extent
@@ -298,11 +293,9 @@ object DemoPlots {
 
     val continuousData = Seq.fill(60)(Math.random() * 100)
 
-    val histogramPlot = GroupedPlot.continuous[Double](
+    val histogramPlot = BinnedPlot.continuous[Double](
       continuousData,
-      { x =>
-        Binning.histogramBinsDataBounds(x.data)
-      }
+      _.histogramBins(identity)
     )(
       _.histogram()
     )
@@ -332,7 +325,8 @@ object DemoPlots {
             Text("\uD83D\uDC10", size = 20).translate(-10, -10)
           } else {
             Style(Disc.centered(2), fill = RGB.random)
-          }})
+          }}),
+        _.scatter
       ).standard()
       .xLabel("x")
       .yLabel("y")
