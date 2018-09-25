@@ -313,72 +313,14 @@ object Style {
   implicit val decoder: Decoder[Style] = deriveDecoder[Style]
 }
 
-sealed trait Gradient2d
-object Gradient2d {
-    implicit val decoder: Decoder[Gradient2d] = deriveDecoder[Gradient2d]
-    implicit val encoder: Encoder[Gradient2d] = deriveEncoder[Gradient2d]
-}
-
-case class GradientStop(offset: Double, color: Color)
-object GradientStop {
-    implicit val decoder: Decoder[GradientStop] = deriveDecoder[GradientStop]
-    implicit val encoder: Encoder[GradientStop] = deriveEncoder[GradientStop]
-}
-
-case class LinearGradient(x0: Double, y0: Double,
-                          x1: Double, y1: Double, stops: Seq[GradientStop]) extends Gradient2d
-
-object LinearGradient {
-  implicit val decoder: Decoder[LinearGradient] = deriveDecoder[LinearGradient]
-  implicit val encoder: Encoder[LinearGradient] = deriveEncoder[LinearGradient]
-
-  def horizontal(ex: Extent, stops: Seq[GradientStop]) = LinearGradient(
-    0,
-    ex.height / 2,
-    ex.width,
-    ex.height / 2,
-    stops
-  )
-
-  def vertical(ex: Extent, stops: Seq[GradientStop]) = LinearGradient(
-    0,
-    ex.height / 2,
-    ex.width,
-    ex.height / 2,
-    stops
-  )
-}
-
-case class RadialGradient(x0: Double, y0: Double, r0: Double,
-                          x1: Double, y1: Double, stops: Seq[GradientStop]) extends Gradient2d
-
-object RadialGradient {
-  implicit val decoder: Decoder[RadialGradient] = deriveDecoder[RadialGradient]
-  implicit val encoder: Encoder[RadialGradient] = deriveEncoder[RadialGradient]
-
-  def withinExtent(extent: Extent, stops: Seq[GradientStop]) = {
-    val radius = extent.height.min(extent.width) / 2
-
-    RadialGradient(
-      extent.width / 2,
-      extent.height / 2,
-      radius,
-      extent.width / 2,
-      extent.height / 2,
-      stops
-    )
-  }
-}
-
 /** Apply a gradient fill to a fillable Drawable. */
 final case class GradientFill(r: Drawable, fill: Gradient2d) extends Drawable {
   lazy val extent: Extent = r.extent
   def draw(context: RenderContext): Unit = context.draw(this)
 }
-
 object GradientFill {
-  implicit val encoder: Encoder[GradientFill] = deriveEncoder[GradientFill]
-  implicit val decoder: Decoder[GradientFill] = deriveDecoder[GradientFill]
+  implicit val encoder: Encoder[Gradient2d] = deriveEncoder[Gradient2d]
+  implicit val decoder: Decoder[Gradient2d] = deriveDecoder[Gradient2d]
 }
 
 /** Apply a border color to a strokable Drawable. */

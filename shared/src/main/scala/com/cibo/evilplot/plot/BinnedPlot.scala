@@ -36,17 +36,19 @@ case class ContinuousBin(values: Seq[Double], bounds: Bounds, agg: Seq[Double] =
 
 object Binning {
 
-  def histogramBinsWithPlotBounds(seq: Seq[Double],
-                                  ctx: Option[PlotContext],
-                                  numBins: Int = 20,
-                                  normalize: Boolean = false): Seq[ContinuousBin] = {
+  def histogramBins(seq: Seq[Double],
+                    ctx: Option[PlotContext],
+                    numBins: Int = 20,
+                    normalize: Boolean = false): Seq[ContinuousBin] = {
     ctx match {
       case Some(rctx) => Binning.histogramBinsWithBounds(seq, rctx.xBounds)
-      case None => Binning.histogramBins(seq)
+      case None => Binning.histogramBinsDataBounds(seq)
     }
   }
 
-  def histogramBins(seq: Seq[Double], numBins: Int = 20, normalize: Boolean = false): Seq[ContinuousBin] = {
+  def histogramBinsDataBounds(seq: Seq[Double],
+                              numBins: Int = 20,
+                              normalize: Boolean = false): Seq[ContinuousBin] = {
     histogramBinsWithBounds(seq, Bounds(seq.min, seq.max), numBins, normalize)
   }
 
@@ -70,24 +72,23 @@ object Binning {
 
 case class BinArgs[T](data: Seq[T], ctx: Option[PlotContext]) {
 
-  def histogramBins(extract: T => Double,
-                    numBins: Int = 20,
-                    normalize: Boolean = false): Seq[ContinuousBin] = {
-    Binning.histogramBins(data.map(extract), numBins, normalize)
+  def continuousBins(extract: T => Double,
+                     numBins: Int = 20,
+                     normalize: Boolean = false): Seq[ContinuousBin] = {
+    Binning.histogramBins(data.map(extract), ctx, numBins, normalize)
   }
 
-  def histogramBinsWithPlotBounds(extract: T => Double,
-                                  ctx: Option[PlotContext],
-                                  numBins: Int = 20,
-                                  normalize: Boolean = false): Seq[ContinuousBin] = {
-    Binning.histogramBinsWithPlotBounds(data.map(extract), ctx, numBins, normalize)
-  }
-
-  def histogramBinsWithBounds(extract: T => Double,
-                              bounds: Bounds,
-                              numBins: Int = 20,
-                              normalize: Boolean = false): Seq[ContinuousBin] = {
+  def continuousBinsWithBounds(extract: T => Double,
+                               bounds: Bounds,
+                               numBins: Int = 20,
+                               normalize: Boolean = false): Seq[ContinuousBin] = {
     Binning.histogramBinsWithBounds(data.map(extract), bounds, numBins, normalize)
+  }
+
+  def continuousBinsDataBounds(extract: T => Double,
+                               numBins: Int = 20,
+                               normalize: Boolean = false): Seq[ContinuousBin] = {
+    Binning.histogramBinsDataBounds(data.map(extract), numBins, normalize)
   }
 }
 

@@ -32,6 +32,8 @@ package com.cibo.evilplot.colors
 
 import io.circe.{Decoder, Encoder}
 
+import scala.util.Random
+
 sealed trait Color {
   val repr: String
   def rgba: (Int, Int, Int, Double)
@@ -94,9 +96,9 @@ object RGBA {
 object RGB {
 
   def random: Color = RGB(
-    (Math.random() * 256).toInt,
-    (Math.random() * 256).toInt,
-    (Math.random() * 256).toInt
+    Random.nextInt(256),
+    Random.nextInt(256),
+    Random.nextInt(256)
   )
 
   def apply(r: Int, g: Int, b: Int): HSLA = ColorUtils.rgbaToHsla(r, g, b, 1.0)

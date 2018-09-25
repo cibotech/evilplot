@@ -163,7 +163,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
         gradient.r.draw(this)
 
       case rg: RadialGradient =>
-        val gradientFill = canvas.createRadialGradient(rg.x0, rg.y0, rg.r0, rg.x1, rg.y1, rg.r0)
+        val gradientFill = canvas.createRadialGradient(rg.x0, rg.y0, 0, rg.x1, rg.y1, rg.r0)
         rg.stops.foreach{ stop =>
           gradientFill.addColorStop(stop.offset, stop.color.repr)
         }

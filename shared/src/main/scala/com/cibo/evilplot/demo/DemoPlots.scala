@@ -33,7 +33,7 @@ package com.cibo.evilplot.demo
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric._
-import com.cibo.evilplot.plot
+import com.cibo.evilplot.{geometry, plot}
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
 import com.cibo.evilplot.plot.aesthetics.Theme
@@ -266,17 +266,22 @@ object DemoPlots {
     }
   }
 
+  case class Record(value: Double)
+
   lazy val simpleGroupedPlot: Drawable = {
 
-    val categoricalData = Seq.fill(60)(Person((Math.random() * 100).toInt, randomMood()))
+    val continuousData = Seq.fill(60)(Record(Math.random() * 50))
 
-    val groupPlot = BinnedPlot.continuous[Person](
-      categoricalData,
-      _.histogramBins(_.age)
+    val groupPlot = BinnedPlot.continuous[Record](
+      continuousData,
+      _.continuousBins(_.value)
     )(
       _.histogram(Some(BarRenderer.custom({ case (context, bar) =>
         val extent = context.extent
-        val gradient = LinearGradient(0, 0, 0, extent.height, Seq(GradientStop(0.0, HTMLNamedColors.red), GradientStop(1.0, HTMLNamedColors.green)))
+        val gradient = LinearGradient.topToBottom(extent, Seq(
+          GradientStop(0.0, HTMLNamedColors.red),
+          GradientStop(1.0, RGB(46, 204, 113)))
+        )
         Rect(extent.width, extent.height).filled(gradient)
       })))
     )
@@ -295,7 +300,7 @@ object DemoPlots {
 
     val histogramPlot = BinnedPlot.continuous[Double](
       continuousData,
-      _.histogramBins(identity)
+      _.continuousBins(identity)
     )(
       _.histogram()
     )
@@ -306,11 +311,6 @@ object DemoPlots {
       .yLabel("y")
       .rightLegend()
       .render(plotAreaSize)
-  }
-
-  case class Person(age: Int, mood: String)
-  def randomMood() = {
-    Random.shuffle(Seq("happy", "happy", "sad", "angry", "neutral")).head
   }
 
   lazy val simpleCartesianPlot: Drawable = {
@@ -325,8 +325,7 @@ object DemoPlots {
             Text("\uD83D\uDC10", size = 20).translate(-10, -10)
           } else {
             Style(Disc.centered(2), fill = RGB.random)
-          }}),
-        _.scatter
+          }})
       ).standard()
       .xLabel("x")
       .yLabel("y")
