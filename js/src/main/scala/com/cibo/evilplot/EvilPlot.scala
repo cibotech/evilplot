@@ -77,10 +77,10 @@ object EvilPlot {
 
     addExample(DemoPlots.simpleGroupedPlot)
     addExample(DemoPlots.simpleContinuousPlot)
-
     addExample(Polygon(Vector(Point(20.0,3.3333333333333357), Point(17.499999999999996,0.0), Point(10.0,0.0), Point(10.0,20.0), Point(17.499999999999996,20.0), Point(20.0,16.666666666666664))).filled(HTMLNamedColors.red))
     addExample(Polygon(Vector(Point(10.0,0.0), Point(17.5,0.0), Point(10.0,20.0), Point(20.0,0.3333333333333333), Point(20.0,1.6666666666666667), Point(17.5,20.0))).filled(HTMLNamedColors.red))
-//    addExample(DemoPlots.simpleCartesianPlot)
+    addExample(Polygon(Vector(Point(10, -10), Point(10, 30), Point(25, 10))))
+    //    addExample(DemoPlots.simpleCartesianPlot)
 //    addExample(DemoPlots.densityPlot)
 //    addExample(DemoPlots.legendFeatures)
 //    addExample(DemoPlots.axesTesting)

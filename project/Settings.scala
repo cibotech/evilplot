@@ -8,7 +8,7 @@ object Settings {
     "-deprecation",
     "-unchecked",
     "-feature",
-    "-Xfatal-warnings",
+//    "-Xfatal-warnings", uncomment when internal deprecations are fixed
     "-Xsource:2.12"
   )
 
