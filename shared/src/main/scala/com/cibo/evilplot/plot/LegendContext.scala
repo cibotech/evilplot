@@ -129,7 +129,7 @@ object LegendContext {
     val minText = Text(colorBar.zMin.toString, theme.fonts.legendLabelSize).padAll(2).center(14)
     val maxText = Text(colorBar.zMax.toString, theme.fonts.legendLabelSize).padAll(2).center(14)
 
-    val gradientLegend = (minText above Rect(gradientBarSize).filled(gradient).center(14) above maxText)
+    val gradientLegend = (minText above Rect(gradientBarSize).filled(gradient).center(14) above maxText).padLeft(5)
 
     LegendContext(
       elements = Seq(EmptyDrawable()), // this is crazy

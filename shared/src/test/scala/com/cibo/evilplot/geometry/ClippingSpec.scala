@@ -32,11 +32,10 @@ package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.geometry.Clipping.Edge
 import com.cibo.evilplot.numeric.Point
-import org.scalactic.Equality
+import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.{FunSpec, Matchers}
 
-class ClippingSpec extends FunSpec with Matchers {
-
+trait PointEquivalences {
   implicit object PointEquivalence extends Equality[Point] {
     import math.{abs}
     def areEqual(a: Point, b: Any): Boolean = b match {
@@ -55,15 +54,46 @@ class ClippingSpec extends FunSpec with Matchers {
     }
   }
 
+  implicit object VectorPointEquivalence extends Equality[Vector[Point]] {
+    val eq = implicitly[Equality[Point]]
+
+    def areEqual(a: Vector[Point], b: Any): Boolean = b match {
+      case bx: Vector[_] => a.corresponds(bx)((i, j) => eq.areEqual(i, j))
+      case _ =>
+        println("UNMATCHED TYPE")
+        false
+    }
+  }
+
+  implicit object VectorVectorPointEquivalence extends Equality[Vector[Vector[Point]]] {
+    val eq = implicitly[Equality[Vector[Point]]]
+
+    def areEqual(a: Vector[Vector[Point]], b: Any): Boolean = b match {
+      case bx: Vector[_] => a.corresponds(bx)((i, j) => eq.areEqual(i, j))
+      case _ => false
+    }
+  }
+}
+
+object PointEquivalences extends PointEquivalences
+
+class ClippingSpec extends FunSpec with Matchers with PointEquivalences {
+
   describe("Edge") {
     it("vertical edge intersections are calculated correctly") {
-      Edge(Point(2, 2), Point(2, 0))
-        .intersection(Edge(Point(1.5, 3), Point(2.1, 1))) should contain(Point(2, 4 / 3d))
+      val interesection = Edge(Point(2, 2), Point(2, 0))
+        .intersection(Edge(Point(1.5, 3), Point(2.1, 1)))
+
+      interesection.head.x shouldEqual 2.0 +- 0.0000001
+      interesection.head.y shouldEqual 1.3333 +- 0.0001
     }
 
     it("vertical line intersections are calculated correctly") {
-      Edge(Point(1.5, 3), Point(2.1, 1))
-        .intersection(Edge(Point(2, 2), Point(2, 0))) should contain(Point(2, 4 / 3d))
+      val interesection = Edge(Point(1.5, 3), Point(2.1, 1))
+        .intersection(Edge(Point(2, 2), Point(2, 0)))
+
+      interesection.head.x shouldEqual 2.0 +- 0.0000001
+      interesection.head.y shouldEqual 1.3333 +- 0.0001
     }
   }
 
@@ -97,22 +127,22 @@ class ClippingSpec extends FunSpec with Matchers {
         Point(1.5, 0.5),
         Point(1, 1)
       )
-      val expected = Seq(
-        Seq(
+      val expected = Vector(
+        Vector(
           Point(0, 1),
           Point(0.75, 2)
         ),
-        Seq(
+        Vector(
           Point(1.8, 2),
           Point(2, 4 / 3d)
         ),
-        Seq(
+        Vector(
           Point(2, 5.5 / 6d),
           Point(1.5, 0.5),
           Point(1, 1)
         )
       )
-      Clipping.clipPath(path, Extent(2, 2)) should contain theSameElementsAs expected
+      Clipping.clipPath(path, Extent(2, 2)) shouldEqual expected
     }
   }
 
@@ -171,17 +201,17 @@ class ClippingSpec extends FunSpec with Matchers {
     it(
       "should properly clip a polygon when all of its points are outside the clipping region" +
         " but some of its area lies within it.") {
-      val polygon = Seq(Point(1, -1), Point(1, 3), Point(2.5, 1))
-      val expected = Seq(
-        Point(1, 0),
-        Point(1.75, 0),
-        Point(1, 2),
-        Point(2, 1d / 3d),
-        Point(2, 5d / 3d),
-        Point(1.75, 2)
+      val polygon = Seq(Point(10, -10), Point(10, 30), Point(25, 10))
+      val expected = Vector(
+        Point(10, 0),
+        Point(17.5, 0),
+        Point(10, 20),
+        Point(20, 10d / 30d),
+        Point(20, 50d / 30d),
+        Point(17.5, 20)
       )
-      val clipped = Clipping.clipPolygon(polygon, Extent(2, 2))
-      clipped should contain allElementsOf expected
+      val clipped = Clipping.clipPolygon(polygon, Extent(20, 20))
+      clipped shouldEqual expected
       clipped should have length expected.length
     }
   }

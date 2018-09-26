@@ -60,10 +60,10 @@ class ScatterPlotSpec extends FunSpec with Matchers {
 
     it("sets reasonable bounds with only 1 point") {
       val plot = ScatterPlot(Seq(Point(2, 3)))
-      plot.xbounds.min should be < 2.0
-      plot.xbounds.max should be > 2.0
-      plot.ybounds.min should be < 3.0
-      plot.ybounds.max should be > 3.0
+      plot.xbounds.min shouldBe 2.0 +- 0.0000001
+      plot.xbounds.max shouldBe 2.0 +- 0.0000001
+      plot.ybounds.min shouldBe 3.0 +- 0.0000001
+      plot.ybounds.max shouldBe 3.0 +- 0.0000001
     }
   }
 }

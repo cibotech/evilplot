@@ -79,7 +79,7 @@ object PlotUtils {
 
       Bounds(
         min - bufferValue,
-        max - bufferValue
+        max + bufferValue
       )
   }
 

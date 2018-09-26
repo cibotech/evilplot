@@ -30,11 +30,12 @@
 
 package com.cibo.evilplot.colors
 
+import com.cibo.evilplot.geometry.PointEquivalences
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultElements, DefaultFonts}
 import com.cibo.evilplot.plot.aesthetics.{Colors, Elements, Fonts, Theme}
 import org.scalatest.{FunSpec, Matchers}
 
-class ColoringSpec extends FunSpec with Matchers {
+class ColoringSpec extends FunSpec with Matchers with PointEquivalences {
   describe("multi color gradient construction") {
     import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
     it("should return a function when Colors has only one element") {
