@@ -14,10 +14,12 @@ going to explore some more built-in plots.
 If we take a look at the method signature for `ScatterPlot.apply`, we see it takes more than just data:
 ```scala
 object ScatterPlot {
-  def apply(
-    data: Seq[Point],
-    pointRenderer: Option[PointRenderer] = None,
-    boundBuffer: Option[Double] = None
+
+  def apply[X <: Datum2d[X]](   // Point extends Datum2d[Point]
+    data: Seq[X],
+    pointRenderer: Option[PointRenderer[X]] = None,
+    xBoundBuffer: Option[Double] = None,
+    yBoundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = ???
 }
 ```
