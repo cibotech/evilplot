@@ -118,8 +118,8 @@ private[evilplot] object Clipping {
     }
   }
 
-  // https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
-  @deprecated("WARNING THIS IS BROKEN, points will be returned in the wrong order", "9/26/2018")
+  // https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algo
+  @deprecated("WARNING THIS IS BROKEN, points are likely to be returned in the wrong order", "9/26/2018")
   private[evilplot] def clipPolygon(points: Seq[Point2d], extent: Extent): Seq[Point2d] = {
     boundEdges(extent).foldLeft(points.toVector) { (inputList, clipEdge) =>
       if (inputList.nonEmpty) {

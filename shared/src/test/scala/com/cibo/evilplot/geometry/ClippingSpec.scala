@@ -59,9 +59,7 @@ trait PointEquivalences {
 
     def areEqual(a: Vector[Point], b: Any): Boolean = b match {
       case bx: Vector[_] => a.corresponds(bx)((i, j) => eq.areEqual(i, j))
-      case _ =>
-        println("UNMATCHED TYPE")
-        false
+      case _ => false
     }
   }
 

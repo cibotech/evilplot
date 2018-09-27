@@ -39,9 +39,9 @@ trait TransformWorldToScreen {
     point.setXY(x = x,y = y)
   }
 
-  def transformDatumToPlotSpace[X <: Datum2d[X]](data: Seq[X],
-                                                 xtransformer: Transformer,
-                                                 ytransformer: Transformer): Seq[X] = {
+  def transformDatumsToWorld[X <: Datum2d[X]](data: Seq[X],
+                                              xtransformer: Transformer,
+                                              ytransformer: Transformer): Seq[X] = {
 
     data.map( p => transformDatumToWorld(p, xtransformer, ytransformer))
   }

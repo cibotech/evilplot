@@ -124,12 +124,12 @@ object LegendContext {
     val stops = FillGradients.distributeEvenly(colorBar.colorSeq)
 
     val gradientBarSize = Extent(10, 100)
-    val gradient = LinearGradient.topToBottom(gradientBarSize, stops)
+    val gradient = LinearGradient.bottomToTop(gradientBarSize, stops)
 
     val minText = Text(colorBar.zMin.toString, theme.fonts.legendLabelSize).padAll(2).center(14)
     val maxText = Text(colorBar.zMax.toString, theme.fonts.legendLabelSize).padAll(2).center(14)
 
-    val gradientLegend = (minText above Rect(gradientBarSize).filled(gradient).center(14) above maxText).padLeft(5)
+    val gradientLegend = (maxText above Rect(gradientBarSize).filled(gradient).center(14) above minText).padLeft(5)
 
     LegendContext(
       elements = Seq(EmptyDrawable()), // this is crazy
