@@ -42,7 +42,9 @@ trait BarRenderer extends PlotElementRenderer[Bar] {
 
 object BarRenderer {
 
-  def custom(renderFn: (PlotContext, Bar) => Drawable, legendCtx: Option[LegendContext] = None): BarRenderer = new BarRenderer {
+  def custom(
+    renderFn: (PlotContext, Bar) => Drawable,
+    legendCtx: Option[LegendContext] = None): BarRenderer = new BarRenderer {
     def render(plot: Plot, extent: Extent, category: Bar): Drawable = {
       renderFn(PlotContext.from(plot, extent), category)
     }

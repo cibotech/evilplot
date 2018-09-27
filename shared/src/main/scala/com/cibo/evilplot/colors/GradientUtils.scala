@@ -72,10 +72,8 @@ object GradientUtils {
     }
   }
 
-  def multiGradient(colors: Seq[Color],
-                    min: Double,
-                    max: Double,
-                   ): Double => Color = multiGradient(colors, min, max, GradientMode.Linear)
+  def multiGradient(colors: Seq[Color], min: Double, max: Double): Double => Color =
+    multiGradient(colors, min, max, GradientMode.Linear)
 
   /** Create a gradient between two colors.
     * @return A PartialFunction[Double, Color], only defined inside  [minValue, maxValue]

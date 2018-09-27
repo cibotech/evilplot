@@ -111,7 +111,10 @@ object ColorUtils {
     rgbaToHsla(r, g, b, 1.0)
   }
 
-  private[colors] def interpolate(component1: Double, component2: Double, coefficient: Double): Double = {
+  private[colors] def interpolate(
+    component1: Double,
+    component2: Double,
+    coefficient: Double): Double = {
     component1 * (1 - coefficient) + coefficient * component2
   }
 
@@ -140,6 +143,6 @@ object ColorUtils {
   def rgba(c: Color): (Double, Double, Double, Double) = c match {
     case hsla: HSLA => hslaToRgba(hsla)
     case Clear      => (0, 0, 0, 0)
-    case _ => throw new Exception(s"Unsupported color conversion: converting ${c} to rgba")
+    case _          => throw new Exception(s"Unsupported color conversion: converting ${c} to rgba")
   }
 }

@@ -41,13 +41,11 @@ final case class Colors(
   point: Color,
   gridLine: Color,
   trendLine: Color,
-
   title: Color,
   label: Color,
   annotation: Color,
   legendLabel: Color,
   tickLabel: Color,
-
   stream: Seq[Color],
   continuousColoring: ContinuousColoring
 )

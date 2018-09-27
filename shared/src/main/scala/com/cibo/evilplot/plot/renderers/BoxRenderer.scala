@@ -61,7 +61,7 @@ trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] { br =>
     * */
   def withMeanLine(
     color: Color = HTMLNamedColors.darkRed
-   )(implicit theme: Theme): BoxRenderer = new BoxRenderer {
+  )(implicit theme: Theme): BoxRenderer = new BoxRenderer {
 
     override def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable = {
       val box = br.render(plot, extent, summary)
@@ -85,9 +85,8 @@ object BoxRenderer {
     cluster: Int = 0
   )
 
-  def custom(renderFn: (Extent, BoxRendererContext) => Drawable
-            )(implicit theme: Theme): BoxRenderer = new BoxRenderer {
-
+  def custom(renderFn: (Extent, BoxRendererContext) => Drawable)(
+    implicit theme: Theme): BoxRenderer = new BoxRenderer {
 
     def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable = {
       renderFn(extent, summary)
@@ -105,7 +104,6 @@ object BoxRenderer {
     private val useStrokeColor = strokeColor.getOrElse(theme.colors.path)
     private val useLineDash = lineDash.getOrElse(theme.elements.lineDashStyle)
     private val useStrokeWidth = strokeWidth.getOrElse(theme.elements.strokeWidth)
-
 
     def render(plot: Plot, extent: Extent, context: BoxRendererContext): Drawable = {
 
@@ -186,10 +184,10 @@ object BoxRenderer {
     private val useColoring = fillColoring.getOrElse(CategoricalColoring.themed[A])
     private val colorFunc = useColoring(colorDimension)
 
-
-    def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable = BoxRenderer
-      .default(fillColor = Some(colorFunc(colorDimension(summary.index))))
-      .render(plot, extent, summary)
+    def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable =
+      BoxRenderer
+        .default(fillColor = Some(colorFunc(colorDimension(summary.index))))
+        .render(plot, extent, summary)
 
     override def legendContext: LegendContext = {
       useColoring.legendContext(colorDimension, legendGlyph = d => Rect(d))

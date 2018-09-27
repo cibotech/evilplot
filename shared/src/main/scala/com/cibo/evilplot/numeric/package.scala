@@ -43,7 +43,7 @@ package object numeric {
     def setXY(x: Double = this.x, y: Double = this.y): Point2d
   }
 
-  case class Point3d[Z: Numeric](x: Double, y: Double, z: Z) extends Datum2d[Point3d[Z]]{
+  case class Point3d[Z: Numeric](x: Double, y: Double, z: Z) extends Datum2d[Point3d[Z]] {
     def setXY(x: Double, y: Double): Point3d[Z] = this.copy(x, y, z)
   }
 
@@ -81,7 +81,9 @@ package object numeric {
     ySpacing: Double)
 
   final case class Bounds(min: Double, max: Double) {
-    require(!(min > max), s"Bounds min must be <= max, $min !<= $max")
+    if (!min.isNaN && !max.isNaN) {
+      require(min <= max, s"Bounds min must be <= max, $min !<= $max")
+    }
 
     lazy val range: Double = max - min
 

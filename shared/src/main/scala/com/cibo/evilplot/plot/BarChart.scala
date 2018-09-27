@@ -86,7 +86,11 @@ object BarChart {
     private val numGroups = data.map(_.cluster).distinct.size
     private val barsPerGroup = if (isClustered) data.groupBy(_.cluster).map(_._2.size).max else 1
 
-    private def getBarX(barIndex: Int, cluster: Int, barWidth: Double, clusterWidth: Double): Double = {
+    private def getBarX(
+      barIndex: Int,
+      cluster: Int,
+      barWidth: Double,
+      clusterWidth: Double): Double = {
       val clusterIndex = if (isClustered) cluster else barIndex
       val clusterStartX = clusterPadding / 2 + (clusterWidth + clusterPadding) * clusterIndex
       val barXInCluster = (barWidth + spacing) * (barIndex % barsPerGroup)

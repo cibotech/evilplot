@@ -56,13 +56,13 @@ object Histogram {
     createBins(values, xbounds, binCount, normalize = true, cumulative = false)
 
   /** Create binCount bins from the given data and xbounds, cumulatively
-   * such that each bin includes the data in all previous bins */
+    * such that each bin includes the data in all previous bins */
   def cumulative(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
     createBins(values, xbounds, binCount, normalize = false, cumulative = true)
 
   /** Create binCount bins from the given data and xbounds, computing the bin
-   * heights such that they represent the average probability density over each
-   * bin interval */
+    * heights such that they represent the average probability density over each
+    * bin interval */
   def density(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] = {
     val binWidth = xbounds.range / binCount
     createBins(values, xbounds, binCount, normalize = true, cumulative = false)
@@ -70,14 +70,18 @@ object Histogram {
   }
 
   /** Create binCount bins from the given data and xbounds, cumulatively
-   * such that each bin includes the data in all previous bins, and normalized
-   * so that bins approximate a CDF */
+    * such that each bin includes the data in all previous bins, and normalized
+    * so that bins approximate a CDF */
   def cumulativeDensity(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
     createBins(values, xbounds, binCount, normalize = true, cumulative = true)
 
   // Create binCount bins from the given data and xbounds.
-  private def createBins(values: Seq[Double], xbounds: Bounds, binCount: Int,
-    normalize: Boolean, cumulative: Boolean): Seq[Point] = {
+  private def createBins(
+    values: Seq[Double],
+    xbounds: Bounds,
+    binCount: Int,
+    normalize: Boolean,
+    cumulative: Boolean): Seq[Point] = {
     val binWidth = xbounds.range / binCount
 
     val grouped = values.groupBy { value =>
@@ -105,8 +109,8 @@ object Histogram {
     binCount: Int,
     spacing: Double,
     boundBuffer: Double,
-    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point]
-  ) extends PlotRenderer {
+    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point])
+      extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.nonEmpty) {
 
@@ -147,11 +151,12 @@ object Histogram {
   }
 
   case class ContinuousBinPlotRenderer(
-                                        bins: Seq[ContinuousBin],
-                                        binRenderer: ContinuousBinRenderer,
-                                        spacing: Double,
-                                        boundBuffer: Double,
-                              ) extends PlotRenderer {
+    bins: Seq[ContinuousBin],
+    binRenderer: ContinuousBinRenderer,
+    spacing: Double,
+    boundBuffer: Double)
+      extends PlotRenderer {
+
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (bins.nonEmpty) {
 
@@ -194,13 +199,13 @@ object Histogram {
     * @return A histogram plot.
     */
   def apply(
-             values: Seq[Double],
-             bins: Int = defaultBinCount,
-             barRenderer: Option[BarRenderer] = None,
-             spacing: Option[Double] = None,
-             boundBuffer: Option[Double] = None,
-             binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins
-           )(implicit theme: Theme): Plot = {
+    values: Seq[Double],
+    bins: Int = defaultBinCount,
+    barRenderer: Option[BarRenderer] = None,
+    spacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None,
+    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins)(
+    implicit theme: Theme): Plot = {
     require(bins > 0, "must have at least one bin")
     val xbounds = Bounds(
       values.reduceOption[Double](math.min).getOrElse(0.0),
@@ -224,12 +229,12 @@ object Histogram {
   }
 
   def fromBins(
-                bins: Seq[ContinuousBin],
-                binRenderer: Option[ContinuousBinRenderer] = None,
-                spacing: Option[Double] = None,
-                boundBuffer: Option[Double] = None,
-                binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins
-           )(implicit theme: Theme): Plot = {
+    bins: Seq[ContinuousBin],
+    binRenderer: Option[ContinuousBinRenderer] = None,
+    spacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None,
+    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins)(
+    implicit theme: Theme): Plot = {
     require(bins.nonEmpty, "must have at least one bin")
     val xbounds = Bounds.union(bins.map(_.x))
     val maxY = bins.map(_.y).max

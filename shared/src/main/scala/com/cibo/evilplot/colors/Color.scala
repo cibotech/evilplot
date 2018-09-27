@@ -56,7 +56,8 @@ case class HSLA(hue: Double, saturation: Double, lightness: Double, opacity: Dou
 
   private def boundHue(hue: Double) = if (hue < 0) hue + 360 else if (hue >= 360) hue - 360 else hue
 
-  private def floorCeiling(value: Double)(floor: Double, ceiling: Double) = value.min(ceiling).max(floor)
+  private def floorCeiling(value: Double)(floor: Double, ceiling: Double) =
+    value.min(ceiling).max(floor)
 
   def hsla: HSLA = this
 

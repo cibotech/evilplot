@@ -21,8 +21,8 @@ object GradientStop {
   implicit val encoder: Encoder[GradientStop] = deriveEncoder[GradientStop]
 }
 
-case class LinearGradient(x0: Double, y0: Double,
-                          x1: Double, y1: Double, stops: Seq[GradientStop]) extends Gradient2d
+case class LinearGradient(x0: Double, y0: Double, x1: Double, y1: Double, stops: Seq[GradientStop])
+    extends Gradient2d
 
 object LinearGradient {
   implicit val decoder: Decoder[LinearGradient] = deriveDecoder[LinearGradient]
@@ -42,8 +42,14 @@ object LinearGradient {
   }
 }
 
-case class RadialGradient(x0: Double, y0: Double, r0: Double,
-                          x1: Double, y1: Double, stops: Seq[GradientStop]) extends Gradient2d
+case class RadialGradient(
+  x0: Double,
+  y0: Double,
+  r0: Double,
+  x1: Double,
+  y1: Double,
+  stops: Seq[GradientStop])
+    extends Gradient2d
 
 object RadialGradient {
   implicit val decoder: Decoder[RadialGradient] = deriveDecoder[RadialGradient]

@@ -156,7 +156,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
     gradient.fill match {
       case lg: LinearGradient =>
         val gradientFill = canvas.createLinearGradient(lg.x0, lg.y0, lg.x1, lg.y1)
-        lg.stops.foreach{ stop =>
+        lg.stops.foreach { stop =>
           gradientFill.addColorStop(stop.offset, stop.color.repr)
         }
         canvas.fillStyle = gradientFill
@@ -164,7 +164,7 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
 
       case rg: RadialGradient =>
         val gradientFill = canvas.createRadialGradient(rg.x0, rg.y0, 0, rg.x1, rg.y1, rg.r0)
-        rg.stops.foreach{ stop =>
+        rg.stops.foreach { stop =>
           gradientFill.addColorStop(stop.offset, stop.color.repr)
         }
         canvas.fillStyle = gradientFill

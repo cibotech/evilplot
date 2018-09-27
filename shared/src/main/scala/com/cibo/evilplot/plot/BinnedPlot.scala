@@ -12,16 +12,19 @@ import com.cibo.evilplot.plot.renderers._
 
 import scala.reflect.ClassTag
 
-final case class CompoundPlotRenderer(drawablesToPlot: Seq[PlotContext => PlotRenderer],
-                                      xBounds: Bounds,
-                                      yBounds: Bounds,
-                                      legend: LegendContext = LegendContext()) extends PlotRenderer {
+final case class CompoundPlotRenderer(
+  drawablesToPlot: Seq[PlotContext => PlotRenderer],
+  xBounds: Bounds,
+  yBounds: Bounds,
+  legend: LegendContext = LegendContext())
+    extends PlotRenderer {
 
   override def legendContext: LegendContext = legend
 
   def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-    drawablesToPlot.foldLeft(EmptyDrawable() : Drawable){ case (accum, dr) =>
-      dr(PlotContext(plot, plotExtent)).render(plot, plotExtent) behind accum
+    drawablesToPlot.foldLeft(EmptyDrawable(): Drawable) {
+      case (accum, dr) =>
+        dr(PlotContext(plot, plotExtent)).render(plot, plotExtent) behind accum
     }
   }
 }
@@ -37,9 +40,10 @@ case class ContinuousBin(values: Seq[Double], bounds: Bounds, y: Double) extends
 
 object ContinuousBin {
 
-  def apply(values: Seq[Double],
-            bounds: Bounds,
-            agg: Seq[Double] => Double = _.length): ContinuousBin = {
+  def apply(
+    values: Seq[Double],
+    bounds: Bounds,
+    agg: Seq[Double] => Double = _.length): ContinuousBin = {
     new ContinuousBin(values, bounds, agg(values))
   }
 }
@@ -51,8 +55,9 @@ trait ContinuousBinRenderer extends PlotElementRenderer[ContinuousBin] {
 
 object ContinuousBinRenderer {
 
-  def custom(renderFn: (PlotContext, ContinuousBin) => Drawable,
-             legendCtx: Option[LegendContext] = None): ContinuousBinRenderer = new ContinuousBinRenderer {
+  def custom(
+    renderFn: (PlotContext, ContinuousBin) => Drawable,
+    legendCtx: Option[LegendContext] = None): ContinuousBinRenderer = new ContinuousBinRenderer {
 
     def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable = {
       renderFn(PlotContext.from(plot, extent), bin)
@@ -63,8 +68,8 @@ object ContinuousBinRenderer {
 
   /** Default bar renderer. */
   def default(
-               color: Option[Color] = None
-             )(implicit theme: Theme): ContinuousBinRenderer = new ContinuousBinRenderer {
+    color: Option[Color] = None
+  )(implicit theme: Theme): ContinuousBinRenderer = new ContinuousBinRenderer {
     def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable = {
       Rect(extent.width, extent.height).filled(color.getOrElse(theme.colors.bar))
     }
@@ -72,26 +77,30 @@ object ContinuousBinRenderer {
 }
 object Binning {
 
-  def histogramBins(seq: Seq[Double],
-                    ctx: Option[PlotContext],
-                    numBins: Int = 20,
-                    normalize: Boolean = false): Seq[ContinuousBin] = {
+  def histogramBins(
+    seq: Seq[Double],
+    ctx: Option[PlotContext],
+    numBins: Int = 20,
+    normalize: Boolean = false): Seq[ContinuousBin] = {
     ctx match {
-      case Some(rctx) => Binning.histogramBinsWithBounds(seq, rctx.xBounds, numBins = numBins, normalize = normalize)
+      case Some(rctx) =>
+        Binning.histogramBinsWithBounds(seq, rctx.xBounds, numBins = numBins, normalize = normalize)
       case None => Binning.histogramBinsDataBounds(seq, numBins = numBins, normalize = normalize)
     }
   }
 
-  def histogramBinsDataBounds(seq: Seq[Double],
-                              numBins: Int = 20,
-                              normalize: Boolean = false): Seq[ContinuousBin] = {
+  def histogramBinsDataBounds(
+    seq: Seq[Double],
+    numBins: Int = 20,
+    normalize: Boolean = false): Seq[ContinuousBin] = {
     histogramBinsWithBounds(seq, Bounds(seq.min, seq.max), numBins, normalize)
   }
 
-  def histogramBinsWithBounds(seq: Seq[Double],
-                              bounds: Bounds,
-                              numBins: Int = 20,
-                              normalize: Boolean = false): Seq[ContinuousBin] = {
+  def histogramBinsWithBounds(
+    seq: Seq[Double],
+    bounds: Bounds,
+    numBins: Int = 20,
+    normalize: Boolean = false): Seq[ContinuousBin] = {
     val xbounds = bounds
     val binWidth = xbounds.range / numBins
     val grouped = seq.groupBy { value =>
@@ -99,31 +108,37 @@ object Binning {
     }
     (0 until numBins).map { i =>
       val x = i * binWidth + xbounds.min
-      grouped.get(i).map { vs =>
-        ContinuousBin(vs, Bounds(x, x + binWidth))
-      }.getOrElse(ContinuousBin(Seq.empty[Double], Bounds(x, x + binWidth)))
+      grouped
+        .get(i)
+        .map { vs =>
+          ContinuousBin(vs, Bounds(x, x + binWidth))
+        }
+        .getOrElse(ContinuousBin(Seq.empty[Double], Bounds(x, x + binWidth)))
     }
   }
 }
 
 case class BinArgs[T](data: Seq[T], ctx: Option[PlotContext]) {
 
-  def continuousBins(extract: T => Double,
-                     numBins: Int = 20,
-                     normalize: Boolean = false): Seq[ContinuousBin] = {
+  def continuousBins(
+    extract: T => Double,
+    numBins: Int = 20,
+    normalize: Boolean = false): Seq[ContinuousBin] = {
     Binning.histogramBins(data.map(extract), ctx, numBins, normalize)
   }
 
-  def continuousBinsWithBounds(extract: T => Double,
-                               bounds: Bounds,
-                               numBins: Int = 20,
-                               normalize: Boolean = false): Seq[ContinuousBin] = {
+  def continuousBinsWithBounds(
+    extract: T => Double,
+    bounds: Bounds,
+    numBins: Int = 20,
+    normalize: Boolean = false): Seq[ContinuousBin] = {
     Binning.histogramBinsWithBounds(data.map(extract), bounds, numBins, normalize)
   }
 
-  def continuousBinsDataBounds(extract: T => Double,
-                               numBins: Int = 20,
-                               normalize: Boolean = false): Seq[ContinuousBin] = {
+  def continuousBinsDataBounds(
+    extract: T => Double,
+    numBins: Int = 20,
+    normalize: Boolean = false): Seq[ContinuousBin] = {
     Binning.histogramBinsDataBounds(data.map(extract), numBins, normalize)
   }
 }
@@ -132,14 +147,13 @@ object BinnedPlot {
 
   type ContextToDrawableContinuous[T] = ContinuousDataRenderer[T] => PlotContext => PlotRenderer
 
-  def continuous[T](data: Seq[T],
-                    binFn: BinArgs[T] => Seq[ContinuousBin],
-                    xboundBuffer: Option[Double] = None,
-                    yboundBuffer: Option[Double] = None,
-                    legendContext: LegendContext = LegendContext()
-              )(
-                contextToDrawable: ContextToDrawableContinuous[T]*,
-              )(implicit theme: Theme): Plot = {
+  def continuous[T](
+    data: Seq[T],
+    binFn: BinArgs[T] => Seq[ContinuousBin],
+    xboundBuffer: Option[Double] = None,
+    yboundBuffer: Option[Double] = None,
+    legendContext: LegendContext = LegendContext())(
+    contextToDrawable: ContextToDrawableContinuous[T]*)(implicit theme: Theme): Plot = {
     val bins: Seq[ContinuousBin] = binFn(BinArgs(data, None))
 
     val xbounds = Bounds.union(bins.map(_.x))
@@ -166,10 +180,11 @@ case class ContinuousDataRenderer[T](data: Seq[T], binFn: BinArgs[T] => Seq[Cont
 
   def filter(x: T => Boolean): ContinuousDataRenderer[T] = this.copy(data.filter(x))
 
-  def histogram(barRenderer: Option[ContinuousBinRenderer] = None,
-                spacing: Option[Double] = None,
-                boundBuffer: Option[Double] = None,
-               )(pCtx: PlotContext)(implicit theme: Theme) = {
+  def histogram(
+    barRenderer: Option[ContinuousBinRenderer] = None,
+    spacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None
+  )(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
     val bins = binFn(BinArgs(data, Some(pCtx)))
     Histogram.fromBins(bins, barRenderer, spacing, boundBuffer).renderer
   }

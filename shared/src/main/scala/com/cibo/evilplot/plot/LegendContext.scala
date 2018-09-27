@@ -31,7 +31,17 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.{FillGradients, HTMLNamedColors, ScaledColorBar}
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, GradientFill, GradientStop, LinearGradient, Rect, Style, Text}
+import com.cibo.evilplot.geometry.{
+  Drawable,
+  EmptyDrawable,
+  Extent,
+  GradientFill,
+  GradientStop,
+  LinearGradient,
+  Rect,
+  Style,
+  Text
+}
 import com.cibo.evilplot.plot.aesthetics.Theme
 
 sealed trait LegendStyle
@@ -52,8 +62,10 @@ case class LegendContext(
   labels: Seq[Drawable] = Seq.empty,
   defaultStyle: LegendStyle = LegendStyle.Categorical,
   gradientLegends: Seq[Drawable] = Seq.empty // move this eventually will break api if done now
- ) {
-  require(elements.lengthCompare(labels.size) == 0, "Legend requires matching number of elements and labels")
+) {
+  require(
+    elements.lengthCompare(labels.size) == 0,
+    "Legend requires matching number of elements and labels")
 
   def isEmpty: Boolean = elements.isEmpty
   def nonEmpty: Boolean = !isEmpty
@@ -118,8 +130,8 @@ object LegendContext {
     )
   }
 
-  def continuousGradientFromColorBar(colorBar: ScaledColorBar
-                                    )(implicit theme: Theme): LegendContext = {
+  def continuousGradientFromColorBar(colorBar: ScaledColorBar)(
+    implicit theme: Theme): LegendContext = {
 
     val stops = FillGradients.distributeEvenly(colorBar.colorSeq)
 
@@ -129,7 +141,8 @@ object LegendContext {
     val minText = Text(colorBar.zMin.toString, theme.fonts.legendLabelSize).padAll(2).center(14)
     val maxText = Text(colorBar.zMax.toString, theme.fonts.legendLabelSize).padAll(2).center(14)
 
-    val gradientLegend = (maxText above Rect(gradientBarSize).filled(gradient).center(14) above minText).padLeft(5)
+    val gradientLegend =
+      (maxText above Rect(gradientBarSize).filled(gradient).center(14) above minText).padLeft(5)
 
     LegendContext(
       elements = Seq(EmptyDrawable()), // this is crazy

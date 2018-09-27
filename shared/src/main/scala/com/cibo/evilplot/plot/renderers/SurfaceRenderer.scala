@@ -50,8 +50,9 @@ object SurfaceRenderer {
     currentLevelPaths: Seq[Seq[Point]],
     currentLevel: Double)
 
-  def custom(fn: (PlotContext, SurfaceRenderContext) => Drawable,
-             legendCtx: Option[Seq[Double] => LegendContext] = None): SurfaceRenderer = new SurfaceRenderer {
+  def custom(
+    fn: (PlotContext, SurfaceRenderContext) => Drawable,
+    legendCtx: Option[Seq[Double] => LegendContext] = None): SurfaceRenderer = new SurfaceRenderer {
 
     def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable =
       fn(PlotContext.from(plot, extent), surface)

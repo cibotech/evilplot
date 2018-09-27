@@ -36,8 +36,10 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 
 /** implicits and methods for jupyter-scala */
 object JupyterScala {
+
   /** enhanced methods on Drawable objects for jupyter-scala */
   implicit class JupyterScalaDrawableMethods(drawable: Drawable) {
+
     /** display this Drawable object directly in the jupyter-scala output cell */
     def show(implicit publish: jupyter.api.Publish) =
       publish.png(drawable.asBufferedImage)
@@ -45,6 +47,7 @@ object JupyterScala {
 
   /** enhanced methods on Plot objects for jupyter-scala */
   implicit class JupyterScalaPlotMethods(plot: Plot) {
+
     /** display this Plot object directly in the jupyter-scala output cell */
     def show(implicit publish: jupyter.api.Publish, theme: Theme) =
       publish.png(plot.render()(theme).asBufferedImage)

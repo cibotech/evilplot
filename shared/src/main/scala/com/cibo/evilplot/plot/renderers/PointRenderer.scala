@@ -36,7 +36,7 @@ import com.cibo.evilplot.numeric.{Datum2d, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{Bar, LegendContext, LegendStyle, Plot, PlotContext}
 
-trait PointRenderer[T <: Datum2d[T]] extends PlotElementRenderer[T]{
+trait PointRenderer[T <: Datum2d[T]] extends PlotElementRenderer[T] {
   def legendContext: LegendContext = LegendContext()
 
   /** Render a category within the extent. */
@@ -51,8 +51,9 @@ object PointRenderer {
 
   val defaultColorCount: Int = 10
 
-  def custom[T <: Datum2d[T]](renderFn: T => Drawable,
-                           legendCtx: Option[LegendContext] = None): PointRenderer[T] = new PointRenderer[T] {
+  def custom[T <: Datum2d[T]](
+    renderFn: T => Drawable,
+    legendCtx: Option[LegendContext] = None): PointRenderer[T] = new PointRenderer[T] {
 
     def render(datum: T): Drawable = {
       renderFn(datum)
@@ -117,11 +118,11 @@ object PointRenderer {
     * @tparam T the type of the data
     * @tparam CATEGORY the type of the categorical variable.
     */
-  def colorByCategory[T <: Datum2d[T], CATEGORY: Ordering](data: Seq[T],
-                                                    categoryExtract:  T => CATEGORY,
-                                                    coloring: Option[Coloring[CATEGORY]] = None,
-                                                    size: Option[Double] = None
-                                                   )(implicit theme: Theme): PointRenderer[T] = new PointRenderer[T] {
+  def colorByCategory[T <: Datum2d[T], CATEGORY: Ordering](
+    data: Seq[T],
+    categoryExtract: T => CATEGORY,
+    coloring: Option[Coloring[CATEGORY]] = None,
+    size: Option[Double] = None)(implicit theme: Theme): PointRenderer[T] = new PointRenderer[T] {
     val categories = data.map(categoryExtract)
     private val useColoring = coloring.getOrElse(CategoricalColoring.themed[CATEGORY])
     private val colorFunc = useColoring(categories)
@@ -144,8 +145,8 @@ object PointRenderer {
   // Old `depthColor` implementation, called to by all deprecated `depthColor`
   // methods.
   private[this] def oldDepthColor[T <: Datum2d[T]](
-   depth: T => Double,
-   labels: Seq[Drawable],
+    depth: T => Double,
+    labels: Seq[Drawable],
     bar: ScaledColorBar,
     size: Option[Double]
   )(implicit theme: Theme): PointRenderer[T] = {

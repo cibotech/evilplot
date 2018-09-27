@@ -38,7 +38,8 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
-case class BoxPlotPoint(x: Double, y: Double, ctx: BoxRendererContext) extends Datum2d[BoxPlotPoint] {
+case class BoxPlotPoint(x: Double, y: Double, ctx: BoxRendererContext)
+    extends Datum2d[BoxPlotPoint] {
   def setXY(x: Double, y: Double): BoxPlotPoint = this.copy(x = x, y = y)
 }
 
@@ -67,7 +68,8 @@ final case class BoxPlotRenderer(
     clusterStartX + boxXInCluster
   }
 
-  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = render(PlotContext.from(plot, plotExtent))
+  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable =
+    render(PlotContext.from(plot, plotExtent))
 
   def render(pCtx: PlotContext)(implicit theme: Theme): Drawable = {
     val xtransformer = pCtx.xCartesianTransform
@@ -86,7 +88,8 @@ final case class BoxPlotRenderer(
             val x = getBoxX(index, cluster, boxWidth, clusterWidth)
             val y = ytransformer(summaryStatistics.upperWhisker)
 
-            val boxHeight = ytransformer(summaryStatistics.lowerWhisker) - ytransformer(summaryStatistics.upperWhisker)
+            val boxHeight = ytransformer(summaryStatistics.lowerWhisker) - ytransformer(
+              summaryStatistics.upperWhisker)
 
             val box = {
               if (boxHeight != 0)
@@ -106,7 +109,7 @@ final case class BoxPlotRenderer(
             }
             d behind (box.translate(x = x, y = y) behind points.group)
           case None => d
-      }
+        }
 
     }
   }
@@ -151,7 +154,6 @@ object BoxPlot {
       pointRenderer
     )
   }
-
 
   /** Create clustered box plots for a sequence of distributions.
     *

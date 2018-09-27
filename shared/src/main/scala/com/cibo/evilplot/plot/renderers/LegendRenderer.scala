@@ -92,11 +92,11 @@ object LegendRenderer {
   }
 
   def continuousGradient(
-                        reduction: (Drawable, Drawable) => Drawable = above
-                        ): LegendRenderer = new LegendRenderer {
+    reduction: (Drawable, Drawable) => Drawable = above
+  ): LegendRenderer = new LegendRenderer {
 
     def render(context: LegendContext): Drawable = {
-      if(context.gradientLegends.length > 1) {
+      if (context.gradientLegends.length > 1) {
         context.gradientLegends.reduce(reduction)
       } else context.gradientLegends.headOption.getOrElse(EmptyDrawable())
     }
@@ -112,7 +112,8 @@ object LegendRenderer {
       context.defaultStyle match {
         case LegendStyle.Categorical => discrete(reduction).render(context).padLeft(1)
         case LegendStyle.Gradient    => gradient(reduction).render(context).padLeft(1)
-        case LegendStyle.ContinuousGradient => continuousGradient(reduction).render(context).padLeft(1)
+        case LegendStyle.ContinuousGradient =>
+          continuousGradient(reduction).render(context).padLeft(1)
       }
     }
   }

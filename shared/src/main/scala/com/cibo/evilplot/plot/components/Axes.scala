@@ -76,7 +76,7 @@ object Axes {
       position match {
         case Position.Left | Position.Right => extents.maxBy(_.width)
         case Position.Bottom | Position.Top => extents.maxBy(_.height)
-        case _ => Extent(extents.maxBy(_.width).width, extents.maxBy(_.height).height)
+        case _                              => Extent(extents.maxBy(_.width).width, extents.maxBy(_.height).height)
       }
     }
 
@@ -87,7 +87,7 @@ object Axes {
       val scale = position match {
         case Position.Left | Position.Right => extent.height / descriptor.axisBounds.range
         case Position.Bottom | Position.Top => extent.width / descriptor.axisBounds.range
-        case _ => 1 //TODO replace with scaling when available
+        case _                              => 1 //TODO replace with scaling when available
       }
       val ts = ticks(descriptor)
       val maxWidth = ts.maxBy(_.extent.width).extent.width
@@ -104,22 +104,21 @@ object Axes {
                 if (y <= extent.height) {
                   position match {
                     case Position.Left => tick.translate(x = maxWidth - tick.extent.width, y = y)
-                    case _ => tick.translate(y = y)
+                    case _             => tick.translate(y = y)
                   }
                 } else EmptyDrawable()
             }
             .group
           drawable.translate(x = extent.width - drawable.extent.width)
         case Position.Bottom | Position.Top =>
-          ts
-            .zip(descriptor.values)
+          ts.zip(descriptor.values)
             .map {
               case (tick, value) =>
                 val x = offset + value * scale - tick.extent.width / 2
                 if (x <= extent.width) {
                   position match {
                     case Position.Top => tick.translate(x = x, y = maxHeight - tick.extent.height)
-                    case _ => tick.translate(x = x)
+                    case _            => tick.translate(x = x)
                   }
                 } else EmptyDrawable()
             }
@@ -137,7 +136,7 @@ object Axes {
     override val labelFormatter: Option[Double => String],
     tickCountRange: Option[Seq[Int]]
   ) extends ArbitraryAxisPlotComponent
-    with ContinuousAxis {
+      with ContinuousAxis {
     override def bounds(plot: Plot): Bounds = boundsFn(plot)
   }
 
@@ -148,7 +147,7 @@ object Axes {
     tickRenderer: TickRenderer,
     override val align: Double
   ) extends ArbitraryAxisPlotComponent
-    with DiscreteAxis {
+      with DiscreteAxis {
     override def bounds(plot: Plot): Bounds = boundsFn(plot)
   }
 
@@ -283,11 +282,12 @@ object Axes {
       require(labels.lengthCompare(values.length) == 0)
       require(0.0 <= align && align <= 1.0, "discreteAxis requires an align value from 0 to 1")
       val labelsAndValues = labels.zip(values)
-      val (boundsFn, defaultRotation) = if (position == Position.Bottom || position == Position.Top) {
-        ((plot: Plot) => plot.xbounds, theme.elements.categoricalXAxisLabelOrientation)
-      } else {
-        ((plot: Plot) => plot.ybounds, theme.elements.categoricalYAxisLabelOrientation)
-      }
+      val (boundsFn, defaultRotation) =
+        if (position == Position.Bottom || position == Position.Top) {
+          ((plot: Plot) => plot.xbounds, theme.elements.categoricalXAxisLabelOrientation)
+        } else {
+          ((plot: Plot) => plot.ybounds, theme.elements.categoricalYAxisLabelOrientation)
+        }
       val component = DiscreteAxisPlotComponent(
         boundsFn,
         position,
@@ -329,7 +329,9 @@ object Axes {
       tickCountRange: Option[Seq[Int]] = None,
       position: Position = Position.Bottom
     )(implicit theme: Theme): Plot = {
-      require(position == Position.Bottom || position == Position.Top, "xAxis expects Position.Bottom or Position.Top.")
+      require(
+        position == Position.Bottom || position == Position.Top,
+        "xAxis expects Position.Bottom or Position.Top.")
       continuousAxis(
         p => p.xbounds,
         position,
@@ -378,7 +380,9 @@ object Axes {
       values: Seq[Double],
       position: Position
     )(implicit theme: Theme): Plot = {
-      require(position == Position.Bottom || position == Position.Top, "xAxis expects Position.Bottom or Position.Top.")
+      require(
+        position == Position.Bottom || position == Position.Top,
+        "xAxis expects Position.Bottom or Position.Top.")
       discreteAxis(labels, values, position, true)
     }
 
@@ -396,7 +400,9 @@ object Axes {
       tickCountRange: Option[Seq[Int]] = None,
       position: Position = Position.Left
     )(implicit theme: Theme): Plot = {
-      require(position == Position.Left || position == Position.Right, "yAxis expects Position.Left or Position.Right.")
+      require(
+        position == Position.Left || position == Position.Right,
+        "yAxis expects Position.Left or Position.Right.")
       continuousAxis(
         p => p.ybounds,
         position,
@@ -445,7 +451,9 @@ object Axes {
       values: Seq[Double],
       position: Position
     )(implicit theme: Theme): Plot = {
-      require(position == Position.Left || position == Position.Right, "yAxis expects Position.Left or Position.Right.")
+      require(
+        position == Position.Left || position == Position.Right,
+        "yAxis expects Position.Left or Position.Right.")
       discreteAxis(labels, values, position, true)
     }
 

@@ -37,17 +37,20 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 object ScatterPlot extends TransformWorldToScreen {
 
-  case class ScatterPlotRenderer[X <: Datum2d[X]](data: Seq[X],
-                                 pointRenderer: PointRenderer[X],
-                                ) extends PlotRenderer {
+  case class ScatterPlotRenderer[X <: Datum2d[X]](data: Seq[X], pointRenderer: PointRenderer[X])
+      extends PlotRenderer {
 
     override def legendContext: LegendContext = pointRenderer.legendContext
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
 
       val plotContext = PlotContext(plot, plotExtent)
-      val xformedPoints: Seq[X] = transformDatumsToWorld(data, plotContext.xCartesianTransform, plotContext.yCartesianTransform)
-      val points = xformedPoints.filter(p => plotExtent.contains(p))
+      val xformedPoints: Seq[X] = transformDatumsToWorld(
+        data,
+        plotContext.xCartesianTransform,
+        plotContext.yCartesianTransform)
+      val points = xformedPoints
+        .filter(p => plotExtent.contains(p))
         .flatMap {
           case point =>
             val r = pointRenderer.render(plot, plotExtent, point)
@@ -65,7 +68,6 @@ object ScatterPlot extends TransformWorldToScreen {
     * @param boundBuffer Extra padding to add to the bounds as a fraction.
     * @return A Plot representing a scatter plot.
     */
-
   def apply[X <: Datum2d[X]](
     data: Seq[X],
     pointRenderer: Option[PointRenderer[X]] = None,
@@ -74,7 +76,8 @@ object ScatterPlot extends TransformWorldToScreen {
   )(implicit theme: Theme): Plot = {
     require(xBoundBuffer.getOrElse(0.0) >= 0.0)
     require(yBoundBuffer.getOrElse(0.0) >= 0.0)
-    val (xbounds, ybounds) = PlotUtils.bounds(data, theme.elements.boundBuffer, xBoundBuffer, yBoundBuffer)
+    val (xbounds, ybounds) =
+      PlotUtils.bounds(data, theme.elements.boundBuffer, xBoundBuffer, yBoundBuffer)
     Plot(
       xbounds,
       ybounds,

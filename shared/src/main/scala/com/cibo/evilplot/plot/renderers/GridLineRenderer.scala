@@ -40,10 +40,10 @@ trait GridLineRenderer {
 
 object GridLineRenderer {
 
-  def custom(renderFn: (Extent, String) => Drawable
-            )(implicit theme: Theme): GridLineRenderer = new GridLineRenderer {
-    def render(extent: Extent, label: String): Drawable = renderFn(extent, label)
-  }
+  def custom(renderFn: (Extent, String) => Drawable)(implicit theme: Theme): GridLineRenderer =
+    new GridLineRenderer {
+      def render(extent: Extent, label: String): Drawable = renderFn(extent, label)
+    }
 
   def xGridLineRenderer()(implicit theme: Theme): GridLineRenderer = new GridLineRenderer {
     def render(extent: Extent, label: String): Drawable = {

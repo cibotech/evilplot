@@ -40,9 +40,8 @@ import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRender
 
 object LinePlot {
 
-  case class LinePlotRenderer[X <: Datum2d[X]](data: Seq[X],
-                              pathRenderer: PathRenderer[X],
-                                ) extends PlotRenderer {
+  case class LinePlotRenderer[X <: Datum2d[X]](data: Seq[X], pathRenderer: PathRenderer[X])
+      extends PlotRenderer {
 
     override def legendContext: LegendContext = pathRenderer.legendContext
 
@@ -50,11 +49,10 @@ object LinePlot {
 
       val xformedPoints: Seq[X] = PlotContext.from(plot, plotExtent).transformDatumsToWorld(data)
 
-
-
       pathRenderer.render(plot, plotExtent, xformedPoints)
     }
   }
+
   /** Create a line plot from some data.  Convenience method on top of XyPlot
     *
     * @param data          The points to plot.
@@ -72,7 +70,8 @@ object LinePlot {
     require(xBoundBuffer.getOrElse(0.0) >= 0.0)
     require(yBoundBuffer.getOrElse(0.0) >= 0.0)
 
-    val (xbounds, ybounds) = PlotUtils.bounds(data, theme.elements.boundBuffer, xBoundBuffer, yBoundBuffer)
+    val (xbounds, ybounds) =
+      PlotUtils.bounds(data, theme.elements.boundBuffer, xBoundBuffer, yBoundBuffer)
 
     Plot(
       xbounds,
