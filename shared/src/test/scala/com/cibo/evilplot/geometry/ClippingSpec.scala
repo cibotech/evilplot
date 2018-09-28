@@ -31,42 +31,33 @@
 package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.geometry.Clipping.Edge
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.numeric.{Point, Point2d}
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.{FunSpec, Matchers}
 
 trait PointEquivalences {
-  implicit object PointEquivalence extends Equality[Point] {
+  implicit object PointEquivalence extends Equality[Point2d] {
     import math.{abs}
-    def areEqual(a: Point, b: Any): Boolean = b match {
+    def areEqual(a: Point2d, b: Any): Boolean = b match {
       case Point(x, y) =>
-        val tol = 1e-7
+        val tol = 1e-5
         abs(a.x - x) < tol && abs(a.y - y) < tol
       case _ => false
     }
   }
 
-  implicit object SeqPointEquivalence extends Equality[Seq[Point]] {
-    val eq = implicitly[Equality[Point]]
-    def areEqual(a: Seq[Point], b: Any): Boolean = b match {
+  implicit object SeqPointEquivalence extends Equality[Seq[Point2d]] {
+    val eq = implicitly[Equality[Point2d]]
+    def areEqual(a: Seq[Point2d], b: Any): Boolean = b match {
       case bx: Seq[_] => a.corresponds(bx)((i, j) => eq.areEqual(i, j))
       case _          => false
     }
   }
 
-  implicit object VectorPointEquivalence extends Equality[Vector[Point]] {
-    val eq = implicitly[Equality[Point]]
+  implicit object SeqSeqPointEquivalence extends Equality[Seq[Seq[Point2d]]] {
+    val eq = implicitly[Equality[Seq[Point2d]]]
 
-    def areEqual(a: Vector[Point], b: Any): Boolean = b match {
-      case bx: Vector[_] => a.corresponds(bx)((i, j) => eq.areEqual(i, j))
-      case _ => false
-    }
-  }
-
-  implicit object VectorVectorPointEquivalence extends Equality[Vector[Vector[Point]]] {
-    val eq = implicitly[Equality[Vector[Point]]]
-
-    def areEqual(a: Vector[Vector[Point]], b: Any): Boolean = b match {
+    def areEqual(a: Seq[Seq[Point2d]], b: Any): Boolean = b match {
       case bx: Vector[_] => a.corresponds(bx)((i, j) => eq.areEqual(i, j))
       case _ => false
     }
@@ -117,7 +108,7 @@ class ClippingSpec extends FunSpec with Matchers with PointEquivalences {
       ) shouldBe Seq(Seq(Point(0, 1), Point(0.75, 2)))
     }
 
-    ignore("segments a path that crosses bounds multiple times") {
+    it("segments a path that crosses bounds multiple times") {
       val path = Seq(
         Point(0, 1),
         Point(1.5, 3),
@@ -140,7 +131,7 @@ class ClippingSpec extends FunSpec with Matchers with PointEquivalences {
           Point(1, 1)
         )
       )
-      Clipping.clipPath(path, Extent(2, 2)) shouldEqual expected
+      Clipping.clipPath(path, Extent(2, 2)).shouldEqual(expected)(SeqSeqPointEquivalence)
     }
   }
 
@@ -196,17 +187,17 @@ class ClippingSpec extends FunSpec with Matchers with PointEquivalences {
       Clipping.clipPolygon(polygon, Extent(10, 10)) shouldBe empty
     }
 
-    ignore(
+    it(
       "should properly clip a polygon when all of its points are outside the clipping region" +
         " but some of its area lies within it.") {
       val polygon = Seq(Point(10, -10), Point(10, 30), Point(25, 10))
       val expected = Vector(
-        Point(10, 0),
+        Point(20, 10d / 3d),
         Point(17.5, 0),
+        Point(10, 0),
         Point(10, 20),
-        Point(20, 10d / 30d),
-        Point(20, 50d / 30d),
-        Point(17.5, 20)
+        Point(17.5, 20),
+        Point(20, 50d / 3d),
       )
       val clipped = Clipping.clipPolygon(polygon, Extent(20, 20))
       clipped shouldEqual expected
@@ -215,10 +206,21 @@ class ClippingSpec extends FunSpec with Matchers with PointEquivalences {
   }
 
   describe("Edges") {
-    it("should compute whether it contains a point") {
+    it("should contain colinear points"){
       Edge(Point(0, 0), Point(8, 8)) contains Point(4, 4) shouldBe true
-      Edge(Point(0, 5), Point(3, 7)) contains Point(3, 4) shouldBe true // WRONG !
-      Edge(Point(0, 5), Point(3, 7)) contains Point(0, 9) shouldBe false
+      Edge(Point(8, 8), Point(0, 0)) contains Point(4, 4) shouldBe true
+      Edge(Point(8, 8), Point(4, 0)) contains Point(5, 2) shouldBe true
+
+    }
+    it("should contain points that are in the correct side of the edge") {
+      Edge(Point(0, 0), Point(8, 8)) contains Point(8, 1) shouldBe true
+      Edge(Point(8, 8), Point(0, 0)) contains Point(1, 8) shouldBe true
+      Edge(Point(8, 8), Point(4, 0)) contains Point(1, 7) shouldBe true
+    }
+    it("should not points that are in the wrong side of the edge") {
+      Edge(Point(0, 0), Point(8, 8)) contains Point(1, 8) shouldBe false
+      Edge(Point(8, 8), Point(0, 0)) contains Point(8, 1) shouldBe false
+      Edge(Point(8, 8), Point(4, 0)) contains Point(7, 1) shouldBe false
     }
 
     it("should compute the intersection point with another edge, if it exists") {
