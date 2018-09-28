@@ -54,7 +54,11 @@ private[evilplot] object Clipping {
         Some(Point(interceptX, interceptY))
       }
     }
-
+    /*
+      This calculates whether the point is on the inside of our edge or not. this crossproduct gives us double the area
+      of the triangle, with a positive sign if it's on the outside, and a negative sign if it's on the inside. 0 means it's
+      colinear.
+     */
     def contains(query: Point2d): Boolean = {
       crossProduct(p1, p2, query) <= 0
     }
@@ -119,12 +123,10 @@ private[evilplot] object Clipping {
   }
 
   // https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algo
-  @deprecated(
-    "WARNING THIS IS BROKEN, points are likely to be returned in the wrong order",
-    "9/26/2018")
   private[evilplot] def clipPolygon(points: Seq[Point2d], extent: Extent): Seq[Point2d] = {
     boundEdges(extent).foldLeft(points.toVector) { (inputList, clipEdge) =>
-      if (inputList.nonEmpty) {
+      if (inputList.isEmpty) Vector.empty
+      else {
         val init = (inputList.last, Vector.empty[Point2d])
         inputList
           .foldLeft(init) {
@@ -142,8 +144,6 @@ private[evilplot] object Clipping {
               }
           }
           ._2
-      } else {
-        Vector.empty
       }
     }
   }
