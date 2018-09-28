@@ -157,12 +157,12 @@ object FunctionPlotLine {
       case 0 => Vector.empty[Point]
       case 1 => Vector(pointAt(xbounds.min))
       case _ =>
-        val bdMin = BigDecimal(xbounds.min)
-        val bdMax = BigDecimal(xbounds.max)
+        val bdMin = xbounds.min
+        val bdMax = xbounds.max
         val step = (bdMax - bdMin) / (numPoints - 1)
-        Vector.tabulate(numPoints) { i =>
-          pointAt((bdMin + step * i).toDouble)
-        }
+        Vector.tabulate(numPoints - 2) { i =>
+          pointAt(bdMin + step * (i + 1))
+        }.+:(pointAt(bdMin)).:+(pointAt(bdMax)) // guarantee bounds are included
     }
   }
 }
