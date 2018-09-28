@@ -203,7 +203,23 @@ class ClippingSpec extends FunSpec with Matchers with PointEquivalences {
       clipped shouldEqual expected
       clipped should have length expected.length
     }
+
+  it(
+    "should properly clip a polygon that goes clockwise") {
+    val polygon = Seq(Point(10, 30), Point(10, -10), Point(25, 10))
+    val expected = Vector(
+      Point(20, 10d / 3d),
+      Point(17.5, 0),
+      Point(10, 0),
+      Point(10, 20),
+      Point(17.5, 20),
+      Point(20, 50d / 3d),
+    ).reverse
+    val clipped = Clipping.clipPolygon(polygon, Extent(20, 20))
+    clipped shouldEqual expected
+    clipped should have length expected.length
   }
+}
 
   describe("Edges") {
     it("should contain colinear points"){
