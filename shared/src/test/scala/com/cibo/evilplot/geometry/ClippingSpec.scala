@@ -197,7 +197,7 @@ class ClippingSpec extends FunSpec with Matchers with PointEquivalences {
         Point(10, 0),
         Point(10, 20),
         Point(17.5, 20),
-        Point(20, 50d / 3d),
+        Point(20, 50d / 3d)
       )
       val clipped = Clipping.clipPolygon(polygon, Extent(20, 20))
       clipped shouldEqual expected
@@ -213,7 +213,7 @@ class ClippingSpec extends FunSpec with Matchers with PointEquivalences {
       Point(10, 0),
       Point(10, 20),
       Point(17.5, 20),
-      Point(20, 50d / 3d),
+      Point(20, 50d / 3d)
     ).reverse
     val clipped = Clipping.clipPolygon(polygon, Extent(20, 20))
     clipped shouldEqual expected
