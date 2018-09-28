@@ -31,9 +31,21 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.numeric.{Bounds, Point}
+import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.{FunSpec, Matchers}
 
 class FunctionPlotLineSpec extends FunSpec with Matchers {
+
+  implicit val doubleEquality: Equality[Double] =
+    TolerantNumerics.tolerantDoubleEquality(1e-10)
+
+  implicit object VectorDoubleEquivalence extends Equality[Vector[Double]] {
+    def areEqual(a: Vector[Double], b: Any): Boolean = b match {
+      case bx: Vector[_] => a.corresponds(bx)((i, j) => doubleEquality.areEqual(i, j))
+      case _          => false
+    }
+  }
+
   describe("plottablePoints") {
     val bounds = Bounds(0, 1)
 
@@ -100,7 +112,7 @@ class FunctionPlotLineSpec extends FunSpec with Matchers {
       val points = FunctionPlotLine.pointsForFunction(x => x, Bounds(0, 1), 11)
 
       points.length shouldBe 11
-      points.map(_.x) shouldBe Seq(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+      points.map(_.x) shouldEqual Vector(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
     }
 
     it("should still return the max bound point for large sequences of small x steps") {
