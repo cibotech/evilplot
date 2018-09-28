@@ -91,7 +91,9 @@ case object Clear extends Color with HSLABasedManipulation {
   def hsla: HSLA = HSLA(0, 0, 0, 0)
 }
 
-case class HSLA(hue: Double, saturation: Double, lightness: Double, opacity: Double) extends Color with HSLABasedManipulation {
+case class HSLA(hue: Double, saturation: Double, lightness: Double, opacity: Double)
+    extends Color
+    with HSLABasedManipulation {
   require(hue >= 0 && hue < 360, s"hue must be within [0, 360) {was $hue}")
   require(
     saturation >= 0 && saturation <= 100,

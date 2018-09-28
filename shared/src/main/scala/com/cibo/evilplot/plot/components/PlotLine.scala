@@ -160,9 +160,12 @@ object FunctionPlotLine {
         val bdMin = xbounds.min
         val bdMax = xbounds.max
         val step = (bdMax - bdMin) / (numPoints - 1)
-        Vector.tabulate(numPoints - 2) { i =>
-          pointAt(bdMin + step * (i + 1))
-        }.+:(pointAt(bdMin)).:+(pointAt(bdMax)) // guarantee bounds are included
+        Vector
+          .tabulate(numPoints - 2) { i =>
+            pointAt(bdMin + step * (i + 1))
+          }
+          .+:(pointAt(bdMin))
+          .:+(pointAt(bdMax)) // guarantee bounds are included
     }
   }
 }
