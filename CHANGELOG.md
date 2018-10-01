@@ -4,6 +4,7 @@
 
 ## [0.5.x] - 2018-??-??
 - added a low priority default Theme so this cumbersome import is only necessary when desired
+- added a ExplicitImplicit trait to help library authors catch unintentional implicit theme's
 
 ## [0.5.0] - 2018-09-21
 ### Added
