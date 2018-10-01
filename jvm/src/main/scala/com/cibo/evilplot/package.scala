@@ -38,8 +38,11 @@ package object evilplot {
   implicit class AwtDrawableOps(r: Drawable) {
 
     /** Return a BufferedImage containing the contents of this Drawable. */
-    def asBufferedImage: BufferedImage = {
-      val scale = 4.0
+    def asBufferedImage: BufferedImage = asBufferedImage()
+
+    /** Return a BufferedImage containing the contents of this Drawable
+      * with resolution proportional to `scale`. */
+    def asBufferedImage(scale: Double = 6.0): BufferedImage = {
       val paddingHack = 20
       val bi = new BufferedImage(
         (r.extent.width * scale.toInt).toInt,
