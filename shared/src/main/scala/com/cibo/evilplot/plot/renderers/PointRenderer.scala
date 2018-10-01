@@ -32,15 +32,16 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text}
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
+import com.cibo.evilplot.plot.ExplicitImplicits
 
 trait PointRenderer extends PlotElementRenderer[Int] {
   def legendContext: LegendContext = LegendContext()
   def render(plot: Plot, extent: Extent, index: Int): Drawable
 }
 
-object PointRenderer extends DefaultTheme{
+object PointRenderer extends ExplicitImplicits{
 
   val defaultColorCount: Int = 10
 

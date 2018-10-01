@@ -32,11 +32,11 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric._
-import com.cibo.evilplot.plot.aesthetics.{Theme,DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext
 import com.cibo.evilplot.plot.renderers.{PlotRenderer, SurfaceRenderer}
 
-object SurfacePlot extends DefaultTheme{
+object SurfacePlot extends ExplicitImplicits{
   private[plot] case class SurfacePlotRenderer(
     data: Seq[Seq[Seq[Point3]]],
     surfaceRenderer: SurfaceRenderer
@@ -72,7 +72,7 @@ object SurfacePlot extends DefaultTheme{
   }
 }
 
-object ContourPlot extends DefaultTheme{
+object ContourPlot extends ExplicitImplicits{
   import SurfacePlot._
   val defaultGridDimensions: (Int, Int) = (100, 100)
 

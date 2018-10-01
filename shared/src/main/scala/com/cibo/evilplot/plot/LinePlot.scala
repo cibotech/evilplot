@@ -33,10 +33,10 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.Drawable
 import com.cibo.evilplot.numeric.Point
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
-object LinePlot extends DefaultTheme{
+object LinePlot extends ExplicitImplicits{
 
   /** Create a line plot from some data.  Convenience method on top of XyPlot
     *

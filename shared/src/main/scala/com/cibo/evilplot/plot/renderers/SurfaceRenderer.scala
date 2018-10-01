@@ -33,16 +33,17 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, LineStyle, Path}
 import com.cibo.evilplot.numeric.{Bounds, Point, Point3}
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext
 import com.cibo.evilplot.plot.{LegendContext, Plot}
+import com.cibo.evilplot.plot.ExplicitImplicits
 
 trait SurfaceRenderer extends PlotElementRenderer[SurfaceRenderContext] {
   def legendContext(levels: Seq[Double]): LegendContext = LegendContext.empty
   def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable
 }
 
-object SurfaceRenderer extends DefaultTheme{
+object SurfaceRenderer extends ExplicitImplicits{
 
   /** The element renderer context for surface renderers. */
   case class SurfaceRenderContext(

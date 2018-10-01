@@ -109,8 +109,4 @@ object DefaultTheme{
   )
 
   implicit val defaultTheme: Theme = this.DefaultTheme
-
-}
-trait DefaultTheme{
-  implicit val defaultTheme: Theme = DefaultTheme.defaultTheme
 }

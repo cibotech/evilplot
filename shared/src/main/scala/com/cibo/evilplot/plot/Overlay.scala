@@ -32,10 +32,10 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
-object Overlay extends DefaultTheme{
+object Overlay extends ExplicitImplicits{
 
   // Update subplots to have the specified bounds (if not already fixed).
   private def updateSubplotBounds(

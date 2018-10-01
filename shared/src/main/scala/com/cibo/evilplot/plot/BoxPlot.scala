@@ -32,7 +32,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
@@ -42,7 +42,7 @@ final case class BoxPlotRenderer(
   pointRenderer: PointRenderer,
   spacing: Double,
   clusterSpacing: Option[Double]
-) extends PlotRenderer with DefaultTheme{
+) extends PlotRenderer with ExplicitImplicits{
 
   private val isClustered = clusterSpacing.isDefined
   private val clusterPadding = clusterSpacing.getOrElse(spacing)
@@ -106,7 +106,7 @@ final case class BoxPlotRenderer(
   override def legendContext: LegendContext = boxRenderer.legendContext
 }
 
-object BoxPlot extends DefaultTheme{
+object BoxPlot extends ExplicitImplicits{
 
   /** Create box plots for a sequence of distributions.
     *

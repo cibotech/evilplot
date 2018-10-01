@@ -33,7 +33,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, DefaultColors}
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Rect, Style, Text}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.aesthetics.{Theme,DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
 /** Data for a bar in a bar chart.
@@ -61,13 +61,13 @@ final case class Bar(
   )
 }
 
-object Bar extends DefaultTheme{
+object Bar extends ExplicitImplicits{
   def apply(value: Double)(implicit theme: Theme): Bar = Bar(Seq(value), 0, theme.colors.stream)
   def apply(value: Double, cluster: Int)(implicit theme: Theme): Bar =
     Bar(Seq(value), cluster = cluster, theme.colors.stream)
 }
 
-object BarChart extends DefaultTheme{
+object BarChart extends ExplicitImplicits{
 
   val defaultBoundBuffer: Double = 0.1
 

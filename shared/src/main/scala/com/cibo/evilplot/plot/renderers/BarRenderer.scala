@@ -32,15 +32,16 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{Bar, LegendContext, Plot}
+import com.cibo.evilplot.plot.ExplicitImplicits
 
 trait BarRenderer extends PlotElementRenderer[Bar] {
   def render(plot: Plot, extent: Extent, category: Bar): Drawable
   def legendContext: Option[LegendContext] = None
 }
 
-object BarRenderer extends DefaultTheme{
+object BarRenderer extends ExplicitImplicits{
 
   /** Default bar renderer. */
   def default(

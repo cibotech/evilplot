@@ -32,10 +32,10 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
-object Histogram extends DefaultTheme{
+object Histogram extends ExplicitImplicits{
 
   val defaultBinCount: Int = 20
 

@@ -31,9 +31,10 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.LegendRenderer
 import com.cibo.evilplot.plot.{LegendContext, Plot}
+import com.cibo.evilplot.plot.ExplicitImplicits
 
 case class Legend(
   position: Position,
@@ -55,7 +56,7 @@ case class Legend(
   }
 }
 
-trait LegendImplicits extends DefaultTheme{
+trait LegendImplicits extends ExplicitImplicits{
   protected val plot: Plot
 
   private def setLegend(

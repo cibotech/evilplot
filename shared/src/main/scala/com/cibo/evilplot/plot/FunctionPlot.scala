@@ -33,11 +33,11 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.Drawable
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.FunctionPlotLine
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
-object FunctionPlot extends DefaultTheme{
+object FunctionPlot extends ExplicitImplicits{
   val defaultBounds: Bounds = Bounds(0, 1)
   val defaultNumPoints: Int = 800
 

@@ -44,11 +44,12 @@ import com.cibo.evilplot.geometry.{
   Translate
 }
 import com.cibo.evilplot.numeric.BoxPlotSummaryStatistics
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.{LegendContext, Plot}
+import com.cibo.evilplot.plot.ExplicitImplicits
 
-trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] with DefaultTheme{ br =>
+trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] with ExplicitImplicits{ br =>
   def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable
   def legendContext: LegendContext = LegendContext.empty
 
@@ -76,7 +77,7 @@ trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] with DefaultTh
   }
 }
 
-object BoxRenderer extends DefaultTheme {
+object BoxRenderer extends ExplicitImplicits {
   final case class BoxRendererContext(
     summaryStatistics: BoxPlotSummaryStatistics,
     index: Int,

@@ -31,11 +31,12 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.geometry.{Drawable, Extent}
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, Plot}
+import com.cibo.evilplot.plot.ExplicitImplicits
 
 /** Renderer for the plot area. */
-trait PlotRenderer extends DefaultTheme{
+trait PlotRenderer extends ExplicitImplicits{
   def legendContext: LegendContext = LegendContext.empty
   def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable
 }

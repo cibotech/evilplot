@@ -33,10 +33,10 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, Coloring, ScaledColorBar}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Rect}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
-object Heatmap extends DefaultTheme{
+object Heatmap extends ExplicitImplicits{
 
   val defaultColorCount: Int = 10
 

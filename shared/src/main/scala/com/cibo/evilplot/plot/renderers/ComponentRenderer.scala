@@ -33,7 +33,8 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.Plot
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.ExplicitImplicits
 
 /** Renderer for non-plot area components of a plot (labels, etc.). */
 trait ComponentRenderer {
@@ -48,7 +49,7 @@ trait ComponentRenderer {
   def plotOffset(plot: Plot): Point
 }
 
-object ComponentRenderer extends DefaultTheme{
+object ComponentRenderer extends ExplicitImplicits{
 
   case class Default() extends ComponentRenderer {
 

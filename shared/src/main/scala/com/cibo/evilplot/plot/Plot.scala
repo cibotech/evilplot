@@ -32,7 +32,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.{FacetedPlotComponent, Position}
 import com.cibo.evilplot.plot.renderers.{ComponentRenderer, PlotRenderer}
 
@@ -57,7 +57,7 @@ final case class Plot(
   xfixed: Boolean = false,
   yfixed: Boolean = false,
   components: Seq[FacetedPlotComponent] = Seq.empty
-) extends DefaultTheme{
+) extends ExplicitImplicits{
   private[plot] def inBounds(point: Point): Boolean =
     xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 

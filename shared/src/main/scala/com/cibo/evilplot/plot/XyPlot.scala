@@ -32,10 +32,10 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plot.aesthetics.{Theme,DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 
-object XyPlot extends DefaultTheme{
+object XyPlot extends ExplicitImplicits{
 
   final case class XyPlotRenderer(
     data: Seq[Point],

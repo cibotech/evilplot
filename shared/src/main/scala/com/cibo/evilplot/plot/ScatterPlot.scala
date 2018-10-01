@@ -33,10 +33,10 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, Style, Text}
 import com.cibo.evilplot.numeric.Point
-import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
+import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
-object ScatterPlot extends DefaultTheme{
+object ScatterPlot extends ExplicitImplicits{
 
   /** Create a scatter plot from some data.
     * @param data The points to plot.
