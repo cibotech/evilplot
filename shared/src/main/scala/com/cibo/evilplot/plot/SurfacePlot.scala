@@ -36,7 +36,7 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext
 import com.cibo.evilplot.plot.renderers.{PlotRenderer, SurfaceRenderer}
 
-object SurfacePlot {
+object SurfacePlot extends ExplicitImplicits{
   private[plot] case class SurfacePlotRenderer(
     data: Seq[Seq[Seq[Point3]]],
     surfaceRenderer: SurfaceRenderer
@@ -72,7 +72,7 @@ object SurfacePlot {
   }
 }
 
-object ContourPlot {
+object ContourPlot extends ExplicitImplicits{
   import SurfacePlot._
   val defaultGridDimensions: (Int, Int) = (100, 100)
 
@@ -120,7 +120,7 @@ object ContourPlot {
         }
     }
 
-    val sr = surfaceRenderer.getOrElse(SurfaceRenderer.densityColorContours())
+    val sr = surfaceRenderer.getOrElse(SurfaceRenderer.densityColorContours()(theme))
     Plot(
       xbounds,
       ybounds,

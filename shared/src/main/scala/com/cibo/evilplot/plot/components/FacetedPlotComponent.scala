@@ -33,9 +33,10 @@ package com.cibo.evilplot.plot.components
 import com.cibo.evilplot.geometry.{Drawable, Extent}
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.ExplicitImplicits
 
 /** A component that is aligned with the data of a plot. */
-trait FacetedPlotComponent {
+trait FacetedPlotComponent extends ExplicitImplicits{
 
   /** The position of this component. */
   val position: Position

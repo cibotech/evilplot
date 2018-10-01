@@ -30,13 +30,12 @@
 
 package com.cibo.evilplot.colors
 
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultElements, DefaultFonts}
 import com.cibo.evilplot.plot.aesthetics.{Colors, Elements, Fonts, Theme}
 import org.scalatest.{FunSpec, Matchers}
 
 class ColoringSpec extends FunSpec with Matchers {
+  
   describe("multi color gradient construction") {
-    import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
     it("should return a function when Colors has only one element") {
       val min: Double = 0
       val max: Double = 100
@@ -77,8 +76,8 @@ class ColoringSpec extends FunSpec with Matchers {
       coloring(6.0) shouldBe HTMLNamedColors.blue
     }
   }
-  describe("coloring from the theme") {
-    import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultColors => AesColors}
+  describe("overriding the default color from the theme") {
+    import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultElements,DefaultFonts,DefaultColors => AesColors}
     implicit val overriddenTheme: Theme = Theme(
       fonts = DefaultFonts,
       elements = DefaultElements,
@@ -90,7 +89,6 @@ class ColoringSpec extends FunSpec with Matchers {
     }
   }
   describe("making a coloring out of a custom mapping") {
-    import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
     it("should actually use the mapping") {
       val f = (s: String) => if (s == "hello") HTMLNamedColors.blue else HTMLNamedColors.red
       val coloring = CategoricalColoring.fromFunction(Seq("hello", "world"), f)

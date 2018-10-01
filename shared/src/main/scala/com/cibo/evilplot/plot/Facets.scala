@@ -77,7 +77,7 @@ object Facets {
           row.zipWithIndex.map {
             case (subplot, xIndex) =>
               val x = xIndex * innerExtent.width
-              subplot.render(innerExtent).translate(x = x, y = y)
+              subplot.render(innerExtent)(theme).translate(x = x, y = y)
           }.group
       }.group
     }

@@ -44,3 +44,14 @@ final case class Theme(
   colors: Colors,
   elements: Elements
 )
+
+object Theme {
+
+  /**An automatic default theme at a low priority precedence*/
+  implicit val default:Theme = DefaultTheme.defaultTheme
+  // /**An automatic default theme at a low priority precedence*/
+  // implicit val default:Theme = Default.theme
+
+  /**A simpler constructor for a classic Theme without requiring the entire Classic import */
+  val classic:Theme = ClassicTheme.classicTheme
+}

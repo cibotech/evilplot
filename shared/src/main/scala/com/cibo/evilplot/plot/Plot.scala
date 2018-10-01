@@ -57,7 +57,7 @@ final case class Plot(
   xfixed: Boolean = false,
   yfixed: Boolean = false,
   components: Seq[FacetedPlotComponent] = Seq.empty
-) {
+) extends ExplicitImplicits{
   private[plot] def inBounds(point: Point): Boolean =
     xbounds.isInBounds(point.x) && ybounds.isInBounds(point.y)
 
@@ -135,11 +135,11 @@ final case class Plot(
     * @param extent the desired size of the resulting Drawable
     */
   def render(extent: Extent = Plot.defaultExtent)(implicit theme: Theme): Drawable = {
-    val overlays = componentRenderer.renderFront(this, extent)
-    val backgrounds = componentRenderer.renderBack(this, extent)
+    val overlays = componentRenderer.renderFront(this, extent)(theme)
+    val backgrounds = componentRenderer.renderBack(this, extent)(theme)
     val pextent = plotExtent(extent)
     val renderedPlot =
-      renderer.render(this, pextent).resize(pextent).translate(x = plotOffset.x, y = plotOffset.y)
+      renderer.render(this, pextent)(theme).resize(pextent).translate(x = plotOffset.x, y = plotOffset.y)
     backgrounds behind renderedPlot behind overlays
   }
 }

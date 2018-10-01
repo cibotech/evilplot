@@ -36,7 +36,7 @@ import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
-object Heatmap {
+object Heatmap extends ExplicitImplicits{
 
   val defaultColorCount: Int = 10
 
@@ -80,7 +80,7 @@ object Heatmap {
       ybounds = ybounds,
       xfixed = true,
       yfixed = true,
-      renderer = HeatmapRenderer(data, colorBar)
+      renderer = HeatmapRenderer(data, colorBar)(theme)
     )
   }
 
@@ -99,7 +99,7 @@ object Heatmap {
     val minValue = flattenedData.reduceOption[Double](math.min).getOrElse(0.0)
     val maxValue = flattenedData.reduceOption[Double](math.max).getOrElse(0.0)
     val colorBar = ScaledColorBar(colorStream.take(colorCount), minValue, maxValue)
-    apply(data, colorBar)
+    apply(data, colorBar)(theme)
   }
 
   def apply(data: Seq[Seq[Double]],
@@ -108,9 +108,9 @@ object Heatmap {
     val minValue = flattenedData.reduceOption[Double](math.min).getOrElse(0.0)
     val maxValue = flattenedData.reduceOption[Double](math.max).getOrElse(0.0)
     val useColoring = coloring.getOrElse(theme.colors.continuousColoring)
-    val colorFunc = useColoring(flattenedData)
+    val colorFunc = useColoring(flattenedData)(theme)
     val colorBar = ScaledColorBar(flattenedData.map(point => colorFunc.apply(point)), minValue, maxValue)
-    apply(data, colorBar)
+    apply(data, colorBar)(theme)
 
   }
 }

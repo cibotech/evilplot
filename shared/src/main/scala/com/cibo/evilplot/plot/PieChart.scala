@@ -36,7 +36,7 @@ import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
-object PieChart {
+object PieChart extends ExplicitImplicits{
 
   case class PieChartRenderer(
     data: Seq[(Drawable, Double)],

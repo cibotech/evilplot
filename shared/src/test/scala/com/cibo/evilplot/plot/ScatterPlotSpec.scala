@@ -35,8 +35,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class ScatterPlotSpec extends FunSpec with Matchers {
 
-  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-
   describe("ScatterPlot") {
     it("sets adheres to bound buffers") {
       val data = Seq(Point(-1, 10), Point(20, -5))

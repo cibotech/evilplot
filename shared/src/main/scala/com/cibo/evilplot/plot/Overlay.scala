@@ -35,7 +35,7 @@ import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
-object Overlay {
+object Overlay extends ExplicitImplicits{
 
   // Update subplots to have the specified bounds (if not already fixed).
   private def updateSubplotBounds(
@@ -71,7 +71,7 @@ object Overlay {
         xbounds = plot.xbounds,
         ybounds = plot.ybounds
       )
-      updatedPlots.map(_.render(plotExtent)).group
+      updatedPlots.map(_.render(plotExtent)(theme)).group
     }
   }
 

@@ -46,13 +46,14 @@ import com.cibo.evilplot.geometry.{
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, Plot}
+import com.cibo.evilplot.plot.ExplicitImplicits
 
 trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
   def legendContext: LegendContext = LegendContext.empty
   def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable
 }
 
-object PathRenderer {
+object PathRenderer extends ExplicitImplicits{
   private[renderers] val baseLegendStrokeLength: Double = 8.0
 
   /** The default path renderer.
@@ -90,13 +91,13 @@ object PathRenderer {
         Text(name, theme.fonts.legendLabelSize, theme.fonts.fontFace),
         theme.colors.legendLabel),
       lineStyle
-    )
+    )(theme)
 
   /** Path renderer for closed paths. The first point is connected to the last point.
     * @param color the color of this path.
     */
   @deprecated("Use the overload taking a strokeWidth, color, label and lineStyle", "2 April 2018")
-  def closed(color: Color)(implicit theme: Theme): PathRenderer = closed(color = Some(color))
+  def closed(color: Color)(implicit theme: Theme): PathRenderer = closed(color = Some(color))(theme)
 
   /** Path renderer for closed paths. The first point is connected to the last point.
     * @param strokeWidth the stroke width
@@ -111,7 +112,7 @@ object PathRenderer {
   )(implicit theme: Theme): PathRenderer = new PathRenderer {
     def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
       path.headOption.fold(EmptyDrawable(): Drawable) { head =>
-        default(strokeWidth, color, label, lineStyle).render(plot, extent, path :+ head)
+        default(strokeWidth, color, label, lineStyle)(theme).render(plot, extent, path :+ head)
       }
     }
   }

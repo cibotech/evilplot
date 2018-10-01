@@ -38,8 +38,6 @@ import com.cibo.evilplot.plot.components.{FacetedPlotComponent, Position}
 
 class FacetsSpec extends FunSpec with Matchers {
 
-  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-
   describe("Facets") {
     it("is the correct size with one facet") {
       val inner = ScatterPlot(Seq(Point(1, 1), Point(2, 2)))

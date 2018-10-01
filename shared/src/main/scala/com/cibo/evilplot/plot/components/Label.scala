@@ -34,6 +34,7 @@ import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Drawable, Extent, StrokeStyle, Style, Text}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.Plot
+import com.cibo.evilplot.plot.ExplicitImplicits
 
 /** A plot label.
   * @param position The position of this component.
@@ -44,7 +45,7 @@ case class Label(
   position: Position,
   f: Extent => Drawable,
   minExtent: Extent
-) extends PlotComponent {
+) extends PlotComponent with ExplicitImplicits{
   override def size(plot: Plot): Extent = minExtent
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = position match {
     case Position.Top    => f(extent).center(extent.width)
@@ -59,7 +60,7 @@ object Label {
   def apply(position: Position, d: Drawable): Label = Label(position, _ => d, d.extent)
 }
 
-trait LabelImplicits {
+trait LabelImplicits extends ExplicitImplicits{
   protected val plot: Plot
 
   def title(d: Drawable): Plot = plot :+ Label(Position.Top, d)
@@ -138,12 +139,12 @@ trait LabelImplicits {
     label: String,
     size: Option[Double] = None,
     color: Option[Color] = None
-  )(implicit theme: Theme): Plot = bottomLabel(label, size, color)
+  )(implicit theme: Theme): Plot = bottomLabel(label, size, color)(theme)
 
   def yLabel(d: Drawable): Plot = leftLabel(d)
   def yLabel(
     label: String,
     size: Option[Double] = None,
     color: Option[Color] = None
-  )(implicit theme: Theme): Plot = leftLabel(label, size, color)
+  )(implicit theme: Theme): Plot = leftLabel(label, size, color)(theme)
 }

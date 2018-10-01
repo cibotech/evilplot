@@ -35,7 +35,7 @@ import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
-object Histogram {
+object Histogram extends ExplicitImplicits{
 
   val defaultBinCount: Int = 20
 
@@ -128,7 +128,7 @@ object Histogram {
           val clippedY = math.min(point.y * yscale, plot.ybounds.max)
           val y = ytransformer(clippedY)
           val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
-          val bar = Bar(clippedY)
+          val bar = Bar(clippedY)(theme)
           val barHeight = yintercept - y
           barRenderer.render(plot, Extent(barWidth, barHeight), bar).translate(x = x, y = y)
         }.group
@@ -173,7 +173,7 @@ object Histogram {
       ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
       renderer = HistogramRenderer(
         values,
-        barRenderer.getOrElse(BarRenderer.default()),
+        barRenderer.getOrElse(BarRenderer.default()(theme)),
         bins,
         spacing.getOrElse(theme.elements.barSpacing),
         boundBuffer.getOrElse(theme.elements.boundBuffer),

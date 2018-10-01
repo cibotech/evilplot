@@ -68,7 +68,7 @@ case class LegendContext(
   }
 }
 
-object LegendContext {
+object LegendContext extends ExplicitImplicits{
   def empty: LegendContext = LegendContext()
 
   def single(

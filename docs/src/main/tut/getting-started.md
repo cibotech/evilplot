@@ -43,7 +43,6 @@ and take a look at it.
 ```scala
 import com.cibo.evilplot._
 import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.numeric.Point
 
 val data = Seq.tabulate(100) { i =>
@@ -77,7 +76,6 @@ some labels, so our audience knows what we're talking about. That's easy as well
 <div class="col-md-6" markdown="1">
 ```scala
 import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.numeric.Point
 
 val data = Seq.tabulate(100) { i =>

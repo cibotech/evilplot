@@ -36,7 +36,7 @@ import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
-object LinePlot {
+object LinePlot extends ExplicitImplicits{
 
   /** Create a line plot from some data.  Convenience method on top of XyPlot
     *
@@ -56,10 +56,10 @@ object LinePlot {
     XyPlot(
       data,
       pointRenderer = Some(pointRenderer.getOrElse(PointRenderer.empty())),
-      pathRenderer = Some(pathRenderer.getOrElse(PathRenderer.default())),
+      pathRenderer = Some(pathRenderer.getOrElse(PathRenderer.default()(theme))),
       xboundBuffer.orElse(Some(0)),
       yboundBuffer
-    )
+    )(theme)
   }
 
   /** Create a line plot from some data.  Convenience method on top of XyPlot
@@ -78,7 +78,7 @@ object LinePlot {
     xboundBuffer: Double,
     yboundBuffer: Double
   )(implicit theme: Theme): Plot = {
-    XyPlot(data, Some(pointRenderer), Some(pathRenderer), Some(xboundBuffer), Some(yboundBuffer))
+    XyPlot(data, Some(pointRenderer), Some(pathRenderer), Some(xboundBuffer), Some(yboundBuffer))(theme)
   }
 
   /** Create a line plot with the specified name and color.
@@ -98,14 +98,14 @@ object LinePlot {
     yboundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.empty()
-    val pathRenderer = PathRenderer.named(name, color, strokeWidth)
+    val pathRenderer = PathRenderer.named(name, color, strokeWidth)(theme)
     XyPlot(
       data,
       Some(pointRenderer),
       Some(pathRenderer),
       xboundBuffer,
       yboundBuffer
-    )
+    )(theme)
   }
 
   /** Create a line plot with the specified name and color.
@@ -125,7 +125,7 @@ object LinePlot {
     yboundBuffer: Option[Double]
   )(implicit theme: Theme): Plot = {
     val pointRenderer = PointRenderer.empty()
-    val pathRenderer = PathRenderer.default(strokeWidth, Some(color), label)
-    XyPlot(data, Some(pointRenderer), Some(pathRenderer), xboundBuffer, yboundBuffer)
+    val pathRenderer = PathRenderer.default(strokeWidth, Some(color), label)(theme)
+    XyPlot(data, Some(pointRenderer), Some(pathRenderer), xboundBuffer, yboundBuffer)(theme)
   }
 }

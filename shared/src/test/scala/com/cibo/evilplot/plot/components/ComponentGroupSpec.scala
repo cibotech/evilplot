@@ -35,9 +35,7 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{Plot, XyPlot}
 import org.scalatest.{FunSpec, Matchers}
 
-class ComponentGroupSpec extends FunSpec with Matchers {
-
-  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+class ComponentGroupSpec extends FunSpec with Matchers{
 
   abstract class MockComponent(val position: Position) extends FacetedPlotComponent
   abstract class LeftComponent extends MockComponent(Position.Left)

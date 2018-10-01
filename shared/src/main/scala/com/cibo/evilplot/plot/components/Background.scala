@@ -34,6 +34,7 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, Extent, Line, Rect, StrokeStyle}
 import com.cibo.evilplot.plot.Plot
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.ExplicitImplicits
 
 final case class Background(
   f: (Plot, Extent) => Drawable
@@ -43,7 +44,7 @@ final case class Background(
   def render(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = f(plot, extent)
 }
 
-trait BackgroundImplicits {
+trait BackgroundImplicits extends ExplicitImplicits{
   protected val plot: Plot
 
   /** Set the background (this will replace any existing background).

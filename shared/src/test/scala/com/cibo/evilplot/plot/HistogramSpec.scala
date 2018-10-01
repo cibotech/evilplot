@@ -36,8 +36,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class HistogramSpec extends FunSpec with Matchers {
 
-  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-
   describe("Histogram") {
     val plot = Histogram(Seq(1.0, 1, 1, 2, 3, 4, 4, 5), boundBuffer = Some(0))
 

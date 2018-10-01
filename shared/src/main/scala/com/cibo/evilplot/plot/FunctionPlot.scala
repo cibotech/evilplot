@@ -37,7 +37,7 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.FunctionPlotLine
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
-object FunctionPlot {
+object FunctionPlot extends ExplicitImplicits{
   val defaultBounds: Bounds = Bounds(0, 1)
   val defaultNumPoints: Int = 800
 
@@ -66,7 +66,7 @@ object FunctionPlot {
       pointRenderer.orElse(Some(PointRenderer.empty())),
       pathRenderer,
       xBoundBuffer,
-      yBoundBuffer)
+      yBoundBuffer)(theme)
   }
 
   /** Plot a function using a name for the legend.
@@ -85,8 +85,8 @@ object FunctionPlot {
     xBoundBuffer: Option[Double] = None,
     yBoundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    val renderer = Some(PathRenderer.named(name, color, strokeWidth))
-    apply(function, xbounds, numPoints, renderer, None, xBoundBuffer, yBoundBuffer)
+    val renderer = Some(PathRenderer.named(name, color, strokeWidth)(theme))
+    apply(function, xbounds, numPoints, renderer, None, xBoundBuffer, yBoundBuffer)(theme)
   }
 
   /** Plot a function using a name for the legend.
@@ -104,7 +104,7 @@ object FunctionPlot {
     strokeWidth: Option[Double],
     xBoundBuffer: Option[Double],
     yBoundBuffer: Option[Double])(implicit theme: Theme): Plot = {
-    val renderer = Some(PathRenderer.default(strokeWidth, Some(color), label))
-    apply(function, xbounds, numPoints, renderer, None, xBoundBuffer, yBoundBuffer)
+    val renderer = Some(PathRenderer.default(strokeWidth, Some(color), label)(theme))
+    apply(function, xbounds, numPoints, renderer, None, xBoundBuffer, yBoundBuffer)(theme)
   }
 }
