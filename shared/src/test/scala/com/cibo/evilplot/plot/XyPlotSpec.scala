@@ -36,8 +36,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class XyPlotSpec extends FunSpec with Matchers {
 
-  implicit val theme = com.cibo.evilplot.plot.aesthetics.Theme.default
-
   describe("XyPlot") {
     it("has the right bounds") {
       val plot =

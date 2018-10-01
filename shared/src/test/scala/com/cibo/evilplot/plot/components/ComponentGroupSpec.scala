@@ -37,8 +37,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class ComponentGroupSpec extends FunSpec with Matchers{
 
-  implicit val theme = Theme.default
-
   abstract class MockComponent(val position: Position) extends FacetedPlotComponent
   abstract class LeftComponent extends MockComponent(Position.Left)
   abstract class TopComponent extends MockComponent(Position.Top)

@@ -36,8 +36,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class ContourPlotSpec extends FunSpec with Matchers {
 
-  implicit val theme = com.cibo.evilplot.plot.aesthetics.Theme.default
-
   describe("ContourPlot") {
     it("it has the right bounds") {
       val plot = ContourPlot(Seq(Point(1, 2), Point(3, 4)), boundBuffer = Some(0.0))

@@ -90,7 +90,7 @@ object PathRenderer {
         Text(name, theme.fonts.legendLabelSize, theme.fonts.fontFace),
         theme.colors.legendLabel),
       lineStyle
-    )
+    )(theme)
 
   /** Path renderer for closed paths. The first point is connected to the last point.
     * @param color the color of this path.

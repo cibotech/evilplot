@@ -34,7 +34,6 @@ import com.cibo.evilplot.plot.aesthetics.{Colors, Elements, Fonts, Theme}
 import org.scalatest.{FunSpec, Matchers}
 
 class ColoringSpec extends FunSpec with Matchers {
-  implicit val theme = com.cibo.evilplot.plot.aesthetics.Theme.default
   
   describe("multi color gradient construction") {
     it("should return a function when Colors has only one element") {
@@ -79,8 +78,7 @@ class ColoringSpec extends FunSpec with Matchers {
   }
   describe("overriding the default color from the theme") {
     import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultElements,DefaultFonts,DefaultColors => AesColors}
-    // implicit val overriddenTheme: Theme = Theme(
-    implicit val theme: Theme = Theme( //shadowed implicit theme
+    implicit val overriddenTheme: Theme = Theme(
       fonts = DefaultFonts,
       elements = DefaultElements,
       colors = AesColors.copy(stream = Seq(HTMLNamedColors.red))

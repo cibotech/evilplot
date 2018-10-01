@@ -39,8 +39,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class PlotSpec extends FunSpec with Matchers {
 
-  implicit val theme = com.cibo.evilplot.plot.aesthetics.Theme.default
-
   DOMInitializer.init()
 
   // Renderer to do nothing.

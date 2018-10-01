@@ -38,8 +38,6 @@ import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 object Heatmap extends DefaultTheme{
 
-  implicit val theme = com.cibo.evilplot.plot.aesthetics.Theme.default
-
   val defaultColorCount: Int = 10
 
   final case class HeatmapRenderer(

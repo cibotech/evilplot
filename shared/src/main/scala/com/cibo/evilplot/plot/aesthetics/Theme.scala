@@ -47,12 +47,8 @@ final case class Theme(
 
 object Theme {
 
-  // trait Default{
-  //   implicit val defaultTheme: Theme = DefaultTheme.DefaultTheme
-  // }
-
   /**An automatic default theme at a low priority precedence*/
-  val default:Theme = DefaultTheme.defaultTheme
+  implicit val default:Theme = DefaultTheme.defaultTheme
   // /**An automatic default theme at a low priority precedence*/
   // implicit val default:Theme = Default.theme
 

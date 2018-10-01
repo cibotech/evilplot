@@ -35,7 +35,6 @@ import com.cibo.evilplot.numeric.Bounds
 import org.scalatest.{FunSpec, Matchers}
 
 class BarChartSpec extends FunSpec with Matchers {
-  implicit val theme = com.cibo.evilplot.plot.aesthetics.Theme.default
 
   describe("BarChart") {
     it("should have the right bounds without buffer") {

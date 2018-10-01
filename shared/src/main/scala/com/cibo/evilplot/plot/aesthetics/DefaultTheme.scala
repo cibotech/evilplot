@@ -34,7 +34,7 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.colors.ContinuousColoring.gradient
 import com.cibo.evilplot.geometry.LineStyle
 
-object DefaultTheme extends DefaultTheme{
+object DefaultTheme{
   private val darkGray: HSLA = HSLA(0, 0, 12, 1.0)
   private val lightGray: HSLA = HSLA(0, 0, 65, 0.8)
   private val darkBlue: HSLA = HSLA(211, 38, 48, 1.0)
@@ -108,7 +108,9 @@ object DefaultTheme extends DefaultTheme{
     elements = DefaultElements
   )
 
+  implicit val defaultTheme: Theme = this.DefaultTheme
+
 }
 trait DefaultTheme{
-  implicit val defaultTheme: Theme = DefaultTheme.DefaultTheme
+  implicit val defaultTheme: Theme = DefaultTheme.defaultTheme
 }
