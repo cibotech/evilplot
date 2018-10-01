@@ -2,6 +2,9 @@
 
 ## [Changes since last release]
 
+## [0.5.x] - 2018-??-??
+- added a low priority default Theme so this cumbersome import is only necessary when desired
+
 ## [0.5.0] - 2018-09-21
 ### Added
 - `ComponentGroup` for combining plot components
