@@ -38,11 +38,39 @@ class ExplcitImplicitsSpec extends FunSpec with Matchers {
        val hist = Histogram(Seq(1, 2, 2)) 
        hist.render().extent shouldBe Plot.defaultExtent
     }
-    it("still provides a mechansim to catch accidental default themes at compile time"){
-      assertDoesNotCompile("""
+
+    it("Provides a mechansim to *require* explicit themes at compile time"){
+      import com.cibo.evilplot.plot.aesthetics.Theme
+      object CustomHistogram extends ExplicitImplicits{
+        def hist(xs:Seq[Double])(implicit theme:Theme) = Histogram(xs)(theme).render()(theme)
+      }
+      CustomHistogram.hist( Seq(1,2,2) ).extent shouldBe Plot.defaultExtent
+    }
+
+    it("still provides a mechansim to catch accidental default themes at compile time with a type Error"){
+
+      assertTypeError("""
         import com.cibo.evilplot.plot.aesthetics.Theme
         object CustomHistogram extends ExplicitImplicits{
-          def hist(xs:Seq[Double])(implicit theme:Theme) = Histogram(xs).render()(theme)
+          def hist(xs:Seq[Double])(implicit theme:Theme) = Histogram(xs).render()    // both implicit
+        }
+      """)
+      assertTypeError("""
+        import com.cibo.evilplot.plot.aesthetics.Theme
+        object CustomHistogram extends ExplicitImplicits{
+          def hist(xs:Seq[Double])(implicit theme:Theme) = Histogram(xs)(theme).render()  // first explicit
+        }
+      """)
+      assertTypeError("""
+        import com.cibo.evilplot.plot.aesthetics.Theme
+        object CustomHistogram extends ExplicitImplicits{
+          def hist(xs:Seq[Double])(implicit theme:Theme) = Histogram(xs)().render()(theme)  //second explicit
+        }
+      """)
+      assertCompiles("""
+        import com.cibo.evilplot.plot.aesthetics.Theme
+        object CustomHistogram extends ExplicitImplicits{
+          def hist(xs:Seq[Double])(implicit theme:Theme) = Histogram(xs)(theme).render()(theme)  //both explicit
         }
       """)
     }
