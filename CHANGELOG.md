@@ -16,6 +16,7 @@
 # Changed
 - `BoxPlotRenderer` now takes `clusterSpacing` parameter (_breaking_)
 -  Broken `fixedBounds` option no longer on `continuousAxis` (_breaking_)
+- `asBufferedImage` optionally takes a `scale` parameter and produces higher-resolution images by default.
 ### Fixed
 - Bug in the spacing and sizing of bars in clustered bar charts.
 
