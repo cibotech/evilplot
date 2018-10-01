@@ -31,7 +31,7 @@
 package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
 import com.cibo.evilplot.plot.renderers.LegendRenderer
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
@@ -55,7 +55,7 @@ case class Legend(
   }
 }
 
-trait LegendImplicits {
+trait LegendImplicits extends DefaultTheme{
   protected val plot: Plot
 
   private def setLegend(
@@ -87,25 +87,25 @@ trait LegendImplicits {
   def rightLegend(
     renderer: LegendRenderer = LegendRenderer.vertical(),
     labels: Option[Seq[String]] = None
-  )(implicit theme: Theme): Plot = setLegend(Position.Right, renderer, 0, 0.5, labels)
+  )(implicit theme: Theme): Plot = setLegend(Position.Right, renderer, 0, 0.5, labels)(theme)
 
   /** Place a legend on the left side of the plot. */
   def leftLegend(
     renderer: LegendRenderer = LegendRenderer.vertical(),
     labels: Option[Seq[String]] = None
-  )(implicit theme: Theme): Plot = setLegend(Position.Left, renderer, 0, 0.5, labels)
+  )(implicit theme: Theme): Plot = setLegend(Position.Left, renderer, 0, 0.5, labels)(theme)
 
   /** Place a legend on the top of the plot. */
   def topLegend(
     renderer: LegendRenderer = LegendRenderer.horizontal(),
     labels: Option[Seq[String]] = None
-  )(implicit theme: Theme): Plot = setLegend(Position.Top, renderer, 0.5, 0, labels)
+  )(implicit theme: Theme): Plot = setLegend(Position.Top, renderer, 0.5, 0, labels)(theme)
 
   /** Place a legend on the bottom of the plot. */
   def bottomLegend(
     renderer: LegendRenderer = LegendRenderer.horizontal(),
     labels: Option[Seq[String]] = None
-  )(implicit theme: Theme): Plot = setLegend(Position.Bottom, renderer, 0.5, 0, labels)
+  )(implicit theme: Theme): Plot = setLegend(Position.Bottom, renderer, 0.5, 0, labels)(theme)
 
   /** Overlay a legend on the plot.
     * @param x The relative X position (0 to 1).
@@ -117,7 +117,7 @@ trait LegendImplicits {
     y: Double = 0.0,
     renderer: LegendRenderer = LegendRenderer.vertical(),
     labels: Option[Seq[String]] = None
-  )(implicit theme: Theme): Plot = setLegend(Position.Overlay, renderer, x, y, labels)
+  )(implicit theme: Theme): Plot = setLegend(Position.Overlay, renderer, x, y, labels)(theme)
 
   /** Get the legend as a drawable. */
   def renderLegend(
@@ -125,6 +125,6 @@ trait LegendImplicits {
   )(implicit theme: Theme): Option[Drawable] =
     if (plot.renderer.legendContext.nonEmpty) {
       val legend = Legend(Position.Right, plot.renderer.legendContext, renderer, 0, 0)
-      Some(legend.render(plot, legend.size(plot)))
+      Some(legend.render(plot, legend.size(plot))(theme))
     } else None
 }

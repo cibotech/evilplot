@@ -32,7 +32,7 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
 import com.cibo.evilplot.plot.{Bar, LegendContext, Plot}
 
 trait BarRenderer extends PlotElementRenderer[Bar] {
@@ -40,7 +40,7 @@ trait BarRenderer extends PlotElementRenderer[Bar] {
   def legendContext: Option[LegendContext] = None
 }
 
-object BarRenderer {
+object BarRenderer extends DefaultTheme{
 
   /** Default bar renderer. */
   def default(
@@ -68,7 +68,7 @@ object BarRenderer {
           Rect(legSize, legSize).filled(color.getOrElse(theme.colors.bar))
         },
         label = n
-      )
+      )(theme)
     }
   }
 

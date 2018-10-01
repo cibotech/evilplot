@@ -36,6 +36,8 @@ import org.scalatest.{FunSpec, Matchers}
 
 class AxesSpec extends FunSpec with Matchers {
 
+  implicit val theme = com.cibo.evilplot.plot.aesthetics.Theme.default
+
   describe("discrete X") {
     it("should set the default bounds") {
       val plot = BarChart(Seq(3.0, 4)).xAxis()

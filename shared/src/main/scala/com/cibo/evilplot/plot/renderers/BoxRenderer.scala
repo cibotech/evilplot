@@ -44,11 +44,11 @@ import com.cibo.evilplot.geometry.{
   Translate
 }
 import com.cibo.evilplot.numeric.BoxPlotSummaryStatistics
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
-trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] { br =>
+trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] with DefaultTheme{ br =>
   def render(plot: Plot, extent: Extent, summary: BoxRendererContext): Drawable
   def legendContext: LegendContext = LegendContext.empty
 
@@ -76,7 +76,7 @@ trait BoxRenderer extends PlotElementRenderer[BoxRendererContext] { br =>
   }
 }
 
-object BoxRenderer {
+object BoxRenderer extends DefaultTheme {
   final case class BoxRendererContext(
     summaryStatistics: BoxPlotSummaryStatistics,
     index: Int,
@@ -173,16 +173,16 @@ object BoxRenderer {
     strokeWidth: Option[Double] = None
   )(implicit theme: Theme): BoxRenderer = new BoxRenderer {
     private val useColoring = fillColoring.getOrElse(CategoricalColoring.themed[A])
-    private val colorFunc = useColoring(colorDimension)
+    private val colorFunc = useColoring(colorDimension)(theme)
 
     def render(plot: Plot, extent: Extent, context: BoxRendererContext): Drawable = {
       BoxRenderer
-        .default(fillColor = Some(colorFunc(colorDimension(context.index))))
+        .default(fillColor = Some(colorFunc(colorDimension(context.index))))(theme)
         .render(plot, extent, context)
     }
 
     override def legendContext: LegendContext = {
-      useColoring.legendContext(colorDimension, legendGlyph = d => Rect(d))
+      useColoring.legendContext(colorDimension, legendGlyph = d => Rect(d))(theme)
     }
   }
 }

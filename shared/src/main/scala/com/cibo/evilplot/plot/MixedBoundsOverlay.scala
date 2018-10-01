@@ -41,7 +41,7 @@ object MixedBoundsOverlay {
     override def legendContext: LegendContext =
       LegendContext.combine(subplots.map(_.renderer.legendContext))
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable =
-      Plot.padPlots(Seq(subplots), plotExtent, 0, 0).head.map(_.render(plotExtent)).group
+      Plot.padPlots(Seq(subplots), plotExtent, 0, 0).head.map(_.render(plotExtent)(theme)).group
   }
 
   /** Overlay plots without updating bounds or transforms for individual plots.

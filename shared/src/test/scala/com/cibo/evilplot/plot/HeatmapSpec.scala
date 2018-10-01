@@ -36,6 +36,8 @@ import org.scalatest.{FunSpec, Matchers}
 
 class HeatmapSpec extends FunSpec with Matchers {
 
+  implicit val theme = com.cibo.evilplot.plot.aesthetics.Theme.default
+
   describe("Heatmap") {
     it("has the right bounds") {
       val plot = Heatmap(Seq(Seq(1), Seq(2)))

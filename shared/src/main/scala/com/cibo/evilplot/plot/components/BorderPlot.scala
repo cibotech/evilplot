@@ -46,13 +46,13 @@ case class BorderPlot(
         border
           .xbounds(plot.xbounds)
           .copy(xtransform = plot.xtransform)
-          .render(extent.copy(height = borderSize))
+          .render(extent.copy(height = borderSize))(theme)
       case Position.Bottom =>
         val borderExent = extent.copy(height = borderSize)
         border
           .xbounds(plot.xbounds)
           .copy(xtransform = plot.xtransform)
-          .render(borderExent)
+          .render(borderExent)(theme)
           .rotated(180)
           .flipX
       case Position.Left =>
@@ -60,7 +60,7 @@ case class BorderPlot(
         border
           .xbounds(plot.ybounds)
           .copy(xtransform = plot.xtransform)
-          .render(borderExtent)
+          .render(borderExtent)(theme)
           .resize(borderExtent)
           .rotated(270)
       case Position.Right =>
@@ -68,12 +68,12 @@ case class BorderPlot(
         border
           .xbounds(plot.ybounds)
           .copy(xtransform = plot.xtransform)
-          .render(borderExtent)
+          .render(borderExtent)(theme)
           .resize(borderExtent)
           .rotated(90)
           .flipY
       case _ =>
-        border.render(extent)
+        border.render(extent)(theme)
     }
   }
 }

@@ -34,7 +34,7 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Line, LineStyle, Path}
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.Plot
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
 
 import scala.annotation.tailrec
 
@@ -167,7 +167,7 @@ object FunctionPlotLine {
   }
 }
 
-trait PlotLineImplicits {
+trait PlotLineImplicits extends DefaultTheme{
   protected val plot: Plot
 
   val defaultThickness: Double = 2.0

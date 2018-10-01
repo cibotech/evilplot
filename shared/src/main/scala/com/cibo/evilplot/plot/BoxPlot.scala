@@ -32,7 +32,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics}
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
 import com.cibo.evilplot.plot.renderers.BoxRenderer.BoxRendererContext
 import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRenderer}
 
@@ -42,7 +42,7 @@ final case class BoxPlotRenderer(
   pointRenderer: PointRenderer,
   spacing: Double,
   clusterSpacing: Option[Double]
-) extends PlotRenderer {
+) extends PlotRenderer with DefaultTheme{
 
   private val isClustered = clusterSpacing.isDefined
   private val clusterPadding = clusterSpacing.getOrElse(spacing)
@@ -106,7 +106,7 @@ final case class BoxPlotRenderer(
   override def legendContext: LegendContext = boxRenderer.legendContext
 }
 
-object BoxPlot {
+object BoxPlot extends DefaultTheme{
 
   /** Create box plots for a sequence of distributions.
     *
@@ -141,7 +141,7 @@ object BoxPlot {
       boundBuffer,
       boxRenderer,
       pointRenderer
-    )
+    )(theme)
   }
 
 
@@ -185,7 +185,7 @@ object BoxPlot {
       boundBuffer,
       boxRenderer,
       pointRenderer
-    )
+    )(theme)
   }
 
   private def makePlot(
@@ -210,8 +210,8 @@ object BoxPlot {
       ybounds,
       BoxPlotRenderer(
         boxContexts,
-        boxRenderer.getOrElse(BoxRenderer.default()),
-        pointRenderer.getOrElse(PointRenderer.default()),
+        boxRenderer.getOrElse(BoxRenderer.default()(theme)),
+        pointRenderer.getOrElse(PointRenderer.default()(theme)),
         spacing.getOrElse(theme.elements.boxSpacing),
         clusterSpacing
       )
@@ -236,6 +236,6 @@ object BoxPlot {
     spacing: Option[Double] = None,
     boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    apply(data, quantiles, spacing, boundBuffer, Some(boxRenderer), Some(pointRenderer))
+    apply(data, quantiles, spacing, boundBuffer, Some(boxRenderer), Some(pointRenderer))(theme)
   }
 }

@@ -33,7 +33,7 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.Plot
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
 
 /** Renderer for non-plot area components of a plot (labels, etc.). */
 trait ComponentRenderer {
@@ -48,7 +48,7 @@ trait ComponentRenderer {
   def plotOffset(plot: Plot): Point
 }
 
-object ComponentRenderer {
+object ComponentRenderer extends DefaultTheme{
 
   case class Default() extends ComponentRenderer {
 
@@ -58,7 +58,7 @@ object ComponentRenderer {
       val plotExtent = plot.plotExtent(extent)
       plot.topComponents.reverse.foldLeft(empty) { (d, c) =>
         val componentExtent = plotExtent.copy(height = c.size(plot).height)
-        c.render(plot, componentExtent, 0, 0)
+        c.render(plot, componentExtent, 0, 0)(theme)
           .translate(x = plot.plotOffset.x, y = d.extent.height) behind d
       }
     }
@@ -69,7 +69,7 @@ object ComponentRenderer {
         .foldLeft((extent.height, empty)) {
           case ((y, d), c) =>
             val componentExtent = plotExtent.copy(height = c.size(plot).height)
-            val rendered = c.render(plot, plotExtent, 0, 0)
+            val rendered = c.render(plot, plotExtent, 0, 0)(theme)
             val newY = y - rendered.extent.height
             (newY, rendered.translate(x = plot.plotOffset.x, y = newY) behind d)
         }
@@ -80,7 +80,7 @@ object ComponentRenderer {
       val plotExtent = plot.plotExtent(extent)
       plot.leftComponents.foldLeft(empty) { (d, c) =>
         val componentExtent = plotExtent.copy(width = c.size(plot).width)
-        c.render(plot, componentExtent, 0, 0).translate(y = plot.plotOffset.y) beside d
+        c.render(plot, componentExtent, 0, 0)(theme).translate(y = plot.plotOffset.y) beside d
       }
     }
 
@@ -90,7 +90,7 @@ object ComponentRenderer {
         .foldLeft((extent.width, empty)) {
           case ((x, d), c) =>
             val componentExtent = plotExtent.copy(width = c.size(plot).width)
-            val rendered = c.render(plot, componentExtent, 0, 0)
+            val rendered = c.render(plot, componentExtent, 0, 0)(theme)
             val newX = x - rendered.extent.width
             (newX, rendered.translate(x = newX, y = plot.plotOffset.y) behind d)
         }
@@ -100,22 +100,22 @@ object ComponentRenderer {
     private def renderOverlay(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val plotExtent = plot.plotExtent(extent)
       plot.overlayComponents.map { a =>
-        a.render(plot, plotExtent, 0, 0).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
+        a.render(plot, plotExtent, 0, 0)(theme).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
       }.group
     }
 
     def renderFront(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
-      renderOverlay(plot, extent)
-        .behind(renderLeft(plot, extent))
-        .behind(renderRight(plot, extent))
-        .behind(renderBottom(plot, extent))
-        .behind(renderTop(plot, extent))
+      renderOverlay(plot, extent)(theme)
+        .behind(renderLeft(plot, extent)(theme))
+        .behind(renderRight(plot, extent)(theme))
+        .behind(renderBottom(plot, extent)(theme))
+        .behind(renderTop(plot, extent)(theme))
     }
 
     def renderBack(plot: Plot, extent: Extent)(implicit theme: Theme): Drawable = {
       val plotExtent = plot.plotExtent(extent)
       plot.backgroundComponents.map { a =>
-        a.render(plot, plotExtent, 0, 0).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
+        a.render(plot, plotExtent, 0, 0)(theme).translate(x = plot.plotOffset.x, y = plot.plotOffset.y)
       }.group
     }
 

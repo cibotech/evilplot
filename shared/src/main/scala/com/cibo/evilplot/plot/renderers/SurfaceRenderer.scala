@@ -33,7 +33,7 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, LineStyle, Path}
 import com.cibo.evilplot.numeric.{Bounds, Point, Point3}
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
 import com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext
 import com.cibo.evilplot.plot.{LegendContext, Plot}
 
@@ -42,7 +42,7 @@ trait SurfaceRenderer extends PlotElementRenderer[SurfaceRenderContext] {
   def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable
 }
 
-object SurfaceRenderer {
+object SurfaceRenderer extends DefaultTheme{
 
   /** The element renderer context for surface renderers. */
   case class SurfaceRenderContext(
@@ -91,9 +91,9 @@ object SurfaceRenderer {
         val surfaceRenderer = getBySafe(points)(_.headOption.flatMap(_.headOption.map(_.z)))
           .map { bs =>
             val bar = ScaledColorBar(getColorSeq(points.length), bs.min, bs.max)
-            densityColorContours(bar)(points)
+            densityColorContours(bar)(points)(theme)
           }
-          .getOrElse(contours())
+          .getOrElse(contours()(theme))
         surfaceRenderer.render(plot, extent, surface)
       }
     }
@@ -105,7 +105,7 @@ object SurfaceRenderer {
       surface.currentLevelPaths.headOption
         .map(pts =>
           contours(Some(pts.headOption.fold(theme.colors.path)(_ =>
-            bar.getColor(surface.currentLevel))))
+            bar.getColor(surface.currentLevel))))(theme)
             .render(plot, extent, surface))
         .getOrElse(EmptyDrawable())
     }
@@ -120,17 +120,17 @@ object SurfaceRenderer {
         coloring.getOrElse(theme.colors.continuousColoring)
 
       def render(plot: Plot, extent: Extent, surface: SurfaceRenderContext): Drawable = {
-        val color = useColoring(surface.levels).apply(surface.currentLevel)
+        val color = useColoring(surface.levels)(theme).apply(surface.currentLevel)
         surface.currentLevelPaths
           .map(
             pts =>
-              contours(Some(color), strokeWidth, dashPattern)
+              contours(Some(color), strokeWidth, dashPattern)(theme)
                 .render(plot, extent, surface))
           .group
       }
 
       override def legendContext(levels: Seq[Double]): LegendContext = {
-        useColoring.legendContext(levels)
+        useColoring.legendContext(levels)(theme)
       }
     }
 }

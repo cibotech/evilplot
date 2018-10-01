@@ -45,9 +45,16 @@ final case class Theme(
   elements: Elements
 )
 
-object Theme{
+object Theme {
+
+  // trait Default{
+  //   implicit val defaultTheme: Theme = DefaultTheme.DefaultTheme
+  // }
+
   /**An automatic default theme at a low priority precedence*/
-  implicit val defaultTheme:Theme = DefaultTheme.defaultTheme
+  val default:Theme = DefaultTheme.defaultTheme
+  // /**An automatic default theme at a low priority precedence*/
+  // implicit val default:Theme = Default.theme
 
   /**A simpler constructor for a classic Theme without requiring the entire Classic import */
   val classic:Theme = ClassicTheme.classicTheme

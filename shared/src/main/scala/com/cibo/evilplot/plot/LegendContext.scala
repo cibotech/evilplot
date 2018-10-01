@@ -32,7 +32,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.ScaledColorBar
 import com.cibo.evilplot.geometry.{Drawable, Rect, Style, Text}
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
 
 sealed trait LegendStyle
 
@@ -68,7 +68,7 @@ case class LegendContext(
   }
 }
 
-object LegendContext {
+object LegendContext extends DefaultTheme{
   def empty: LegendContext = LegendContext()
 
   def single(

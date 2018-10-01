@@ -33,7 +33,7 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, DefaultColors}
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Rect, Style, Text}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme,DefaultTheme}
 import com.cibo.evilplot.plot.renderers.{BarRenderer, PlotRenderer}
 
 /** Data for a bar in a bar chart.
@@ -61,13 +61,13 @@ final case class Bar(
   )
 }
 
-object Bar {
+object Bar extends DefaultTheme{
   def apply(value: Double)(implicit theme: Theme): Bar = Bar(Seq(value), 0, theme.colors.stream)
   def apply(value: Double, cluster: Int)(implicit theme: Theme): Bar =
     Bar(Seq(value), cluster = cluster, theme.colors.stream)
 }
 
-object BarChart {
+object BarChart extends DefaultTheme{
 
   val defaultBoundBuffer: Double = 0.1
 
@@ -151,9 +151,9 @@ object BarChart {
     spacing: Option[Double] = None,
     boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    val barRenderer = BarRenderer.default(color)
-    val bars = values.map(Bar(_))
-    custom(bars, Some(barRenderer), spacing, None, boundBuffer)
+    val barRenderer = BarRenderer.default(color)(theme)
+    val bars = values.map(Bar(_)(theme))
+    custom(bars, Some(barRenderer), spacing, None, boundBuffer)(theme)
   }
 
   /** Create a bar chart where bars are divided into clusters. */
@@ -195,7 +195,7 @@ object BarChart {
       Some(barRenderer),
       spacing,
       Some(clusterSpacing.getOrElse(theme.elements.clusterSpacing)),
-      boundBuffer)
+      boundBuffer)(theme)
   }
 
   /** Create a stacked bar chart.
@@ -220,7 +220,7 @@ object BarChart {
     val bars = values.map { stack =>
       Bar(stack, colors = colorStream, labels = barLabels, cluster = 0)
     }
-    custom(bars, Some(barRenderer), spacing, None, boundBuffer)
+    custom(bars, Some(barRenderer), spacing, None, boundBuffer)(theme)
   }
 
   /** Create a clustered bar chart of stacked bars.
@@ -261,7 +261,7 @@ object BarChart {
       Some(barRenderer),
       spacing,
       Some(clusterSpacing.getOrElse(theme.elements.clusterSpacing)),
-      boundBuffer)
+      boundBuffer)(theme)
   }
 
   /** Create a custom bar chart.
@@ -292,7 +292,7 @@ object BarChart {
       ybounds,
       BarChartRenderer(
         bars,
-        barRenderer.getOrElse(BarRenderer.default()),
+        barRenderer.getOrElse(BarRenderer.default()(theme)),
         spacing.getOrElse(theme.elements.barSpacing),
         clusterSpacing
       )

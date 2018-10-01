@@ -33,10 +33,10 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.{Color, HTMLNamedColors}
 import com.cibo.evilplot.geometry.{Drawable, Extent, Rect, Text, Wedge}
 import com.cibo.evilplot.numeric.Bounds
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme,DefaultTheme}
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
-object PieChart {
+object PieChart extends DefaultTheme{
 
   case class PieChartRenderer(
     data: Seq[(Drawable, Double)],

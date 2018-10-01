@@ -33,10 +33,10 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.{Drawable, Style, Text}
 import com.cibo.evilplot.numeric.Point
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
 
-object ScatterPlot {
+object ScatterPlot extends DefaultTheme{
 
   /** Create a scatter plot from some data.
     * @param data The points to plot.
@@ -49,7 +49,7 @@ object ScatterPlot {
     pointRenderer: Option[PointRenderer] = None,
     boundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    XyPlot(data, pointRenderer, Some(PathRenderer.empty()), boundBuffer, boundBuffer)
+    XyPlot(data, pointRenderer, Some(PathRenderer.empty()), boundBuffer, boundBuffer)(theme)
   }
 
   /** Create a scatter plot with the specified name and color.
@@ -74,7 +74,7 @@ object ScatterPlot {
       color,
       pointSize,
       boundBuffer
-    )
+    )(theme)
 
   /** Create a scatter plot with the specified name and color.
     * @param data The points to plot.
@@ -90,8 +90,8 @@ object ScatterPlot {
     pointSize: Option[Double],
     boundBuffer: Option[Double]
   )(implicit theme: Theme): Plot = {
-    val pointRenderer = PointRenderer.default(Some(color), pointSize, name)
+    val pointRenderer = PointRenderer.default(Some(color), pointSize, name)(theme)
     val pathRenderer = PathRenderer.empty()
-    XyPlot(data, Some(pointRenderer), Some(pathRenderer), boundBuffer, boundBuffer)
+    XyPlot(data, Some(pointRenderer), Some(pathRenderer), boundBuffer, boundBuffer)(theme)
   }
 }

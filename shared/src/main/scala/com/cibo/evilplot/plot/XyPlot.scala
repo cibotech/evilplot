@@ -32,10 +32,10 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme,DefaultTheme}
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 
-object XyPlot {
+object XyPlot extends DefaultTheme{
 
   final case class XyPlotRenderer(
     data: Seq[Point],
@@ -104,8 +104,8 @@ object XyPlot {
       ybounds,
       XyPlotRenderer(
         data,
-        pointRenderer.getOrElse(PointRenderer.default()),
-        pathRenderer.getOrElse(PathRenderer.default()))
+        pointRenderer.getOrElse(PointRenderer.default()(theme)),
+        pathRenderer.getOrElse(PathRenderer.default()(theme)))
     )
   }
 }

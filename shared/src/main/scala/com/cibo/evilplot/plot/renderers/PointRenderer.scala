@@ -32,7 +32,7 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text}
-import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.aesthetics.{Theme, DefaultTheme}
 import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
 
 trait PointRenderer extends PlotElementRenderer[Int] {
@@ -40,7 +40,7 @@ trait PointRenderer extends PlotElementRenderer[Int] {
   def render(plot: Plot, extent: Extent, index: Int): Drawable
 }
 
-object PointRenderer {
+object PointRenderer extends DefaultTheme{
 
   val defaultColorCount: Int = 10
 
@@ -78,7 +78,7 @@ object PointRenderer {
     size: Option[Double] = None
   )(implicit theme: Theme): PointRenderer = new PointRenderer {
     private val useColoring = coloring.getOrElse(theme.colors.continuousColoring)
-    private val colorFunc = useColoring(depths)
+    private val colorFunc = useColoring(depths)(theme)
     private val radius = size.getOrElse(theme.elements.pointSize)
 
     def render(plot: Plot, extent: Extent, index: Int): Drawable = {
@@ -86,7 +86,7 @@ object PointRenderer {
     }
 
     override def legendContext: LegendContext =
-      useColoring.legendContext(depths)
+      useColoring.legendContext(depths)(theme)
   }
 
   /**
@@ -103,14 +103,14 @@ object PointRenderer {
     size: Option[Double] = None
   )(implicit theme: Theme): PointRenderer = new PointRenderer {
     private val useColoring = coloring.getOrElse(CategoricalColoring.themed[A])
-    private val colorFunc = useColoring(colorDimension)
+    private val colorFunc = useColoring(colorDimension)(theme)
     private val radius = size.getOrElse(theme.elements.pointSize)
 
     def render(plot: Plot, extent: Extent, index: Int): Drawable = {
       Disc.centered(radius).filled(colorFunc(colorDimension(index)))
     }
 
-    override def legendContext: LegendContext = useColoring.legendContext(colorDimension)
+    override def legendContext: LegendContext = useColoring.legendContext(colorDimension)(theme)
   }
 
   /**
@@ -138,7 +138,7 @@ object PointRenderer {
           theme.fonts.fontFace),
         theme.colors.legendLabel)
     }
-    oldDepthColor(depths, labels, bar, None)
+    oldDepthColor(depths, labels, bar, None)(theme)
   }
 
   /** Render points with colors based on depth.
@@ -154,7 +154,7 @@ object PointRenderer {
     bar: ScaledColorBar,
     size: Option[Double]
   )(implicit theme: Theme): PointRenderer = {
-    oldDepthColor(depths, labels, bar, size)
+    oldDepthColor(depths, labels, bar, size)(theme)
   }
 
   /** Render points with colors based on depth.
@@ -167,7 +167,7 @@ object PointRenderer {
     depths: Seq[Double],
     labels: Seq[Drawable],
     bar: ScaledColorBar
-  )(implicit theme: Theme): PointRenderer = oldDepthColor(depths, labels, bar, None)
+  )(implicit theme: Theme): PointRenderer = oldDepthColor(depths, labels, bar, None)(theme)
 
   /** Render points with colors based on depth.
     * @param depths The depths.
@@ -186,7 +186,7 @@ object PointRenderer {
           theme.fonts.fontFace),
         theme.colors.legendLabel)
     }
-    oldDepthColor(depths, labels, bar, None)
+    oldDepthColor(depths, labels, bar, None)(theme)
   }
 
   // Old `depthColor` implementation, called to by all deprecated `depthColor`
