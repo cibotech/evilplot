@@ -38,8 +38,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class OverlaySpec extends FunSpec with Matchers {
 
-  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-
   describe("Overlay") {
     it("it gets the bounds right for a single plot") {
       val inner = ScatterPlot(Seq(Point(1.0, 10.0), Point(2.0, 20.0)))

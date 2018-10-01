@@ -36,8 +36,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class BoxPlotSpec extends FunSpec with Matchers {
 
-  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-
   describe("BoxPlot") {
     it("should have the right extents") {
       val plot = BoxPlot(Seq(Seq(1.0, 2.0)))

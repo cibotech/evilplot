@@ -18,7 +18,6 @@ Started page using `CanvasRenderContext`.
 ```scala
 import com.cibo.evilplot.geometry.{CanvasRenderContext, Extent}
 import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.numeric.Point
 import org.scalajs.dom
 

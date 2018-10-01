@@ -293,7 +293,6 @@ A pairs plot can be built by combining `ScatterPlot` and `Histogram` plots with 
 ```scala
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import scala.util.Random
 
 val labels = Vector("a", "b", "c", "d")
@@ -332,7 +331,6 @@ A `FunctionPlot` can be used to build density plots.
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.plot.renderers.PathRenderer
 import scala.util.Random
 
@@ -379,7 +377,6 @@ Overlay(
 import com.cibo.evilplot.colors.HTMLNamedColors.{green, red}
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import com.cibo.evilplot.plot.renderers.BarRenderer
 import scala.util.Random
 
@@ -408,7 +405,6 @@ Overlay(
 ```scala
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import scala.util.Random
 
 val data = Seq.fill(100) {

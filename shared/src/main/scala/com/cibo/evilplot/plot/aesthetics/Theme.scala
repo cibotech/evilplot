@@ -47,5 +47,8 @@ final case class Theme(
 
 object Theme{
   /**An automatic default theme at a low priority precedence*/
-  implicit val defaultTheme:Theme = com.cibo.evilplot.plot.aesthetics.DefaultTheme.defaultTheme
+  implicit val defaultTheme:Theme = DefaultTheme.defaultTheme
+
+  /**A simpler constructor for a classic Theme without requiring the entire Classic import */
+  val classic:Theme = ClassicTheme.classicTheme
 }

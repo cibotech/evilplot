@@ -38,8 +38,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class MixedBoundsOverlaySpec extends FunSpec with Matchers {
 
-  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-
   describe("MixedBoundsOverlay") {
 
     it("it has the bounds that are set for it") {

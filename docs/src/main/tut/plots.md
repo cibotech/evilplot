@@ -37,7 +37,6 @@ A `PointRenderer` tells your plot how to draw the data. When we don't pass one i
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot._
 import com.cibo.evilplot.plot.renderers.PointRenderer
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 import scala.util.Random
 
 val qualities = Seq("good", "bad")
