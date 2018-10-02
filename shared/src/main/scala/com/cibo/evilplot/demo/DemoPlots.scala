@@ -257,22 +257,6 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
-  def cluster(
-    values: Seq[Double],
-    binCount: Int,
-    xbounds: Bounds,
-    normalize: Boolean): Seq[Seq[Double]] = {
-    val binWidth = xbounds.range / binCount
-    val grouped = values.groupBy { value =>
-      math.min(((value - xbounds.min) / binWidth).toInt, binCount - 1)
-    }
-    (0 until binCount).flatMap { i =>
-      grouped.get(i).map { vs =>
-        vs
-      }
-    }
-  }
-
   case class Record(value: Double)
 
   lazy val simpleGroupedPlot: Drawable = {
@@ -304,13 +288,12 @@ object DemoPlots {
 
     val continuousData = Seq.fill(60)(Math.random() * 100)
 
-    val histogramPlot = BinnedPlot.continuous[Double](
+    val histogramPlot = BinnedPlot.continuous[Double](  // creates a histogram
       continuousData,
       _.continuousBins(identity)
     )(_.histogram())
 
-    Overlay(histogramPlot)
-      .standard()
+    histogramPlot.standard()
       .xLabel("x")
       .yLabel("y")
       .rightLegend()
@@ -324,7 +307,7 @@ object DemoPlots {
 
     val pointData = points.sortBy(_.x).map(thing => Point3d(thing.x, thing.y, Math.random()))
 
-    CartesianPlot(pointData)(
+    CartesianPlot(pointData)( // creates a scatter plot
       _.scatter({ pt: Point3d[Double] =>
         if (pt.z > 0.6) {
           Text("\uD83D\uDC10", size = 20).translate(-10, -10)
