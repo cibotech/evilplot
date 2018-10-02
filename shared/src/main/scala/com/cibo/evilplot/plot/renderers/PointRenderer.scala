@@ -86,9 +86,11 @@ object PointRenderer {
 
   /**
     * Render points with colors based on a third, continuous variable.
-    * @param depths The depths for each point.
+    * @param min the min for the gradient
+    * @param max the max for the gradient
     * @param coloring The coloring to use.
     * @param size The size of the point.
+    * @tparam T the type of the point
     */
   def depthColor[T <: Datum2d[T]](
     depth: T => Double,
@@ -111,7 +113,8 @@ object PointRenderer {
 
   /**
     * Render points with colors based on a third, categorical variable.
-    * @param colorDimension Categories for each point.
+    * @param data the cateogory data
+    * @param categoryExtract a function to extract categories for coloring
     * @param coloring The coloring to use. If not provided, one based on the
     *                 color stream from the theme is used.
     * @param size The size of the points.
@@ -140,35 +143,6 @@ object PointRenderer {
     */
   def empty[T <: Datum2d[T]](): PointRenderer[T] = new PointRenderer[T] {
     def render(index: T): Drawable = EmptyDrawable()
-  }
-
-  // Old `depthColor` implementation, called to by all deprecated `depthColor`
-  // methods.
-  private[this] def oldDepthColor[T <: Datum2d[T]](
-    depth: T => Double,
-    labels: Seq[Drawable],
-    bar: ScaledColorBar,
-    size: Option[Double]
-  )(implicit theme: Theme): PointRenderer[T] = {
-    require(
-      labels.lengthCompare(bar.nColors) == 0,
-      "Number of labels does not match the number of categories")
-    val pointSize = size.getOrElse(theme.elements.pointSize)
-    new PointRenderer[T] {
-      override def legendContext: LegendContext = {
-        LegendContext(
-          elements = (0 until bar.nColors).map { c =>
-            Disc(pointSize).filled(bar.getColor(c))
-          },
-          labels = labels,
-          defaultStyle = LegendStyle.Categorical
-        )
-      }
-
-      def render(index: T): Drawable = {
-        Disc.centered(pointSize) filled bar.getColor(depth(index))
-      }
-    }
   }
 
 }

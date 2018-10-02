@@ -232,8 +232,7 @@ object Histogram {
     bins: Seq[ContinuousBin],
     binRenderer: Option[ContinuousBinRenderer] = None,
     spacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None,
-    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins)(
+    boundBuffer: Option[Double] = None)(
     implicit theme: Theme): Plot = {
     require(bins.nonEmpty, "must have at least one bin")
     val xbounds = Bounds.union(bins.map(_.x))

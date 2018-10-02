@@ -40,14 +40,14 @@ import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRender
 
 object LinePlot {
 
-  case class LinePlotRenderer[X <: Datum2d[X]](data: Seq[X], pathRenderer: PathRenderer[X])
+  case class LinePlotRenderer[T <: Datum2d[T]](data: Seq[T], pathRenderer: PathRenderer[T])
       extends PlotRenderer {
 
     override def legendContext: LegendContext = pathRenderer.legendContext
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
 
-      val xformedPoints: Seq[X] = PlotContext.from(plot, plotExtent).transformDatumsToWorld(data)
+      val xformedPoints: Seq[T] = PlotContext.from(plot, plotExtent).transformDatumsToWorld(data)
 
       pathRenderer.render(plot, plotExtent, xformedPoints)
     }
@@ -55,15 +55,15 @@ object LinePlot {
 
   /** Create a line plot from some data.  Convenience method on top of XyPlot
     *
-    * @param data          The points to plot.
-    * @param pointRenderer A function to create a Drawable for each point to plot.
+    * @tparam T           The point type
+    * @param data         The points to plot.
     * @param pathRenderer A function to create a Drawable for all the points (such as a path)
     * @param xboundBuffer Extra padding to add to x bounds as a fraction.
     * @param yboundBuffer Extra padding to add to y bounds as a fraction.
     */
-  def apply[X <: Datum2d[X]](
-    data: Seq[X],
-    pathRenderer: Option[PathRenderer[X]] = None,
+  def apply[T <: Datum2d[T]](
+    data: Seq[T],
+    pathRenderer: Option[PathRenderer[T]] = None,
     xBoundBuffer: Option[Double] = None,
     yBoundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
@@ -92,10 +92,10 @@ object LinePlot {
     * @param yboundBuffer Extra padding to add to y bounds as a fraction.
     */
   @deprecated("Use apply", "2018-03-15")
-  def custom[X <: Datum2d[X]](
-    data: Seq[X],
-    pointRenderer: PointRenderer[X],
-    pathRenderer: PathRenderer[X],
+  def custom[T <: Datum2d[T]](
+    data: Seq[T],
+    pointRenderer: PointRenderer[T],
+    pathRenderer: PathRenderer[T],
     xboundBuffer: Double,
     yboundBuffer: Double
   )(implicit theme: Theme): Plot = {
@@ -110,15 +110,15 @@ object LinePlot {
     * @param xboundBuffer Extra padding to add to x bounds as a fraction.
     * @param yboundBuffer Extra padding to add to y bounds as a fraction.
     */
-  def series[X <: Datum2d[X]](
-    data: Seq[X],
+  def series[T <: Datum2d[T]](
+    data: Seq[T],
     name: String,
     color: Color,
     strokeWidth: Option[Double] = None,
     xboundBuffer: Option[Double] = None,
     yboundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    val pathRenderer = PathRenderer.named[X](name, color, strokeWidth)
+    val pathRenderer = PathRenderer.named[T](name, color, strokeWidth)
     LinePlot(
       data,
       Some(pathRenderer),
@@ -135,15 +135,15 @@ object LinePlot {
     * @param xboundBuffer Extra padding to add to x bounds as a fraction.
     * @param yboundBuffer Extra padding to add to y bounds as a fraction.
     */
-  def series[X <: Datum2d[X]](
-    data: Seq[X],
+  def series[T <: Datum2d[T]](
+    data: Seq[T],
     label: Drawable,
     color: Color,
     strokeWidth: Option[Double],
     xboundBuffer: Option[Double],
     yboundBuffer: Option[Double]
   )(implicit theme: Theme): Plot = {
-    val pathRenderer = PathRenderer.default[X](strokeWidth, Some(color), label)
+    val pathRenderer = PathRenderer.default[T](strokeWidth, Some(color), label)
     LinePlot(data, Some(pathRenderer), xboundBuffer, yboundBuffer)
   }
 }

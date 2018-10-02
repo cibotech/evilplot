@@ -37,7 +37,7 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRenderer}
 object ScatterPlot extends TransformWorldToScreen {
 
-  case class ScatterPlotRenderer[X <: Datum2d[X]](data: Seq[X], pointRenderer: PointRenderer[X])
+  case class ScatterPlotRenderer[T <: Datum2d[T]](data: Seq[T], pointRenderer: PointRenderer[T])
       extends PlotRenderer {
 
     override def legendContext: LegendContext = pointRenderer.legendContext
@@ -45,7 +45,7 @@ object ScatterPlot extends TransformWorldToScreen {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
 
       val plotContext = PlotContext(plot, plotExtent)
-      val xformedPoints: Seq[X] = transformDatumsToWorld(
+      val xformedPoints: Seq[T] = transformDatumsToWorld(
         data,
         plotContext.xCartesianTransform,
         plotContext.yCartesianTransform)
@@ -68,9 +68,9 @@ object ScatterPlot extends TransformWorldToScreen {
     * @param boundBuffer Extra padding to add to the bounds as a fraction.
     * @return A Plot representing a scatter plot.
     */
-  def apply[X <: Datum2d[X]](
-    data: Seq[X],
-    pointRenderer: Option[PointRenderer[X]] = None,
+  def apply[T <: Datum2d[T]](
+    data: Seq[T],
+    pointRenderer: Option[PointRenderer[T]] = None,
     xBoundBuffer: Option[Double] = None,
     yBoundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {

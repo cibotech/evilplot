@@ -122,7 +122,7 @@ private[evilplot] object Clipping {
     }
   }
 
-  // https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algo
+  // https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
   private[evilplot] def clipPolygon(points: Seq[Point2d], extent: Extent): Seq[Point2d] = {
     boundEdges(extent).foldLeft(points.toVector) { (inputList, clipEdge) =>
       if (inputList.isEmpty) Vector.empty
