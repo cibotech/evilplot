@@ -117,11 +117,13 @@ object Histogram {
         // Scaling the bars would show the correct histogram as long as no axis is displayed.  However, if
         // an axis is display, we would end up showing the wrong values. Thus, we clip if the y boundary is
         // fixed, otherwise we scale to make it look pretty.
-        val points = binningFunction(data, plot.xbounds, binCount)
+        
+        val dataBounds = Bounds.get(data) getOrElse plot.xbounds
+        val points = binningFunction(data, dataBounds, binCount)
         val maxY = points.maxBy(_.y).y * (1.0 + boundBuffer)
         val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
 
-        val binWidth = plot.xbounds.range / binCount
+        val binWidth = dataBounds.range / binCount
         val yintercept = ytransformer(0)
         points.map { point =>
           val x = xtransformer(point.x) + spacing / 2.0
