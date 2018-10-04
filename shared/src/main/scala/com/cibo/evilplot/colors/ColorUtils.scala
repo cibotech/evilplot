@@ -30,7 +30,7 @@
 
 package com.cibo.evilplot.colors
 
-private[evilplot] object ColorUtils {
+object ColorUtils {
 
   //https://en.wikipedia.org/wiki/Hue
   //https://en.wikipedia.org/wiki/HSL_and_HSV
@@ -111,7 +111,10 @@ private[evilplot] object ColorUtils {
     rgbaToHsla(r, g, b, 1.0)
   }
 
-  def interpolate(component1: Double, component2: Double, coefficient: Double): Double = {
+  private[colors] def interpolate(
+    component1: Double,
+    component2: Double,
+    coefficient: Double): Double = {
     component1 * (1 - coefficient) + coefficient * component2
   }
 

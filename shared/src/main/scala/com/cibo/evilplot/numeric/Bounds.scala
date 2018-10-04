@@ -28,36 +28,66 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cibo.evilplot.geometry
+package com.cibo.evilplot.numeric
 
-import com.cibo.evilplot.JSONUtils
-import com.cibo.evilplot.numeric.{Point, Point2d}
-import io.circe.generic.extras.Configuration
+import scala.language.implicitConversions
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto._
 
-/**
-  * Extent defines an object's rectangular bounding box.
-  * As discussed in <a href="http://ozark.hendrix.edu/~yorgey/pub/monoid-pearl.pdf">
-  * "Monoids: Theme and Variations" by Yorgey</a>,
-  * rectangular bounding boxes don't play well with rotation.
-  * We'll eventually need something fancier like the convex hull.
-  *
-  * @param width bounding box width
-  * @param height bounding box height
-  */
-case class Extent(width: Double, height: Double) {
-  def *(scale: Double): Extent = Extent(scale * width, scale * height)
-  def -(w: Double = 0.0, h: Double = 0.0): Extent = Extent(width - w, height - h)
-
-  private[evilplot] def contains(p: Point2d): Boolean = {
-    p.x >= 0 && p.x <= width && p.y >= 0 && p.y <= height
+final case class Bounds(min: Double, max: Double) {
+  if (!min.isNaN && !max.isNaN) {
+    require(min <= max, s"Bounds min must be <= max, $min !<= $max")
   }
+
+  lazy val range: Double = max - min
+
+  lazy val midpoint: Double = (max + min) / 2.0
+
+  def isInBounds(x: Double): Boolean = x >= min && x <= max
 }
 
-object Extent {
-  private implicit val cfg: Configuration = JSONUtils.minifyProperties
-  implicit val extentEncoder: Encoder[Extent] =
-    io.circe.generic.extras.semiauto.deriveEncoder[Extent]
-  implicit val extentDecoder: Decoder[Extent] =
-    io.circe.generic.extras.semiauto.deriveDecoder[Extent]
+object Bounds {
+
+  implicit val encoder: Encoder[Bounds] = deriveEncoder[Bounds]
+  implicit val decoder: Decoder[Bounds] = deriveDecoder[Bounds]
+
+  private def lift[T](expr: => T): Option[T] = {
+    try {
+      Some(expr)
+    } catch {
+      case _: Exception => None
+    }
+  }
+
+  def union(bounds: Seq[Bounds]): Bounds = {
+    Bounds(
+      min = bounds.map(_.min).min,
+      max = bounds.map(_.max).max
+    )
+  }
+
+  def getBy[T](data: Seq[T])(f: T => Double): Option[Bounds] = {
+    val mapped = data.map(f).filterNot(_.isNaN)
+    for {
+      min <- lift(mapped.min)
+      max <- lift(mapped.max)
+    } yield Bounds(min, max)
+  }
+
+  def get(data: Seq[Double]): Option[Bounds] = {
+    data.foldLeft(None: Option[Bounds]) { (bounds, value) =>
+      bounds match {
+        case None => Some(Bounds(value, value))
+        case Some(Bounds(min, max)) =>
+          Some(Bounds(math.min(min, value), math.max(max, value)))
+      }
+    }
+  }
+
+  def widest(bounds: Seq[Option[Bounds]]): Option[Bounds] =
+    bounds.flatten.foldLeft(None: Option[Bounds]) { (acc, curr) =>
+      if (acc.isEmpty) Some(curr)
+      else
+        Some(Bounds(math.min(acc.get.min, curr.min), math.max(acc.get.max, curr.max)))
+    }
 }

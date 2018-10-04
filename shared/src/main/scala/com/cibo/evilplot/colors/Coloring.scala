@@ -43,10 +43,11 @@ sealed trait Coloring[A] {
 case class LegendEntry(color: Color, desc: String)
 case class LegendData(style: LegendStyle, entries: Seq[LegendEntry])
 
-object LegendContextBuilders{
+object LegendContextBuilders {
 
-  def fromCategorical(data: LegendData, legendGlyph: Double => Drawable)(implicit theme: Theme): LegendContext = {
-    val elements = data.entries.map{ x =>
+  def fromCategorical(data: LegendData, legendGlyph: Double => Drawable)(
+    implicit theme: Theme): LegendContext = {
+    val elements = data.entries.map { x =>
       legendGlyph(theme.elements.pointSize) filled x.color
     }
     val labels = renderLabels(data)
@@ -54,16 +55,19 @@ object LegendContextBuilders{
   }
 
   def fromGradient(data: LegendData)(implicit theme: Theme): LegendContext = {
-    val elements = data.entries.map{ x =>
+    val elements = data.entries.map { x =>
       Rect(theme.fonts.legendLabelSize, theme.fonts.legendLabelSize) filled x.color
     }
     val labels = renderLabels(data)
     LegendContext(elements, labels, LegendStyle.Gradient)
   }
 
-  private def renderLabels(data: LegendData)(implicit theme: Theme): Seq[Drawable] = data.entries.map(x => Style(
-    Text(x.desc, theme.fonts.legendLabelSize, theme.fonts.fontFace),
-    theme.colors.legendLabel))
+  private def renderLabels(data: LegendData)(implicit theme: Theme): Seq[Drawable] =
+    data.entries.map(
+      x =>
+        Style(
+          Text(x.desc, theme.fonts.legendLabelSize, theme.fonts.fontFace),
+          theme.colors.legendLabel))
 }
 
 trait CategoricalColoring[A] extends Coloring[A] {
@@ -75,7 +79,9 @@ trait CategoricalColoring[A] extends Coloring[A] {
 
   protected def buildLegendData(elems: Seq[A], coloring: A => Color) = LegendData(
     LegendStyle.Categorical,
-    elems.map{ x => LegendEntry(coloring(x), x.toString) }
+    elems.map { x =>
+      LegendEntry(coloring(x), x.toString)
+    }
   )
 
   def legendContext(dataToColor: Seq[A])(implicit theme: Theme): LegendContext =
@@ -84,7 +90,7 @@ trait CategoricalColoring[A] extends Coloring[A] {
   def legendContext(dataToColor: Seq[A], legendGlyph: Double => Drawable)(
     implicit theme: Theme): LegendContext = {
     val (distinct, coloring) = distinctElemsAndColorFunction(dataToColor)
-    val data = buildLegendData(distinct,coloring)
+    val data = buildLegendData(distinct, coloring)
     LegendContextBuilders.fromCategorical(data, legendGlyph)
   }
 }
@@ -223,8 +229,9 @@ object ContinuousColoring {
       }
 
       private def axisDescriptorToLegendData(d: AxisDescriptor, coloring: Double => Color) =
-        LegendData(LegendStyle.Gradient, d.values.zip(d.labels).map{ case (value, label) =>
-          LegendEntry(coloring(value), label)
+        LegendData(LegendStyle.Gradient, d.values.zip(d.labels).map {
+          case (value, label) =>
+            LegendEntry(coloring(value), label)
         })
 
       protected def buildLegendData(coloringDimension: Seq[Double])(implicit theme: Theme) = {

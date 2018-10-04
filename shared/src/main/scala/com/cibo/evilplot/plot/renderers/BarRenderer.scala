@@ -33,7 +33,7 @@ package com.cibo.evilplot.plot.renderers
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.{Bar, LegendContext, Plot}
+import com.cibo.evilplot.plot.{Bar, LegendContext, Plot, PlotContext}
 
 trait BarRenderer extends PlotElementRenderer[Bar] {
   def render(plot: Plot, extent: Extent, category: Bar): Drawable
@@ -41,6 +41,16 @@ trait BarRenderer extends PlotElementRenderer[Bar] {
 }
 
 object BarRenderer {
+
+  def custom(
+    renderFn: (PlotContext, Bar) => Drawable,
+    legendCtx: Option[LegendContext] = None): BarRenderer = new BarRenderer {
+    def render(plot: Plot, extent: Extent, category: Bar): Drawable = {
+      renderFn(PlotContext.from(plot, extent), category)
+    }
+
+    override def legendContext: Option[LegendContext] = legendCtx
+  }
 
   /** Default bar renderer. */
   def default(

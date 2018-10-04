@@ -43,6 +43,10 @@ object LegendRenderer {
   val leftPadding: Double = 4
   val spacing: Double = 4
 
+  def custom(fn: LegendContext => Drawable): LegendRenderer = new LegendRenderer {
+    def render(context: LegendContext): Drawable = fn(context)
+  }
+
   /** Create a legend for discrete components.
     * @param reduction Function to combine multiple legends.
     */
@@ -87,6 +91,17 @@ object LegendRenderer {
     }
   }
 
+  def continuousGradient(
+    reduction: (Drawable, Drawable) => Drawable = above
+  ): LegendRenderer = new LegendRenderer {
+
+    def render(context: LegendContext): Drawable = {
+      if (context.gradientLegends.length > 1) {
+        context.gradientLegends.reduce(reduction)
+      } else context.gradientLegends.headOption.getOrElse(EmptyDrawable())
+    }
+  }
+
   /** Create a legend using the default style
     * @param reduction Function to combine multiple legends.
     */
@@ -95,8 +110,10 @@ object LegendRenderer {
   ): LegendRenderer = new LegendRenderer {
     def render(context: LegendContext): Drawable = {
       context.defaultStyle match {
-        case LegendStyle.Categorical => discrete(reduction).render(context)
-        case LegendStyle.Gradient    => gradient(reduction).render(context)
+        case LegendStyle.Categorical => discrete(reduction).render(context).padLeft(1)
+        case LegendStyle.Gradient    => gradient(reduction).render(context).padLeft(1)
+        case LegendStyle.ContinuousGradient =>
+          continuousGradient(reduction).render(context).padLeft(1)
       }
     }
   }

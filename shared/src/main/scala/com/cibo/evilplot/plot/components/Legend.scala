@@ -69,11 +69,19 @@ trait LegendImplicits {
       case Some(names) =>
         val drawableLabels: Seq[Drawable] = names.map { value =>
           Style(
-            Text(value.toString, size = theme.fonts.legendLabelSize, fontFace = theme.fonts.fontFace),
+            Text(
+              value.toString,
+              size = theme.fonts.legendLabelSize,
+              fontFace = theme.fonts.fontFace),
             theme.colors.legendLabel
           )
         }
-        plot :+ Legend(position, plot.renderer.legendContext.copy(labels = drawableLabels), renderer, x, y)
+        plot :+ Legend(
+          position,
+          plot.renderer.legendContext.copy(labels = drawableLabels),
+          renderer,
+          x,
+          y)
       case _ =>
         if (plot.renderer.legendContext.nonEmpty) {
           plot :+ Legend(position, plot.renderer.legendContext, renderer, x, y)

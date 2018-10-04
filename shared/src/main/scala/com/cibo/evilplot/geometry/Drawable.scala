@@ -32,10 +32,10 @@ package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.JSONUtils.minifyProperties
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.numeric.{Point, Point2d}
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, Encoder, ObjectEncoder}
 // scalastyle:off
 
 /**
@@ -87,17 +87,21 @@ final case class Path(points: Seq[Point], strokeWidth: Double) extends Drawable 
   private lazy val xS: Seq[Double] = points.map(_.x)
   private lazy val yS: Seq[Double] = points.map(_.y)
   lazy val extent: Extent =
-    if (points.nonEmpty) Extent(xS.max , yS.max) else Extent(0, 0)
+    if (points.nonEmpty) Extent(xS.max, yS.max) else Extent(0, 0)
   def draw(context: RenderContext): Unit = if (points.nonEmpty) context.draw(this) else ()
 }
 object Path {
 
-  def apply(points: Seq[Point], strokeWidth: Double) : Drawable = {
+  def apply(points: Seq[Point2d], strokeWidth: Double): Drawable = {
     val minX = points.map(_.x).min
     val minY = points.map(_.y).min
-    Translate(new Path(points.map{x=> Point(x.x - minX, x.y - minY)},strokeWidth), minX, minY)
+    Translate(new Path(points.map { x =>
+      Point(x.x - minX, x.y - minY)
+    }, strokeWidth), minX, minY)
   }
-  implicit val encoder: Encoder[Path] = Encoder.forProduct2("p", "s"){x => (x.points, x.strokeWidth)}
+  implicit val encoder: Encoder[Path] = Encoder.forProduct2("p", "s") { x =>
+    (x.points, x.strokeWidth)
+  }
   implicit val decoder: Decoder[Path] = Decoder.forProduct2("p", "s")(
     (points: Seq[Point], strokeWidth: Double) => new Path(points, strokeWidth)
   )
@@ -114,7 +118,9 @@ final case class Polygon(boundary: Seq[Point]) extends Drawable {
   def draw(context: RenderContext): Unit = if (boundary.nonEmpty) context.draw(this) else ()
 }
 object Polygon {
-  implicit val encoder: Encoder[Polygon] = Encoder.forProduct1("b"){x => x.boundary}
+  implicit val encoder: Encoder[Polygon] = Encoder.forProduct1("b") { x =>
+    x.boundary
+  }
   implicit val decoder: Decoder[Polygon] = Decoder.forProduct1("b")(
     (boundary: Seq[Point]) => new Polygon(boundary)
   )
@@ -123,10 +129,12 @@ object Polygon {
     Polygon(Clipping.clipPolygon(boundary, extent))
   }
 
-  def apply(boundary: Seq[Point]) :Drawable = {
-      val minX = boundary.map(_.x).min
-      val minY = boundary.map(_.y).min
-      Translate(new Polygon(boundary.map{x=> Point(x.x - minX, x.y - minY)}), minX, minY)
+  def apply(boundary: Seq[Point2d]): Drawable = {
+    val minX = boundary.map(_.x).min
+    val minY = boundary.map(_.y).min
+    Translate(new Polygon(boundary.map { x =>
+      Point(x.x - minX, x.y - minY)
+    }), minX, minY)
   }
 }
 
@@ -311,6 +319,16 @@ final case class Style(r: Drawable, fill: Color) extends Drawable {
 object Style {
   implicit val encoder: Encoder[Style] = deriveEncoder[Style]
   implicit val decoder: Decoder[Style] = deriveDecoder[Style]
+}
+
+/** Apply a gradient fill to a fillable Drawable. */
+final case class GradientFill(r: Drawable, fill: Gradient2d) extends Drawable {
+  lazy val extent: Extent = r.extent
+  def draw(context: RenderContext): Unit = context.draw(this)
+}
+object GradientFill {
+  implicit val encoder: Encoder[GradientFill] = deriveEncoder[GradientFill]
+  implicit val decoder: Decoder[GradientFill] = deriveDecoder[GradientFill]
 }
 
 /** Apply a border color to a strokable Drawable. */

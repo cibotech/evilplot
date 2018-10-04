@@ -32,35 +32,53 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry.{Disc, Drawable, EmptyDrawable, Extent, Style, Text}
+import com.cibo.evilplot.numeric.{Datum2d, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.{LegendContext, LegendStyle, Plot}
+import com.cibo.evilplot.plot.{Bar, LegendContext, LegendStyle, Plot, PlotContext}
 
-trait PointRenderer extends PlotElementRenderer[Int] {
+trait PointRenderer[T <: Datum2d[T]] extends PlotElementRenderer[T] {
   def legendContext: LegendContext = LegendContext()
-  def render(plot: Plot, extent: Extent, index: Int): Drawable
-}
 
+  /** Render a category within the extent. */
+  def render(plot: Plot, extent: Extent, context: T): Drawable = render(context)
+
+  def render(extent: Extent, context: T): Drawable = render(context)
+
+  def render(datum: T): Drawable
+
+}
 object PointRenderer {
 
   val defaultColorCount: Int = 10
+
+  def custom[T <: Datum2d[T]](
+    renderFn: T => Drawable,
+    legendCtx: Option[LegendContext] = None): PointRenderer[T] = new PointRenderer[T] {
+
+    def render(datum: T): Drawable = {
+      renderFn(datum)
+    }
+
+    override def legendContext: LegendContext = legendCtx.getOrElse(super.legendContext)
+  }
 
   /** The default point renderer to render a disc.
     * @param color The color of the point.
     * @param pointSize The size of the point.
     * @param label Label to be shown in a legend.
     */
-  def default(
+  def default[T <: Datum2d[T]](
     color: Option[Color] = None,
     pointSize: Option[Double] = None,
     label: Drawable = EmptyDrawable()
-  )(implicit theme: Theme): PointRenderer = new PointRenderer {
+  )(implicit theme: Theme): PointRenderer[T] = new PointRenderer[T] {
     override def legendContext: LegendContext = label match {
       case _: EmptyDrawable => LegendContext.empty
       case d =>
         val size = pointSize.getOrElse(theme.elements.pointSize)
         LegendContext.single(Disc.centered(size).filled(color.getOrElse(theme.colors.point)), d)
     }
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
+    def render(index: T): Drawable = {
       val size = pointSize.getOrElse(theme.elements.pointSize)
       Disc.centered(size).filled(color.getOrElse(theme.colors.point))
     }
@@ -68,154 +86,63 @@ object PointRenderer {
 
   /**
     * Render points with colors based on a third, continuous variable.
-    * @param depths The depths for each point.
+    * @param min the min for the gradient
+    * @param max the max for the gradient
     * @param coloring The coloring to use.
     * @param size The size of the point.
+    * @tparam T the type of the point
     */
-  def depthColor(
-    depths: Seq[Double],
+  def depthColor[T <: Datum2d[T]](
+    depth: T => Double,
+    min: Double,
+    max: Double,
     coloring: Option[Coloring[Double]] = None,
     size: Option[Double] = None
-  )(implicit theme: Theme): PointRenderer = new PointRenderer {
+  )(implicit theme: Theme): PointRenderer[T] = new PointRenderer[T] {
     private val useColoring = coloring.getOrElse(theme.colors.continuousColoring)
-    private val colorFunc = useColoring(depths)
+    private val colorFunc = useColoring(Seq(min, max))
     private val radius = size.getOrElse(theme.elements.pointSize)
 
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
-      Disc.centered(radius).filled(colorFunc(depths(index)))
+    def render(element: T): Drawable = {
+      Disc.centered(radius).filled(colorFunc(depth(element)))
     }
 
     override def legendContext: LegendContext =
-      useColoring.legendContext(depths)
+      useColoring.legendContext(Seq(min, max))
   }
 
   /**
     * Render points with colors based on a third, categorical variable.
-    * @param colorDimension Categories for each point.
+    * @param data the cateogory data
+    * @param categoryExtract a function to extract categories for coloring
     * @param coloring The coloring to use. If not provided, one based on the
     *                 color stream from the theme is used.
     * @param size The size of the points.
-    * @tparam A the type of the categorical variable.
+    * @tparam T the type of the data
+    * @tparam CATEGORY the type of the categorical variable.
     */
-  def colorByCategory[A: Ordering](
-    colorDimension: Seq[A],
-    coloring: Option[Coloring[A]] = None,
-    size: Option[Double] = None
-  )(implicit theme: Theme): PointRenderer = new PointRenderer {
-    private val useColoring = coloring.getOrElse(CategoricalColoring.themed[A])
-    private val colorFunc = useColoring(colorDimension)
+  def colorByCategory[T <: Datum2d[T], CATEGORY: Ordering](
+    data: Seq[T],
+    categoryExtract: T => CATEGORY,
+    coloring: Option[Coloring[CATEGORY]] = None,
+    size: Option[Double] = None)(implicit theme: Theme): PointRenderer[T] = new PointRenderer[T] {
+    val categories = data.map(categoryExtract)
+    private val useColoring = coloring.getOrElse(CategoricalColoring.themed[CATEGORY])
+    private val colorFunc = useColoring(categories)
     private val radius = size.getOrElse(theme.elements.pointSize)
 
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = {
-      Disc.centered(radius).filled(colorFunc(colorDimension(index)))
+    def render(element: T): Drawable = {
+      Disc.centered(radius).filled(colorFunc(categoryExtract(element)))
     }
 
-    override def legendContext: LegendContext = useColoring.legendContext(colorDimension)
+    override def legendContext: LegendContext = useColoring.legendContext(categories)
   }
 
   /**
     * A no-op renderer for when you don't want to render points (such as on a line)
     */
-  def empty(): PointRenderer = new PointRenderer {
-    def render(plot: Plot, extent: Extent, index: Int): Drawable = EmptyDrawable()
-  }
-
-  /** Render points with colors based on depth.
-    * @param depths The depths.
-    * @param colorCount The number of labels/colors to use.
-    */
-  @deprecated("Use an overload taking a Coloring[Double]", since = "29 March 2018")
-  def depthColor(
-    depths: Seq[Double],
-    colorCount: Int
-  )(implicit theme: Theme): PointRenderer = {
-    val bar = ScaledColorBar(Color.stream.take(colorCount), depths.min, depths.max)
-    val labels = (0 until colorCount).map { c =>
-      Style(
-        Text(
-          math.ceil(bar.colorValue(c)).toString,
-          theme.fonts.legendLabelSize,
-          theme.fonts.fontFace),
-        theme.colors.legendLabel)
-    }
-    oldDepthColor(depths, labels, bar, None)
-  }
-
-  /** Render points with colors based on depth.
-    * @param depths The depths.
-    * @param labels Label for each category
-    * @param bar The color bar to use
-    * @param size The size of the point.
-    */
-  @deprecated("Use an overload taking a Coloring[Double]", since = "29 March 2018")
-  def depthColor(
-    depths: Seq[Double],
-    labels: Seq[Drawable],
-    bar: ScaledColorBar,
-    size: Option[Double]
-  )(implicit theme: Theme): PointRenderer = {
-    oldDepthColor(depths, labels, bar, size)
-  }
-
-  /** Render points with colors based on depth.
-    * @param depths The depths.
-    * @param labels The labels to use for categories.
-    * @param bar The color bar to use
-    */
-  @deprecated("Use an overload taking a Coloring[Double]", since = "29 March 2018")
-  def depthColor(
-    depths: Seq[Double],
-    labels: Seq[Drawable],
-    bar: ScaledColorBar
-  )(implicit theme: Theme): PointRenderer = oldDepthColor(depths, labels, bar, None)
-
-  /** Render points with colors based on depth.
-    * @param depths The depths.
-    * @param bar The color bar to use
-    */
-  @deprecated("Use an overload taking a Coloring[Double]", since = "29 March 2018")
-  def depthColor(
-    depths: Seq[Double],
-    bar: ScaledColorBar
-  )(implicit theme: Theme): PointRenderer = {
-    val labels = (0 until bar.nColors).map { c =>
-      Style(
-        Text(
-          math.ceil(bar.colorValue(c)).toString,
-          theme.fonts.legendLabelSize,
-          theme.fonts.fontFace),
-        theme.colors.legendLabel)
-    }
-    oldDepthColor(depths, labels, bar, None)
-  }
-
-  // Old `depthColor` implementation, called to by all deprecated `depthColor`
-  // methods.
-  private[this] def oldDepthColor(
-    depths: Seq[Double],
-    labels: Seq[Drawable],
-    bar: ScaledColorBar,
-    size: Option[Double]
-  )(implicit theme: Theme): PointRenderer = {
-    require(
-      labels.lengthCompare(bar.nColors) == 0,
-      "Number of labels does not match the number of categories")
-    val pointSize = size.getOrElse(theme.elements.pointSize)
-    new PointRenderer {
-      override def legendContext: LegendContext = {
-        LegendContext(
-          elements = (0 until bar.nColors).map { c =>
-            Disc(pointSize).filled(bar.getColor(c))
-          },
-          labels = labels,
-          defaultStyle = LegendStyle.Categorical
-        )
-      }
-
-      def render(plot: Plot, extent: Extent, index: Int): Drawable = {
-        Disc.centered(pointSize) filled bar.getColor(depths(index))
-      }
-    }
+  def empty[T <: Datum2d[T]](): PointRenderer[T] = new PointRenderer[T] {
+    def render(index: T): Drawable = EmptyDrawable()
   }
 
 }

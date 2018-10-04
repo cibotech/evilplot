@@ -32,7 +32,7 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.geometry.Drawable
-import com.cibo.evilplot.numeric.Bounds
+import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.FunctionPlotLine
 import com.cibo.evilplot.plot.renderers.{PathRenderer, PointRenderer}
@@ -51,8 +51,8 @@ object FunctionPlot {
     function: Double => Double,
     xbounds: Option[Bounds] = None,
     numPoints: Option[Int] = None,
-    pathRenderer: Option[PathRenderer] = None,
-    pointRenderer: Option[PointRenderer] = None,
+    pathRenderer: Option[PathRenderer[Point]] = None,
+    pointRenderer: Option[PointRenderer[Point]] = None,
     xBoundBuffer: Option[Double] = None,
     yBoundBuffer: Option[Double] = None)(implicit theme: Theme): Plot = {
     require(numPoints.forall(_ != 0), "Cannot make a function plot using zero points.")
@@ -61,12 +61,10 @@ object FunctionPlot {
       xbounds.getOrElse(defaultBounds),
       numPoints.getOrElse(defaultNumPoints))
 
-    XyPlot(
-      pts,
-      pointRenderer.orElse(Some(PointRenderer.empty())),
-      pathRenderer,
-      xBoundBuffer,
-      yBoundBuffer)
+    CartesianPlot(pts, xBoundBuffer, yBoundBuffer)(
+      _.line(pathRenderer.getOrElse(PathRenderer.empty())),
+      _.scatter(pointRenderer.getOrElse(PointRenderer.empty()))
+    )
   }
 
   /** Plot a function using a name for the legend.
@@ -85,7 +83,7 @@ object FunctionPlot {
     xBoundBuffer: Option[Double] = None,
     yBoundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    val renderer = Some(PathRenderer.named(name, color, strokeWidth))
+    val renderer = Some(PathRenderer.named[Point](name, color, strokeWidth))
     apply(function, xbounds, numPoints, renderer, None, xBoundBuffer, yBoundBuffer)
   }
 
@@ -104,7 +102,7 @@ object FunctionPlot {
     strokeWidth: Option[Double],
     xBoundBuffer: Option[Double],
     yBoundBuffer: Option[Double])(implicit theme: Theme): Plot = {
-    val renderer = Some(PathRenderer.default(strokeWidth, Some(color), label))
+    val renderer = Some(PathRenderer.default[Point](strokeWidth, Some(color), label))
     apply(function, xbounds, numPoints, renderer, None, xBoundBuffer, yBoundBuffer)
   }
 }

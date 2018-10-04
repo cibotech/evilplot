@@ -28,28 +28,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cibo.evilplot
+package com.cibo.evilplot.plot
 
-import com.cibo.evilplot.plot.Plot
-import com.cibo.evilplot.geometry.Drawable
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
+import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.renderers.PlotRenderer
 
-/** implicits and methods for jupyter-scala */
-object JupyterScala {
+final case class CompoundPlotRenderer(
+                                       drawablesToPlot: Seq[PlotContext => PlotRenderer],
+                                       xBounds: Bounds,
+                                       yBounds: Bounds,
+                                       legend: LegendContext = LegendContext())
+  extends PlotRenderer {
 
-  /** enhanced methods on Drawable objects for jupyter-scala */
-  implicit class JupyterScalaDrawableMethods(drawable: Drawable) {
+  override def legendContext: LegendContext = legend
 
-    /** display this Drawable object directly in the jupyter-scala output cell */
-    def show(implicit publish: jupyter.api.Publish) =
-      publish.png(drawable.asBufferedImage)
-  }
-
-  /** enhanced methods on Plot objects for jupyter-scala */
-  implicit class JupyterScalaPlotMethods(plot: Plot) {
-
-    /** display this Plot object directly in the jupyter-scala output cell */
-    def show(implicit publish: jupyter.api.Publish, theme: Theme) =
-      publish.png(plot.render()(theme).asBufferedImage)
+  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
+    drawablesToPlot.foldLeft(EmptyDrawable(): Drawable) {
+      case (accum, dr) =>
+        dr(PlotContext(plot, plotExtent)).render(plot, plotExtent) behind accum
+    }
   }
 }

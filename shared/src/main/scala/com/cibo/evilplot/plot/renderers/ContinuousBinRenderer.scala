@@ -28,28 +28,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cibo.evilplot
+package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.plot.Plot
-import com.cibo.evilplot.geometry.Drawable
+import com.cibo.evilplot.colors.Color
+import com.cibo.evilplot.geometry.{Drawable, Extent, Rect}
+import com.cibo.evilplot.plot.{ContinuousBin, LegendContext, Plot, PlotContext}
 import com.cibo.evilplot.plot.aesthetics.Theme
 
-/** implicits and methods for jupyter-scala */
-object JupyterScala {
 
-  /** enhanced methods on Drawable objects for jupyter-scala */
-  implicit class JupyterScalaDrawableMethods(drawable: Drawable) {
+trait ContinuousBinRenderer extends PlotElementRenderer[ContinuousBin] {
+  def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable
+  def legendContext: Option[LegendContext] = None
+}
 
-    /** display this Drawable object directly in the jupyter-scala output cell */
-    def show(implicit publish: jupyter.api.Publish) =
-      publish.png(drawable.asBufferedImage)
+
+object ContinuousBinRenderer {
+
+  def custom(
+              renderFn: (PlotContext, ContinuousBin) => Drawable,
+              legendCtx: Option[LegendContext] = None): ContinuousBinRenderer = new ContinuousBinRenderer {
+
+    def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable = {
+      renderFn(PlotContext.from(plot, extent), bin)
+    }
+
+    override def legendContext: Option[LegendContext] = legendCtx
   }
 
-  /** enhanced methods on Plot objects for jupyter-scala */
-  implicit class JupyterScalaPlotMethods(plot: Plot) {
-
-    /** display this Plot object directly in the jupyter-scala output cell */
-    def show(implicit publish: jupyter.api.Publish, theme: Theme) =
-      publish.png(plot.render()(theme).asBufferedImage)
+  /** Default bar renderer. */
+  def default(
+               color: Option[Color] = None
+             )(implicit theme: Theme): ContinuousBinRenderer = new ContinuousBinRenderer {
+    def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable = {
+      Rect(extent.width, extent.height).filled(color.getOrElse(theme.colors.bar))
+    }
   }
 }

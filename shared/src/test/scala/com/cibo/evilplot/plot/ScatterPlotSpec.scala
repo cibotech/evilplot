@@ -40,7 +40,7 @@ class ScatterPlotSpec extends FunSpec with Matchers {
   describe("ScatterPlot") {
     it("sets adheres to bound buffers") {
       val data = Seq(Point(-1, 10), Point(20, -5))
-      val plot = ScatterPlot(data, boundBuffer = Some(0.1))
+      val plot = ScatterPlot(data, xBoundBuffer = Some(0.1), yBoundBuffer = Some(0.1))
 
       plot.xbounds.min should be < -1.0
       plot.xbounds.max should be > 20.0
@@ -60,10 +60,10 @@ class ScatterPlotSpec extends FunSpec with Matchers {
 
     it("sets reasonable bounds with only 1 point") {
       val plot = ScatterPlot(Seq(Point(2, 3)))
-      plot.xbounds.min should be < 2.0
-      plot.xbounds.max should be > 2.0
-      plot.ybounds.min should be < 3.0
-      plot.ybounds.max should be > 3.0
+      plot.xbounds.min shouldBe 2.0 +- 0.0000001
+      plot.xbounds.max shouldBe 2.0 +- 0.0000001
+      plot.ybounds.min shouldBe 3.0 +- 0.0000001
+      plot.ybounds.max shouldBe 3.0 +- 0.0000001
     }
   }
 }

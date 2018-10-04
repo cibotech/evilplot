@@ -33,9 +33,9 @@ package com.cibo.evilplot.demo
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric._
-import com.cibo.evilplot.plot
+import com.cibo.evilplot.{geometry, plot}
 import com.cibo.evilplot.plot._
-import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultTheme, DefaultFonts}
+import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.{Legend, Marker, Position}
 import com.cibo.evilplot.plot.renderers._
@@ -63,8 +63,8 @@ object DemoPlots {
 
   lazy val legendFeatures: Drawable = {
     val allYears = (2007 to 2013).toVector
-    val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
-    val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+    val data = Seq.fill(150)(
+      Point3d(Random.nextDouble(), Random.nextDouble(), allYears(Random.nextInt(allYears.length))))
 
     val customCategoricalLegend = Legend(
       Position.Right,
@@ -91,7 +91,9 @@ object DemoPlots {
 
     ScatterPlot(
       data = data,
-      pointRenderer = Some(PointRenderer.colorByCategory(years))
+      pointRenderer = Some(PointRenderer.colorByCategory(data, { x: Point3d[Int] =>
+        x.z
+      }))
     ).standard()
       .overlayLegend(x = 0.95, y = 0.8)
       .component(customCategoricalLegend)
@@ -255,17 +257,89 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
+  case class Record(value: Double)
+
+  lazy val simpleGroupedPlot: Drawable = {
+
+    val continuousData = Seq.fill(60)(Record(Math.random() * 100))
+
+    val colorBar = ScaledColorBar(ColorGradients.magma, 0, 100)
+    val gradientFn = GradientUtils.multiGradient(ColorGradients.magma, 0, 100, GradientMode.Linear)
+    val groupPlot = BinnedPlot.continuous[Record](
+      continuousData,
+      _.continuousBins(_.value, numBins = 30),
+      legendContext = LegendContext.continuousGradientFromColorBar(colorBar)
+    )(
+      _.histogram(Some(ContinuousBinRenderer.custom({
+        case (context, bin) =>
+          val extent = context.extent
+          Rect(extent.width, extent.height).filled(gradientFn(bin.bounds.midpoint))
+      })))
+    )
+
+    groupPlot
+      .standard()
+      .xLabel("Value")
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
+  lazy val simpleContinuousPlot: Drawable = {
+
+    val continuousData = Seq.fill(60)(Math.random() * 100)
+
+    val histogramPlot = BinnedPlot.continuous[Double](  // creates a histogram
+      continuousData,
+      _.continuousBins(identity)
+    )(_.histogram())
+
+    histogramPlot.standard()
+      .xLabel("x")
+      .yLabel("y")
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
+  lazy val simpleCartesianPlot: Drawable = {
+    val points = Seq.fill(150)(Point(Random.nextDouble() * 2, Random.nextDouble())) :+ Point(
+      0.0,
+      0.0) :+ Point(1.0, 0.0) :+ Point(0.0, 1.0) :+ Point(1.0, 1.0)
+
+    val pointData = points.sortBy(_.x).map(thing => Point3d(thing.x, thing.y, Math.random()))
+
+    CartesianPlot(pointData)( // creates a scatter plot
+      _.scatter({ pt: Point3d[Double] =>
+        if (pt.z > 0.6) {
+          Text("\uD83D\uDC10", size = 20).translate(-10, -10)
+        } else {
+          Style(Disc.centered(2), fill = RGB.random)
+        }
+      })
+    ).standard()
+      .xLabel("x")
+      .yLabel("y")
+      .trend(1, 0)
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
   lazy val scatterPlot: Drawable = {
-    val points = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble())) :+ Point(0.0, 0.0)
-    val years = Seq.fill(150)(Random.nextDouble()) :+ 1.0
+    val points = Seq.fill(150)(
+      Point3d(Random.nextDouble(), Random.nextDouble(), Random.nextDouble())) :+ Point3d(
+      0.0,
+      0.0,
+      Random.nextDouble())
+
     ScatterPlot(
       points,
-      pointRenderer = Some(
-        PointRenderer.depthColor(
-          years,
-          Some(ContinuousColoring
-            .gradient3(HTMLNamedColors.green, HTMLNamedColors.yellow, HTMLNamedColors.red)),
-          None))
+      pointRenderer = Some(PointRenderer.depthColor[Point3d[Double]](
+        x => x.z,
+        points.map(_.z).min,
+        points.map(_.z).max,
+        Some(ContinuousColoring
+          .gradient3(HTMLNamedColors.green, HTMLNamedColors.yellow, HTMLNamedColors.red)),
+        None
+      ))
     ).standard()
       .xLabel("x")
       .yLabel("y")
@@ -280,14 +354,16 @@ object DemoPlots {
 
     // Make up some data...
     val allYears = (2007 to 2013).toVector
-    val data = Seq.fill(150)(Point(Random.nextDouble(), Random.nextDouble()))
-    val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+    val data = Seq.fill(150)(
+      Point3d(Random.nextDouble(), Random.nextDouble(), allYears(Random.nextInt(allYears.length))))
 
     val xhist = Histogram(data.map(_.x), bins = 50)
     val yhist = Histogram(data.map(_.y), bins = 40)
     ScatterPlot(
       data = data,
-      pointRenderer = Some(PointRenderer.colorByCategory(years))
+      pointRenderer = Some(PointRenderer.colorByCategory(data, { x: Point3d[Int] =>
+        x.z
+      }))
     ).topPlot(xhist)
       .rightPlot(yhist)
       .standard()
@@ -341,10 +417,17 @@ object DemoPlots {
       Seq(5, 6, 7, 8),
       Seq(9, 8, 7, 6)
     )
-    val coloring = ContinuousColoring.gradient3(HTMLNamedColors.dodgerBlue, HTMLNamedColors.crimson, HTMLNamedColors.dodgerBlue)
-    Heatmap(data, Some(coloring)).title("Heatmap Demo").xAxis().yAxis().rightLegend().render(plotAreaSize)
+    val coloring = ContinuousColoring.gradient3(
+      HTMLNamedColors.dodgerBlue,
+      HTMLNamedColors.crimson,
+      HTMLNamedColors.dodgerBlue)
+    Heatmap(data, Some(coloring))
+      .title("Heatmap Demo")
+      .xAxis()
+      .yAxis()
+      .rightLegend()
+      .render(plotAreaSize)
   }
-
 
   lazy val facetedPlot: Drawable = {
     val years = 2007 to 2013
@@ -385,14 +468,19 @@ object DemoPlots {
 
     // Make up some data...
     val allYears = (2007 to 2013).toVector
-    val data = Seq.fill(150)(Point(6 * Random.nextDouble(), Random.nextDouble()))
-    val years = Seq.fill(150)(allYears(Random.nextInt(allYears.length)))
+    val data = Seq.fill(150)(
+      Point3d(
+        6 * Random.nextDouble(),
+        Random.nextDouble(),
+        allYears(Random.nextInt(allYears.length))))
 
     val xhist = Histogram(data.map(_.x), bins = 50)
     val yhist = Histogram(data.map(_.y), bins = 40)
     val plot = ScatterPlot(
       data = data,
-      pointRenderer = Some(PointRenderer.colorByCategory(years))
+      pointRenderer = Some(PointRenderer.colorByCategory(data, { x: Point3d[Int] =>
+        x.z
+      }))
     ).xAxis()
       .topPlot(xhist)
       .rightPlot(yhist)

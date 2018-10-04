@@ -43,6 +43,10 @@ object TickRenderer {
   val defaultTickThickness: Double = 1
   val defaultTickLength: Double = 5
 
+  def custom(fn: String => Drawable)(implicit theme: Theme): TickRenderer = new TickRenderer {
+    def render(label: String): Drawable = fn(label)
+  }
+
   /** Create a renderer to render a tick on the x axis.
     *
     * @param length     The length of the tick line.

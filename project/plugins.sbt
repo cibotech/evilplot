@@ -6,6 +6,7 @@ addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.4")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.22")
 dependencyOverrides += "org.scala-js" % "sbt-scalajs" % "0.6.22"
 
+addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "1.5.1")
 addSbtPlugin("com.lihaoyi" % "workbench" % "0.4.1")
 addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.18")
 

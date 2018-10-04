@@ -30,18 +30,18 @@
 
 package com.cibo.evilplot.geometry
 
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.numeric.{Point, Point2d}
 
 private[evilplot] object Clipping {
 
-  final case class Edge(p1: Point, p2: Point) {
+  final case class Edge(p1: Point2d, p2: Point2d) {
     lazy val vertical: Boolean = p1.x == p2.x
     lazy val slope: Double = (p2.y - p1.y) / (p2.x - p1.x)
     lazy val intercept: Double = -slope * p1.x + p1.y
 
     def valueAt(x: Double): Double = slope * x + intercept
 
-    def intersection(edge: Edge): Option[Point] = {
+    def intersection(edge: Edge): Option[Point2d] = {
       if (vertical && edge.vertical) {
         None
       } else if (edge.vertical) {
@@ -54,14 +54,18 @@ private[evilplot] object Clipping {
         Some(Point(interceptX, interceptY))
       }
     }
-
-    def contains(query: Point): Boolean = {
+    /*
+      This calculates whether the point is on the inside of our edge or not. this crossproduct gives us double the area
+      of the triangle, with a positive sign if it's on the outside, and a negative sign if it's on the inside. 0 means it's
+      colinear.
+     */
+    def contains(query: Point2d): Boolean = {
       crossProduct(p1, p2, query) <= 0
     }
   }
 
   // (p2 - p1) cross (p3 - p1)
-  private[evilplot] def crossProduct(p1: Point, p2: Point, p3: Point): Double = {
+  private[evilplot] def crossProduct(p1: Point2d, p2: Point2d, p3: Point2d): Double = {
     (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
   }
 
@@ -74,11 +78,11 @@ private[evilplot] object Clipping {
     )
   }
 
-  private def segmentPathByEdge(path: Seq[Point], clipEdge: Edge): Vector[Vector[Point]] = {
+  private def segmentPathByEdge(path: Seq[Point2d], clipEdge: Edge): Vector[Vector[Point2d]] = {
     if (path.nonEmpty) {
       val init = (
         path.head,
-        Vector.empty[Vector[Point]],
+        Vector.empty[Vector[Point2d]],
         if (clipEdge.contains(path.head)) Vector(path.head) else Vector.empty[Point]
       )
 
@@ -109,9 +113,9 @@ private[evilplot] object Clipping {
     }
   }
 
-  private[evilplot] def clipPath(points: Seq[Point], extent: Extent): Seq[Seq[Point]] = {
+  private[evilplot] def clipPath(points: Seq[Point2d], extent: Extent): Seq[Seq[Point2d]] = {
     boundEdges(extent).foldLeft(Seq(points.toVector)) { (segments, clipEdge) =>
-      segments.foldLeft(Vector.empty[Vector[Point]]) { (acc, segment) =>
+      segments.foldLeft(Vector.empty[Vector[Point2d]]) { (acc, segment) =>
         val segments = segmentPathByEdge(segment, clipEdge)
         if (segments.nonEmpty) acc ++ segments else acc
       }
@@ -119,10 +123,11 @@ private[evilplot] object Clipping {
   }
 
   // https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
-  private[evilplot] def clipPolygon(points: Seq[Point], extent: Extent): Seq[Point] = {
+  private[evilplot] def clipPolygon(points: Seq[Point2d], extent: Extent): Seq[Point2d] = {
     boundEdges(extent).foldLeft(points.toVector) { (inputList, clipEdge) =>
-      if (inputList.nonEmpty) {
-        val init = (inputList.last, Vector.empty[Point])
+      if (inputList.isEmpty) Vector.empty
+      else {
+        val init = (inputList.last, Vector.empty[Point2d])
         inputList
           .foldLeft(init) {
             case ((s, outputList), point) =>
@@ -139,8 +144,6 @@ private[evilplot] object Clipping {
               }
           }
           ._2
-      } else {
-        Vector.empty
       }
     }
   }

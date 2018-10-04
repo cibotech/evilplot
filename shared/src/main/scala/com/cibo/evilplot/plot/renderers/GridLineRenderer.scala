@@ -32,12 +32,18 @@ package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.geometry.{Drawable, Extent, Line}
 import com.cibo.evilplot.plot.aesthetics.Theme
+import com.cibo.evilplot.plot.components.Label
 
 trait GridLineRenderer {
   def render(extent: Extent, label: String): Drawable
 }
 
 object GridLineRenderer {
+
+  def custom(renderFn: (Extent, String) => Drawable)(implicit theme: Theme): GridLineRenderer =
+    new GridLineRenderer {
+      def render(extent: Extent, label: String): Drawable = renderFn(extent, label)
+    }
 
   def xGridLineRenderer()(implicit theme: Theme): GridLineRenderer = new GridLineRenderer {
     def render(extent: Extent, label: String): Drawable = {

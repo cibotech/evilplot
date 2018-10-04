@@ -43,30 +43,40 @@ import com.cibo.evilplot.geometry.{
   Style,
   Text
 }
-import com.cibo.evilplot.numeric.Point
+import com.cibo.evilplot.numeric.{Datum2d, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.{LegendContext, Plot}
+import com.cibo.evilplot.plot.{LegendContext, Plot, PlotContext}
 
-trait PathRenderer extends PlotElementRenderer[Seq[Point]] {
+trait PathRenderer[T <: Datum2d[T]] extends PlotElementRenderer[Seq[T]] {
   def legendContext: LegendContext = LegendContext.empty
-  def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable
+  def render(plot: Plot, extent: Extent, path: Seq[T]): Drawable
 }
 
 object PathRenderer {
   private[renderers] val baseLegendStrokeLength: Double = 8.0
+
+  def custom[T <: Datum2d[T]](
+    pathFn: (PlotContext, Seq[T]) => Drawable,
+    legendCtx: Option[LegendContext] = None): PathRenderer[T] = new PathRenderer[T] {
+    def render(plot: Plot, extent: Extent, path: Seq[T]): Drawable = {
+      pathFn(PlotContext.from(plot, extent), path)
+    }
+
+    override def legendContext: LegendContext = legendCtx.getOrElse(super.legendContext)
+  }
 
   /** The default path renderer.
     * @param strokeWidth The width of the path.
     * @param color Point color.
     * @param label A label for this path (for legends).
     */
-  def default(
+  def default[T <: Datum2d[T]](
     strokeWidth: Option[Double] = None,
     color: Option[Color] = None,
     label: Drawable = EmptyDrawable(),
     lineStyle: Option[LineStyle] = None
-  )(implicit theme: Theme): PathRenderer =
-    new DefaultPathRenderer(
+  )(implicit theme: Theme): PathRenderer[T] =
+    new DefaultPathRenderer[T](
       strokeWidth.getOrElse(theme.elements.strokeWidth),
       color.getOrElse(theme.colors.path),
       label,
@@ -77,12 +87,12 @@ object PathRenderer {
     * @param color The color of this path.
     * @param strokeWidth The width of the path.
     */
-  def named(
+  def named[T <: Datum2d[T]](
     name: String,
     color: Color,
     strokeWidth: Option[Double] = None,
     lineStyle: Option[LineStyle] = None
-  )(implicit theme: Theme): PathRenderer =
+  )(implicit theme: Theme): PathRenderer[T] =
     default(
       strokeWidth,
       Some(color),
@@ -96,20 +106,21 @@ object PathRenderer {
     * @param color the color of this path.
     */
   @deprecated("Use the overload taking a strokeWidth, color, label and lineStyle", "2 April 2018")
-  def closed(color: Color)(implicit theme: Theme): PathRenderer = closed(color = Some(color))
+  def closed[T <: Datum2d[T]](color: Color)(implicit theme: Theme): PathRenderer[T] =
+    closed(color = Some(color))
 
   /** Path renderer for closed paths. The first point is connected to the last point.
     * @param strokeWidth the stroke width
     * @param color the color of the path
     * @param label the label for the legend
     */
-  def closed(
+  def closed[T <: Datum2d[T]](
     strokeWidth: Option[Double] = None,
     color: Option[Color] = None,
     label: Drawable = EmptyDrawable(),
     lineStyle: Option[LineStyle] = None
-  )(implicit theme: Theme): PathRenderer = new PathRenderer {
-    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
+  )(implicit theme: Theme): PathRenderer[T] = new PathRenderer[T] {
+    def render(plot: Plot, extent: Extent, path: Seq[T]): Drawable = {
       path.headOption.fold(EmptyDrawable(): Drawable) { head =>
         default(strokeWidth, color, label, lineStyle).render(plot, extent, path :+ head)
       }
@@ -119,8 +130,8 @@ object PathRenderer {
   /**
     * A no-op renderer for when you don't want to render paths (such as on a scatter plot)
     */
-  def empty(): PathRenderer = new PathRenderer {
-    def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = EmptyDrawable()
+  def empty[T <: Datum2d[T]](): PathRenderer[T] = new PathRenderer[T] {
+    def render(plot: Plot, extent: Extent, path: Seq[T]): Drawable = EmptyDrawable()
   }
 
   // Need to use a multiple of the pattern array so the legend looks accurate.
@@ -138,10 +149,26 @@ object PathRenderer {
     }
 }
 
-class DefaultPathRenderer (strokeWidth: Double,
+class DefaultPathRenderer[T <: Datum2d[T]](
+  strokeWidth: Double,
   color: Color,
   label: Drawable = EmptyDrawable(),
-  lineStyle: LineStyle) extends PathRenderer {
+  lineStyle: LineStyle)
+    extends PathRenderer[T] {
+
+  def render(plot: Plot, extent: Extent, path: Seq[T]): Drawable = {
+    Clipping
+      .clipPath(path, extent)
+      .map(
+        segment =>
+          LineDash(
+            StrokeStyle(Path(segment, strokeWidth), color),
+            lineStyle
+        )
+      )
+      .group
+  }
+
   private val legendStrokeLength: Double = PathRenderer.calcLegendStrokeLength(lineStyle)
   override def legendContext: LegendContext = label match {
     case _: EmptyDrawable => LegendContext.empty
@@ -161,18 +188,4 @@ class DefaultPathRenderer (strokeWidth: Double,
       )
   }
 
-  def render(plot: Plot, extent: Extent, path: Seq[Point]): Drawable = {
-    Clipping
-      .clipPath(path, extent)
-      .map(
-        segment =>
-          LineDash(
-            StrokeStyle(
-              Path(segment, strokeWidth),
-              color),
-            lineStyle
-          )
-      )
-      .group
-  }
 }

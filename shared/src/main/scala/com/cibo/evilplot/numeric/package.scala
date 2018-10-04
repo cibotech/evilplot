@@ -37,21 +37,6 @@ import io.circe.generic.semiauto._
 package object numeric {
   type Grid = Vector[Vector[Double]]
 
-  final case class Point(x: Double, y: Double) {
-    def -(that: Point): Point = Point(x - that.x, y - that.y)
-  }
-  object Point {
-    implicit val encoder: Encoder[Point] = io.circe.generic.semiauto.deriveEncoder[Point]
-    implicit val decoder: Decoder[Point] = io.circe.generic.semiauto.deriveDecoder[Point]
-    def tupled(t: (Double, Double)): Point = Point(t._1, t._2)
-    implicit def toTuple(p: Point): (Double, Double) = (p.x, p.y)
-  }
-
-  final case class Point3(x: Double, y: Double, z: Double)
-
-  object Point3 {
-    def tupled(t: (Double, Double, Double)): Point3 = Point3(t._1, t._2, t._3)
-  }
 
   final case class GridData(
     grid: Grid,
@@ -60,51 +45,6 @@ package object numeric {
     zBounds: Bounds,
     xSpacing: Double,
     ySpacing: Double)
-
-  final case class Bounds(min: Double, max: Double) {
-    lazy val range: Double = max - min
-
-    def isInBounds(x: Double): Boolean = x >= min && x <= max
-  }
-
-  object Bounds {
-
-    implicit val encoder: Encoder[Bounds] = deriveEncoder[Bounds]
-    implicit val decoder: Decoder[Bounds] = deriveDecoder[Bounds]
-
-    private def lift[T](expr: => T): Option[T] = {
-      try {
-        Some(expr)
-      } catch {
-        case _: Exception => None
-      }
-    }
-
-    def getBy[T](data: Seq[T])(f: T => Double): Option[Bounds] = {
-      val mapped = data.map(f).filterNot(_.isNaN)
-      for {
-        min <- lift(mapped.min)
-        max <- lift(mapped.max)
-      } yield Bounds(min, max)
-    }
-
-    def get(data: Seq[Double]): Option[Bounds] = {
-      data.foldLeft(None: Option[Bounds]) { (bounds, value) =>
-        bounds match {
-          case None => Some(Bounds(value, value))
-          case Some(Bounds(min, max)) =>
-            Some(Bounds(math.min(min, value), math.max(max, value)))
-        }
-      }
-    }
-
-    def widest(bounds: Seq[Option[Bounds]]): Option[Bounds] =
-      bounds.flatten.foldLeft(None: Option[Bounds]) { (acc, curr) =>
-        if (acc.isEmpty) Some(curr)
-        else
-          Some(Bounds(math.min(acc.get.min, curr.min), math.max(acc.get.max, curr.max)))
-      }
-  }
 
   private val normalConstant = 1.0 / math.sqrt(2 * math.Pi)
 

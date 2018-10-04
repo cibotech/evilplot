@@ -32,7 +32,7 @@ package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Group, Rect, Translate}
 import com.cibo.evilplot.plot.aesthetics.Theme
-import com.cibo.evilplot.plot.{Plot, XyPlot}
+import com.cibo.evilplot.plot.{CartesianPlot, Plot}
 import org.scalatest.{FunSpec, Matchers}
 
 class ComponentGroupSpec extends FunSpec with Matchers {
@@ -52,7 +52,7 @@ class ComponentGroupSpec extends FunSpec with Matchers {
     val rectFore = Rect(50)
     val rectMiddle = Rect(120)
     val rectBack = Rect(35)
-    val emptyPlot = XyPlot(Seq.empty)
+    val emptyPlot = CartesianPlot(Seq.empty)()
 
     def simpleMockComponent(
       componentPosition: Position,

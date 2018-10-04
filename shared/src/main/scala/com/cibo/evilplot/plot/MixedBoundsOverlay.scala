@@ -67,7 +67,8 @@ object MixedBoundsOverlay {
     * @param yBounds The X bounds to set for the main overlay plot (for e.g., axes)
     * @param plots   The plots to overlay.
     */
-  def fromSeq(xBounds: Bounds, yBounds: Bounds, plots: Seq[Plot]): Plot = apply(xBounds, yBounds, plots: _*)
+  def fromSeq(xBounds: Bounds, yBounds: Bounds, plots: Seq[Plot]): Plot =
+    apply(xBounds, yBounds, plots: _*)
 
   /** Overlay a sequence of plots without updating bounds or transforms for individual plots.
     * @param mainPlot The plot which will set the bounds for the overlay (for e.g., axes)

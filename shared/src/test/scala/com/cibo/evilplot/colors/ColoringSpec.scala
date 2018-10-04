@@ -30,6 +30,7 @@
 
 package com.cibo.evilplot.colors
 
+import com.cibo.evilplot.geometry.PointEquivalences
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultElements, DefaultFonts}
 import com.cibo.evilplot.plot.aesthetics.{Colors, Elements, Fonts, Theme}
 import org.scalatest.{FunSpec, Matchers}

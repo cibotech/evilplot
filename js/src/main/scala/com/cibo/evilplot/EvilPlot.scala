@@ -31,8 +31,10 @@
 package com.cibo.evilplot
 
 import java.util.UUID
+
 import com.cibo.evilplot.colors.{Color, DefaultColors, HEX, HTMLNamedColors}
 import com.cibo.evilplot.demo.DemoPlots
+import com.cibo.evilplot.geometry.Clipping.Edge
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.{LinePlot, Overlay}
@@ -72,12 +74,16 @@ object EvilPlot {
   /** Render the example plots to the specified canvas. */
   @JSExport
   def renderExample(canvasId: String): Unit = {
+
+    addExample(DemoPlots.simpleGroupedPlot)
+    addExample(DemoPlots.simpleContinuousPlot)
+
+    addExample(DemoPlots.simpleCartesianPlot)
     addExample(DemoPlots.densityPlot)
     addExample(DemoPlots.legendFeatures)
     addExample(DemoPlots.axesTesting)
     addExample(DemoPlots.functionPlot)
     addExample(DemoPlots.markerPlot)
-    addExample(DemoPlots.marginalHistogram)
     addExample(DemoPlots.scatterPlot)
     addExample(DemoPlots.barChart)
     addExample(DemoPlots.boxPlot)
@@ -102,7 +108,6 @@ object EvilPlot {
   }
 
   def renderPaletteExample(colors: Seq[Color]): Unit = {
-    println("Rendering palette")
     val paletteID = "palette"
     val div = dom.document.getElementById(paletteID)
     colors.foreach { color =>

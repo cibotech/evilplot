@@ -103,8 +103,7 @@ object KernelDensityEstimation {
   }
 
   // lots of magic numbers, not sure on the theory behind this "rule of thumb" for bandwidth estimation.
-  
-  
+
   private[numeric] def bandwidthEstimate(vec: Seq[Double]) = {
     val iqr = quantile(vec, Seq(0.25, 0.75)).reduceLeft((first, third) => third - first)
     val h = iqr / 1.34
