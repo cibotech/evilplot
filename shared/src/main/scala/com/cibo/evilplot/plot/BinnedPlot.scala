@@ -42,22 +42,7 @@ import com.cibo.evilplot.plot.renderers._
 
 import scala.reflect.ClassTag
 
-final case class CompoundPlotRenderer(
-  drawablesToPlot: Seq[PlotContext => PlotRenderer],
-  xBounds: Bounds,
-  yBounds: Bounds,
-  legend: LegendContext = LegendContext())
-    extends PlotRenderer {
 
-  override def legendContext: LegendContext = legend
-
-  def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-    drawablesToPlot.foldLeft(EmptyDrawable(): Drawable) {
-      case (accum, dr) =>
-        dr(PlotContext(plot, plotExtent)).render(plot, plotExtent) behind accum
-    }
-  }
-}
 
 sealed abstract class Bin[T] {
   val values: Seq[T]
@@ -78,33 +63,6 @@ object ContinuousBin {
   }
 }
 
-trait ContinuousBinRenderer extends PlotElementRenderer[ContinuousBin] {
-  def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable
-  def legendContext: Option[LegendContext] = None
-}
-
-object ContinuousBinRenderer {
-
-  def custom(
-    renderFn: (PlotContext, ContinuousBin) => Drawable,
-    legendCtx: Option[LegendContext] = None): ContinuousBinRenderer = new ContinuousBinRenderer {
-
-    def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable = {
-      renderFn(PlotContext.from(plot, extent), bin)
-    }
-
-    override def legendContext: Option[LegendContext] = legendCtx
-  }
-
-  /** Default bar renderer. */
-  def default(
-    color: Option[Color] = None
-  )(implicit theme: Theme): ContinuousBinRenderer = new ContinuousBinRenderer {
-    def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable = {
-      Rect(extent.width, extent.height).filled(color.getOrElse(theme.colors.bar))
-    }
-  }
-}
 object Binning {
 
   def histogramBins(
@@ -175,7 +133,7 @@ case class BinArgs[T](data: Seq[T], ctx: Option[PlotContext]) {
 
 object BinnedPlot {
 
-  type ContextToDrawableContinuous[T] = ContinuousDataRenderer[T] => PlotContext => PlotRenderer
+  type ContextToDrawableContinuous[T] = ContinuousDataComposer[T] => PlotContext => PlotRenderer
 
   def continuous[T](
     data: Seq[T],
@@ -189,7 +147,7 @@ object BinnedPlot {
     val xbounds = Bounds.union(bins.map(_.x))
     val ybounds = Bounds(0, bins.map(_.y).max)
 
-    val groupedDataRenderer = ContinuousDataRenderer[T](data, binFn)
+    val groupedDataRenderer = ContinuousDataComposer[T](data, binFn)
 
     Plot(
       xbounds,
@@ -204,11 +162,11 @@ object BinnedPlot {
   }
 }
 
-case class ContinuousDataRenderer[T](data: Seq[T], binFn: BinArgs[T] => Seq[ContinuousBin]) {
+case class ContinuousDataComposer[T](data: Seq[T], binFn: BinArgs[T] => Seq[ContinuousBin]) {
 
   def manipulate(x: Seq[T] => Seq[T]): Seq[T] = x(data)
 
-  def filter(x: T => Boolean): ContinuousDataRenderer[T] = this.copy(data.filter(x))
+  def filter(x: T => Boolean): ContinuousDataComposer[T] = this.copy(data.filter(x))
 
   def histogram(
     barRenderer: Option[ContinuousBinRenderer] = None,

@@ -67,8 +67,6 @@ object LinePlot {
     xBoundBuffer: Option[Double] = None,
     yBoundBuffer: Option[Double] = None
   )(implicit theme: Theme): Plot = {
-    require(xBoundBuffer.getOrElse(0.0) >= 0.0)
-    require(yBoundBuffer.getOrElse(0.0) >= 0.0)
 
     val (xbounds, ybounds) =
       PlotUtils.bounds(data, theme.elements.boundBuffer, xBoundBuffer, yBoundBuffer)

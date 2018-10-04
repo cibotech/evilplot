@@ -143,6 +143,5 @@ object ColorUtils {
   def rgba(c: Color): (Double, Double, Double, Double) = c match {
     case hsla: HSLA => hslaToRgba(hsla)
     case Clear      => (0, 0, 0, 0)
-    case _          => throw new Exception(s"Unsupported color conversion: converting ${c} to rgba")
   }
 }

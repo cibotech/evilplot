@@ -169,8 +169,6 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
         }
         canvas.fillStyle = gradientFill
         gradient.r.draw(this)
-
-      case _ => throw new Exception("Unknown gradient type")
     }
   }
 }

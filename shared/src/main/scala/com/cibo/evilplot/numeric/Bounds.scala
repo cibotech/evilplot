@@ -28,59 +28,66 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cibo.evilplot
+package com.cibo.evilplot.numeric
 
 import scala.language.implicitConversions
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
 
-package object numeric {
-  type Grid = Vector[Vector[Double]]
+final case class Bounds(min: Double, max: Double) {
+  if (!min.isNaN && !max.isNaN) {
+    require(min <= max, s"Bounds min must be <= max, $min !<= $max")
+  }
 
+  lazy val range: Double = max - min
 
-  final case class GridData(
-    grid: Grid,
-    xBounds: Bounds,
-    yBounds: Bounds,
-    zBounds: Bounds,
-    xSpacing: Double,
-    ySpacing: Double)
+  lazy val midpoint: Double = (max + min) / 2.0
 
-  private val normalConstant = 1.0 / math.sqrt(2 * math.Pi)
+  def isInBounds(x: Double): Boolean = x >= min && x <= max
+}
 
-  // with sigma = 1.0 and mu = 0, like R's dnorm.
-  private[numeric] def probabilityDensityInNormal(x: Double): Double =
-    normalConstant * math.exp(-math.pow(x, 2) / 2)
+object Bounds {
 
-  // quantiles using linear interpolation.
-  private[numeric] def quantile(data: Seq[Double], quantiles: Seq[Double]): Seq[Double] = {
-    if (data.isEmpty) Seq.fill(quantiles.length)(Double.NaN)
-    else {
-      val length = data.length
-      val sorted = data.sorted
-      for {
-        quantile <- quantiles
-        _ = require(quantile >= 0.0 && quantile <= 1.0)
-        index = quantile * (length - 1)
-        result = {
-          if (index >= length - 1) sorted.last
-          else {
-            val lower = sorted(math.floor(index).toInt)
-            val upper = sorted(math.ceil(index).toInt)
-            lower + (upper - lower) * (index - math.floor(index))
-          }
-        }
-      } yield result
+  implicit val encoder: Encoder[Bounds] = deriveEncoder[Bounds]
+  implicit val decoder: Decoder[Bounds] = deriveDecoder[Bounds]
+
+  private def lift[T](expr: => T): Option[T] = {
+    try {
+      Some(expr)
+    } catch {
+      case _: Exception => None
     }
   }
 
-  private[numeric] def mean(data: Seq[Double]): Double = data.sum / data.length
-
-  private[numeric] def variance(data: Seq[Double]): Double = {
-    val _mean = mean(data)
-    data.map(x => math.pow(x - _mean, 2)).sum / (data.length - 1)
+  def union(bounds: Seq[Bounds]): Bounds = {
+    Bounds(
+      min = bounds.map(_.min).min,
+      max = bounds.map(_.max).max
+    )
   }
 
-  private[numeric] def standardDeviation(data: Seq[Double]): Double = math.sqrt(variance(data))
+  def getBy[T](data: Seq[T])(f: T => Double): Option[Bounds] = {
+    val mapped = data.map(f).filterNot(_.isNaN)
+    for {
+      min <- lift(mapped.min)
+      max <- lift(mapped.max)
+    } yield Bounds(min, max)
+  }
 
+  def get(data: Seq[Double]): Option[Bounds] = {
+    data.foldLeft(None: Option[Bounds]) { (bounds, value) =>
+      bounds match {
+        case None => Some(Bounds(value, value))
+        case Some(Bounds(min, max)) =>
+          Some(Bounds(math.min(min, value), math.max(max, value)))
+      }
+    }
+  }
+
+  def widest(bounds: Seq[Option[Bounds]]): Option[Bounds] =
+    bounds.flatten.foldLeft(None: Option[Bounds]) { (acc, curr) =>
+      if (acc.isEmpty) Some(curr)
+      else
+        Some(Bounds(math.min(acc.get.min, curr.min), math.max(acc.get.max, curr.max)))
+    }
 }

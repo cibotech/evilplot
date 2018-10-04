@@ -327,8 +327,8 @@ final case class GradientFill(r: Drawable, fill: Gradient2d) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object GradientFill {
-  implicit val encoder: Encoder[Gradient2d] = deriveEncoder[Gradient2d]
-  implicit val decoder: Decoder[Gradient2d] = deriveDecoder[Gradient2d]
+  implicit val encoder: Encoder[GradientFill] = deriveEncoder[GradientFill]
+  implicit val decoder: Decoder[GradientFill] = deriveDecoder[GradientFill]
 }
 
 /** Apply a border color to a strokable Drawable. */

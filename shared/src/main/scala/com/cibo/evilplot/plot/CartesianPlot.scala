@@ -41,19 +41,19 @@ import com.cibo.evilplot.plot.renderers._
 
 object CartesianPlot {
 
-  type ContextToDrawable[X <: Datum2d[X]] = CartesianDataRenderer[X] => PlotContext => PlotRenderer
+  type ContextToDrawable[T <: Datum2d[T]] = CartesianDataComposer[T] => PlotContext => PlotRenderer
 
-  def apply[X <: Datum2d[X]](
-    data: Seq[X],
+  def apply[T <: Datum2d[T]](
+    data: Seq[T],
     xboundBuffer: Option[Double] = None,
     yboundBuffer: Option[Double] = None,
     legendContext: LegendContext = LegendContext()
-  )(contextToDrawable: ContextToDrawable[X]*)(implicit theme: Theme): Plot = {
+  )(contextToDrawable: ContextToDrawable[T]*)(implicit theme: Theme): Plot = {
 
     val (xbounds, ybounds) =
       PlotUtils.bounds(data, theme.elements.boundBuffer, xboundBuffer, yboundBuffer)
 
-    val cartesianDataRenderer = CartesianDataRenderer(data)
+    val cartesianDataRenderer = CartesianDataComposer(data)
 
     Plot(
       xbounds,
@@ -68,23 +68,23 @@ object CartesianPlot {
   }
 }
 
-case class CartesianDataRenderer[X <: Datum2d[X]](data: Seq[X]) {
+case class CartesianDataComposer[T <: Datum2d[T]](data: Seq[T]) {
 
-  def manipulate(x: Seq[X] => Seq[X]): Seq[X] = x(data)
+  def manipulate(x: Seq[T] => Seq[T]): Seq[T] = x(data)
 
-  def filter(x: X => Boolean): CartesianDataRenderer[X] = this.copy(data.filter(x))
+  def filter(x: T => Boolean): CartesianDataComposer[T] = this.copy(data.filter(x))
 
-  def scatter(pointToDrawable: X => Drawable, legendCtx: LegendContext = LegendContext.empty)(
+  def scatter(pointToDrawable: T => Drawable, legendCtx: LegendContext = LegendContext.empty)(
     pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
     ScatterPlotRenderer(data, PointRenderer.custom(pointToDrawable, Some(legendCtx)))
   }
 
-  def scatter(pCtx: PlotContext)(implicit theme: Theme): ScatterPlotRenderer[X] = {
+  def scatter(pCtx: PlotContext)(implicit theme: Theme): ScatterPlotRenderer[T] = {
     ScatterPlotRenderer(data, PointRenderer.default())
   }
 
-  def scatter(pointRenderer: PointRenderer[X])(pCtx: PlotContext)(
-    implicit theme: Theme): ScatterPlotRenderer[X] = {
+  def scatter(pointRenderer: PointRenderer[T])(pCtx: PlotContext)(
+    implicit theme: Theme): ScatterPlotRenderer[T] = {
     ScatterPlotRenderer(data, pointRenderer)
   }
 
@@ -102,7 +102,7 @@ case class CartesianDataRenderer[X <: Datum2d[X]](data: Seq[X]) {
     LinePlotRenderer(data, PathRenderer.default())
   }
 
-  def line(pathRenderer: PathRenderer[X])(pCtx: PlotContext)(
+  def line(pathRenderer: PathRenderer[T])(pCtx: PlotContext)(
     implicit theme: Theme): PlotRenderer = {
     LinePlotRenderer(data, pathRenderer)
   }

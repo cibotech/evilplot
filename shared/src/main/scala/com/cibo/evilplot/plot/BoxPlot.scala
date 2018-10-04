@@ -40,7 +40,7 @@ import com.cibo.evilplot.plot.renderers.{BoxRenderer, PlotRenderer, PointRendere
 
 case class BoxPlotPoint(x: Double, y: Double, ctx: BoxRendererContext)
     extends Datum2d[BoxPlotPoint] {
-  def setXY(x: Double, y: Double): BoxPlotPoint = this.copy(x = x, y = y)
+  def withXY(x: Double, y: Double): BoxPlotPoint = this.copy(x = x, y = y)
 }
 
 final case class BoxPlotRenderer(

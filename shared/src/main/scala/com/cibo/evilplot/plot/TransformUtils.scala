@@ -69,25 +69,27 @@ trait TransformWorldToScreen {
     yBounds: Bounds,
     xBounds: Bounds,
     extent: Extent): (Double => Double, Double => Double) = {
+
     val xtransformer = xCartesianTransformer(xBounds, extent)
     val ytransformer = yCartesianTransformer(yBounds, extent)
 
     (xtransformer, ytransformer)
   }
 
-  def transformDatumToWorld[X <: Datum2d[X]](
-    point: X,
+  def transformDatumToWorld[T <: Datum2d[T]](
+    point: T,
     xtransformer: Transformer,
-    ytransformer: Transformer): X = {
+    ytransformer: Transformer): T = {
+
     val x = xtransformer(point.x)
     val y = ytransformer(point.y)
-    point.setXY(x = x, y = y)
+    point.withXY(x = x, y = y)
   }
 
-  def transformDatumsToWorld[X <: Datum2d[X]](
-    data: Seq[X],
+  def transformDatumsToWorld[T <: Datum2d[T]](
+    data: Seq[T],
     xtransformer: Transformer,
-    ytransformer: Transformer): Seq[X] = {
+    ytransformer: Transformer): Seq[T] = {
 
     data.map(p => transformDatumToWorld(p, xtransformer, ytransformer))
   }
@@ -121,6 +123,8 @@ object PlotUtils {
 
   def boundsWithBuffer(xs: Seq[Double], buffer: Double): Bounds = {
 
+    require(buffer >= 0.0, "boundBuffer cannot be negative")
+
     val min = xs.reduceOption[Double](math.min).getOrElse(0.0)
     val max = xs.reduceOption[Double](math.max).getOrElse(0.0)
 
@@ -132,13 +136,15 @@ object PlotUtils {
     )
   }
 
-  def bounds[X <: Datum2d[X]](
-    data: Seq[X],
+  def bounds[T <: Datum2d[T]](
+    data: Seq[T],
     defaultBoundBuffer: Double,
     xboundBuffer: Option[Double] = None,
     yboundBuffer: Option[Double] = None): (Bounds, Bounds) = {
-    require(xboundBuffer.getOrElse(0.0) >= 0.0)
-    require(yboundBuffer.getOrElse(0.0) >= 0.0)
+
+    require(xboundBuffer.getOrElse(0.0) >= 0.0, "xboundBuffer cannot be negative")
+    require(yboundBuffer.getOrElse(0.0) >= 0.0, "yboundBuffer cannot be negative")
+
     val xbuffer = xboundBuffer.getOrElse(defaultBoundBuffer)
     val ybuffer = yboundBuffer.getOrElse(defaultBoundBuffer)
 
