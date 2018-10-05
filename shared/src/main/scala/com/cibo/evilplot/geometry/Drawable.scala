@@ -53,6 +53,20 @@ sealed trait Drawable {
 // Because of the way the JSON de/serialization works right now, no two field names
 // can start with the same character in any class extending Drawable.
 // Also you should register a shortened constructor name in JSONUtils#shortenedName
+sealed trait InteractionEvent
+case class OnClick(e: () => Unit) extends InteractionEvent
+case class OnHover(e: () => Unit) extends InteractionEvent
+
+/** Apply a fill color to a fillable Drawable. */
+final case class Interaction(r: Drawable, interactionEvent: InteractionEvent) extends Drawable {
+  lazy val extent: Extent = r.extent
+  def draw(context: RenderContext): Unit = context.draw(this)
+}
+
+object Interaction {
+  implicit val encoder: Encoder[Interaction] = deriveEncoder[Interaction]
+  implicit val decoder: Decoder[Interaction] = deriveDecoder[Interaction]
+}
 
 /** A drawable that displays nothing when drawn. */
 final case class EmptyDrawable() extends Drawable {
