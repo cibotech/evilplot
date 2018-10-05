@@ -162,6 +162,10 @@
                         <a class="trait" href="ComponentRenderer.html" title="Renderer for non-plot area components of a plot (labels, etc.)."></a>
                         <a href="ComponentRenderer.html" title="Renderer for non-plot area components of a plot (labels, etc.).">ComponentRenderer</a>
                       </li><li class="current-entities indented5">
+                        <a class="object" href="ContinuousBinRenderer$.html" title=""></a>
+                        <a class="trait" href="ContinuousBinRenderer.html" title=""></a>
+                        <a href="ContinuousBinRenderer.html" title="">ContinuousBinRenderer</a>
+                      </li><li class="current-entities indented5">
                         <span class="separator"></span>
                         <a class="class" href="DefaultPathRenderer.html" title=""></a>
                         <a href="DefaultPathRenderer.html" title="">DefaultPathRenderer</a>
@@ -222,7 +226,7 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">PointRenderer</span><span class="result"> extends <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<span class="extype" name="scala.Int">Int</span>]</span>
+        <span class="name">PointRenderer</span><span class="tparams">[<span name="T">T &lt;: <a href="../../numeric/Datum2d.html" class="extype" name="com.cibo.evilplot.numeric.Datum2d">Datum2d</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.T">T</span>]</span>]</span><span class="result"> extends <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.T">T</span>]</span>
       </span>
       </h4>
 
@@ -231,7 +235,7 @@
           <span class="toggle">
             Linear Supertypes
           </span>
-          <div class="superTypes hiddenContent"><a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<span class="extype" name="scala.Int">Int</span>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.T">T</span>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -281,10 +285,10 @@
 
         <div class="values members">
               <h3>Abstract Value Members</h3>
-              <ol><li name="com.cibo.evilplot.plot.renderers.PointRenderer#render" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="render(plot:com.cibo.evilplot.plot.Plot,extent:com.cibo.evilplot.geometry.Extent,index:Int):com.cibo.evilplot.geometry.Drawable"></a><a id="render(Plot,Extent,Int):Drawable"></a>
+              <ol><li name="com.cibo.evilplot.plot.renderers.PointRenderer#render" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="render(datum:T):com.cibo.evilplot.geometry.Drawable"></a><a id="render(T):Drawable"></a>
       <span class="permalink">
-      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer.html#render(plot:com.cibo.evilplot.plot.Plot,extent:com.cibo.evilplot.geometry.Extent,index:Int):com.cibo.evilplot.geometry.Drawable" title="Permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer.html#render(datum:T):com.cibo.evilplot.geometry.Drawable" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -293,10 +297,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">render</span><span class="params">(<span name="plot">plot: <a href="../Plot.html" class="extype" name="com.cibo.evilplot.plot.Plot">Plot</a></span>, <span name="extent">extent: <a href="../../geometry/Extent.html" class="extype" name="com.cibo.evilplot.geometry.Extent">Extent</a></span>, <span name="index">index: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>
+        <span class="name">render</span><span class="params">(<span name="datum">datum: <span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.T">T</span></span>)</span><span class="result">: <a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>
       </span>
       
-      <p class="shortcomment cmt">Render a category within the extent.</p><div class="fullcomment"><div class="comment cmt"><p>Render a category within the extent.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a> → <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a></dd></dl></div>
+      
     </li></ol>
             </div>
 
@@ -569,6 +573,38 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#render" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="render(extent:com.cibo.evilplot.geometry.Extent,context:T):com.cibo.evilplot.geometry.Drawable"></a><a id="render(Extent,T):Drawable"></a>
+      <span class="permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer.html#render(extent:com.cibo.evilplot.geometry.Extent,context:T):com.cibo.evilplot.geometry.Drawable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">render</span><span class="params">(<span name="extent">extent: <a href="../../geometry/Extent.html" class="extype" name="com.cibo.evilplot.geometry.Extent">Extent</a></span>, <span name="context">context: <span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.T">T</span></span>)</span><span class="result">: <a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#render" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="render(plot:com.cibo.evilplot.plot.Plot,extent:com.cibo.evilplot.geometry.Extent,context:T):com.cibo.evilplot.geometry.Drawable"></a><a id="render(Plot,Extent,T):Drawable"></a>
+      <span class="permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer.html#render(plot:com.cibo.evilplot.plot.Plot,extent:com.cibo.evilplot.geometry.Extent,context:T):com.cibo.evilplot.geometry.Drawable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">render</span><span class="params">(<span name="plot">plot: <a href="../Plot.html" class="extype" name="com.cibo.evilplot.plot.Plot">Plot</a></span>, <span name="extent">extent: <a href="../../geometry/Extent.html" class="extype" name="com.cibo.evilplot.geometry.Extent">Extent</a></span>, <span name="context">context: <span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.T">T</span></span>)</span><span class="result">: <a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>
+      </span>
+      
+      <p class="shortcomment cmt">Render a category within the extent.</p><div class="fullcomment"><div class="comment cmt"><p>Render a category within the extent.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a> → <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a><a id="synchronized[T0](⇒T0):T0"></a>
       <span class="permalink">
@@ -680,7 +716,7 @@
 
         <div id="inheritedMembers">
         <div class="parent" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">
-              <h3>Inherited from <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<span class="extype" name="scala.Int">Int</span>]</h3>
+              <h3>Inherited from <a href="PlotElementRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PlotElementRenderer">PlotElementRenderer</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.T">T</span>]</h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">

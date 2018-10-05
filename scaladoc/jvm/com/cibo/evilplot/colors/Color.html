@@ -151,6 +151,14 @@
                         <a href="ColorBar.html" title="">ColorBar</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
+                        <a class="object" href="ColorGradients$.html" title=""></a>
+                        <a href="ColorGradients$.html" title="">ColorGradients</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="object" href="ColorUtils$.html" title=""></a>
+                        <a href="ColorUtils$.html" title="">ColorUtils</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
                         <a class="trait" href="Coloring.html" title=""></a>
                         <a href="Coloring.html" title="">Coloring</a>
                       </li><li class="current-entities indented4">
@@ -161,6 +169,10 @@
                         <span class="separator"></span>
                         <a class="object" href="DefaultColors$.html" title=""></a>
                         <a href="DefaultColors$.html" title="">DefaultColors</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="object" href="FillGradients$.html" title=""></a>
+                        <a href="FillGradients$.html" title="">FillGradients</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="GradientMode$.html" title=""></a>
                         <a class="trait" href="GradientMode.html" title=""></a>
@@ -181,6 +193,10 @@
                         <span class="separator"></span>
                         <a class="class" href="HSLA.html" title=""></a>
                         <a href="HSLA.html" title="">HSLA</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="trait" href="HSLABasedManipulation.html" title=""></a>
+                        <a href="HSLABasedManipulation.html" title="">HSLABasedManipulation</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="object" href="HTMLNamedColors$.html" title=""></a>
@@ -302,7 +318,71 @@
 
         <div class="values members">
               <h3>Abstract Value Members</h3>
-              <ol><li name="com.cibo.evilplot.colors.Color#repr" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+              <ol><li name="com.cibo.evilplot.colors.Color#analogous" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="analogous(offsetDegrees:Double):(com.cibo.evilplot.colors.Color,com.cibo.evilplot.colors.Color)"></a><a id="analogous(Double):(Color,Color)"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Color.html#analogous(offsetDegrees:Double):(com.cibo.evilplot.colors.Color,com.cibo.evilplot.colors.Color)" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">analogous</span><span class="params">(<span name="offsetDegrees">offsetDegrees: <span class="extype" name="scala.Double">Double</span> = <span class="symbol">14</span></span>)</span><span class="result">: (<a href="" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>, <a href="" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>)</span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.colors.Color#darken" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="darken(percent:Double):com.cibo.evilplot.colors.Color"></a><a id="darken(Double):Color"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Color.html#darken(percent:Double):com.cibo.evilplot.colors.Color" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">darken</span><span class="params">(<span name="percent">percent: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result">: <a href="" class="extype" name="com.cibo.evilplot.colors.Color">Color</a></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.colors.Color#hsla" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="hsla:com.cibo.evilplot.colors.HSLA"></a><a id="hsla:HSLA"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Color.html#hsla:com.cibo.evilplot.colors.HSLA" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hsla</span><span class="result">: <a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.colors.Color#lighten" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="lighten(percent:Double):com.cibo.evilplot.colors.Color"></a><a id="lighten(Double):Color"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Color.html#lighten(percent:Double):com.cibo.evilplot.colors.Color" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">lighten</span><span class="params">(<span name="percent">percent: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result">: <a href="" class="extype" name="com.cibo.evilplot.colors.Color">Color</a></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.colors.Color#repr" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="repr:String"></a>
       <span class="permalink">
       <a href="../../../../com/cibo/evilplot/colors/Color.html#repr:String" title="Permalink">
@@ -331,6 +411,22 @@
       </span>
       <span class="symbol">
         <span class="name">rgba</span><span class="result">: (<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Double">Double</span>)</span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.colors.Color#triadic" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="triadic:(com.cibo.evilplot.colors.Color,com.cibo.evilplot.colors.Color)"></a><a id="triadic:(Color,Color)"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Color.html#triadic:(com.cibo.evilplot.colors.Color,com.cibo.evilplot.colors.Color)" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">triadic</span><span class="result">: (<a href="" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>, <a href="" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>)</span>
       </span>
       
       

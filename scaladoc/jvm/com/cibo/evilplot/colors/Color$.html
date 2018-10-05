@@ -151,6 +151,14 @@
                         <a href="ColorBar.html" title="">ColorBar</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
+                        <a class="object" href="ColorGradients$.html" title=""></a>
+                        <a href="ColorGradients$.html" title="">ColorGradients</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="object" href="ColorUtils$.html" title=""></a>
+                        <a href="ColorUtils$.html" title="">ColorUtils</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
                         <a class="trait" href="Coloring.html" title=""></a>
                         <a href="Coloring.html" title="">Coloring</a>
                       </li><li class="current-entities indented4">
@@ -161,6 +169,10 @@
                         <span class="separator"></span>
                         <a class="object" href="DefaultColors$.html" title=""></a>
                         <a href="DefaultColors$.html" title="">DefaultColors</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="object" href="FillGradients$.html" title=""></a>
+                        <a href="FillGradients$.html" title="">FillGradients</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="GradientMode$.html" title=""></a>
                         <a class="trait" href="GradientMode.html" title=""></a>
@@ -181,6 +193,10 @@
                         <span class="separator"></span>
                         <a class="class" href="HSLA.html" title=""></a>
                         <a href="HSLA.html" title="">HSLA</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="trait" href="HSLABasedManipulation.html" title=""></a>
+                        <a href="HSLABasedManipulation.html" title="">HSLABasedManipulation</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="object" href="HTMLNamedColors$.html" title=""></a>
@@ -349,9 +365,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="com.cibo.evilplot.colors.Color#analogGrow" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="analogGrow(node:com.cibo.evilplot.colors.HSLA,depth:Int):Seq[com.cibo.evilplot.colors.Color]"></a><a id="analogGrow(HSLA,Int):Seq[Color]"></a>
+      <a id="analogGrow(node:com.cibo.evilplot.colors.Color,depth:Int):Seq[com.cibo.evilplot.colors.Color]"></a><a id="analogGrow(Color,Int):Seq[Color]"></a>
       <span class="permalink">
-      <a href="../../../../com/cibo/evilplot/colors/Color$.html#analogGrow(node:com.cibo.evilplot.colors.HSLA,depth:Int):Seq[com.cibo.evilplot.colors.Color]" title="Permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Color$.html#analogGrow(node:com.cibo.evilplot.colors.Color,depth:Int):Seq[com.cibo.evilplot.colors.Color]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -360,7 +376,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">analogGrow</span><span class="params">(<span name="node">node: <a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a></span>, <span name="depth">depth: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>]</span>
+        <span class="name">analogGrow</span><span class="params">(<span name="node">node: <a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a></span>, <span name="depth">depth: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>]</span>
       </span>
       
       
@@ -491,9 +507,9 @@
               
         </dd></dl></div>
     </li><li name="com.cibo.evilplot.colors.Color#getAnalogousSeq" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getAnalogousSeq(seed:com.cibo.evilplot.colors.HSLA,depth:Int):Seq[com.cibo.evilplot.colors.Color]"></a><a id="getAnalogousSeq(HSLA,Int):Seq[Color]"></a>
+      <a id="getAnalogousSeq(seed:com.cibo.evilplot.colors.Color,depth:Int):Seq[com.cibo.evilplot.colors.Color]"></a><a id="getAnalogousSeq(Color,Int):Seq[Color]"></a>
       <span class="permalink">
-      <a href="../../../../com/cibo/evilplot/colors/Color$.html#getAnalogousSeq(seed:com.cibo.evilplot.colors.HSLA,depth:Int):Seq[com.cibo.evilplot.colors.Color]" title="Permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Color$.html#getAnalogousSeq(seed:com.cibo.evilplot.colors.Color,depth:Int):Seq[com.cibo.evilplot.colors.Color]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -502,7 +518,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getAnalogousSeq</span><span class="params">(<span name="seed">seed: <a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a> = <span class="symbol"><span class="name"><a href="HSL$.html">HSL(207, 90, 54)</a></span></span></span>, <span name="depth">depth: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>]</span>
+        <span class="name">getAnalogousSeq</span><span class="params">(<span name="seed">seed: <a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a> = <span class="symbol"><span class="name"><a href="HSL$.html">HSL(207, 90, 54)</a></span></span></span>, <span name="depth">depth: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>]</span>
       </span>
       
       
@@ -695,9 +711,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="com.cibo.evilplot.colors.Color#triadGrow" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="triadGrow(node:com.cibo.evilplot.colors.HSLA,depth:Int):Seq[com.cibo.evilplot.colors.Color]"></a><a id="triadGrow(HSLA,Int):Seq[Color]"></a>
+      <a id="triadGrow(node:com.cibo.evilplot.colors.Color,depth:Int):Seq[com.cibo.evilplot.colors.Color]"></a><a id="triadGrow(Color,Int):Seq[Color]"></a>
       <span class="permalink">
-      <a href="../../../../com/cibo/evilplot/colors/Color$.html#triadGrow(node:com.cibo.evilplot.colors.HSLA,depth:Int):Seq[com.cibo.evilplot.colors.Color]" title="Permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Color$.html#triadGrow(node:com.cibo.evilplot.colors.Color,depth:Int):Seq[com.cibo.evilplot.colors.Color]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -706,7 +722,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">triadGrow</span><span class="params">(<span name="node">node: <a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a></span>, <span name="depth">depth: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>]</span>
+        <span class="name">triadGrow</span><span class="params">(<span name="node">node: <a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a></span>, <span name="depth">depth: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>]</span>
       </span>
       
       

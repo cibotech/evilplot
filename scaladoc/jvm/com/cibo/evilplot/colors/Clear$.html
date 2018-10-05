@@ -151,6 +151,14 @@
                         <a href="ColorBar.html" title="">ColorBar</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
+                        <a class="object" href="ColorGradients$.html" title=""></a>
+                        <a href="ColorGradients$.html" title="">ColorGradients</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="object" href="ColorUtils$.html" title=""></a>
+                        <a href="ColorUtils$.html" title="">ColorUtils</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
                         <a class="trait" href="Coloring.html" title=""></a>
                         <a href="Coloring.html" title="">Coloring</a>
                       </li><li class="current-entities indented4">
@@ -161,6 +169,10 @@
                         <span class="separator"></span>
                         <a class="object" href="DefaultColors$.html" title=""></a>
                         <a href="DefaultColors$.html" title="">DefaultColors</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="object" href="FillGradients$.html" title=""></a>
+                        <a href="FillGradients$.html" title="">FillGradients</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="GradientMode$.html" title=""></a>
                         <a class="trait" href="GradientMode.html" title=""></a>
@@ -181,6 +193,10 @@
                         <span class="separator"></span>
                         <a class="class" href="HSLA.html" title=""></a>
                         <a href="HSLA.html" title="">HSLA</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="trait" href="HSLABasedManipulation.html" title=""></a>
+                        <a href="HSLABasedManipulation.html" title="">HSLABasedManipulation</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="object" href="HTMLNamedColors$.html" title=""></a>
@@ -236,7 +252,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Clear</span><span class="result"> extends <a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Clear</span><span class="result"> extends <a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a> with <a href="HSLABasedManipulation.html" class="extype" name="com.cibo.evilplot.colors.HSLABasedManipulation">HSLABasedManipulation</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
 
@@ -245,7 +261,7 @@
           <span class="toggle">
             Linear Supertypes
           </span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="HSLABasedManipulation.html" class="extype" name="com.cibo.evilplot.colors.HSLABasedManipulation">HSLABasedManipulation</a>, <a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -271,7 +287,7 @@
                   <span class="filtertype">Inherited<br />
                   </span>
                   <ol id="linearization">
-                    <li class="in" name="com.cibo.evilplot.colors.Clear"><span>Clear</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="com.cibo.evilplot.colors.Color"><span>Color</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                    <li class="in" name="com.cibo.evilplot.colors.Clear"><span>Clear</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="com.cibo.evilplot.colors.HSLABasedManipulation"><span>HSLABasedManipulation</span></li><li class="in" name="com.cibo.evilplot.colors.Color"><span>Color</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                   </ol>
                 </div><div class="ancestors">
               <span class="filtertype"></span>
@@ -346,6 +362,22 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.cibo.evilplot.colors.HSLABasedManipulation#analogous" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="analogous(offsetDegrees:Double):(com.cibo.evilplot.colors.HSLA,com.cibo.evilplot.colors.HSLA)"></a><a id="analogous(Double):(HSLA,HSLA)"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Clear$.html#analogous(offsetDegrees:Double):(com.cibo.evilplot.colors.HSLA,com.cibo.evilplot.colors.HSLA)" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">analogous</span><span class="params">(<span name="offsetDegrees">offsetDegrees: <span class="extype" name="scala.Double">Double</span> = <span class="symbol">14</span></span>)</span><span class="result">: (<a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a>, <a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a>)</span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HSLABasedManipulation.html" class="extype" name="com.cibo.evilplot.colors.HSLABasedManipulation">HSLABasedManipulation</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <span class="permalink">
@@ -386,6 +418,22 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.cibo.evilplot.colors.HSLABasedManipulation#darken" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="darken(percent:Double):com.cibo.evilplot.colors.HSLA"></a><a id="darken(Double):HSLA"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Clear$.html#darken(percent:Double):com.cibo.evilplot.colors.HSLA" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">darken</span><span class="params">(<span name="percent">percent: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result">: <a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HSLABasedManipulation.html" class="extype" name="com.cibo.evilplot.colors.HSLABasedManipulation">HSLABasedManipulation</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -459,6 +507,22 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li name="com.cibo.evilplot.colors.Clear#hsla" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hsla:com.cibo.evilplot.colors.HSLA"></a><a id="hsla:HSLA"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Clear$.html#hsla:com.cibo.evilplot.colors.HSLA" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hsla</span><span class="result">: <a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.cibo.evilplot.colors.Clear">Clear</a> → <a href="HSLABasedManipulation.html" class="extype" name="com.cibo.evilplot.colors.HSLABasedManipulation">HSLABasedManipulation</a> → <a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <span class="permalink">
@@ -475,6 +539,22 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.cibo.evilplot.colors.HSLABasedManipulation#lighten" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="lighten(percent:Double):com.cibo.evilplot.colors.HSLA"></a><a id="lighten(Double):HSLA"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Clear$.html#lighten(percent:Double):com.cibo.evilplot.colors.HSLA" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">lighten</span><span class="params">(<span name="percent">percent: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result">: <a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HSLABasedManipulation.html" class="extype" name="com.cibo.evilplot.colors.HSLABasedManipulation">HSLABasedManipulation</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -577,6 +657,22 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.cibo.evilplot.colors.HSLABasedManipulation#triadic" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="triadic:(com.cibo.evilplot.colors.HSLA,com.cibo.evilplot.colors.HSLA)"></a><a id="triadic:(HSLA,HSLA)"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/colors/Clear$.html#triadic:(com.cibo.evilplot.colors.HSLA,com.cibo.evilplot.colors.HSLA)" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">triadic</span><span class="result">: (<a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a>, <a href="HSLA.html" class="extype" name="com.cibo.evilplot.colors.HSLA">HSLA</a>)</span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HSLABasedManipulation.html" class="extype" name="com.cibo.evilplot.colors.HSLABasedManipulation">HSLABasedManipulation</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <span class="permalink">
@@ -663,6 +759,8 @@
               <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
             </div><div class="parent" name="scala.Equals">
               <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="com.cibo.evilplot.colors.HSLABasedManipulation">
+              <h3>Inherited from <a href="HSLABasedManipulation.html" class="extype" name="com.cibo.evilplot.colors.HSLABasedManipulation">HSLABasedManipulation</a></h3>
             </div><div class="parent" name="com.cibo.evilplot.colors.Color">
               <h3>Inherited from <a href="Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a></h3>
             </div><div class="parent" name="scala.AnyRef">

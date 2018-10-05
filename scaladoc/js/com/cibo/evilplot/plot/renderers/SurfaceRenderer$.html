@@ -162,6 +162,10 @@
                         <a class="trait" href="ComponentRenderer.html" title="Renderer for non-plot area components of a plot (labels, etc.)."></a>
                         <a href="ComponentRenderer.html" title="Renderer for non-plot area components of a plot (labels, etc.).">ComponentRenderer</a>
                       </li><li class="current-entities indented5">
+                        <a class="object" href="ContinuousBinRenderer$.html" title=""></a>
+                        <a class="trait" href="ContinuousBinRenderer.html" title=""></a>
+                        <a href="ContinuousBinRenderer.html" title="">ContinuousBinRenderer</a>
+                      </li><li class="current-entities indented5">
                         <span class="separator"></span>
                         <a class="class" href="DefaultPathRenderer.html" title=""></a>
                         <a href="DefaultPathRenderer.html" title="">DefaultPathRenderer</a>
@@ -291,7 +295,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="The element renderer context for surface renderers." href="SurfaceRenderer$$SurfaceRenderContext.html"><span class="name">SurfaceRenderContext</span></a><span class="params">(<span name="levels">levels: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="currentLevelPaths">currentLevelPaths: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]]</span>, <span name="currentLevel">currentLevel: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="The element renderer context for surface renderers." href="SurfaceRenderer$$SurfaceRenderContext.html"><span class="name">SurfaceRenderContext</span></a><span class="params">(<span name="levels">levels: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="currentLevelPaths">currentLevelPaths: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../numeric/Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]]</span>, <span name="currentLevel">currentLevel: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       <p class="shortcomment cmt">The element renderer context for surface renderers.</p>
@@ -407,6 +411,22 @@
       </span>
       
       
+    </li><li name="com.cibo.evilplot.plot.renderers.SurfaceRenderer#custom" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="custom(fn:(com.cibo.evilplot.plot.PlotContext,com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext)=&gt;com.cibo.evilplot.geometry.Drawable,legendCtx:Option[Seq[Double]=&gt;com.cibo.evilplot.plot.LegendContext]):com.cibo.evilplot.plot.renderers.SurfaceRenderer"></a><a id="custom((PlotContext,SurfaceRenderContext)⇒Drawable,Option[(Seq[Double])⇒LegendContext]):SurfaceRenderer"></a>
+      <span class="permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/SurfaceRenderer$.html#custom(fn:(com.cibo.evilplot.plot.PlotContext,com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext)=&gt;com.cibo.evilplot.geometry.Drawable,legendCtx:Option[Seq[Double]=&gt;com.cibo.evilplot.plot.LegendContext]):com.cibo.evilplot.plot.renderers.SurfaceRenderer" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">custom</span><span class="params">(<span name="fn">fn: (<a href="../PlotContext.html" class="extype" name="com.cibo.evilplot.plot.PlotContext">PlotContext</a>, <a href="SurfaceRenderer$$SurfaceRenderContext.html" class="extype" name="com.cibo.evilplot.plot.renderers.SurfaceRenderer.SurfaceRenderContext">SurfaceRenderContext</a>) ⇒ <a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>, <span name="legendCtx">legendCtx: <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]) ⇒ <a href="../LegendContext.html" class="extype" name="com.cibo.evilplot.plot.LegendContext">LegendContext</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <a href="SurfaceRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.SurfaceRenderer">SurfaceRenderer</a></span>
+      </span>
+      
+      
     </li><li name="com.cibo.evilplot.plot.renderers.SurfaceRenderer#densityColorContours" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="densityColorContours(coloring:Option[com.cibo.evilplot.colors.Coloring[Double]],strokeWidth:Option[Double],dashPattern:Option[com.cibo.evilplot.geometry.LineStyle])(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.SurfaceRenderer"></a><a id="densityColorContours(Option[Coloring[Double]],Option[Double],Option[LineStyle])(Theme):SurfaceRenderer"></a>
       <span class="permalink">
@@ -435,7 +455,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">densityColorContours</span><span class="params">(<span name="bar">bar: <a href="../../colors/ScaledColorBar.html" class="extype" name="com.cibo.evilplot.colors.ScaledColorBar">ScaledColorBar</a></span>)</span><span class="params">(<span name="points">points: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../numeric/package$$Point3.html" class="extype" name="com.cibo.evilplot.numeric.Point3">Point3</a>]]]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="SurfaceRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.SurfaceRenderer">SurfaceRenderer</a></span>
+        <span class="name">densityColorContours</span><span class="params">(<span name="bar">bar: <a href="../../colors/ScaledColorBar.html" class="extype" name="com.cibo.evilplot.colors.ScaledColorBar">ScaledColorBar</a></span>)</span><span class="params">(<span name="points">points: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../numeric/Point3.html" class="extype" name="com.cibo.evilplot.numeric.Point3">Point3</a>]]]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="SurfaceRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.SurfaceRenderer">SurfaceRenderer</a></span>
       </span>
       
       
@@ -451,7 +471,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">densityColorContours</span><span class="params">(<span name="points">points: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../numeric/package$$Point3.html" class="extype" name="com.cibo.evilplot.numeric.Point3">Point3</a>]]]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="SurfaceRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.SurfaceRenderer">SurfaceRenderer</a></span>
+        <span class="name">densityColorContours</span><span class="params">(<span name="points">points: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../numeric/Point3.html" class="extype" name="com.cibo.evilplot.numeric.Point3">Point3</a>]]]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="SurfaceRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.SurfaceRenderer">SurfaceRenderer</a></span>
       </span>
       
       

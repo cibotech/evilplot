@@ -206,6 +206,18 @@
                         <a class="class" href="Extent.html" title="Extent defines an object's rectangular bounding box."></a>
                         <a href="Extent.html" title="Extent defines an object's rectangular bounding box.">Extent</a>
                       </li><li class="current-entities indented4">
+                        <a class="object" href="Gradient2d$.html" title=""></a>
+                        <a class="trait" href="Gradient2d.html" title=""></a>
+                        <a href="Gradient2d.html" title="">Gradient2d</a>
+                      </li><li class="current-entities indented4">
+                        <a class="object" href="GradientFill$.html" title=""></a>
+                        <a class="class" href="GradientFill.html" title="Apply a gradient fill to a fillable Drawable."></a>
+                        <a href="GradientFill.html" title="Apply a gradient fill to a fillable Drawable.">GradientFill</a>
+                      </li><li class="current-entities indented4">
+                        <a class="object" href="GradientStop$.html" title=""></a>
+                        <a class="class" href="GradientStop.html" title=""></a>
+                        <a href="GradientStop.html" title="">GradientStop</a>
+                      </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="class" href="Grid.html" title=""></a>
                         <a href="Grid.html" title="">Grid</a>
@@ -226,6 +238,10 @@
                         <a class="class" href="LineStyle.html" title="The stroke pattern of a line."></a>
                         <a href="LineStyle.html" title="The stroke pattern of a line.">LineStyle</a>
                       </li><li class="current-entities indented4">
+                        <a class="object" href="LinearGradient$.html" title=""></a>
+                        <a class="class" href="LinearGradient.html" title=""></a>
+                        <a href="LinearGradient.html" title="">LinearGradient</a>
+                      </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="object" href="MultilineText$.html" title=""></a>
                         <a href="MultilineText$.html" title="">MultilineText</a>
@@ -241,6 +257,10 @@
                         <a class="object" href="Polygon$.html" title=""></a>
                         <a class="class" href="Polygon.html" title="A filled polygon."></a>
                         <a href="Polygon.html" title="A filled polygon.">Polygon</a>
+                      </li><li class="current-entities indented4">
+                        <a class="object" href="RadialGradient$.html" title=""></a>
+                        <a class="class" href="RadialGradient.html" title=""></a>
+                        <a href="RadialGradient.html" title="">RadialGradient</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="Rect$.html" title=""></a>
                         <a class="class" href="Rect.html" title="A filled rectangle."></a>
@@ -546,6 +566,54 @@ As discussed in <a href="http://ozark.hendrix.edu/~yorgey/pub/monoid-pearl.pdf">
 rectangular bounding boxes don't play well with rotation.
 We'll eventually need something fancier like the convex hull.
 </p></div><dl class="paramcmts block"><dt class="param">width</dt><dd class="cmt"><p>bounding box width</p></dd><dt class="param">height</dt><dd class="cmt"><p>bounding box height</p></dd></dl></div>
+    </li><li name="com.cibo.evilplot.geometry.Gradient2d" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="Gradient2dextendsAnyRef"></a><a id="Gradient2d:Gradient2d"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/index.html#Gradient2dextendsAnyRef" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="Gradient2d.html"><span class="name">Gradient2d</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.geometry.GradientFill" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="GradientFillextendsDrawablewithProductwithSerializable"></a><a id="GradientFill:GradientFill"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/index.html#GradientFillextendsDrawablewithProductwithSerializable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a title="Apply a gradient fill to a fillable Drawable." href="GradientFill.html"><span class="name">GradientFill</span></a><span class="params">(<span name="r">r: <a href="Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>, <span name="fill">fill: <a href="Gradient2d.html" class="extype" name="com.cibo.evilplot.geometry.Gradient2d">Gradient2d</a></span>)</span><span class="result"> extends <a href="Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Apply a gradient fill to a fillable Drawable.</p>
+    </li><li name="com.cibo.evilplot.geometry.GradientStop" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="GradientStopextendsProductwithSerializable"></a><a id="GradientStop:GradientStop"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/index.html#GradientStopextendsProductwithSerializable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="GradientStop.html"><span class="name">GradientStop</span></a><span class="params">(<span name="offset">offset: <span class="extype" name="scala.Double">Double</span></span>, <span name="color">color: <a href="../colors/Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
     </li><li name="com.cibo.evilplot.geometry.Grid" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="GridextendsProductwithSerializable"></a><a id="Grid:Grid"></a>
       <span class="permalink">
@@ -628,6 +696,22 @@ We'll eventually need something fancier like the convex hull.
       <p class="shortcomment cmt">The stroke pattern of a line.</p><div class="fullcomment"><div class="comment cmt"><p>The stroke pattern of a line.</p></div><dl class="paramcmts block"><dt class="param">dashPattern</dt><dd class="cmt"><p>A sequence containing distances between the solid portions of
   the line and the invisible portions. A single value will result in equal-sized opaque
   segments and gaps. An empty list uses a solid line. All values must be positive.</p></dd><dt class="param">offset</dt><dd class="cmt"><p>The &quot;phase&quot; of the dash pattern.</p></dd></dl></div>
+    </li><li name="com.cibo.evilplot.geometry.LinearGradient" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LinearGradientextendsGradient2dwithProductwithSerializable"></a><a id="LinearGradient:LinearGradient"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/index.html#LinearGradientextendsGradient2dwithProductwithSerializable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="LinearGradient.html"><span class="name">LinearGradient</span></a><span class="params">(<span name="x0">x0: <span class="extype" name="scala.Double">Double</span></span>, <span name="y0">y0: <span class="extype" name="scala.Double">Double</span></span>, <span name="x1">x1: <span class="extype" name="scala.Double">Double</span></span>, <span name="y1">y1: <span class="extype" name="scala.Double">Double</span></span>, <span name="stops">stops: <span class="extype" name="scala.Seq">Seq</span>[<a href="GradientStop.html" class="extype" name="com.cibo.evilplot.geometry.GradientStop">GradientStop</a>]</span>)</span><span class="result"> extends <a href="Gradient2d.html" class="extype" name="com.cibo.evilplot.geometry.Gradient2d">Gradient2d</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
     </li><li name="com.cibo.evilplot.geometry.Path" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PathextendsDrawablewithProductwithSerializable"></a><a id="Path:Path"></a>
       <span class="permalink">
@@ -640,7 +724,7 @@ We'll eventually need something fancier like the convex hull.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="A path with a strokable outline." href="Path.html"><span class="name">Path</span></a><span class="params">(<span name="points">points: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>, <span name="strokeWidth">strokeWidth: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <a href="Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="A path with a strokable outline." href="Path.html"><span class="name">Path</span></a><span class="params">(<span name="points">points: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>, <span name="strokeWidth">strokeWidth: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <a href="Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       <p class="shortcomment cmt">A path with a strokable outline.</p><div class="fullcomment"><div class="comment cmt"><p>A path with a strokable outline.</p></div><dl class="paramcmts block"><dt class="param">points</dt><dd class="cmt"><p>The points in the path. The path will be drawn in the same
@@ -673,10 +757,26 @@ We'll eventually need something fancier like the convex hull.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="A filled polygon." href="Polygon.html"><span class="name">Polygon</span></a><span class="params">(<span name="boundary">boundary: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>)</span><span class="result"> extends <a href="Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="A filled polygon." href="Polygon.html"><span class="name">Polygon</span></a><span class="params">(<span name="boundary">boundary: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>)</span><span class="result"> extends <a href="Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       <p class="shortcomment cmt">A filled polygon.</p><div class="fullcomment"><div class="comment cmt"><p>A filled polygon.</p></div><dl class="paramcmts block"><dt class="param">boundary</dt><dd class="cmt"><p>the points on the boundary of the polygon.</p></dd></dl></div>
+    </li><li name="com.cibo.evilplot.geometry.RadialGradient" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RadialGradientextendsGradient2dwithProductwithSerializable"></a><a id="RadialGradient:RadialGradient"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/index.html#RadialGradientextendsGradient2dwithProductwithSerializable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="RadialGradient.html"><span class="name">RadialGradient</span></a><span class="params">(<span name="x0">x0: <span class="extype" name="scala.Double">Double</span></span>, <span name="y0">y0: <span class="extype" name="scala.Double">Double</span></span>, <span name="r0">r0: <span class="extype" name="scala.Double">Double</span></span>, <span name="x1">x1: <span class="extype" name="scala.Double">Double</span></span>, <span name="y1">y1: <span class="extype" name="scala.Double">Double</span></span>, <span name="stops">stops: <span class="extype" name="scala.Seq">Seq</span>[<a href="GradientStop.html" class="extype" name="com.cibo.evilplot.geometry.GradientStop">GradientStop</a>]</span>)</span><span class="result"> extends <a href="Gradient2d.html" class="extype" name="com.cibo.evilplot.geometry.Gradient2d">Gradient2d</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
     </li><li name="com.cibo.evilplot.geometry.Rect" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="RectextendsDrawablewithProductwithSerializable"></a><a id="Rect:Rect"></a>
       <span class="permalink">
@@ -1182,6 +1282,54 @@ contents.</p>
       </span>
       
       
+    </li><li name="com.cibo.evilplot.geometry.Gradient2d" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Gradient2d"></a><a id="Gradient2d:Gradient2d"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/index.html#Gradient2d" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="Gradient2d$.html"><span class="name">Gradient2d</span></a>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.geometry.GradientFill" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="GradientFill"></a><a id="GradientFill:GradientFill"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/index.html#GradientFill" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="GradientFill$.html"><span class="name">GradientFill</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.geometry.GradientStop" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="GradientStop"></a><a id="GradientStop:GradientStop"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/index.html#GradientStop" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="GradientStop$.html"><span class="name">GradientStop</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
     </li><li name="com.cibo.evilplot.geometry.Group" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Group"></a><a id="Group:Group"></a>
       <span class="permalink">
@@ -1246,6 +1394,22 @@ contents.</p>
       </span>
       
       
+    </li><li name="com.cibo.evilplot.geometry.LinearGradient" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LinearGradient"></a><a id="LinearGradient:LinearGradient"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/index.html#LinearGradient" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="LinearGradient$.html"><span class="name">LinearGradient</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
     </li><li name="com.cibo.evilplot.geometry.MultilineText" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="MultilineText"></a><a id="MultilineText:MultilineText"></a>
       <span class="permalink">
@@ -1291,6 +1455,22 @@ contents.</p>
       </span>
       <span class="symbol">
         <a title="" href="Polygon$.html"><span class="name">Polygon</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.geometry.RadialGradient" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RadialGradient"></a><a id="RadialGradient:RadialGradient"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/index.html#RadialGradient" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="RadialGradient$.html"><span class="name">RadialGradient</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       

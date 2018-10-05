@@ -7,10 +7,12 @@ going to explore some more built-in plots.</p>
 
 <p>If we take a look at the method signature for <code class="highlighter-rouge">ScatterPlot.apply</code>, we see it takes more than just data:</p>
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">object</span> <span class="nc">ScatterPlot</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">apply</span><span class="o">(</span>
-    <span class="n">data</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">Point</span><span class="o">],</span>
-    <span class="n">pointRenderer</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">PointRenderer</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span><span class="o">,</span>
-    <span class="n">boundBuffer</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Double</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span>
+
+  <span class="k">def</span> <span class="n">apply</span><span class="o">[</span><span class="kt">X</span> <span class="k">&lt;:</span> <span class="kt">Datum2d</span><span class="o">[</span><span class="kt">X</span><span class="o">]](</span>   <span class="c1">// Point extends Datum2d[Point]
+</span>    <span class="n">data</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">X</span><span class="o">],</span>
+    <span class="n">pointRenderer</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">PointRenderer</span><span class="o">[</span><span class="kt">X</span><span class="o">]]</span> <span class="k">=</span> <span class="nc">None</span><span class="o">,</span>
+    <span class="n">xBoundBuffer</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Double</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span><span class="o">,</span>
+    <span class="n">yBoundBuffer</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Double</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span>
   <span class="o">)(</span><span class="k">implicit</span> <span class="n">theme</span><span class="k">:</span> <span class="kt">Theme</span><span class="o">)</span><span class="k">:</span> <span class="kt">Plot</span> <span class="o">=</span> <span class="o">???</span>
 <span class="o">}</span>
 </code></pre></div></div>

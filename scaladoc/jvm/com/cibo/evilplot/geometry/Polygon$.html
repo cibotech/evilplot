@@ -166,6 +166,18 @@
                         <a class="class" href="Extent.html" title="Extent defines an object's rectangular bounding box."></a>
                         <a href="Extent.html" title="Extent defines an object's rectangular bounding box.">Extent</a>
                       </li><li class="current-entities indented4">
+                        <a class="object" href="Gradient2d$.html" title=""></a>
+                        <a class="trait" href="Gradient2d.html" title=""></a>
+                        <a href="Gradient2d.html" title="">Gradient2d</a>
+                      </li><li class="current-entities indented4">
+                        <a class="object" href="GradientFill$.html" title=""></a>
+                        <a class="class" href="GradientFill.html" title="Apply a gradient fill to a fillable Drawable."></a>
+                        <a href="GradientFill.html" title="Apply a gradient fill to a fillable Drawable.">GradientFill</a>
+                      </li><li class="current-entities indented4">
+                        <a class="object" href="GradientStop$.html" title=""></a>
+                        <a class="class" href="GradientStop.html" title=""></a>
+                        <a href="GradientStop.html" title="">GradientStop</a>
+                      </li><li class="current-entities indented4">
                         <a class="object" href="Graphics2DRenderContext$.html" title=""></a>
                         <a class="class" href="Graphics2DRenderContext.html" title="A RenderContext for java.awt.Graphics2D"></a>
                         <a href="Graphics2DRenderContext.html" title="A RenderContext for java.awt.Graphics2D">Graphics2DRenderContext</a>
@@ -190,6 +202,10 @@
                         <a class="class" href="LineStyle.html" title="The stroke pattern of a line."></a>
                         <a href="LineStyle.html" title="The stroke pattern of a line.">LineStyle</a>
                       </li><li class="current-entities indented4">
+                        <a class="object" href="LinearGradient$.html" title=""></a>
+                        <a class="class" href="LinearGradient.html" title=""></a>
+                        <a href="LinearGradient.html" title="">LinearGradient</a>
+                      </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="object" href="MultilineText$.html" title=""></a>
                         <a href="MultilineText$.html" title="">MultilineText</a>
@@ -205,6 +221,10 @@
                         <a class="object" href="" title=""></a>
                         <a class="class" href="Polygon.html" title="A filled polygon."></a>
                         <a href="Polygon.html" title="A filled polygon.">Polygon</a>
+                      </li><li class="current-entities indented4">
+                        <a class="object" href="RadialGradient$.html" title=""></a>
+                        <a class="class" href="RadialGradient.html" title=""></a>
+                        <a href="RadialGradient.html" title="">RadialGradient</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="Rect$.html" title=""></a>
                         <a class="class" href="Rect.html" title="A filled rectangle."></a>
@@ -397,9 +417,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="com.cibo.evilplot.geometry.Polygon#apply" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(boundary:Seq[com.cibo.evilplot.numeric.Point]):com.cibo.evilplot.geometry.Drawable"></a><a id="apply(Seq[Point]):Drawable"></a>
+      <a id="apply(boundary:Seq[com.cibo.evilplot.numeric.Point2d]):com.cibo.evilplot.geometry.Drawable"></a><a id="apply(Seq[Point2d]):Drawable"></a>
       <span class="permalink">
-      <a href="../../../../com/cibo/evilplot/geometry/Polygon$.html#apply(boundary:Seq[com.cibo.evilplot.numeric.Point]):com.cibo.evilplot.geometry.Drawable" title="Permalink">
+      <a href="../../../../com/cibo/evilplot/geometry/Polygon$.html#apply(boundary:Seq[com.cibo.evilplot.numeric.Point2d]):com.cibo.evilplot.geometry.Drawable" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -408,7 +428,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="boundary">boundary: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>)</span><span class="result">: <a href="Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>
+        <span class="name">apply</span><span class="params">(<span name="boundary">boundary: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/Point2d.html" class="extype" name="com.cibo.evilplot.numeric.Point2d">Point2d</a>]</span>)</span><span class="result">: <a href="Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>
       </span>
       
       
@@ -440,7 +460,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">clipped</span><span class="params">(<span name="boundary">boundary: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>, <span name="extent">extent: <a href="Extent.html" class="extype" name="com.cibo.evilplot.geometry.Extent">Extent</a></span>)</span><span class="result">: <a href="Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>
+        <span class="name">clipped</span><span class="params">(<span name="boundary">boundary: <span class="extype" name="scala.Seq">Seq</span>[<a href="../numeric/Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>, <span name="extent">extent: <a href="Extent.html" class="extype" name="com.cibo.evilplot.geometry.Extent">Extent</a></span>)</span><span class="result">: <a href="Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>
       </span>
       
       

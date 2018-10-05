@@ -186,9 +186,9 @@
                         <a class="trait" href="AxisDescriptor.html" title=""></a>
                         <a href="AxisDescriptor.html" title="">AxisDescriptor</a>
                       </li><li class="current-entities indented4">
-                        <a class="object" href="package$$Bounds$.html" title=""></a>
-                        <a class="class" href="package$$Bounds.html" title=""></a>
-                        <a href="package$$Bounds.html" title="">Bounds</a>
+                        <a class="object" href="Bounds$.html" title=""></a>
+                        <a class="class" href="Bounds.html" title=""></a>
+                        <a href="Bounds.html" title="">Bounds</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="BoxPlotSummaryStatistics$.html" title=""></a>
                         <a class="class" href="BoxPlotSummaryStatistics.html" title=""></a>
@@ -197,6 +197,10 @@
                         <span class="separator"></span>
                         <a class="class" href="ContinuousAxisDescriptor.html" title=""></a>
                         <a href="ContinuousAxisDescriptor.html" title="">ContinuousAxisDescriptor</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="trait" href="Datum2d.html" title=""></a>
+                        <a href="Datum2d.html" title="">Datum2d</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="class" href="DiscreteAxisDescriptor.html" title=""></a>
@@ -218,13 +222,21 @@
                         <a class="object" href="MarchingSquares$.html" title=""></a>
                         <a href="MarchingSquares$.html" title="">MarchingSquares</a>
                       </li><li class="current-entities indented4">
-                        <a class="object" href="package$$Point$.html" title=""></a>
-                        <a class="class" href="package$$Point.html" title=""></a>
-                        <a href="package$$Point.html" title="">Point</a>
+                        <a class="object" href="Point$.html" title=""></a>
+                        <a class="class" href="Point.html" title=""></a>
+                        <a href="Point.html" title="">Point</a>
                       </li><li class="current-entities indented4">
-                        <a class="object" href="package$$Point3$.html" title=""></a>
-                        <a class="class" href="package$$Point3.html" title=""></a>
-                        <a href="package$$Point3.html" title="">Point3</a>
+                        <span class="separator"></span>
+                        <a class="trait" href="Point2d.html" title=""></a>
+                        <a href="Point2d.html" title="">Point2d</a>
+                      </li><li class="current-entities indented4">
+                        <a class="object" href="Point3$.html" title=""></a>
+                        <a class="class" href="Point3.html" title=""></a>
+                        <a href="Point3.html" title="">Point3</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="class" href="Point3d.html" title=""></a>
+                        <a href="Point3d.html" title="">Point3d</a>
                       </li><li name="com.cibo.evilplot.plot" visbl="pub" class="indented4 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="plot"></a><a id="plot:plot"></a>
       <span class="permalink">
@@ -349,7 +361,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="package$$Bounds.html"><span class="name">Bounds</span></a><span class="params">(<span name="min">min: <span class="extype" name="scala.Double">Double</span></span>, <span name="max">max: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="" href="Bounds.html"><span class="name">Bounds</span></a><span class="params">(<span name="min">min: <span class="extype" name="scala.Double">Double</span></span>, <span name="max">max: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       
@@ -381,7 +393,23 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ContinuousAxisDescriptor.html"><span class="name">ContinuousAxisDescriptor</span></a><span class="params">(<span name="bounds">bounds: <a href="package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="numTicksRequested">numTicksRequested: <span class="extype" name="scala.Int">Int</span></span>, <span name="fixed">fixed: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result"> extends <a href="AxisDescriptor.html" class="extype" name="com.cibo.evilplot.numeric.AxisDescriptor">AxisDescriptor</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="" href="ContinuousAxisDescriptor.html"><span class="name">ContinuousAxisDescriptor</span></a><span class="params">(<span name="bounds">bounds: <a href="Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="numTicksRequested">numTicksRequested: <span class="extype" name="scala.Int">Int</span></span>, <span name="fixed">fixed: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result"> extends <a href="AxisDescriptor.html" class="extype" name="com.cibo.evilplot.numeric.AxisDescriptor">AxisDescriptor</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.numeric.Datum2d" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="Datum2d[A&lt;:com.cibo.evilplot.numeric.Datum2d[A]]extendsPoint2d"></a><a id="Datum2d[A&lt;:Datum2d[A]]:Datum2d[A]"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/numeric/index.html#Datum2d[A&lt;:com.cibo.evilplot.numeric.Datum2d[A]]extendsPoint2d" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="Datum2d.html"><span class="name">Datum2d</span></a><span class="tparams">[<span name="A">A &lt;: <a href="Datum2d.html" class="extype" name="com.cibo.evilplot.numeric.Datum2d">Datum2d</a>[<span class="extype" name="com.cibo.evilplot.numeric.Datum2d.A">A</span>]</span>]</span><span class="result"> extends <a href="Point2d.html" class="extype" name="com.cibo.evilplot.numeric.Point2d">Point2d</a></span>
       </span>
       
       
@@ -429,14 +457,14 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="package$$GridData.html"><span class="name">GridData</span></a><span class="params">(<span name="grid">grid: <a href="#Grid=Vector[Vector[Double]]" class="extmbr" name="com.cibo.evilplot.numeric.Grid">Grid</a></span>, <span name="xBounds">xBounds: <a href="package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="yBounds">yBounds: <a href="package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="zBounds">zBounds: <a href="package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="xSpacing">xSpacing: <span class="extype" name="scala.Double">Double</span></span>, <span name="ySpacing">ySpacing: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="" href="package$$GridData.html"><span class="name">GridData</span></a><span class="params">(<span name="grid">grid: <a href="#Grid=Vector[Vector[Double]]" class="extmbr" name="com.cibo.evilplot.numeric.Grid">Grid</a></span>, <span name="xBounds">xBounds: <a href="Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="yBounds">yBounds: <a href="Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="zBounds">zBounds: <a href="Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a></span>, <span name="xSpacing">xSpacing: <span class="extype" name="scala.Double">Double</span></span>, <span name="ySpacing">ySpacing: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       
     </li><li name="com.cibo.evilplot.numeric.Point" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="PointextendsProductwithSerializable"></a><a id="Point:Point"></a>
+      <a id="PointextendsDatum2d[com.cibo.evilplot.numeric.Point]withProductwithSerializable"></a><a id="Point:Point"></a>
       <span class="permalink">
-      <a href="../../../../com/cibo/evilplot/numeric/index.html#PointextendsProductwithSerializable" title="Permalink">
+      <a href="../../../../com/cibo/evilplot/numeric/index.html#PointextendsDatum2d[com.cibo.evilplot.numeric.Point]withProductwithSerializable" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -445,7 +473,23 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="package$$Point.html"><span class="name">Point</span></a><span class="params">(<span name="x">x: <span class="extype" name="scala.Double">Double</span></span>, <span name="y">y: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="" href="Point.html"><span class="name">Point</span></a><span class="params">(<span name="x">x: <span class="extype" name="scala.Double">Double</span></span>, <span name="y">y: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <a href="Datum2d.html" class="extype" name="com.cibo.evilplot.numeric.Datum2d">Datum2d</a>[<a href="Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.numeric.Point2d" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="Point2dextendsAnyRef"></a><a id="Point2d:Point2d"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/numeric/index.html#Point2dextendsAnyRef" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="Point2d.html"><span class="name">Point2d</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       
       
@@ -461,7 +505,23 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="package$$Point3.html"><span class="name">Point3</span></a><span class="params">(<span name="x">x: <span class="extype" name="scala.Double">Double</span></span>, <span name="y">y: <span class="extype" name="scala.Double">Double</span></span>, <span name="z">z: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="" href="Point3.html"><span class="name">Point3</span></a><span class="params">(<span name="x">x: <span class="extype" name="scala.Double">Double</span></span>, <span name="y">y: <span class="extype" name="scala.Double">Double</span></span>, <span name="z">z: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.numeric.Point3d" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Point3d[Z]extendsDatum2d[com.cibo.evilplot.numeric.Point3d[Z]]withProductwithSerializable"></a><a id="Point3d[Z]:Point3d[Z]"></a>
+      <span class="permalink">
+      <a href="../../../../com/cibo/evilplot/numeric/index.html#Point3d[Z]extendsDatum2d[com.cibo.evilplot.numeric.Point3d[Z]]withProductwithSerializable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="Point3d.html"><span class="name">Point3d</span></a><span class="tparams">[<span name="Z">Z</span>]</span><span class="params">(<span name="x">x: <span class="extype" name="scala.Double">Double</span></span>, <span name="y">y: <span class="extype" name="scala.Double">Double</span></span>, <span name="z">z: <span class="extype" name="com.cibo.evilplot.numeric.Point3d.Z">Z</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="evidence$1">evidence$1: <span class="extype" name="scala.Numeric">Numeric</span>[<span class="extype" name="com.cibo.evilplot.numeric.Point3d.Z">Z</span>]</span>)</span><span class="result"> extends <a href="Datum2d.html" class="extype" name="com.cibo.evilplot.numeric.Datum2d">Datum2d</a>[<a href="Point3d.html" class="extype" name="com.cibo.evilplot.numeric.Point3d">Point3d</a>[<span class="extype" name="com.cibo.evilplot.numeric.Point3d.Z">Z</span>]] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       
@@ -501,7 +561,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a title="" href="package$$Bounds$.html"><span class="name">Bounds</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="" href="Bounds$.html"><span class="name">Bounds</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       
@@ -581,7 +641,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a title="" href="package$$Point$.html"><span class="name">Point</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="" href="Point$.html"><span class="name">Point</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       
@@ -597,7 +657,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a title="" href="package$$Point3$.html"><span class="name">Point3</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="" href="Point3$.html"><span class="name">Point3</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
       

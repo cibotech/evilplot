@@ -162,6 +162,10 @@
                         <a class="trait" href="ComponentRenderer.html" title="Renderer for non-plot area components of a plot (labels, etc.)."></a>
                         <a href="ComponentRenderer.html" title="Renderer for non-plot area components of a plot (labels, etc.).">ComponentRenderer</a>
                       </li><li class="current-entities indented5">
+                        <a class="object" href="ContinuousBinRenderer$.html" title=""></a>
+                        <a class="trait" href="ContinuousBinRenderer.html" title=""></a>
+                        <a href="ContinuousBinRenderer.html" title="">ContinuousBinRenderer</a>
+                      </li><li class="current-entities indented5">
                         <span class="separator"></span>
                         <a class="class" href="DefaultPathRenderer.html" title=""></a>
                         <a href="DefaultPathRenderer.html" title="">DefaultPathRenderer</a>
@@ -373,9 +377,9 @@
               
         </dd></dl></div>
     </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#colorByCategory" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="colorByCategory[A](colorDimension:Seq[A],coloring:Option[com.cibo.evilplot.colors.Coloring[A]],size:Option[Double])(implicitevidence$1:Ordering[A],implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer"></a><a id="colorByCategory[A](Seq[A],Option[Coloring[A]],Option[Double])(Ordering[A],Theme):PointRenderer"></a>
+      <a id="colorByCategory[T&lt;:com.cibo.evilplot.numeric.Datum2d[T],CATEGORY](data:Seq[T],categoryExtract:T=&gt;CATEGORY,coloring:Option[com.cibo.evilplot.colors.Coloring[CATEGORY]],size:Option[Double])(implicitevidence$1:Ordering[CATEGORY],implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer[T]"></a><a id="colorByCategory[T&lt;:Datum2d[T],CATEGORY](Seq[T],(T)⇒CATEGORY,Option[Coloring[CATEGORY]],Option[Double])(Ordering[CATEGORY],Theme):PointRenderer[T]"></a>
       <span class="permalink">
-      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#colorByCategory[A](colorDimension:Seq[A],coloring:Option[com.cibo.evilplot.colors.Coloring[A]],size:Option[Double])(implicitevidence$1:Ordering[A],implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer" title="Permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#colorByCategory[T&lt;:com.cibo.evilplot.numeric.Datum2d[T],CATEGORY](data:Seq[T],categoryExtract:T=&gt;CATEGORY,coloring:Option[com.cibo.evilplot.colors.Coloring[CATEGORY]],size:Option[Double])(implicitevidence$1:Ordering[CATEGORY],implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer[T]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -384,15 +388,15 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">colorByCategory</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="colorDimension">colorDimension: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.colorByCategory.A">A</span>]</span>, <span name="coloring">coloring: <span class="extype" name="scala.Option">Option</span>[<a href="../../colors/Coloring.html" class="extype" name="com.cibo.evilplot.colors.Coloring">Coloring</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.colorByCategory.A">A</span>]] = <span class="symbol">None</span></span>, <span name="size">size: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Double">Double</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.Ordering">Ordering</span>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.colorByCategory.A">A</span>]</span>, <span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a></span>
+        <span class="name">colorByCategory</span><span class="tparams">[<span name="T">T &lt;: <a href="../../numeric/Datum2d.html" class="extype" name="com.cibo.evilplot.numeric.Datum2d">Datum2d</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.colorByCategory.T">T</span>]</span>, <span name="CATEGORY">CATEGORY</span>]</span><span class="params">(<span name="data">data: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.colorByCategory.T">T</span>]</span>, <span name="categoryExtract">categoryExtract: (<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.colorByCategory.T">T</span>) ⇒ <span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.colorByCategory.CATEGORY">CATEGORY</span></span>, <span name="coloring">coloring: <span class="extype" name="scala.Option">Option</span>[<a href="../../colors/Coloring.html" class="extype" name="com.cibo.evilplot.colors.Coloring">Coloring</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.colorByCategory.CATEGORY">CATEGORY</span>]] = <span class="symbol">None</span></span>, <span name="size">size: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Double">Double</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.Ordering">Ordering</span>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.colorByCategory.CATEGORY">CATEGORY</span>]</span>, <span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.colorByCategory.T">T</span>]</span>
       </span>
       
-      <p class="shortcomment cmt">Render points with colors based on a third, categorical variable.</p><div class="fullcomment"><div class="comment cmt"><p>Render points with colors based on a third, categorical variable.</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>the type of the categorical variable.</p></dd><dt class="param">colorDimension</dt><dd class="cmt"><p>Categories for each point.</p></dd><dt class="param">coloring</dt><dd class="cmt"><p>The coloring to use. If not provided, one based on the
+      <p class="shortcomment cmt">Render points with colors based on a third, categorical variable.</p><div class="fullcomment"><div class="comment cmt"><p>Render points with colors based on a third, categorical variable.</p></div><dl class="paramcmts block"><dt class="tparam">T</dt><dd class="cmt"><p>the type of the data</p></dd><dt class="tparam">CATEGORY</dt><dd class="cmt"><p>the type of the categorical variable.</p></dd><dt class="param">data</dt><dd class="cmt"><p>the cateogory data</p></dd><dt class="param">categoryExtract</dt><dd class="cmt"><p>a function to extract categories for coloring</p></dd><dt class="param">coloring</dt><dd class="cmt"><p>The coloring to use. If not provided, one based on the
                 color stream from the theme is used.</p></dd><dt class="param">size</dt><dd class="cmt"><p>The size of the points.</p></dd></dl></div>
-    </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#default" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="default(color:Option[com.cibo.evilplot.colors.Color],pointSize:Option[Double],label:com.cibo.evilplot.geometry.Drawable)(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer"></a><a id="default(Option[Color],Option[Double],Drawable)(Theme):PointRenderer"></a>
+    </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#custom" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="custom[T&lt;:com.cibo.evilplot.numeric.Datum2d[T]](renderFn:T=&gt;com.cibo.evilplot.geometry.Drawable,legendCtx:Option[com.cibo.evilplot.plot.LegendContext]):com.cibo.evilplot.plot.renderers.PointRenderer[T]"></a><a id="custom[T&lt;:Datum2d[T]]((T)⇒Drawable,Option[LegendContext]):PointRenderer[T]"></a>
       <span class="permalink">
-      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#default(color:Option[com.cibo.evilplot.colors.Color],pointSize:Option[Double],label:com.cibo.evilplot.geometry.Drawable)(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer" title="Permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#custom[T&lt;:com.cibo.evilplot.numeric.Datum2d[T]](renderFn:T=&gt;com.cibo.evilplot.geometry.Drawable,legendCtx:Option[com.cibo.evilplot.plot.LegendContext]):com.cibo.evilplot.plot.renderers.PointRenderer[T]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -401,7 +405,23 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">default</span><span class="params">(<span name="color">color: <span class="extype" name="scala.Option">Option</span>[<a href="../../colors/Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>] = <span class="symbol">None</span></span>, <span name="pointSize">pointSize: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Double">Double</span>] = <span class="symbol">None</span></span>, <span name="label">label: <a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a> = <span class="symbol"><span class="name"><a href="../../../../index.html">EmptyDrawable()</a></span></span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a></span>
+        <span class="name">custom</span><span class="tparams">[<span name="T">T &lt;: <a href="../../numeric/Datum2d.html" class="extype" name="com.cibo.evilplot.numeric.Datum2d">Datum2d</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.custom.T">T</span>]</span>]</span><span class="params">(<span name="renderFn">renderFn: (<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.custom.T">T</span>) ⇒ <a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a></span>, <span name="legendCtx">legendCtx: <span class="extype" name="scala.Option">Option</span>[<a href="../LegendContext.html" class="extype" name="com.cibo.evilplot.plot.LegendContext">LegendContext</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.custom.T">T</span>]</span>
+      </span>
+      
+      
+    </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#default" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="default[T&lt;:com.cibo.evilplot.numeric.Datum2d[T]](color:Option[com.cibo.evilplot.colors.Color],pointSize:Option[Double],label:com.cibo.evilplot.geometry.Drawable)(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer[T]"></a><a id="default[T&lt;:Datum2d[T]](Option[Color],Option[Double],Drawable)(Theme):PointRenderer[T]"></a>
+      <span class="permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#default[T&lt;:com.cibo.evilplot.numeric.Datum2d[T]](color:Option[com.cibo.evilplot.colors.Color],pointSize:Option[Double],label:com.cibo.evilplot.geometry.Drawable)(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer[T]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">default</span><span class="tparams">[<span name="T">T &lt;: <a href="../../numeric/Datum2d.html" class="extype" name="com.cibo.evilplot.numeric.Datum2d">Datum2d</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.default.T">T</span>]</span>]</span><span class="params">(<span name="color">color: <span class="extype" name="scala.Option">Option</span>[<a href="../../colors/Color.html" class="extype" name="com.cibo.evilplot.colors.Color">Color</a>] = <span class="symbol">None</span></span>, <span name="pointSize">pointSize: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Double">Double</span>] = <span class="symbol">None</span></span>, <span name="label">label: <a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a> = <span class="symbol"><span class="name"><a href="../../../../index.html">EmptyDrawable()</a></span></span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.default.T">T</span>]</span>
       </span>
       
       <p class="shortcomment cmt">The default point renderer to render a disc.</p><div class="fullcomment"><div class="comment cmt"><p>The default point renderer to render a disc.</p></div><dl class="paramcmts block"><dt class="param">color</dt><dd class="cmt"><p>The color of the point.</p></dd><dt class="param">pointSize</dt><dd class="cmt"><p>The size of the point.</p></dd><dt class="param">label</dt><dd class="cmt"><p>Label to be shown in a legend.</p></dd></dl></div>
@@ -422,9 +442,9 @@
       
       
     </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#depthColor" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="depthColor(depths:Seq[Double],coloring:Option[com.cibo.evilplot.colors.Coloring[Double]],size:Option[Double])(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer"></a><a id="depthColor(Seq[Double],Option[Coloring[Double]],Option[Double])(Theme):PointRenderer"></a>
+      <a id="depthColor[T&lt;:com.cibo.evilplot.numeric.Datum2d[T]](depth:T=&gt;Double,min:Double,max:Double,coloring:Option[com.cibo.evilplot.colors.Coloring[Double]],size:Option[Double])(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer[T]"></a><a id="depthColor[T&lt;:Datum2d[T]]((T)⇒Double,Double,Double,Option[Coloring[Double]],Option[Double])(Theme):PointRenderer[T]"></a>
       <span class="permalink">
-      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#depthColor(depths:Seq[Double],coloring:Option[com.cibo.evilplot.colors.Coloring[Double]],size:Option[Double])(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer" title="Permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#depthColor[T&lt;:com.cibo.evilplot.numeric.Datum2d[T]](depth:T=&gt;Double,min:Double,max:Double,coloring:Option[com.cibo.evilplot.colors.Coloring[Double]],size:Option[Double])(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer[T]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -433,14 +453,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">depthColor</span><span class="params">(<span name="depths">depths: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="coloring">coloring: <span class="extype" name="scala.Option">Option</span>[<a href="../../colors/Coloring.html" class="extype" name="com.cibo.evilplot.colors.Coloring">Coloring</a>[<span class="extype" name="scala.Double">Double</span>]] = <span class="symbol">None</span></span>, <span name="size">size: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Double">Double</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a></span>
+        <span class="name">depthColor</span><span class="tparams">[<span name="T">T &lt;: <a href="../../numeric/Datum2d.html" class="extype" name="com.cibo.evilplot.numeric.Datum2d">Datum2d</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.depthColor.T">T</span>]</span>]</span><span class="params">(<span name="depth">depth: (<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.depthColor.T">T</span>) ⇒ <span class="extype" name="scala.Double">Double</span></span>, <span name="min">min: <span class="extype" name="scala.Double">Double</span></span>, <span name="max">max: <span class="extype" name="scala.Double">Double</span></span>, <span name="coloring">coloring: <span class="extype" name="scala.Option">Option</span>[<a href="../../colors/Coloring.html" class="extype" name="com.cibo.evilplot.colors.Coloring">Coloring</a>[<span class="extype" name="scala.Double">Double</span>]] = <span class="symbol">None</span></span>, <span name="size">size: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Double">Double</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.depthColor.T">T</span>]</span>
       </span>
       
-      <p class="shortcomment cmt">Render points with colors based on a third, continuous variable.</p><div class="fullcomment"><div class="comment cmt"><p>Render points with colors based on a third, continuous variable.</p></div><dl class="paramcmts block"><dt class="param">depths</dt><dd class="cmt"><p>The depths for each point.</p></dd><dt class="param">coloring</dt><dd class="cmt"><p>The coloring to use.</p></dd><dt class="param">size</dt><dd class="cmt"><p>The size of the point.</p></dd></dl></div>
+      <p class="shortcomment cmt">Render points with colors based on a third, continuous variable.</p><div class="fullcomment"><div class="comment cmt"><p>Render points with colors based on a third, continuous variable.</p></div><dl class="paramcmts block"><dt class="tparam">T</dt><dd class="cmt"><p>the type of the point</p></dd><dt class="param">min</dt><dd class="cmt"><p>the min for the gradient</p></dd><dt class="param">max</dt><dd class="cmt"><p>the max for the gradient</p></dd><dt class="param">coloring</dt><dd class="cmt"><p>The coloring to use.</p></dd><dt class="param">size</dt><dd class="cmt"><p>The size of the point.</p></dd></dl></div>
     </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#empty" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="empty():com.cibo.evilplot.plot.renderers.PointRenderer"></a><a id="empty():PointRenderer"></a>
+      <a id="empty[T&lt;:com.cibo.evilplot.numeric.Datum2d[T]]():com.cibo.evilplot.plot.renderers.PointRenderer[T]"></a><a id="empty[T&lt;:Datum2d[T]]():PointRenderer[T]"></a>
       <span class="permalink">
-      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#empty():com.cibo.evilplot.plot.renderers.PointRenderer" title="Permalink">
+      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#empty[T&lt;:com.cibo.evilplot.numeric.Datum2d[T]]():com.cibo.evilplot.plot.renderers.PointRenderer[T]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -449,7 +469,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">empty</span><span class="params">()</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a></span>
+        <span class="name">empty</span><span class="tparams">[<span name="T">T &lt;: <a href="../../numeric/Datum2d.html" class="extype" name="com.cibo.evilplot.numeric.Datum2d">Datum2d</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.empty.T">T</span>]</span>]</span><span class="params">()</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a>[<span class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer.empty.T">T</span>]</span>
       </span>
       
       <p class="shortcomment cmt">A no-op renderer for when you don't want to render points (such as on a line)
@@ -722,86 +742,7 @@
 
         
 
-        <div class="values members">
-              <h3>Deprecated Value Members</h3>
-              <ol><li name="com.cibo.evilplot.plot.renderers.PointRenderer#depthColor" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="depthColor(depths:Seq[Double],bar:com.cibo.evilplot.colors.ScaledColorBar)(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer"></a><a id="depthColor(Seq[Double],ScaledColorBar)(Theme):PointRenderer"></a>
-      <span class="permalink">
-      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#depthColor(depths:Seq[Double],bar:com.cibo.evilplot.colors.ScaledColorBar)(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name deprecated" title="Deprecated: (Since version 29 March 2018) Use an overload taking a Coloring[Double]">depthColor</span><span class="params">(<span name="depths">depths: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="bar">bar: <a href="../../colors/ScaledColorBar.html" class="extype" name="com.cibo.evilplot.colors.ScaledColorBar">ScaledColorBar</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a></span>
-      </span>
-      
-      <p class="shortcomment cmt">Render points with colors based on depth.</p><div class="fullcomment"><div class="comment cmt"><p>Render points with colors based on depth.</p></div><dl class="paramcmts block"><dt class="param">depths</dt><dd class="cmt"><p>The depths.</p></dd><dt class="param">bar</dt><dd class="cmt"><p>The color bar to use</p></dd></dl><dl class="attributes block"> <dt>Annotations</dt><dd>
-                <span class="name">@deprecated</span>
-              
-        </dd><dt>Deprecated</dt><dd class="cmt"><p><i>(Since version 29 March 2018)</i> Use an overload taking a Coloring[Double]</p></dd></dl></div>
-    </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#depthColor" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="depthColor(depths:Seq[Double],labels:Seq[com.cibo.evilplot.geometry.Drawable],bar:com.cibo.evilplot.colors.ScaledColorBar)(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer"></a><a id="depthColor(Seq[Double],Seq[Drawable],ScaledColorBar)(Theme):PointRenderer"></a>
-      <span class="permalink">
-      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#depthColor(depths:Seq[Double],labels:Seq[com.cibo.evilplot.geometry.Drawable],bar:com.cibo.evilplot.colors.ScaledColorBar)(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name deprecated" title="Deprecated: (Since version 29 March 2018) Use an overload taking a Coloring[Double]">depthColor</span><span class="params">(<span name="depths">depths: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="labels">labels: <span class="extype" name="scala.Seq">Seq</span>[<a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a>]</span>, <span name="bar">bar: <a href="../../colors/ScaledColorBar.html" class="extype" name="com.cibo.evilplot.colors.ScaledColorBar">ScaledColorBar</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a></span>
-      </span>
-      
-      <p class="shortcomment cmt">Render points with colors based on depth.</p><div class="fullcomment"><div class="comment cmt"><p>Render points with colors based on depth.</p></div><dl class="paramcmts block"><dt class="param">depths</dt><dd class="cmt"><p>The depths.</p></dd><dt class="param">labels</dt><dd class="cmt"><p>The labels to use for categories.</p></dd><dt class="param">bar</dt><dd class="cmt"><p>The color bar to use</p></dd></dl><dl class="attributes block"> <dt>Annotations</dt><dd>
-                <span class="name">@deprecated</span>
-              
-        </dd><dt>Deprecated</dt><dd class="cmt"><p><i>(Since version 29 March 2018)</i> Use an overload taking a Coloring[Double]</p></dd></dl></div>
-    </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#depthColor" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="depthColor(depths:Seq[Double],labels:Seq[com.cibo.evilplot.geometry.Drawable],bar:com.cibo.evilplot.colors.ScaledColorBar,size:Option[Double])(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer"></a><a id="depthColor(Seq[Double],Seq[Drawable],ScaledColorBar,Option[Double])(Theme):PointRenderer"></a>
-      <span class="permalink">
-      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#depthColor(depths:Seq[Double],labels:Seq[com.cibo.evilplot.geometry.Drawable],bar:com.cibo.evilplot.colors.ScaledColorBar,size:Option[Double])(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name deprecated" title="Deprecated: (Since version 29 March 2018) Use an overload taking a Coloring[Double]">depthColor</span><span class="params">(<span name="depths">depths: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="labels">labels: <span class="extype" name="scala.Seq">Seq</span>[<a href="../../geometry/Drawable.html" class="extype" name="com.cibo.evilplot.geometry.Drawable">Drawable</a>]</span>, <span name="bar">bar: <a href="../../colors/ScaledColorBar.html" class="extype" name="com.cibo.evilplot.colors.ScaledColorBar">ScaledColorBar</a></span>, <span name="size">size: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Double">Double</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a></span>
-      </span>
-      
-      <p class="shortcomment cmt">Render points with colors based on depth.</p><div class="fullcomment"><div class="comment cmt"><p>Render points with colors based on depth.</p></div><dl class="paramcmts block"><dt class="param">depths</dt><dd class="cmt"><p>The depths.</p></dd><dt class="param">labels</dt><dd class="cmt"><p>Label for each category</p></dd><dt class="param">bar</dt><dd class="cmt"><p>The color bar to use</p></dd><dt class="param">size</dt><dd class="cmt"><p>The size of the point.</p></dd></dl><dl class="attributes block"> <dt>Annotations</dt><dd>
-                <span class="name">@deprecated</span>
-              
-        </dd><dt>Deprecated</dt><dd class="cmt"><p><i>(Since version 29 March 2018)</i> Use an overload taking a Coloring[Double]</p></dd></dl></div>
-    </li><li name="com.cibo.evilplot.plot.renderers.PointRenderer#depthColor" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="depthColor(depths:Seq[Double],colorCount:Int)(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer"></a><a id="depthColor(Seq[Double],Int)(Theme):PointRenderer"></a>
-      <span class="permalink">
-      <a href="../../../../../com/cibo/evilplot/plot/renderers/PointRenderer$.html#depthColor(depths:Seq[Double],colorCount:Int)(implicittheme:com.cibo.evilplot.plot.aesthetics.Theme):com.cibo.evilplot.plot.renderers.PointRenderer" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name deprecated" title="Deprecated: (Since version 29 March 2018) Use an overload taking a Coloring[Double]">depthColor</span><span class="params">(<span name="depths">depths: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]</span>, <span name="colorCount">colorCount: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="theme">theme: <a href="../aesthetics/Theme.html" class="extype" name="com.cibo.evilplot.plot.aesthetics.Theme">Theme</a></span>)</span><span class="result">: <a href="PointRenderer.html" class="extype" name="com.cibo.evilplot.plot.renderers.PointRenderer">PointRenderer</a></span>
-      </span>
-      
-      <p class="shortcomment cmt">Render points with colors based on depth.</p><div class="fullcomment"><div class="comment cmt"><p>Render points with colors based on depth.</p></div><dl class="paramcmts block"><dt class="param">depths</dt><dd class="cmt"><p>The depths.</p></dd><dt class="param">colorCount</dt><dd class="cmt"><p>The number of labels/colors to use.</p></dd></dl><dl class="attributes block"> <dt>Annotations</dt><dd>
-                <span class="name">@deprecated</span>
-              
-        </dd><dt>Deprecated</dt><dd class="cmt"><p><i>(Since version 29 March 2018)</i> Use an overload taking a Coloring[Double]</p></dd></dl></div>
-    </li></ol>
-            </div>
+        
         </div>
 
         <div id="inheritedMembers">

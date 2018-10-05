@@ -138,9 +138,9 @@
                         <a class="trait" href="AxisDescriptor.html" title=""></a>
                         <a href="AxisDescriptor.html" title="">AxisDescriptor</a>
                       </li><li class="current-entities indented4">
-                        <a class="object" href="package$$Bounds$.html" title=""></a>
-                        <a class="class" href="package$$Bounds.html" title=""></a>
-                        <a href="package$$Bounds.html" title="">Bounds</a>
+                        <a class="object" href="Bounds$.html" title=""></a>
+                        <a class="class" href="Bounds.html" title=""></a>
+                        <a href="Bounds.html" title="">Bounds</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="BoxPlotSummaryStatistics$.html" title=""></a>
                         <a class="class" href="BoxPlotSummaryStatistics.html" title=""></a>
@@ -149,6 +149,10 @@
                         <span class="separator"></span>
                         <a class="class" href="ContinuousAxisDescriptor.html" title=""></a>
                         <a href="ContinuousAxisDescriptor.html" title="">ContinuousAxisDescriptor</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="trait" href="Datum2d.html" title=""></a>
+                        <a href="Datum2d.html" title="">Datum2d</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="class" href="DiscreteAxisDescriptor.html" title=""></a>
@@ -170,13 +174,21 @@
                         <a class="object" href="MarchingSquares$.html" title=""></a>
                         <a href="MarchingSquares$.html" title="">MarchingSquares</a>
                       </li><li class="current-entities indented4">
-                        <a class="object" href="package$$Point$.html" title=""></a>
-                        <a class="class" href="package$$Point.html" title=""></a>
-                        <a href="package$$Point.html" title="">Point</a>
+                        <a class="object" href="Point$.html" title=""></a>
+                        <a class="class" href="Point.html" title=""></a>
+                        <a href="Point.html" title="">Point</a>
                       </li><li class="current-entities indented4">
-                        <a class="object" href="package$$Point3$.html" title=""></a>
-                        <a class="class" href="package$$Point3.html" title=""></a>
-                        <a href="package$$Point3.html" title="">Point3</a>
+                        <span class="separator"></span>
+                        <a class="trait" href="Point2d.html" title=""></a>
+                        <a href="Point2d.html" title="">Point2d</a>
+                      </li><li class="current-entities indented4">
+                        <a class="object" href="Point3$.html" title=""></a>
+                        <a class="class" href="Point3.html" title=""></a>
+                        <a href="Point3.html" title="">Point3</a>
+                      </li><li class="current-entities indented4">
+                        <span class="separator"></span>
+                        <a class="class" href="Point3d.html" title=""></a>
+                        <a href="Point3d.html" title="">Point3d</a>
                       </li>
               </ul>
             </div>
@@ -362,7 +374,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">densityEstimate2D</span><span class="params">(<span name="data">data: <span class="extype" name="scala.Seq">Seq</span>[<a href="package$$Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>, <span name="numPoints">numPoints: (<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Int">Int</span>) = <span class="symbol">(100, 100)</span></span>, <span name="xBounds">xBounds: <span class="extype" name="scala.Option">Option</span>[<a href="package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a>] = <span class="symbol">None</span></span>, <span name="yBounds">yBounds: <span class="extype" name="scala.Option">Option</span>[<a href="package$$Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <a href="package$$GridData.html" class="extype" name="com.cibo.evilplot.numeric.GridData">GridData</a></span>
+        <span class="name">densityEstimate2D</span><span class="params">(<span name="data">data: <span class="extype" name="scala.Seq">Seq</span>[<a href="Point.html" class="extype" name="com.cibo.evilplot.numeric.Point">Point</a>]</span>, <span name="numPoints">numPoints: (<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Int">Int</span>) = <span class="symbol">(100, 100)</span></span>, <span name="xBounds">xBounds: <span class="extype" name="scala.Option">Option</span>[<a href="Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a>] = <span class="symbol">None</span></span>, <span name="yBounds">yBounds: <span class="extype" name="scala.Option">Option</span>[<a href="Bounds.html" class="extype" name="com.cibo.evilplot.numeric.Bounds">Bounds</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <a href="package$$GridData.html" class="extype" name="com.cibo.evilplot.numeric.GridData">GridData</a></span>
       </span>
       
       <p class="shortcomment cmt">Perform a 2-dimensional kernel density estimation on data.</p><div class="fullcomment"><div class="comment cmt"><p>Perform a 2-dimensional kernel density estimation on data.</p></div><dl class="paramcmts block"><dt class="param">data</dt><dd class="cmt"><p>A sequence of points, for which a density estimate is to be generated. &quot;x&quot; corresponds to
