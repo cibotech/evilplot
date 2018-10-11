@@ -33,7 +33,11 @@ package com.cibo.evilplot.geometry
 import com.cibo.evilplot.colors.HTMLNamedColors
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
-final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends RenderContext {
+trait CanvasBasedRenderContext extends RenderContext {
+  val canvas: CanvasRenderingContext2D
+
+  def clear() = canvas.clearRect(0, 0, this.canvas.canvas.width, this.canvas.canvas.height)
+
   def draw(line: Line): Unit = CanvasOp(canvas) {
     canvas.lineWidth = line.strokeWidth
     canvas.beginPath()
@@ -171,4 +175,9 @@ final case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends R
         gradient.r.draw(this)
     }
   }
+
+  def draw(interaction: Interaction): Unit = {
+    interaction.r.draw(this)
+  }
 }
+case class CanvasRenderContext(canvas: CanvasRenderingContext2D) extends CanvasBasedRenderContext

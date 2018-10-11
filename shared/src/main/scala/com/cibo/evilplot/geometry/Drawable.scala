@@ -35,7 +35,9 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.numeric.{Point, Point2d}
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
-import io.circe.{Decoder, Encoder, ObjectEncoder}
+import io.circe._
+
+import scala.collection.immutable.Stream.Empty
 // scalastyle:off
 
 /**
@@ -53,12 +55,28 @@ sealed trait Drawable {
 // Because of the way the JSON de/serialization works right now, no two field names
 // can start with the same character in any class extending Drawable.
 // Also you should register a shortened constructor name in JSONUtils#shortenedName
-sealed trait InteractionEvent
+sealed trait InteractionEvent {
+  val e: () => Unit
+}
+
+object InteractionEvent {
+  implicit val encodeInteractionEvent: Encoder[InteractionEvent] = new Encoder[InteractionEvent] {
+    final def apply(a: InteractionEvent): Json = Json.obj()
+  }
+
+  implicit val decodeInteractionEvent: Decoder[InteractionEvent] = new Decoder[InteractionEvent] {
+    final def apply(c: HCursor): Decoder.Result[InteractionEvent] = Right(EmptyEvent())
+  }
+}
+
+case class EmptyEvent() extends InteractionEvent{
+  override val e: () => Unit = () => ()
+}
 case class OnClick(e: () => Unit) extends InteractionEvent
 case class OnHover(e: () => Unit) extends InteractionEvent
 
 /** Apply a fill color to a fillable Drawable. */
-final case class Interaction(r: Drawable, interactionEvent: InteractionEvent) extends Drawable {
+final case class Interaction(r: Drawable, interactionEvent: InteractionEvent*) extends Drawable {
   lazy val extent: Extent = r.extent
   def draw(context: RenderContext): Unit = context.draw(this)
 }
