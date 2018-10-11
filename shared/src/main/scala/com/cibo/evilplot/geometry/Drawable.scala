@@ -36,8 +36,6 @@ import com.cibo.evilplot.numeric.{Point, Point2d}
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
 import io.circe._
-
-import scala.collection.immutable.Stream.Empty
 // scalastyle:off
 
 /**
@@ -55,10 +53,12 @@ sealed trait Drawable {
 // Because of the way the JSON de/serialization works right now, no two field names
 // can start with the same character in any class extending Drawable.
 // Also you should register a shortened constructor name in JSONUtils#shortenedName
+
 sealed trait InteractionEvent {
   val e: () => Unit
 }
 
+// Interaction events are non-portable
 object InteractionEvent {
   implicit val encodeInteractionEvent: Encoder[InteractionEvent] = new Encoder[InteractionEvent] {
     final def apply(a: InteractionEvent): Json = Json.obj()

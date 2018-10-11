@@ -12,7 +12,9 @@ import scala.scalajs.js.timers.SetTimeoutHandle
 /*
   This provides interaction tracking for a maximum of ~10,000,000 individual elements
    limited by colors in RGB space and likelyhood of collision
- */
+
+   This works well for use cases where the interaction mask is rendered less often than the main drawable
+*/
 trait CanvasInteractionDetection {
 
   val noInteraction: String = s"#FFFFFF"

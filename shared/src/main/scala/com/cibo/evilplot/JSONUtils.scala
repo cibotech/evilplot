@@ -65,6 +65,7 @@ object JSONUtils {
       case "LineDash"      => "l"
       case "Text"          => "X"
       case "HSLA"          => "c"
+      case "GradientFill"  => "g2"
       case other           => other
     }
   }
