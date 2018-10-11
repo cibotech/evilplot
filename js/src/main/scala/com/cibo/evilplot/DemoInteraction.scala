@@ -1,0 +1,70 @@
+package com.cibo.evilplot
+
+import java.util.UUID
+
+import com.cibo.evilplot.geometry.{CanvasRenderContext, Disc, Interaction, OnClick, OnHover, Text}
+import com.cibo.evilplot.interaction.CanvasInteractionContext
+import com.cibo.evilplot.numeric.Point3d
+import com.cibo.evilplot.plot.CartesianPlot
+import org.scalajs.dom
+
+object DemoInteraction {
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
+  // Crappy way to maintain state
+  private var activePoint: Option[Point3d[Int]] = None
+  private var hoveredPoint: Option[Int] = None
+
+  def scatter(ctx: CanvasRenderContext, interactionMaskContext: CanvasInteractionContext, screenWidth: Double, screenHeight: Double) = {
+
+    val anchors = Seq((10.0, 10.0), (0.0, 10.0), (10.0, 0.0), (0.0, 0.0))
+    val data = (Seq.fill(300)(Math.random() * 10, Math.random() * 10) ++ anchors).zipWithIndex.map(x => Point3d[Int](x._1._1, x._1._2, x._2))
+    val canvasId = UUID.randomUUID().toString
+
+
+    def pointHover(hovered: Point3d[Int]) = {
+      if(hovered.z != hoveredPoint.getOrElse(-1)){
+        hoveredPoint = Some(hovered.z)
+        renderPlot()
+      }
+    }
+
+    def renderPlot() = {
+      dom.window.requestAnimationFrame { _ =>
+
+        val updatedPlot = CartesianPlot(data){
+          _.scatter({x: Point3d[Int] =>
+            if(hoveredPoint.getOrElse(-1) == x.z) {
+              Disc(5).translate(-5, -5).filled(colors.DefaultColors.lightPalette(1))
+            } else if(activePoint.map(_.z).getOrElse(-1) == x.z){
+              Disc(5).translate(-5, -5).filled(colors.DefaultColors.lightPalette(4))
+            } else Disc(5).translate(-5, -5).filled(colors.DefaultColors.lightPalette(2))
+          })
+        }
+        ctx.clear()
+        (Text(s"Active Point: ${activePoint.map(_.z)}, Hovered Point: ${hoveredPoint}", size = 16)
+          .padBottom(20) above updatedPlot.standard().render()).padAll(10).draw(ctx)
+      }
+    }
+
+    val plot = CartesianPlot(data){
+      _.scatter({x: Point3d[Int] => Interaction(
+        Disc(5).filled(colors.DefaultColors.lightPalette(2))
+          .translate(-5, -5), OnHover(() => pointHover(x)), OnClick(() => {
+          println("Clicked")
+          activePoint = Some(x)
+          renderPlot()
+        })
+      )})
+    }.standard()
+
+    interactionMaskContext.attachToMainCanvas(ctx.canvas.canvas, defaultMove = { () =>
+      hoveredPoint = None
+      renderPlot()
+    })
+    (Text(s"Active Point: ${activePoint.map(_.z)}, Hovered Point: ${hoveredPoint}", size = 16)
+      .padBottom(20) above plot.render()).padAll(10).draw(interactionMaskContext)
+
+    renderPlot()
+  }
+}

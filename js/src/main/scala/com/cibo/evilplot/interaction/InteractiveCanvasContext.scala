@@ -5,7 +5,7 @@ import com.cibo.evilplot.geometry._
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 
-final case class InteractionMaskContext(canvas: CanvasRenderingContext2D)
+final case class CanvasInteractionContext(canvas: CanvasRenderingContext2D)
   extends CanvasBasedRenderContext with CanvasInteractionDetection {
 
   override def draw(interaction: Interaction): Unit = {

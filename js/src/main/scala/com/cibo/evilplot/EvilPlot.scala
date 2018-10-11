@@ -37,7 +37,7 @@ import com.cibo.evilplot.colors._
 import com.cibo.evilplot.demo.DemoPlots
 import com.cibo.evilplot.geometry.Clipping.Edge
 import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.interaction.InteractionMaskContext
+import com.cibo.evilplot.interaction.CanvasInteractionContext
 import com.cibo.evilplot.numeric.{Point, Point3d}
 import com.cibo.evilplot.plot.{CartesianPlot, LinePlot, Overlay, Plot}
 import com.cibo.evilplot.plot.renderers.PathRenderer
@@ -78,7 +78,12 @@ object EvilPlot {
   /** Render the example plots to the specified canvas. */
   @JSExport
   def renderExample(canvasId: String): Unit = {
-    interactionExample()
+    val screenWidth = dom.window.innerWidth
+    val screenHeight = dom.window.innerHeight
+    val interactionContext = prepareInteractionContext(screenWidth, screenHeight)
+    val interactionShow = prepareContext(screenWidth, screenHeight)
+
+    DemoInteraction.scatter(interactionShow, interactionContext, screenWidth, screenHeight)
     addExample(DemoPlots.simpleGroupedPlot)
     addExample(DemoPlots.simpleContinuousPlot)
 
@@ -100,68 +105,7 @@ object EvilPlot {
     addExample(DemoPlots.clusteredStackedBarChart)
   }
 
-  // Crappy way to maintain state
-  private var activePoint: Option[Point3d[Int]] = None
-  private var hoveredPoint: Option[Int] = None
 
-  def interactionExample() = {
-    import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
-
-    val anchors = Seq((10.0, 10.0), (0.0, 10.0), (10.0, 0.0), (0.0, 0.0))
-    val data = (Seq.fill(300)(Math.random() * 10, Math.random() * 10) ++ anchors).zipWithIndex.map(x => Point3d[Int](x._1._1, x._1._2, x._2))
-    val canvasId = UUID.randomUUID().toString
-
-    val screenWidth = dom.window.innerWidth
-    val screenHeight = dom.window.innerHeight
-
-    val ctx = prepareContext(screenWidth, screenHeight)
-    val interactionContext = prepareInteractionContext(screenWidth, screenHeight)
-
-    def pointHover(hovered: Point3d[Int]) = {
-      if(hovered.z != hoveredPoint.getOrElse(-1)){
-        hoveredPoint = Some(hovered.z)
-        renderPlot()
-      }
-    }
-
-    def renderPlot() = {
-      dom.window.requestAnimationFrame { _ =>
-
-        val updatedPlot = CartesianPlot(data){
-          _.scatter({x: Point3d[Int] =>
-            if(hoveredPoint.getOrElse(-1) == x.z) {
-              Disc(5).translate(-5, -5).filled(colors.DefaultColors.lightPalette(1))
-            } else if(activePoint.map(_.z).getOrElse(-1) == x.z){
-              Disc(5).translate(-5, -5).filled(colors.DefaultColors.lightPalette(4))
-            } else Disc(5).translate(-5, -5).filled(colors.DefaultColors.lightPalette(2))
-          })
-        }
-        ctx.clear()
-        (Text(s"Active Point: ${activePoint.map(_.z)}, Hovered Point: ${hoveredPoint}", size = 16)
-          .padBottom(20) above updatedPlot.standard().render()).padAll(10).draw(ctx)
-      }
-    }
-
-    val plot = CartesianPlot(data){
-      _.scatter({x: Point3d[Int] => Interaction(
-        Disc(5).filled(colors.DefaultColors.lightPalette(2))
-          .translate(-5, -5), OnHover(() => pointHover(x)), OnClick(() => {
-            println("Clicked")
-            activePoint = Some(x)
-            renderPlot()
-          })
-      )})
-    }.standard()
-
-    interactionContext.attachToMainCanvas(ctx.canvas.canvas, defaultMove = { () =>
-      hoveredPoint = None
-      renderPlot()
-    })
-    (Text(s"Active Point: ${activePoint.map(_.z)}, Hovered Point: ${hoveredPoint}", size = 16)
-      .padBottom(20) above plot.render()).padAll(10).draw(interactionContext)
-
-    renderPlot()
-  }
 
   private def prepareContext(screenWidth: Double, screenHeight: Double, id: String = "" ) = {
     val canvas = dom.document.createElement("canvas").asInstanceOf[HTMLCanvasElement]
@@ -171,7 +115,7 @@ object EvilPlot {
 
   private def prepareInteractionContext(screenWidth: Double, screenHeight: Double) = {
     val canvasInteraction = dom.document.createElement("canvas").asInstanceOf[HTMLCanvasElement]
-    InteractionMaskContext(prepareCanvas(canvasInteraction, Extent(screenWidth, screenHeight)))
+    CanvasInteractionContext(prepareCanvas(canvasInteraction, Extent(screenWidth, screenHeight)))
   }
 
   private def addExample(plot: Drawable): Unit = {
