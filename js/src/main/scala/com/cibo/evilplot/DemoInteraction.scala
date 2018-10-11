@@ -39,7 +39,7 @@ object DemoInteraction {
 
         // Clear the canvas, otherwise new rendering will overlay with old
         ctx.clear()
-        (Text(s"Active Point: ${activePoint.map(_.z)}, Hovered Point: ${hoveredPoint}", size = 16)
+        (Text(s"Active Point: ${activePoint.map(_.z)}, Hovered Point: ${hoveredPoint.map(_.z)}", size = 16)
           .padBottom(20) above updatedPlot.standard().render()).padAll(10).draw(ctx)
       }
     }
@@ -75,7 +75,7 @@ object DemoInteraction {
     interactionMaskContext.attachToMainCanvas(ctx.canvas.canvas, defaultMove = defaultMove)
 
     //Render the "virtual" interaction mask
-    (Text(s"Active Point: ${activePoint.map(_.z)}, Hovered Point: ${hoveredPoint}", size = 16)
+    (Text(s"Active Point: ${activePoint.map(_.z)}, Hovered Point: ${hoveredPoint.map(_.z)}", size = 16)
       .padBottom(20) above plot.render()).padAll(10).draw(interactionMaskContext)
 
     //Render displayed plot

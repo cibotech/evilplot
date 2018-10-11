@@ -262,7 +262,7 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     }
   }
 
-  // to implement, reference: InteractiveCanvasContext.scala and CanvasInteractionMask.scala
+  // to implement, reference: InteractionMask.scala and InteractiveCanvasContext.scala
   override def draw(interaction: Interaction): Unit = interaction.r.draw(this)
 }
 
