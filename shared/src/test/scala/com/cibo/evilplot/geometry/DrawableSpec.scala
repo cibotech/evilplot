@@ -110,8 +110,6 @@ class DrawableSpec extends FunSpec with Matchers {
 
       val gradient = LinearGradient.bottomToTop(Extent(100, 100),  FillGradients.distributeEvenly(ColorGradients.viridis))
 
-      println(GradientFill(Rect(10), gradient))
-      println(GradientFill(Rect(10), gradient).asJson.spaces2)
       encodeDeocde(GradientFill(Rect(10), gradient)) shouldEqual GradientFill(Rect(10), gradient)
     }
   }

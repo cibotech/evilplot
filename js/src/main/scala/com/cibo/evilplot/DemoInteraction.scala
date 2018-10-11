@@ -82,7 +82,6 @@ object DemoInteraction {
     }
 
     def onClick(point3d: Point3d[Int]): Unit ={
-      println("Clicked")
       activePoint = Some(point3d)
       renderPlot() // rerender
     }
