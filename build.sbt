@@ -67,7 +67,6 @@ lazy val evilplot = crossProject
   )
   .settings(licenseSettings)
   .jsSettings(
-    scalaJSLinkerConfig ~= { _.withBatchMode(true)},
     libraryDependencies ++= Settings.scalajsDependencies.value,
     libraryDependencies ++= Settings.sharedDependencies.value,
     jsDependencies ++= Settings.jsDependencies.value,

@@ -8,7 +8,7 @@ import scala.concurrent.{Await, Future}
 import scala.util.Try
 
 class InteractionMaskSpec extends FunSpec with Matchers {
-  
+
   describe("The Interaction Mask"){
 
     it("Doesn't collide at <= 10,000"){
