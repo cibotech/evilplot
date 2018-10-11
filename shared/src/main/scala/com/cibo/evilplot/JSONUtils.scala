@@ -38,7 +38,7 @@ import io.circe.{Decoder, Encoder, Error}
 object JSONUtils {
   // This should only be used for colors, drawables, and extents.
   private[evilplot] implicit val minifyProperties: Configuration = Configuration.default.copy(
-    transformMemberNames = s => s.head.toString,
+    transformMemberNames = s => s.take(2).toString,
     transformConstructorNames = shortenedName
   )
 
@@ -65,7 +65,7 @@ object JSONUtils {
       case "LineDash"      => "l"
       case "Text"          => "X"
       case "HSLA"          => "c"
-      case "GradientFill"  => "g2"
+      case "GradientFill"  => "gf"
       case other           => other
     }
   }

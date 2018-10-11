@@ -32,21 +32,15 @@ package com.cibo.evilplot
 
 import java.util.UUID
 
-import cats.data.State
 import com.cibo.evilplot.colors._
 import com.cibo.evilplot.demo.DemoPlots
-import com.cibo.evilplot.geometry.Clipping.Edge
 import com.cibo.evilplot.geometry._
 import com.cibo.evilplot.interaction.CanvasInteractionContext
-import com.cibo.evilplot.numeric.{Point, Point3d}
-import com.cibo.evilplot.plot.{CartesianPlot, LinePlot, Overlay, Plot}
-import com.cibo.evilplot.plot.renderers.PathRenderer
 import org.scalajs.dom
 import org.scalajs.dom.CanvasRenderingContext2D
 import org.scalajs.dom.raw.HTMLCanvasElement
 
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
-import scala.util.Random
 
 @JSExportTopLevel("EvilPlot")
 object EvilPlot {
