@@ -75,14 +75,14 @@ final case class CanvasInteractionContext(canvas: CanvasRenderingContext2D)
                          defaultMove: () => Unit = () => ()
                         ): Unit = {
 
-    canvas.addEventListener[MouseEvent]("click", { event =>
+    canvas.addEventListener[MouseEvent]("click", { event: MouseEvent =>
 
       val canvasY = event.clientY - canvas.getBoundingClientRect().top
       val canvasX = event.clientX - canvas.getBoundingClientRect().left
       events(canvasX, canvasY).find(_.isInstanceOf[OnClick]).map(_.e).getOrElse(defaultClick).apply()
     })
 
-    canvas.addEventListener[MouseEvent]("mousemove", { event =>
+    canvas.addEventListener[MouseEvent]("mousemove", { event: MouseEvent =>
 
       val canvasY = event.clientY - canvas.getBoundingClientRect().top
       val canvasX = event.clientX - canvas.getBoundingClientRect().left

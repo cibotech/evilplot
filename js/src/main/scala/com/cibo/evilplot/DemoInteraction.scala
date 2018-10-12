@@ -53,7 +53,7 @@ object DemoInteraction {
 
     // Rerender plot to draw updated state
     def renderPlot() = {
-      dom.window.requestAnimationFrame { _ =>
+      dom.window.requestAnimationFrame { d: Double =>
 
         val updatedPlot = CartesianPlot(data){
           _.scatter({x: Point3d[Int] =>
