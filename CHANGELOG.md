@@ -2,6 +2,22 @@
 
 ## [Changes since last release]
 
+## [0.6.0] - 2018-10-05
+### Added
+- "plot composers" CartesianPlot and BinnedPlot for easier creation of custom plots (these are experimental).
+- GradientFill drawable which renders Gradient2d's (Linear and Radial).
+- more functionality to the base Color type.
+- Datum2d which allows for additional data to be passed along to point renderer.
+- Gradient legend that uses gradient fill
+- Custom methods to some renderers for easier definition
+# Changed
+- Parallel value array api for scatter plot removed, Datum2d is provided directly to the point renderer. (_breaking_)
+- Scatter plot now takes an xBoundsBuffer and yBoundsBuffer instead of a single bound buffer. (_breaking_)
+- New gradient drawables that have been serialized will not be handled by older versions of EvilPlot. (_breaking_)
+### Fixed
+- HSLA is now backed by Doubles so conversions are less lossy.
+- Tests for clipping now verify ordering
+
 ## [0.5.0] - 2018-09-21
 ### Added
 - `ComponentGroup` for combining plot components
@@ -84,7 +100,8 @@ correcting previously incorrect extent calculation.
 - Applying "bound buffers" to plots is no longer part of the default theme.
 - The default number of ticks on continuous axes has been decreased.
 
-[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.5.0...HEAD
+[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/cibotech/evilplot/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/cibotech/evilplot/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/cibotech/evilplot/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/cibotech/evilplot/compare/v0.3.4...v0.4.0

@@ -46,6 +46,19 @@ class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
       colorsFromData.head should !==(colorsFromData(1))
       colorsFromData.head should !==(colorsFromData(3))
     }
+
+    it("should clip data to the colorbar's range") {
+      val z: Seq[Double] = Seq(2012, 2013, 2012, 2011, 2014, 2010)
+
+      val colorBar = ScaledColorBar(Color.getGradientSeq(3), 2011, 2013)
+      val colorsFromData = z.map(colorBar.getColor)
+
+      colorsFromData.head should ===(colorsFromData(2))
+      colorsFromData.head should !==(colorsFromData(1))
+      colorsFromData.head should !==(colorsFromData(3))
+      colorsFromData(3) should ===(colorsFromData(5))
+      colorsFromData(1) should ===(colorsFromData(4))
+    }
   }
 
   describe("toRGBA cfunctions") {
