@@ -52,8 +52,8 @@ object DemoPlots {
   val plotAreaSize: Extent = Extent(1000, 600)
   lazy val histogram: Drawable = {
     val data = (0.0 to 3 by .25) ++ (3.0 to 5 by .05) ++ (5.0 to 8 by 1.0)
-    plot
-      .Histogram(data, 10)
+
+    Histogram(data, 10)
       .standard()
       .xbounds(-75, 225)
       .ybounds(0, 15)

@@ -40,8 +40,7 @@ import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers._
 
-import scala.reflect.ClassTag
-
+// import scala.reflect.ClassTag
 
 
 sealed abstract class Bin[T] {
