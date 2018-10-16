@@ -44,6 +44,9 @@ final case class Bounds(min: Double, max: Double) {
   lazy val midpoint: Double = (max + min) / 2.0
 
   def isInBounds(x: Double): Boolean = x >= min && x <= max
+
+  def pad(x:Double) =  Bounds(min-x, max+x) 
+  def padRelative(p:Double) = pad(range*p)
 }
 
 object Bounds {

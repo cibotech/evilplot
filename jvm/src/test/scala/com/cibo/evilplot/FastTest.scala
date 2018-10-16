@@ -64,17 +64,15 @@ object FastTest extends App{
   val plotAreaSize: Extent = Extent(1000, 600)
 
   def hist(data:Seq[Double], bins:Int, label:String):Unit = {
-    // val renderOld = Histogram(data,bins).standard().ybounds(0,data.size/bins + 2).render(plotAreaSize)
+
+    val histOld   = Histogram(data,bins)
+    val histChris = BinnedPlot.continuous[Double](  // creates a histogram
+                      data,
+                      _.continuousBins(identity, bins)
+                    )(_.histogram())
 
 
-    val render = {
-      val histogramPlot = BinnedPlot.continuous[Double](  // creates a histogram
-            data,
-            _.continuousBins(identity, bins)
-          )(_.histogram())
-
-      histogramPlot.standard().ybounds(0, data.size).render(plotAreaSize)
-    }
+    val render = histChris.standard().xbounds(0,7)/*.ybounds(0, data.size)*/.render(plotAreaSize)
 
     val file = new java.io.File(s"FastTest-$label-${bins}bins.png")
     render.write(file)
@@ -83,17 +81,17 @@ object FastTest extends App{
 
 
   // -- bugs
-  // 1. binning edge case
-  // 2. standard breaks the edge cases???
-  // 3. ybounds is related to all this
-  //  Its is all broken because the view bounds if filtering the data that is binned.  This shouldn't be possible.
-  //   lets try Chris's to see if it fails under the same problems
-  //  Chris has the same problem
+  // [x] 1. binning edge case        
+  // [x] 2. standard breaks the edge cases???
+  // [ ] 3. ybounds is related to all this
+  // [ ]  Its is all broken because the view bounds if filtering the data that is binned.  This shouldn't be possible.
+  // [x]   lets try Chris's to see if it fails under the same problems
+  // [x]  Chris has the same problem
   //
-  //  the fix should be deconflate plot range and data range (hard when both are auto too)
-  //  1. do the binning
-  //  2. do the *viewing* NOT filtering data for binning
-  //  3. validate that the axis are correct.  maybe the shape and clipping are fixed in aaron and bill's hack but axis is off
+  // [x]  the fix should be deconflate plot range and data range (hard when both are auto too)
+  // [x]  1. do the binning first
+  // [x]  2. do the *viewing* NOT filtering data for binning
+  // [ ]  3. validate that the axis are correct.  maybe the shape and clipping are fixed in aaron and bill's hack but axis is off
 
   //---
   val data = 1d to 10d by 1d
@@ -103,6 +101,9 @@ object FastTest extends App{
 
   val uniform = Seq.fill(10000)(Random.nextDouble()*10)
   hist(uniform, 5, "uniform")
+
+  val normal = Seq.fill(10000)(Random.nextGaussian()*10)
+  hist(normal, 5, "normal")
 
 }
 

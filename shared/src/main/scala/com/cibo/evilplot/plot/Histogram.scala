@@ -123,15 +123,22 @@ object Histogram {
         // Scaling the bars would show the correct histogram as long as no axis is displayed.  However, if
         // an axis is display, we would end up showing the wrong values. Thus, we clip if the y boundary is
         // fixed, otherwise we scale to make it look pretty.
-        val points = binningFunction(data, plot.xbounds, binCount)
+        
+        
+        val dataBounds = Bounds.get(data) getOrElse plot.xbounds
+        val points = binningFunction(data, dataBounds, binCount)
+
+
         val maxY = points.maxBy(_.y).y * (1.0 + boundBuffer)
         val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
 
-        val binWidth = plot.xbounds.range / binCount
+        val binWidth = dataBounds.range / binCount
+
         val yintercept = ytransformer(0)
         points.map { point =>
           val x = xtransformer(point.x) + spacing / 2.0
           val clippedY = math.min(point.y * yscale, plot.ybounds.max)
+          //TODO maybe add a clippedX also so the bars don't flow over a specific view bound?
           val y = ytransformer(clippedY)
 
           val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
@@ -232,14 +239,18 @@ object Histogram {
     binRenderer: Option[ContinuousBinRenderer] = None,
     spacing: Option[Double] = None,
     boundBuffer: Option[Double] = None)(
-    implicit theme: Theme): Plot = {
+    implicit theme: Theme): Plot = 
+  {
     require(bins.nonEmpty, "must have at least one bin")
-    val xbounds = Bounds.union(bins.map(_.x))
-    val maxY = bins.map(_.y).max
+
+    //view bounds restricting presented(rendered) data
+    val bufRatio = boundBuffer getOrElse theme.elements.boundBuffer
+    val xBounds = Bounds.union(bins.map(_.x)).padRelative(bufRatio)
+    val yBounds = Bounds.get(bins.map(_.y) :+ 0d).get.padRelative(bufRatio)
 
     Plot(
-      xbounds = xbounds,
-      ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
+      xbounds = xBounds,
+      ybounds = yBounds,
       renderer = ContinuousBinPlotRenderer(
         bins,
         binRenderer.getOrElse(ContinuousBinRenderer.default()),
