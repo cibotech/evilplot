@@ -169,20 +169,16 @@ object Histogram {
         val xtransformer = plot.xtransform(plot, plotExtent)
         val ytransformer = plot.ytransform(plot, plotExtent)
 
-        val maxY = bins.maxBy(_.y).y * (1.0 + boundBuffer)
-        val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
+        val y0 = ytransformer(0)
 
-        val yintercept = ytransformer(0)
-
-        bins.map { bin =>
-          val x = xtransformer(bin.x.min) + spacing / 2.0
-          val clippedY = math.min(bin.y * yscale, plot.ybounds.max)
-          val y = ytransformer(clippedY)
-          val barWidth = math.max(xtransformer(bin.x.range + plot.xbounds.min) - spacing, 0)
-
-          val barHeight = yintercept - y
+        val drawableBins:Seq[Drawable] = for(bin <- bins; xbin <- bin.x intersect plot.xbounds; ybin <- Bounds(0,bin.y) intersect plot.ybounds) yield {
+          val x = xtransformer(xbin.min) + spacing / 2.0
+          val y = ytransformer(ybin.max)
+          val barWidth = xtransformer(xbin.range) - spacing
+          val barHeight  = y0 - y
           binRenderer.render(plot, Extent(barWidth, barHeight), bin).translate(x = x, y = y)
-        }.group
+        }
+        drawableBins.group
       } else {
         EmptyDrawable()
       }

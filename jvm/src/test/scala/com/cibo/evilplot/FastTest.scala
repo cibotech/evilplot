@@ -83,15 +83,20 @@ object FastTest extends App{
   // -- bugs
   // [x] 1. binning edge case        
   // [x] 2. standard breaks the edge cases???
-  // [ ] 3. ybounds is related to all this
-  // [ ]  Its is all broken because the view bounds if filtering the data that is binned.  This shouldn't be possible.
+  // [x] 3. ybounds is related to all this
+  //     Its is all broken because the view bounds if filtering the data that is binned.  This shouldn't be possible.
   // [x]   lets try Chris's to see if it fails under the same problems
   // [x]  Chris has the same problem
   //
+  // -- first fix
   // [x]  the fix should be deconflate plot range and data range (hard when both are auto too)
   // [x]  1. do the binning first
   // [x]  2. do the *viewing* NOT filtering data for binning
-  // [ ]  3. validate that the axis are correct.  maybe the shape and clipping are fixed in aaron and bill's hack but axis is off
+  // [x]  3. validate that the axis are correct.  maybe the shape and clipping are fixed in aaron and bill's hack but axis is off
+  //
+  // --remaining bugs
+  // [ ] should we clip histogram boxes by the view?
+  // [ ] y-axis tick marks are not on the top level overlay Position (probably Position.Left)
 
   //---
   val data = 1d to 10d by 1d

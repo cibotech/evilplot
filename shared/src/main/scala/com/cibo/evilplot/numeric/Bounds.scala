@@ -45,6 +45,12 @@ final case class Bounds(min: Double, max: Double) {
 
   def isInBounds(x: Double): Boolean = x >= min && x <= max
 
+  def intersect(that:Bounds):Option[Bounds] = {
+    val min = math.max(this.min, that.min)
+    val max = math.min(this.max, that.max)
+    if(min <= max) Some(Bounds(min, max)) else None
+  }
+
   def pad(x:Double) =  Bounds(min-x, max+x) 
   def padRelative(p:Double) = pad(range*p)
 }
