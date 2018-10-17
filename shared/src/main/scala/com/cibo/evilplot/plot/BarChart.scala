@@ -47,7 +47,7 @@ final case class Bar(
   values: Seq[Double],
   cluster: Int,
   colors: Seq[Color],
-  labels: Seq[Drawable] = Seq.empty
+ labels: Seq[Drawable] = Seq.empty
 ) {
   lazy val height: Double = values.sum
 

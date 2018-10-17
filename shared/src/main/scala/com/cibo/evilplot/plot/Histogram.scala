@@ -31,7 +31,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
-import com.cibo.evilplot.numeric.{Bounds, Point}
+import com.cibo.evilplot.numeric.{Bounds, Bounds2d, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, ContinuousBinRenderer, PlotRenderer}
 
@@ -156,6 +156,22 @@ object Histogram {
 
   }
 
+  private case class PlotCtx(plot:Plot, extent:Extent, spacing:Double, bufRatio:Double){
+    lazy val xbounds = plot.xbounds // plot.xbounds.padRelative(bufRatio) //expand left and right //FIXME 
+    lazy val ybounds = plot.ybounds //FIXME  Bounds(plot.ybounds.min, plot.ybounds.min + plot.ybounds.range*bufRatio) //shift up
+
+    lazy val tx = plot.xtransform(plot, extent)
+    lazy val ty = plot.ytransform(plot, extent)
+    lazy val y0 = ty(0)
+  }
+  private case class BoundedBar(xbin:Bounds,ybin:Bounds, ctx:PlotCtx){
+    lazy val x = ctx.tx(xbin.min) + ctx.spacing / 2.0
+    lazy val y = ctx.ty(ybin.max)
+    lazy val width = ctx.tx(xbin.range) - ctx.spacing
+    lazy val height = ctx.y0 - y
+    lazy val extent = Extent(width, height)
+  }
+
   case class ContinuousBinPlotRenderer(
     bins: Seq[ContinuousBin],
     binRenderer: ContinuousBinRenderer,
@@ -166,19 +182,13 @@ object Histogram {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (bins.nonEmpty) {
 
-        val xtransformer = plot.xtransform(plot, plotExtent)
-        val ytransformer = plot.ytransform(plot, plotExtent)
+        val ctx = PlotCtx(plot, plotExtent, spacing, boundBuffer)
 
-        val y0 = ytransformer(0)
-
-        val drawableBins:Seq[Drawable] = for(bin <- bins; xbin <- bin.x intersect plot.xbounds; ybin <- Bounds(0,bin.y) intersect plot.ybounds) yield {
-          val x = xtransformer(xbin.min) + spacing / 2.0
-          val y = ytransformer(ybin.max)
-          val barWidth = xtransformer(xbin.range) - spacing
-          val barHeight  = y0 - y
-          binRenderer.render(plot, Extent(barWidth, barHeight), bin).translate(x = x, y = y)
+        val bars = for(bin <- bins; xbin <- bin.x intersect ctx.xbounds; ybin <- Bounds(0,bin.y) intersect ctx.ybounds) yield {
+          val bar = BoundedBar(xbin, ybin, ctx)
+          binRenderer.render(plot, bar.extent, bin).translate(x = bar.x, y = bar.y)
         }
-        drawableBins.group
+        bars.group
       } else {
         EmptyDrawable()
       }

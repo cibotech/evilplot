@@ -34,6 +34,9 @@ import scala.language.implicitConversions
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
 
+final case class Bounds2d(x: Bounds, y: Bounds) {
+  def intersect(that:Bounds2d):Option[Bounds2d] = for(x <- this.x intersect that.x; y <- this.y intersect that.y) yield Bounds2d(x,y)
+}
 final case class Bounds(min: Double, max: Double) {
   if (!min.isNaN && !max.isNaN) {
     require(min <= max, s"Bounds min must be <= max, $min !<= $max")
@@ -45,13 +48,18 @@ final case class Bounds(min: Double, max: Double) {
 
   def isInBounds(x: Double): Boolean = x >= min && x <= max
 
+  /**if it exists find the the intersection between two bounds*/
   def intersect(that:Bounds):Option[Bounds] = {
     val min = math.max(this.min, that.min)
     val max = math.min(this.max, that.max)
     if(min <= max) Some(Bounds(min, max)) else None
   }
 
+  /**grow the bound by a specific amount
+   * @param x amount to lower the min raise the max (note a negative value shrinks the bound)*/
   def pad(x:Double) =  Bounds(min-x, max+x) 
+  /**grow the bound by a relative amount
+   * @param p ratio of the bound range pad*/
   def padRelative(p:Double) = pad(range*p)
 }
 
