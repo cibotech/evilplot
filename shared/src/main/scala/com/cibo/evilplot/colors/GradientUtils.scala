@@ -67,7 +67,7 @@ object GradientUtils {
         {
           if (d < min) colors.head
           else if (d > max) colors.last
-          else if (d.isNaN) RGBA(0,0,0,0)
+          else if (d.isNaN) Clear
           else complete(d)
         }
     }
@@ -98,7 +98,7 @@ object GradientUtils {
         val b = interpolate(inverse(b1), inverse(b2), interpolationCoefficient)
         val a = interpolate(a1, a2, interpolationCoefficient)
         RGBA((255 * forward(r)).toInt, (255 * forward(g)).toInt, (255 * forward(b)).toInt, a)
-      case noData if noData.isNaN => RGBA(0,0,0,0)
+      case noData if noData.isNaN => Clear
     }
   }
 
