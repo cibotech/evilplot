@@ -102,6 +102,7 @@ object Histogram {
     }
   }
 
+  @deprecated("Use HistogramBinRenderer instead","v0.6.1")
   case class HistogramRenderer(
     data: Seq[Double],
     barRenderer: BarRenderer,
@@ -112,9 +113,9 @@ object Histogram {
       extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.nonEmpty) {
-        val ctx = PlotCtx(plot, plotExtent, spacing, boundBuffer)
+        val ctx = PlotCtx(plot, plotExtent, spacing)
         
-        val dataBounds = Bounds.get(data) getOrElse plot.xbounds //why is the xbounds so explicitly set before rendering???
+        val dataBounds = Bounds.get(data) getOrElse plot.xbounds
         val points = binningFunction(data, dataBounds, binCount)
         val binWidth:Double = dataBounds.range/binCount
 
@@ -136,10 +137,43 @@ object Histogram {
 
   }
 
-  private case class PlotCtx(plot:Plot, extent:Extent, spacing:Double, bufRatio:Double){
-    lazy val xbounds = plot.xbounds // plot.xbounds.padRelative(bufRatio) //expand left and right //FIXME 
-    lazy val ybounds = plot.ybounds //FIXME  Bounds(plot.ybounds.min, plot.ybounds.min + plot.ybounds.range*bufRatio) //shift up
-    // lazy val ybounds = Bounds(plot.ybounds.min, plot.ybounds.min + plot.ybounds.range*bufRatio) //shift up
+  /** this render assumes the binning of the data has already been applied; i.e in cases where the plot ranges need to be pre-calculated */
+  case class HistogramBinRenderer(
+    binPoints: Seq[Point],
+    binWidth: Double,
+    barRenderer: BarRenderer,
+    spacing: Double)
+      extends PlotRenderer 
+  {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = 
+      if (binPoints.isEmpty) EmptyDrawable() else {
+        val ctx = PlotCtx(plot, plotExtent, spacing)
+
+        //--data bounds
+        val xbounds = {
+          val leftEdge = Bounds.get(binPoints.map{_.x}) getOrElse Bounds.empty
+          Bounds(leftEdge.min, leftEdge.max + binWidth)
+        }
+        val ybounds = Bounds.get(binPoints.map{_.y} :+ 0d) getOrElse Bounds.empty
+
+        //--constrain to view bounds
+        val bars = for(p <- binPoints; 
+                       xb <- Bounds(p.x, p.x+binWidth) intersect ctx.xbounds;
+                       yb <- Bounds(0,   p.y)          intersect ctx.ybounds
+                   ) yield {
+                      val bar = BoundedBar(xb, yb, ctx)
+                      barRenderer.render(plot, bar.extent, Bar(bar.y)).translate(x = bar.x, y = bar.y)
+                   }
+        bars.group
+     }
+
+    override val legendContext: LegendContext =
+      barRenderer.legendContext.getOrElse(LegendContext.empty)
+  }
+
+  private case class PlotCtx(plot:Plot, extent:Extent, spacing:Double){
+    lazy val xbounds = plot.xbounds
+    lazy val ybounds = plot.ybounds
 
     lazy val tx = plot.xtransform(plot, extent)
     lazy val ty = plot.ytransform(plot, extent)
@@ -160,20 +194,20 @@ object Histogram {
     boundBuffer: Double)
       extends PlotRenderer {
 
-    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-      if (bins.nonEmpty) {
+    def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = 
+      if (bins.isEmpty) EmptyDrawable() else {
 
-        val ctx = PlotCtx(plot, plotExtent, spacing, boundBuffer)
+        val ctx = PlotCtx(plot, plotExtent, spacing)
 
-        val bars = for(bin <- bins; xbin <- bin.x intersect ctx.xbounds; ybin <- Bounds(0,bin.y) intersect ctx.ybounds) yield {
-          val bar = BoundedBar(xbin, ybin, ctx)
-          binRenderer.render(plot, bar.extent, bin).translate(x = bar.x, y = bar.y)
-        }
+        val bars = for(bin <- bins; 
+                      xbin <- bin.x intersect ctx.xbounds;
+                      ybin <- Bounds(0,bin.y) intersect ctx.ybounds
+                  ) yield {
+                    val bar = BoundedBar(xbin, ybin, ctx)
+                    binRenderer.render(plot, bar.extent, bin).translate(x = bar.x, y = bar.y)
+                  }
         bars.group
-      } else {
-        EmptyDrawable()
       }
-    }
 
     override val legendContext: LegendContext =
       binRenderer.legendContext.getOrElse(LegendContext.empty)
@@ -198,27 +232,24 @@ object Histogram {
     spacing: Option[Double] = None,
     boundBuffer: Option[Double] = None,
     binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins)(
-    implicit theme: Theme): Plot = {
+    implicit theme: Theme): Plot = 
+  {
     require(bins > 0, "must have at least one bin")
-    val xbounds = Bounds(
-      values.reduceOption[Double](math.min).getOrElse(0.0),
-      values.reduceOption[Double](math.max).getOrElse(0.0)
-    )
-    val maxY =
-      binningFunction(values, xbounds, bins).map(_.y).reduceOption[Double](math.max).getOrElse(0.0)
 
-    Plot(
-      xbounds = xbounds,
-      ybounds = Bounds(0, maxY * (1.0 + boundBuffer.getOrElse(theme.elements.boundBuffer))),
-      renderer = HistogramRenderer(
-        values,
-        barRenderer.getOrElse(BarRenderer.default()),
-        bins,
-        spacing.getOrElse(theme.elements.barSpacing),
-        boundBuffer.getOrElse(theme.elements.boundBuffer),
-        binningFunction
-      )
-    )
+    //--merge the multiple sources of configuration options with priority on the arguments over default and themes
+    val theBarRenderer = barRenderer.getOrElse(BarRenderer.default())
+    val theSpacing = spacing.getOrElse(theme.elements.barSpacing)
+    val theBufRatio = boundBuffer.getOrElse(theme.elements.boundBuffer)
+
+    //--auto plot bounds from data. 
+    //  Note: the whole histogram shouldn't have to be re-calculated at render time if it is already computed here for the ybounds
+    val xbounds = Bounds.get(values) getOrElse Bounds.empty
+    val binPoints = binningFunction(values, xbounds, bins)
+    val ybounds = Bounds.get(binPoints.map{_.y} :+ 0d).map{_ padMax theBufRatio} getOrElse Bounds.empty
+    val binWidth = xbounds.range/bins
+
+    val renderer = HistogramBinRenderer(binPoints, binWidth, theBarRenderer, theSpacing)
+    Plot(xbounds, ybounds, renderer)
   }
 
   def fromBins(
@@ -232,8 +263,8 @@ object Histogram {
 
     //view bounds restricting presented(rendered) data
     val bufRatio = boundBuffer getOrElse theme.elements.boundBuffer
-    val xBounds = Bounds.union(bins.map(_.x)).padRelative(bufRatio)
-    val yBounds = Bounds.get(bins.map(_.y) :+ 0d).get.padRelative(bufRatio)
+    val xBounds = Bounds.union(bins.map(_.x)) //no padding on x
+    val yBounds = Bounds.get(bins.map(_.y) :+ 0d).get.padMax(bufRatio) //pad top
 
     Plot(
       xbounds = xBounds,
