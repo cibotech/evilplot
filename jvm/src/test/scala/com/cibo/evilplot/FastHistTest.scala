@@ -72,7 +72,7 @@ object FastHistTest extends App{
                     )(_.histogram())
 
     List('orig -> histOrig, 'binned-> histBinned) foreach {case (k,v) => 
-      val render = histOld.standard().xbounds(0,7)/*.ybounds(0, data.size)*/.render(plotAreaSize)
+      val render = histOrig.standard().xbounds(0,7)/*.ybounds(0, data.size)*/.render(plotAreaSize)
       val file = new java.io.File(s"FastTest-${k.name}-$label-${bins}bins.png")
       render.write(file)
     }
