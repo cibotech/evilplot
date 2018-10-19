@@ -71,11 +71,12 @@ object FastTest extends App{
                       _.continuousBins(identity, bins)
                     )(_.histogram())
 
+    List('old -> histOld, 'chris -> histChris) foreach {case (k,v) => 
+      val render = histOld.standard().xbounds(0,7)/*.ybounds(0, data.size)*/.render(plotAreaSize)
+      val file = new java.io.File(s"FastTest-${k.name}-$label-${bins}bins.png")
+      render.write(file)
+    }
 
-    val render = histChris.standard().xbounds(0,7)/*.ybounds(0, data.size)*/.render(plotAreaSize)
-
-    val file = new java.io.File(s"FastTest-$label-${bins}bins.png")
-    render.write(file)
   }
 
 
@@ -95,8 +96,11 @@ object FastTest extends App{
   // [x]  3. validate that the axis are correct.  maybe the shape and clipping are fixed in aaron and bill's hack but axis is off
   //
   // --remaining bugs
-  // [ ] should we clip histogram boxes by the view?
-  // [ ] y-axis tick marks are not on the top level overlay Position (probably Position.Left)
+  // [x] should we clip histogram boxes by the view?
+  // [-] y-axis tick marks are not on the top level overlay Position (probably Position.Left)
+  // --remaining features
+  // [ ] implement plot ctx separate for original histogram function
+  // [ ] hashed tests
 
   //---
   val data = 1d to 10d by 1d
@@ -109,6 +113,9 @@ object FastTest extends App{
 
   val normal = Seq.fill(10000)(Random.nextGaussian()*10)
   hist(normal, 5, "normal")
+
+  val normal2 = Seq.fill(10000)(Random.nextGaussian()*1 + 4)
+  hist(normal2, 50, "normal2")
 
 }
 

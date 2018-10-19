@@ -112,40 +112,20 @@ object Histogram {
       extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
       if (data.nonEmpty) {
-
-        val xtransformer = plot.xtransform(plot, plotExtent)
-        val ytransformer = plot.ytransform(plot, plotExtent)
-
-        // The x bounds might have changed here, which could lead to a different binning of the data. If that
-        // happens, it's possible for us to exceed our boundary. Thus we have two options:
-        //  1. Clip at the boundary
-        //  2. Scale all bars to have the correct relative heights.
-        // Scaling the bars would show the correct histogram as long as no axis is displayed.  However, if
-        // an axis is display, we would end up showing the wrong values. Thus, we clip if the y boundary is
-        // fixed, otherwise we scale to make it look pretty.
+        val ctx = PlotCtx(plot, plotExtent, spacing, boundBuffer)
         
-        
-        val dataBounds = Bounds.get(data) getOrElse plot.xbounds
+        val dataBounds = Bounds.get(data) getOrElse plot.xbounds //why is the xbounds so explicitly set before rendering???
         val points = binningFunction(data, dataBounds, binCount)
+        val binWidth:Double = dataBounds.range/binCount
 
-
-        val maxY = points.maxBy(_.y).y * (1.0 + boundBuffer)
-        val yscale = if (plot.yfixed) 1.0 else math.min(1.0, plot.ybounds.max / maxY)
-
-        val binWidth = dataBounds.range / binCount
-
-        val yintercept = ytransformer(0)
-        points.map { point =>
-          val x = xtransformer(point.x) + spacing / 2.0
-          val clippedY = math.min(point.y * yscale, plot.ybounds.max)
-          //TODO maybe add a clippedX also so the bars don't flow over a specific view bound?
-          val y = ytransformer(clippedY)
-
-          val barWidth = math.max(xtransformer(point.x + binWidth) - x - spacing, 0)
-          val bar = Bar(clippedY)
-          val barHeight = yintercept - y
-          barRenderer.render(plot, Extent(barWidth, barHeight), bar).translate(x = x, y = y)
-        }.group
+        val bars = for(p <- points; 
+                       xb <- Bounds(p.x, p.x+binWidth) intersect ctx.xbounds;
+                       yb <- Bounds(0,   p.y)          intersect ctx.ybounds
+                   ) yield {
+                      val bar = BoundedBar(xb, yb, ctx)
+                      barRenderer.render(plot, bar.extent, Bar(bar.y)).translate(x = bar.x, y = bar.y)
+                   }
+        bars.group
       } else {
         EmptyDrawable()
       }
@@ -159,6 +139,7 @@ object Histogram {
   private case class PlotCtx(plot:Plot, extent:Extent, spacing:Double, bufRatio:Double){
     lazy val xbounds = plot.xbounds // plot.xbounds.padRelative(bufRatio) //expand left and right //FIXME 
     lazy val ybounds = plot.ybounds //FIXME  Bounds(plot.ybounds.min, plot.ybounds.min + plot.ybounds.range*bufRatio) //shift up
+    // lazy val ybounds = Bounds(plot.ybounds.min, plot.ybounds.min + plot.ybounds.range*bufRatio) //shift up
 
     lazy val tx = plot.xtransform(plot, extent)
     lazy val ty = plot.ytransform(plot, extent)
