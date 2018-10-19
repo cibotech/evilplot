@@ -120,7 +120,7 @@ object Histogram {
         val binWidth:Double = dataBounds.range/binCount
 
         val bars = for(p <- points; 
-                       xb <- Bounds(p.x, p.x+binWidth) intersect ctx.xbounds;
+                       xb <- Bounds(p.x, p.x + binWidth) intersect ctx.xbounds;
                        yb <- Bounds(0,   p.y)          intersect ctx.ybounds
                    ) yield {
                       val bar = BoundedBar(xb, yb, ctx)
@@ -158,7 +158,7 @@ object Histogram {
 
         //--constrain to view bounds
         val bars = for(p <- binPoints; 
-                       xb <- Bounds(p.x, p.x+binWidth) intersect ctx.xbounds;
+                       xb <- Bounds(p.x, p.x + binWidth) intersect ctx.xbounds;
                        yb <- Bounds(0,   p.y)          intersect ctx.ybounds
                    ) yield {
                       val bar = BoundedBar(xb, yb, ctx)

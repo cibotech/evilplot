@@ -59,9 +59,9 @@ final case class Bounds(min: Double, max: Double) {
 
   /**grow the bound by a specific amount
    * @param p ratio of the range to lower the min raise the max (note a negative value shrinks the bound)*/
-  def pad(p:Double) =  Bounds(min - range*p, max + range*p) 
-  def padMax(p:Double) =  Bounds(min, max + range*p) 
-  def padMin(p:Double) =  Bounds(min - range*p, max) 
+  def pad(p:Double):Bounds =  Bounds(min - range*p, max + range*p) 
+  def padMax(p:Double):Bounds =  Bounds(min, max + range*p) 
+  def padMin(p:Double):Bounds =  Bounds(min - range*p, max) 
 }
 
 object Bounds {
@@ -96,7 +96,7 @@ object Bounds {
       }
     }
   }
-  def empty = Bounds(0d,0d)
+  def empty:Bounds = Bounds(0d,0d)
 
   def widest(bounds: Seq[Option[Bounds]]): Option[Bounds] =
     bounds.flatten.foldLeft(None: Option[Bounds]) { (acc, curr) =>
