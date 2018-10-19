@@ -88,15 +88,19 @@ object Binning {
     val xbounds = bounds //note this is technically the *view* bounds not the bounds of the histogram
     val dataBounds = Bounds.get(seq) getOrElse xbounds
     val binWidth = dataBounds.range / numBins
-    val grouped:Map[Int,Seq[Double]] = seq.groupBy { value =>
-      math.min(((value - dataBounds.min) / binWidth).toInt, numBins - 1)
-    }.withDefault{i => Seq.empty[Double]}
+    val grouped: Map[Int, Seq[Double]] = seq
+      .groupBy { value =>
+        math.min(((value - dataBounds.min) / binWidth).toInt, numBins - 1)
+      }
+      .withDefault { i =>
+        Seq.empty[Double]
+      }
 
-    grouped.toSeq.map{ case (i, vs) => 
-      val x = i * binWidth + dataBounds.min
-      ContinuousBin(vs, Bounds(x, x + binWidth))
+    grouped.toSeq.map {
+      case (i, vs) =>
+        val x = i * binWidth + dataBounds.min
+        ContinuousBin(vs, Bounds(x, x + binWidth))
     }
-
 
   }
 }

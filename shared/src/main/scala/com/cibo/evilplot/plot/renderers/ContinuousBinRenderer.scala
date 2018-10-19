@@ -35,18 +35,16 @@ import com.cibo.evilplot.geometry.{Drawable, Extent, Rect}
 import com.cibo.evilplot.plot.{ContinuousBin, LegendContext, Plot, PlotContext}
 import com.cibo.evilplot.plot.aesthetics.Theme
 
-
 trait ContinuousBinRenderer extends PlotElementRenderer[ContinuousBin] {
   def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable
   def legendContext: Option[LegendContext] = None
 }
 
-
 object ContinuousBinRenderer {
 
   def custom(
-              renderFn: (PlotContext, ContinuousBin) => Drawable,
-              legendCtx: Option[LegendContext] = None): ContinuousBinRenderer = new ContinuousBinRenderer {
+    renderFn: (PlotContext, ContinuousBin) => Drawable,
+    legendCtx: Option[LegendContext] = None): ContinuousBinRenderer = new ContinuousBinRenderer {
 
     def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable = {
       renderFn(PlotContext.from(plot, extent), bin)
@@ -57,8 +55,8 @@ object ContinuousBinRenderer {
 
   /** Default bar renderer. */
   def default(
-               color: Option[Color] = None
-             )(implicit theme: Theme): ContinuousBinRenderer = new ContinuousBinRenderer {
+    color: Option[Color] = None
+  )(implicit theme: Theme): ContinuousBinRenderer = new ContinuousBinRenderer {
     def render(plot: Plot, extent: Extent, bin: ContinuousBin): Drawable = {
       Rect(extent.width, extent.height).filled(color.getOrElse(theme.colors.bar))
     }

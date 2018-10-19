@@ -35,7 +35,8 @@ import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
 
 final case class Bounds2d(x: Bounds, y: Bounds) {
-  def intersect(that:Bounds2d):Option[Bounds2d] = for(x <- this.x intersect that.x; y <- this.y intersect that.y) yield Bounds2d(x,y)
+  def intersect(that: Bounds2d): Option[Bounds2d] =
+    for (x <- this.x intersect that.x; y <- this.y intersect that.y) yield Bounds2d(x, y)
 }
 final case class Bounds(min: Double, max: Double) {
   if (!min.isNaN && !max.isNaN) {
@@ -49,19 +50,20 @@ final case class Bounds(min: Double, max: Double) {
   def isInBounds(x: Double): Boolean = x >= min && x <= max
 
   /**if it exists find the the intersection between two bounds*/
-  def intersect(that:Bounds):Option[Bounds] = {
+  def intersect(that: Bounds): Option[Bounds] = {
     val min = math.max(this.min, that.min)
     val max = math.min(this.max, that.max)
-    if(min <= max) Some(Bounds(min, max)) else None
+    if (min <= max) Some(Bounds(min, max)) else None
   }
 
-  def union(that:Bounds):Bounds = Bounds(math.min(this.min, that.min), math.max(this.max, that.max))
+  def union(that: Bounds): Bounds =
+    Bounds(math.min(this.min, that.min), math.max(this.max, that.max))
 
   /**grow the bound by a specific amount
-   * @param p ratio of the range to lower the min raise the max (note a negative value shrinks the bound)*/
-  def pad(p:Double):Bounds =  Bounds(min - range*p, max + range*p) 
-  def padMax(p:Double):Bounds =  Bounds(min, max + range*p) 
-  def padMin(p:Double):Bounds =  Bounds(min - range*p, max) 
+    * @param p ratio of the range to lower the min raise the max (note a negative value shrinks the bound)*/
+  def pad(p: Double): Bounds = Bounds(min - range * p, max + range * p)
+  def padMax(p: Double): Bounds = Bounds(min, max + range * p)
+  def padMin(p: Double): Bounds = Bounds(min - range * p, max)
 }
 
 object Bounds {
@@ -77,7 +79,7 @@ object Bounds {
     }
   }
 
-  def union(bounds: Seq[Bounds]): Bounds = bounds reduce {_ union _}
+  def union(bounds: Seq[Bounds]): Bounds = bounds reduce { _ union _ }
 
   def getBy[T](data: Seq[T])(f: T => Double): Option[Bounds] = {
     val mapped = data.map(f).filterNot(_.isNaN)
@@ -96,7 +98,7 @@ object Bounds {
       }
     }
   }
-  def empty:Bounds = Bounds(0d,0d)
+  def empty: Bounds = Bounds(0d, 0d)
 
   def widest(bounds: Seq[Option[Bounds]]): Option[Bounds] =
     bounds.flatten.foldLeft(None: Option[Bounds]) { (acc, curr) =>

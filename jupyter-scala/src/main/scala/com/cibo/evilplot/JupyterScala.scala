@@ -41,7 +41,7 @@ object JupyterScala {
   implicit class JupyterScalaDrawableMethods(drawable: Drawable) {
 
     /** display this Drawable object directly in the jupyter-scala output cell */
-    def show(implicit publish: jupyter.api.Publish):Unit =
+    def show(implicit publish: jupyter.api.Publish): Unit =
       publish.png(drawable.asBufferedImage)
   }
 
@@ -49,7 +49,7 @@ object JupyterScala {
   implicit class JupyterScalaPlotMethods(plot: Plot) {
 
     /** display this Plot object directly in the jupyter-scala output cell */
-    def show(implicit publish: jupyter.api.Publish, theme: Theme):Unit =
+    def show(implicit publish: jupyter.api.Publish, theme: Theme): Unit =
       publish.png(plot.render()(theme).asBufferedImage)
   }
 }

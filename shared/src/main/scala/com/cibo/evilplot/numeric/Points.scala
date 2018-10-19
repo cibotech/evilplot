@@ -68,4 +68,3 @@ final case class Point3(x: Double, y: Double, z: Double)
 object Point3 {
   def tupled(t: (Double, Double, Double)): Point3 = Point3(t._1, t._2, t._3)
 }
-

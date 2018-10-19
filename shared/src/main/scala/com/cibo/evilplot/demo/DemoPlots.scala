@@ -288,12 +288,12 @@ object DemoPlots {
 
     val continuousData = Seq.fill(60)(Math.random() * 100)
 
-    val histogramPlot = BinnedPlot.continuous[Double](  // creates a histogram
+    val histogramPlot = BinnedPlot.continuous[Double]( // creates a histogram
       continuousData,
-      _.continuousBins(identity)
-    )(_.histogram())
+      _.continuousBins(identity))(_.histogram())
 
-    histogramPlot.standard()
+    histogramPlot
+      .standard()
       .xLabel("x")
       .yLabel("y")
       .rightLegend()
@@ -314,8 +314,8 @@ object DemoPlots {
         } else {
           Style(Disc.centered(2), fill = RGB.random)
         }
-      })
-    ).standard()
+      }))
+      .standard()
       .xLabel("x")
       .yLabel("y")
       .trend(1, 0)
