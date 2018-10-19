@@ -42,7 +42,7 @@ import com.cibo.evilplot.plot.renderers._
 
 import scala.util.Random
 
-object FastTest extends App{
+object FastHistTest extends App{
 
   // val data = (0.0 to 3 by .25) ++ (3.0 to 5 by .05) ++ (5.0 to 8 by 1.0)
 
@@ -65,20 +65,19 @@ object FastTest extends App{
 
   def hist(data:Seq[Double], bins:Int, label:String):Unit = {
 
-    val histOld   = Histogram(data,bins)
-    val histChris = BinnedPlot.continuous[Double](  // creates a histogram
+    val histOrig = Histogram(data,bins)
+    val histBinned = BinnedPlot.continuous[Double](  // creates a histogram
                       data,
                       _.continuousBins(identity, bins)
                     )(_.histogram())
 
-    List('old -> histOld, 'chris -> histChris) foreach {case (k,v) => 
+    List('orig -> histOrig, 'binned-> histBinned) foreach {case (k,v) => 
       val render = histOld.standard().xbounds(0,7)/*.ybounds(0, data.size)*/.render(plotAreaSize)
       val file = new java.io.File(s"FastTest-${k.name}-$label-${bins}bins.png")
       render.write(file)
     }
 
   }
-
 
 
   // -- bugs
@@ -99,7 +98,7 @@ object FastTest extends App{
   // [x] should we clip histogram boxes by the view?
   // [-] y-axis tick marks are not on the top level overlay Position (probably Position.Left)
   // --remaining features
-  // [ ] implement plot ctx separate for original histogram function
+  // [x] implement plot ctx separate for original histogram function
   // [ ] hashed tests
 
   //---
