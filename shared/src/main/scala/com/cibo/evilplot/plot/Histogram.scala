@@ -185,6 +185,7 @@ object Histogram {
 
     lazy val tx = plot.xtransform(plot, extent)
     lazy val ty = plot.ytransform(plot, extent)
+    println(s"PlotCtx  xbounds=$xbounds ybounds=$ybounds extent=$extent")
   }
   private case class BoundedBar(xbin: Bounds, ybin: Bounds, ctx: PlotCtx) {
     //transform data space to pixel space

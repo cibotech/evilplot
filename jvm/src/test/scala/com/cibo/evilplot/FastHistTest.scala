@@ -130,5 +130,21 @@ object FastHistTest extends App{
     render.write(file)
   }
 
+  {
+
+    def hist(xs:Seq[Double], c:Color) = Histogram(xs, barRenderer = Some(BarRenderer.named( color = Some(c.hsla.copy(opacity = 0.5)) )) ) //Some(c.copy(opacity = 0.6))) )
+    
+    val N = 1000
+    // def data = Seq.fill(N)(Random.nextGaussian())// ++ List(-10d,10d) 
+    def data = 1 to N map {_.toDouble/N}
+    val hist1 = hist(data :+ 1d, HTMLNamedColors.dodgerBlue)
+    val hist2 = hist(data :+ 2d, HTMLNamedColors.crimson)  //this is the test case that breaks overlay BAD!
+
+    val plot = Overlay(hist1, hist2).standard()
+
+    plot.render(plotAreaSize).write(new java.io.File(s"FastTest-overlay.png"))
+  }
+  
+
 }
 
