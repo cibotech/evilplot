@@ -40,6 +40,11 @@ object Histogram {
   private val automaticBinCount:Int = -1 //to keep v0.6.0 api compatibility this is used instead of an Option type to trigger automatic binning
   val defaultBinCount: Int = automaticBinCount //TODO deprecate -1 in favor of Option[Int] where None is automatic sizing
 
+  def defaultBinCount(nSamples:Int):Int = {
+    val bins = math.floor(1 + 3.322*math.log10(nSamples)).toInt //Sturges
+    math.min(math.max(10, bins), 2000)
+  }
+
   /** Create binCount bins from the given data and xbounds.
     * @param values the raw data
     * @param xbounds the bounds over which to bin
@@ -238,10 +243,7 @@ object Histogram {
     boundBuffer: Option[Double] = None,
     binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins)(
     implicit theme: Theme): Plot = {
-    val binCount = if(bins != automaticBinCount) bins else {
-      val sturges = math.floor(1 + 3.322*math.log10(values.size)).toInt //Sturges
-      math.min(math.max(10, sturges), 1000)
-    }
+    val binCount = if(bins != automaticBinCount) bins else defaultBinCount(values.size)
 
     require(binCount > 0, "must have at least one bin")
 
