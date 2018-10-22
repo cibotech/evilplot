@@ -119,3 +119,5 @@ class HistogramSpec extends FunSpec with Matchers {
     }
   }
 }
+
+

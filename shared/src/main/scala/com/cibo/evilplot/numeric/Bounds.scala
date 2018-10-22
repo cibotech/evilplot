@@ -34,22 +34,29 @@ import scala.language.implicitConversions
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
 
-final case class Bounds2d(x: Bounds, y: Bounds) {
-  def intersect(that: Bounds2d): Option[Bounds2d] =
-    for (x <- this.x intersect that.x; y <- this.y intersect that.y) yield Bounds2d(x, y)
-}
+// TODO remove this since it is nice but not used right now
+// final case class Bounds2d(x: Bounds, y: Bounds) {
+//   def intersect(that: Bounds2d): Option[Bounds2d] =
+//     for (x <- this.x intersect that.x; y <- this.y intersect that.y) yield Bounds2d(x, y)
+// }
 final case class Bounds(min: Double, max: Double) {
   if (!min.isNaN && !max.isNaN) {
     require(min <= max, s"Bounds min must be <= max, $min !<= $max")
   }
 
+  /*absolute range (since min <= max)*/
   lazy val range: Double = max - min
 
   lazy val midpoint: Double = (max + min) / 2.0
 
   def isInBounds(x: Double): Boolean = x >= min && x <= max
 
-  /**if it exists find the the intersection between two bounds*/
+  /**if it exists find the intersection between two bounds
+   *
+   * this   |     [    ] | [  ]        |   [   ]  |   [  ]   |    [  ]      |   [  ]
+   * that   | []         |        []   | [   ]    |   [  ]   |    [    ]    |      [  ]   
+   * result |  none      |    none     |   [ ]    |   [  ]   |    [  ]      |      |
+   * */
   def intersect(that: Bounds): Option[Bounds] = {
     val min = math.max(this.min, that.min)
     val max = math.min(this.max, that.max)
@@ -88,6 +95,8 @@ object Bounds {
       max <- lift(mapped.max)
     } yield Bounds(min, max)
   }
+
+  def of(data:Seq[Double]):Bounds = Bounds.get(data) getOrElse Bounds.empty
 
   def get(data: Seq[Double]): Option[Bounds] = {
     data.foldLeft(None: Option[Bounds]) { (bounds, value) =>

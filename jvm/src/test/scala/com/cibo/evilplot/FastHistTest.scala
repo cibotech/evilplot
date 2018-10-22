@@ -72,7 +72,8 @@ object FastHistTest extends App{
                     )(_.histogram())
 
     List('orig -> histOrig, 'binned-> histBinned) foreach {case (k,v) => 
-      val render = histOrig.standard().xbounds(0,7)/*.ybounds(0, data.size)*/.render(plotAreaSize)
+      // val render = histOrig.standard().xbounds(0,7)/*.ybounds(0, data.size)*/.render(plotAreaSize)
+      val render = histOrig.standard().xbounds(2,7)/*.ybounds(0, data.size)*/.render(plotAreaSize)
       val file = new java.io.File(s"FastTest-${k.name}-$label-${bins}bins.png")
       render.write(file)
     }
@@ -102,6 +103,7 @@ object FastHistTest extends App{
   // [ ] hashed tests
 
   //---
+  //
   val data = 1d to 10d by 1d
   val moreData = Seq.fill(10)(data).flatten
   hist(moreData, 2, "1-10")
@@ -115,6 +117,15 @@ object FastHistTest extends App{
 
   val normal2 = Seq.fill(10000)(Random.nextGaussian()*1 + 4)
   hist(normal2, 50, "normal2")
+
+  {
+    val engines = "1.8  3.2  2.8  2.8  3.5  2.2  3.8  5.7  3.8  4.9  4.6  2.2  2.2  3.4  2.2  3.8  4.3  5.0  5.7  3.3  3.0  3.3  1.5  2.2  2.5  3.0  2.5  3.0  1.5  3.5  1.3  1.8  2.3  2.3  2.0  3.0  3.0  4.6  1.0  1.6  2.3  1.5  2.2  1.5  1.8  1.5  2.0  4.5  3.0  3.0  3.8  4.6  1.6  1.8  2.5  3.0  1.3  2.3  3.2  1.6  3.8  1.5  3.0  1.6  2.4  3.0  3.0  2.3  2.2  3.8  3.8  1.8  1.6  2.0  3.4  3.4  3.8  2.1  1.9  1.2  1.8  2.2  1.3  1.5  2.2  2.2  2.4  1.8  2.5  2.0  2.8  2.3  2.4".split("\\s+").map{_.toDouble}
+
+
+    val render = Histogram(normal).standard().xLabel("engines").render(plotAreaSize)
+    val file = new java.io.File(s"FastTest-engine-test.png")
+    render.write(file)
+  }
 
 }
 
