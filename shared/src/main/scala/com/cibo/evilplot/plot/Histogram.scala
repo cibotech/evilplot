@@ -1,4 +1,4 @@
-  /*
+/*
  * Copyright (c) 2018, CiBO Technologies, Inc.
  * All rights reserved.
  *
@@ -39,13 +39,11 @@ import com.cibo.evilplot.colors.Color
 
 object Histogram {
 
-  private val automaticBinCount:Int = -1 //to keep v0.6.0 api compatibility this is used instead of an Option type to trigger automatic binning
-  val defaultBinCount: Int = automaticBinCount //TODO deprecate -1 in favor of Option[Int] where None is automatic sizing
+  private val automaticBinCount:Int = -1 //to keep v0.6.x api compatibility this is used instead of an Option type to trigger automatic binning
+  val defaultBinCount: Int = automaticBinCount //TODO v0.7.x deprecate -1 in favor of Option[Int] where None is automatic sizing
 
   def defaultBinCount(nSamples:Int):Int = {
-    // val bins = 1 + math.ceil(math.log(nSamples)/math.log(2)).toInt //Sturges
-    // val bins = math.ceil(math.sqrt(nSamples)).toInt //sqrtn
-    val bins = math.ceil(2*math.pow(nSamples, 1d/3)).toInt //Rice rules 1k => 20bins
+    val bins = math.ceil(2*math.pow(nSamples, 1d/3)).toInt //Rice rule: 1k => 20bins (less decimating than Sturges)
     math.min(math.max(10, bins), 1000)
   }
 
@@ -121,24 +119,10 @@ object Histogram {
     boundBuffer: Double,
     binningFunction: (Seq[Double], Bounds, Int) => Seq[Point])
       extends PlotRenderer {
+
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-      if (data.nonEmpty) {
-        val ctx = PlotCtx(plot, plotExtent, spacing)
-
-        val dataBounds = Bounds.of(data)
-        val points = binningFunction(data, dataBounds, binCount)
-        val binWidth: Double = dataBounds.range / binCount  //??? binning based on data bounds always? what about custom binning?
-
-        val bars = for (p <- points;
-                        xb <- Bounds(p.x, p.x + binWidth) intersect plot.xbounds;
-                        yb <- Bounds(0, p.y) intersect plot.ybounds) yield {
-          val bar = BoundedBar(xb, yb, ctx)
-          barRenderer.render(plot, bar.extent, Bar(bar.ymax)).translate(x = bar.xmin, y = bar.ymax)
-        }
-        bars.group
-      } else {
-        EmptyDrawable()
-      }
+      val histRenderer = Histogram(data, bins = binCount, barRenderer = Some(barRenderer), spacing = Some(spacing), boundBuffer = Some(boundBuffer), binningFunction = binningFunction).renderer
+      histRenderer.render(plot,plotExtent)
     }
 
     override val legendContext: LegendContext =
@@ -153,7 +137,8 @@ object Histogram {
     binWidth: Double,
     barRenderer: BarRenderer,
     spacing: Double)
-      extends PlotRenderer {
+      extends PlotRenderer 
+  {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable =
       if (binPoints.isEmpty) EmptyDrawable()
       else {
@@ -176,7 +161,6 @@ object Histogram {
   private case class PlotCtx(plot: Plot, extent: Extent, spacing: Double) {
     lazy val tx = plot.xtransform(plot, extent)
     lazy val ty = plot.ytransform(plot, extent)
-    // println(s"PlotCtx  xbounds=$xbounds ybounds=$ybounds extent=$extent")
   }
   private case class BoundedBar(xbin: Bounds, ybin: Bounds, ctx: PlotCtx) {
     //transform data space to pixel space
@@ -187,7 +171,53 @@ object Histogram {
     lazy val ymin = ctx.ty(0)
     lazy val height = math.abs(ymax - ymin)
     lazy val extent = Extent(width, height)
-    println(s"BoundedBar xbin:$xbin width:$width")
+  }
+
+  /** Create a histogram.
+    * @param values The data.
+    * @param bins The number of bins to divide the data into.
+    * @param barRenderer The renderer to render bars for each bin.
+    * @param spacing The spacing between bars.
+    * @param boundBuffer Extra padding to place at the top of the plot.
+    * @param binningFunction A function taking the raw data, the x bounds, and a bin count
+    *                        that returns a sequence of points with x points representing left
+    *                        bin boundaries and y points representing bin heights
+    * @param xbounds optionally use an explicit xbounds instead of an automatic bounds
+    * @param color color to use for the default barRenderer and override the implicit theme bar color
+    * @param color series name to use if using the default barRenderer
+    * @return A histogram plot.
+    */
+  def apply(
+    values: Seq[Double],
+    bins: Int = automaticBinCount, //TODO in next major version (v0.7.x) make this an option instead of -1
+    barRenderer: Option[BarRenderer] = None,
+    spacing: Option[Double] = None,
+    boundBuffer: Option[Double] = None,
+    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins,
+    xbounds: Option[Bounds] = None,
+    ybounds: Option[Bounds] = None,
+    color: Option[Color] = None,
+    name: Option[String] = None)(
+    implicit theme: Theme): Plot = {
+    val binCount = if(bins != automaticBinCount) bins else defaultBinCount(values.size)
+
+    require(binCount > 0, "must have at least one bin")
+
+    //--merge the multiple sources of configuration options with priority on the arguments over default and themes
+    val theColor = color getOrElse theme.colors.bar
+    val theBarRenderer = barRenderer getOrElse BarRenderer.named(color=Some(theColor),name=name)
+    val theSpacing = spacing getOrElse theme.elements.barSpacing
+    val theBufRatio = boundBuffer getOrElse theme.elements.boundBuffer
+    val theXbounds = xbounds getOrElse Bounds.of(values)
+
+    //--auto plot bounds from data.
+    //  Note: the whole histogram shouldn't have to be re-calculated at render time if it is already computed here for the ybounds
+    val binPoints = binningFunction(values, theXbounds, binCount)
+    val theYbounds = Bounds.of(binPoints.map{_.y} :+ 0d).padMax(theBufRatio)
+    val binWidth = theXbounds.range / binCount
+
+    val renderer = HistogramBinRenderer(binPoints, binWidth, theBarRenderer, theSpacing)
+    Plot(theXbounds, theYbounds, renderer)
   }
 
   case class ContinuousBinPlotRenderer(
@@ -217,49 +247,6 @@ object Histogram {
 
   }
 
-  /** Create a histogram.
-    * @param values The data.
-    * @param bins The number of bins to divide the data into.
-    * @param barRenderer The renderer to render bars for each bin.
-    * @param spacing The spacing between bars.
-    * @param boundBuffer Extra padding to place at the top of the plot.
-    * @param binningFunction A function taking the raw data, the x bounds, and a bin count
-    *                        that returns a sequence of points with x points representing left
-    *                        bin boundaries and y points representing bin heights
-    * @param xbounds optionally use an explicit xbounds instead of an automatic bounds
-    * @param color color to use for the default barRenderer and override the implicit theme bar color
-    * @return A histogram plot.
-    */
-  def apply(
-    values: Seq[Double],
-    bins: Int = automaticBinCount, //TODO in next major version make this an option instead of -1
-    barRenderer: Option[BarRenderer] = None,
-    spacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None,
-    binningFunction: (Seq[Double], Bounds, Int) => Seq[Point] = createBins,
-    xbounds: Option[Bounds] = None,
-    color: Option[Color] = None)(
-    implicit theme: Theme): Plot = {
-    val binCount = if(bins != automaticBinCount) bins else defaultBinCount(values.size)
-
-    require(binCount > 0, "must have at least one bin")
-
-    //--merge the multiple sources of configuration options with priority on the arguments over default and themes
-    val theColor = color getOrElse theme.colors.bar
-    val theBarRenderer = barRenderer getOrElse BarRenderer.default( Some(theColor) )
-    val theSpacing = spacing getOrElse theme.elements.barSpacing
-    val theBufRatio = boundBuffer getOrElse theme.elements.boundBuffer
-    val theXbounds = xbounds getOrElse Bounds.of(values)
-
-    //--auto plot bounds from data.
-    //  Note: the whole histogram shouldn't have to be re-calculated at render time if it is already computed here for the ybounds
-    val binPoints = binningFunction(values, theXbounds, binCount)
-    val theYbounds = Bounds.of(binPoints.map{_.y} :+ 0d) padMax theBufRatio //FIXME should this have an explit ybounds if its adjusted?? 
-    val binWidth = theXbounds.range / binCount
-
-    val renderer = HistogramBinRenderer(binPoints, binWidth, theBarRenderer, theSpacing)
-    Plot(theXbounds, theYbounds, renderer)
-  }
 
   def fromBins(
     bins: Seq[ContinuousBin],
