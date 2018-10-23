@@ -132,17 +132,30 @@ object FastHistTest extends App{
 
   {
 
-    def hist(xs:Seq[Double], c:Color) = Histogram(xs, barRenderer = Some(BarRenderer.named( color = Some(c.hsla.copy(opacity = 0.5)) )) ) //Some(c.copy(opacity = 0.6))) )
+    val forcedXBounds = Bounds(-1, 3)
+
+    def mkBins(values: Seq[Double], xbounds: Bounds, binCount: Int): Seq[Point] =
+      Histogram.createBins(values, forcedXBounds, Histogram.defaultBinCount(values.size))
+
+    def hist(xs:Seq[Double], c:Color) = 
+      Histogram(xs, 
+        // barRenderer = Some(BarRenderer.named( color = Some(c.opacity(0.5)))), 
+        color = Some(c.opacity(0.5)),
+        // binningFunction = mkBins,
+        xbounds = Some(forcedXBounds)
+      )
+
     
     val N = 1000
     // def data = Seq.fill(N)(Random.nextGaussian())// ++ List(-10d,10d) 
     def data = 1 to N map {_.toDouble/N}
-    val hist1 = hist(data :+ 1d, HTMLNamedColors.dodgerBlue)
-    val hist2 = hist(data :+ 2d, HTMLNamedColors.crimson)  //this is the test case that breaks overlay BAD!
+    val hist1 = hist(data :+ 0.99d, HTMLNamedColors.dodgerBlue)
+    val hist2 = hist(data :+ 2.0d, HTMLNamedColors.crimson)  //this is the test case that breaks overlay BAD!
 
+    // val plot = hist1.standard()
     val plot = Overlay(hist1, hist2).standard()
 
-    plot.render(plotAreaSize).write(new java.io.File(s"FastTest-overlay.png"))
+    plot/*.xbounds(forcedXBounds)*/.render(plotAreaSize).write(new java.io.File(s"FastTest-overlay.png"))
   }
   
 
