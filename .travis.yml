@@ -2,6 +2,10 @@ language: scala
     
 jdk: oraclejdk8
 
+scala: 
+  - 2.12.4
+    #- 2.11.12
+
 # Use container-based infrastructure
 sudo: false
 
@@ -16,7 +20,8 @@ cache:
         - $HOME/.sbt/boot/
 
 script:
-   - sbt +scalastyle +test +headerCheck +test:headerCheck +it:test +doc
+   #- sbt ++$TRAVIS_SCALA_VERSION scalastyle test headerCheck test:headerCheck it:test doc
+   - sbt ++$TRAVIS_SCALA_VERSION it:test
 
 notifications:
   email: false

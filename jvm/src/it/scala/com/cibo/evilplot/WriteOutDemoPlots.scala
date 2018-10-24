@@ -54,9 +54,14 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
         val hashValue:String = {
           def hex(i:Int):String = "%08x" format i
           val pixels = (for(x <- 0 until bi.getWidth; y <- 0 until bi.getHeight) yield bi.getRGB(x,y)).toArray
+          val mono = pixels.map{p => if(p == 0) 0 else 1}
+          val monommr = hex(scala.util.hashing.MurmurHash3.arrayHash(mono))
           val mmr = hex(scala.util.hashing.MurmurHash3.arrayHash(pixels))
+          // int javaRed = (javaRGB >> 16) & 0xFF;
+          // int javaGreen = (javaRGB >> 8) & 0xFF;
+          // int javaBlue = (javaRGB >> 0) & 0xFF;
           val xor = hex(pixels.reduce{_ ^ _})
-          println(f"${name.name}%-30s mmr:$mmr xor:$xor")
+          println(f"${name.name}%-30s monommr:$monommr mmr:$mmr xor:$xor w:${bi.getWidth} h:${bi.getHeight}")
           mmr
         }
 
