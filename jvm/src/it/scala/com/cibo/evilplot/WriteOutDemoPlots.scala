@@ -12,22 +12,22 @@ import scala.util.Try
 class WriteOutDemoPlots extends FunSpec with Matchers {
 
   val plots = Seq(
-    'linePlot -> "fca0af7afa",
-    'heatmap -> "402b0f28e0",
-    'pieChart -> "de8f6d6d44",
-    'clusteredBarChart -> "00ceb43ff3",
-    'clusteredStackedBarChart -> "015225d567",
-    'stackedBarChart -> "f0978d9322",
-    'barChart -> "003f69c9c6",
-    'functionPlot -> "d0692b3eff",
-    'markerPlot -> "736c4b7471",
-    'crazyPlot -> "88a86f0074",
-    'facetedPlot -> "6f5f2fc577",
-    'marginalHistogram -> "312e547f8f",
-    'scatterPlot -> "ffeb4cb0e5",
-    'boxPlot -> "9d5487bc54",
-    'facetedPlot -> "6f5f2fc577",
-    'histogramOverlay -> "821be14621"
+    'linePlot -> "9fa9d6fb",
+    'heatmap -> "8eb17253",
+    'pieChart -> "e470690b",
+    'clusteredBarChart -> "0214ab04",
+    'clusteredStackedBarChart -> "c7045d0a",
+    'stackedBarChart -> "bf508e8c",
+    'barChart -> "8102586e",
+    'functionPlot -> "c537877d",
+    'markerPlot -> "f95778db",
+    'crazyPlot -> "3ff2d020",
+    'facetedPlot -> "8f4ce32d",
+    'marginalHistogram -> "6acf977e",
+    'scatterPlot -> "9abab52b",
+    'boxPlot -> "ec53bbdc",
+    'facetedPlot -> "8f4ce32d",
+    'histogramOverlay -> "3699c648"
   )
 
   val demoPlotMethods= DemoPlots.getClass.getMethods.map{m => Symbol(m.getName) -> m}.toMap
@@ -35,35 +35,35 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
   val tmpPathOpt = {
     val tmpPath = Paths.get("/tmp/evilplot")
     if (Files.notExists(tmpPath)) Try{Files.createDirectories(tmpPath)}
-    if(Files.exists(tmpPath)) Some(tmpPath) else None
+    if(Files.notExists(tmpPath)) None else {
+      println(s"Saving rendered png's to $tmpPath")
+      Some(tmpPath)
+    }
   }
 
   describe("Demo Plots") {
     it("render to consistent sha1 hash") {
-      for { (name, sha1Truth) <- plots } {
+      for { (name, hashValueTruth) <- plots } {
 
         scala.util.Random.setSeed(666L) //evil global seed renewed for each plot render
         val plot = demoPlotMethods(name).invoke(DemoPlots).asInstanceOf[Drawable]
 
         val bi = plot.asBufferedImage
 
-        //--sha1 of the image
-        val sha1:String = {
-          val baos = new java.io.ByteArrayOutputStream();
-          ImageIO.write(bi, "png", baos);
-          val md = java.security.MessageDigest.getInstance("SHA-1")
-          val sha1Bytes = md.digest(baos.toByteArray())
-          sha1Bytes map {"%02x" format _} mkString "" take 10
+        //--hashValue of the image
+        val hashValue:String = {
+          val pixels = for(x <- 0 until bi.getWidth; y <- 0 until bi.getHeight) yield bi.getRGB(x,y)
+          "%08x" format pixels.toVector.## //use scala's built in murmurhash function
         }
 
-        s"$name-$sha1" shouldBe s"$name-$sha1Truth"
+        s"$name-$hashValue" shouldBe s"$name-$hashValueTruth"
 
-        println(s"""$name -> "$sha1",""")
+        println(s"""$name -> "$hashValue",""")
 
         //--write img to file if the tmp path is available
-        for(tmpPath <- tmpPathOpt){
+        for(_ <- None; tmpPath <- tmpPathOpt){
           val file = new File(s"${tmpPath.toAbsolutePath.toString}/${name.name}.png")
-          println(s"Write ${name.name} to $file")
+          // println(s"Write ${name.name} to $file")
           ImageIO.write(bi, "png", file)
           file.exists() shouldBe true
         }
