@@ -63,9 +63,9 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
           pixels.count(isColored).toDouble/pixels.size
         }
 
-        println(f"""$name -> $ratio%5.5f,""")
-
-        assert(math.abs(ratioTruth - ratio) < 0.001, s"$name out of range $ratio != $ratioTruth")
+        val delta = math.abs(ratioTruth - ratio)
+        println(f"""$name -> $ratio%5.5f, //$delta%8.8f""")
+        assert(delta < 0.003, s"$name out of range $ratio != $ratioTruth")
 
         //--write img to file if the tmp path is available
         for(_ <- None; tmpPath <- tmpPathOpt){
