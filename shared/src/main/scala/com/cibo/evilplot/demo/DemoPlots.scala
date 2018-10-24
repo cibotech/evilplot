@@ -44,6 +44,27 @@ import scala.util.Random
 
 /** A number of examples of Evil Plotting */
 object DemoPlots {
+
+  lazy val plotLookup = Map(
+    'linePlot -> linePlot,
+    'heatmap -> heatmap,
+    'pieChart -> pieChart,
+    'clusteredBarChart -> clusteredBarChart,
+    'clusteredStackedBarChart -> clusteredStackedBarChart,
+    'stackedBarChart -> stackedBarChart,
+    'barChart -> barChart,
+    'functionPlot -> functionPlot,
+    'markerPlot -> markerPlot,
+    'crazyPlot -> crazyPlot,
+    'facetedPlot -> facetedPlot,
+    'marginalHistogram -> marginalHistogram,
+    'scatterPlot -> scatterPlot,
+    'boxPlot -> boxPlot,
+    'facetedPlot -> facetedPlot,
+    'histogramOverlay -> histogramOverlay
+  )
+  def get(plotName:Symbol):Option[Drawable] = plotLookup.get(plotName)
+
   implicit val theme: Theme = DefaultTheme.copy(
     fonts = DefaultFonts
       .copy(tickLabelSize = 14, legendLabelSize = 14, fontFace = "'Lato', sans-serif")
@@ -51,6 +72,7 @@ object DemoPlots {
 
   val plotAreaSize: Extent = Extent(1000, 600)
   lazy val histogram: Drawable = {
+    Random.setSeed(666L) //evil seed
     val data = (0.0 to 3 by .25) ++ (3.0 to 5 by .05) ++ (5.0 to 8 by 1.0)
 
     Histogram(data, 10)
@@ -62,6 +84,7 @@ object DemoPlots {
   }
 
   lazy val legendFeatures: Drawable = {
+    Random.setSeed(666L) //evil seed
     val allYears = (2007 to 2013).toVector
     val data = Seq.fill(150)(
       Point3d(Random.nextDouble(), Random.nextDouble(), allYears(Random.nextInt(allYears.length))))
@@ -103,6 +126,7 @@ object DemoPlots {
   }
 
   lazy val barChart: Drawable = {
+    Random.setSeed(666L) //evil seed
     val percentChange = Seq[Double](-10, 5, 12, 68, -22)
     val labels = Seq("one", "two", "three", "four", "five")
 
@@ -129,6 +153,7 @@ object DemoPlots {
   }
 
   lazy val axesTesting: Drawable = {
+    Random.setSeed(666L) //evil seed
     val points = Seq(Point(1, 1), Point(1.5, 1.1), Point(2.5, 1.5), Point(2.9, 2.5), Point(3, 3))
     val filler = Seq("Lorem", "ipsum", "dolor", "sit", "amet", "consectetur")
     LinePlot(points)
@@ -162,6 +187,7 @@ object DemoPlots {
   }
 
   lazy val clusteredBarChart: Drawable = {
+    Random.setSeed(666L) //evil seed
     val data = Seq[Seq[Double]](
       Seq(1, 2, 3),
       Seq(4, 5, 6),
@@ -183,6 +209,7 @@ object DemoPlots {
   }
 
   lazy val stackedBarChart: Drawable = {
+    Random.setSeed(666L) //evil seed
     val data = Seq[Seq[Double]](
       Seq(1, 2, 3),
       Seq(4, 5, 6),
@@ -203,6 +230,7 @@ object DemoPlots {
   }
 
   lazy val clusteredStackedBarChart: Drawable = {
+    Random.setSeed(666L) //evil seed
     val data = Seq[Seq[Seq[Double]]](
       Seq(Seq(1, 2, 3), Seq(4, 5, 6)),
       Seq(Seq(3, 4, 1), Seq(2, 3, 4))
@@ -222,6 +250,7 @@ object DemoPlots {
   }
 
   lazy val functionPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     val Seq(one, two, three) = theme.colors.stream.take(3)
     Overlay(
       FunctionPlot.series(x => x * x, "y = x\u00B2", one, xbounds = Some(Bounds(-1, 1))),
@@ -234,6 +263,7 @@ object DemoPlots {
   }
 
   lazy val boxPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     val data = Seq.fill(10)(Seq.fill(Random.nextInt(30))(Random.nextDouble()))
     val series = Seq.fill(10)(Random.nextInt(2))
     BoxPlot(data, boxRenderer = Some(BoxRenderer.colorBy(series).withMeanLine()))
@@ -243,6 +273,7 @@ object DemoPlots {
   }
 
   lazy val clusteredBoxPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     val data = Seq.fill(3)(Seq.fill(3)(Seq.fill(Random.nextInt(30))(Random.nextDouble())))
     val series = Seq.fill(3)(Seq(0, 1, 2)).flatten
     BoxPlot
@@ -260,6 +291,7 @@ object DemoPlots {
   case class Record(value: Double)
 
   lazy val simpleGroupedPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
 
     val continuousData = Seq.fill(60)(Record(Math.random() * 100))
 
@@ -285,6 +317,7 @@ object DemoPlots {
   }
 
   lazy val simpleContinuousPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
 
     val continuousData = Seq.fill(60)(Math.random() * 100)
 
@@ -301,6 +334,7 @@ object DemoPlots {
   }
 
   lazy val simpleCartesianPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     val points = Seq.fill(150)(Point(Random.nextDouble() * 2, Random.nextDouble())) :+ Point(
       0.0,
       0.0) :+ Point(1.0, 0.0) :+ Point(0.0, 1.0) :+ Point(1.0, 1.0)
@@ -324,6 +358,7 @@ object DemoPlots {
   }
 
   lazy val scatterPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     val points = Seq.fill(150)(
       Point3d(Random.nextDouble(), Random.nextDouble(), Random.nextDouble())) :+ Point3d(
       0.0,
@@ -349,6 +384,7 @@ object DemoPlots {
   }
 
   lazy val marginalHistogram: Drawable = {
+    Random.setSeed(666L) //evil seed
     import com.cibo.evilplot.plot._
     import com.cibo.evilplot.plot.renderers._
 
@@ -375,14 +411,14 @@ object DemoPlots {
   }
 
   lazy val pieChart: Drawable = {
+    Random.setSeed(666L) //evil seed
     val data = Seq("one" -> 1.5, "two" -> 3.5, "three" -> 2.0)
     PieChart(data).rightLegend().render(plotAreaSize)
   }
 
   lazy val contourPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     import com.cibo.evilplot.plot._
-
-    import scala.util.Random
 
     val data = Seq.fill(100)(Point(Random.nextDouble() * 20, Random.nextDouble() * 20))
     ContourPlot(data)
@@ -393,6 +429,7 @@ object DemoPlots {
   }
 
   lazy val linePlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     val data = (0 to 5)
       .map(_.toDouble)
       .zip(
@@ -412,6 +449,7 @@ object DemoPlots {
   }
 
   lazy val heatmap: Drawable = {
+    Random.setSeed(666L) //evil seed
     val data = Seq[Seq[Double]](
       Seq(1, 2, 3, 4),
       Seq(5, 6, 7, 8),
@@ -430,6 +468,7 @@ object DemoPlots {
   }
 
   lazy val facetedPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     val years = 2007 to 2013
     val datas: Seq[Seq[Point]] =
       years.map(_ => Seq.fill(Random.nextInt(20))(Point(Random.nextDouble(), Random.nextDouble())))
@@ -463,6 +502,7 @@ object DemoPlots {
   }
 
   lazy val crazyPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     import com.cibo.evilplot.plot._
     import com.cibo.evilplot.plot.renderers._
 
@@ -536,6 +576,7 @@ object DemoPlots {
   }
 
   lazy val markerPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     val Seq(one, two, three) = theme.colors.stream.take(3)
     FunctionPlot
       .series(x => x, "y = x", one, xbounds = Some(Bounds(-1, 1)))
@@ -571,6 +612,7 @@ object DemoPlots {
   }
 
   lazy val densityPlot: Drawable = {
+    Random.setSeed(666L) //evil seed
     val data = Seq.fill(150)(Random.nextDouble() * 30)
     val colors = theme.colors.stream.slice(1, 4)
     val bandwidths = Seq(5d, 2d, 0.5d)
@@ -594,6 +636,7 @@ object DemoPlots {
   }
 
   lazy val histogramOverlay: Drawable = {
+    Random.setSeed(666L) //evil seed
     val forcedXBounds = Bounds(-1, 3)
 
     def hist(xs: Seq[Double], c: Color) =

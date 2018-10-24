@@ -9,6 +9,11 @@ import org.scalatest.{FunSpec, Matchers}
 import com.cibo.evilplot.geometry.Drawable
 import scala.util.Try
 
+object WriteOutDemoPlots {
+  def apply(args:Array[String]):Unit = 
+    for(plotName <- args; plot <- DemoPlots.get(Symbol(plotName)))
+       plot write new java.io.File(s"$plotName.png")
+}
 class WriteOutDemoPlots extends FunSpec with Matchers {
 
   val plots = Seq(
@@ -30,8 +35,6 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
     'histogramOverlay -> "3699c648"
   )
 
-  val demoPlotMethods= DemoPlots.getClass.getMethods.map{m => Symbol(m.getName) -> m}.toMap
-
   val tmpPathOpt = {
     val tmpPath = Paths.get("/tmp/evilplot")
     if (Files.notExists(tmpPath)) Try{Files.createDirectories(tmpPath)}
@@ -42,11 +45,8 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
   }
 
   describe("Demo Plots") {
-    it("render to consistent sha1 hash") {
-      for { (name, hashValueTruth) <- plots } {
-
-        scala.util.Random.setSeed(666L) //evil global seed renewed for each plot render
-        val plot = demoPlotMethods(name).invoke(DemoPlots).asInstanceOf[Drawable]
+    it("render to consistent murmur hash") {
+      for { (name, hashValueTruth) <- plots; plot <- DemoPlots.get(name)} {
 
         val bi = plot.asBufferedImage
 
