@@ -52,11 +52,11 @@ final case class Bounds(min: Double, max: Double) {
   def isInBounds(x: Double): Boolean = x >= min && x <= max
 
   /**if it exists find the intersection between two bounds
-   *
-   * this   |     [    ] | [  ]        |   [   ]  |   [  ]   |    [  ]      |   [  ]
-   * that   | []         |        []   | [   ]    |   [  ]   |    [    ]    |      [  ]   
-   * result |  none      |    none     |   [ ]    |   [  ]   |    [  ]      |      |
-   * */
+    *
+    * this   |     [    ] | [  ]        |   [   ]  |   [  ]   |    [  ]      |   [  ]
+    * that   | []         |        []   | [   ]    |   [  ]   |    [    ]    |      [  ]
+    * result |  none      |    none     |   [ ]    |   [  ]   |    [  ]      |      |
+    * */
   def intersect(that: Bounds): Option[Bounds] = {
     val min = math.max(this.min, that.min)
     val max = math.min(this.max, that.max)
@@ -96,7 +96,7 @@ object Bounds {
     } yield Bounds(min, max)
   }
 
-  def of(data:Seq[Double]):Bounds = Bounds.get(data) getOrElse Bounds.empty
+  def of(data: Seq[Double]): Bounds = Bounds.get(data) getOrElse Bounds.empty
 
   def get(data: Seq[Double]): Option[Bounds] = {
     data.foldLeft(None: Option[Bounds]) { (bounds, value) =>

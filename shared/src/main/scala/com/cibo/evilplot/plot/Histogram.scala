@@ -36,14 +36,15 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.{BarRenderer, ContinuousBinRenderer, PlotRenderer}
 import com.cibo.evilplot.colors.Color
 
-
 object Histogram {
 
-  private val automaticBinCount:Int = -1 //to keep v0.6.x api compatibility this is used instead of an Option type to trigger automatic binning
-  val defaultBinCount: Int = automaticBinCount //TODO v0.7.x deprecate -1 in favor of Option[Int] where None is automatic sizing
+  private val automaticBinCount
+    : Int = -1 //to keep v0.6.x api compatibility this is used instead of an Option type to trigger automatic binning
+  val defaultBinCount
+    : Int = automaticBinCount //TODO v0.7.x deprecate -1 in favor of Option[Int] where None is automatic sizing
 
-  def defaultBinCount(nSamples:Int):Int = {
-    val bins = math.ceil(2*math.pow(nSamples, 1d/3)).toInt //Rice rule: 1k => 20bins (less decimating than Sturges)
+  def defaultBinCount(nSamples: Int): Int = {
+    val bins = math.ceil(2 * math.pow(nSamples, 1d / 3)).toInt //Rice rule: 1k => 20bins (less decimating than Sturges)
     math.min(math.max(10, bins), 1000)
   }
 
@@ -110,7 +111,9 @@ object Histogram {
     }
   }
 
-  @deprecated("Use HistogramBinRenderer instead to prevent double binning and separation of data and view bounds", "v0.6.1")
+  @deprecated(
+    "Use HistogramBinRenderer instead to prevent double binning and separation of data and view bounds",
+    "v0.6.1")
   case class HistogramRenderer(
     data: Seq[Double],
     barRenderer: BarRenderer,
@@ -121,8 +124,14 @@ object Histogram {
       extends PlotRenderer {
 
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable = {
-      val histRenderer = Histogram(data, bins = binCount, barRenderer = Some(barRenderer), spacing = Some(spacing), boundBuffer = Some(boundBuffer), binningFunction = binningFunction).renderer
-      histRenderer.render(plot,plotExtent)
+      val histRenderer = Histogram(
+        data,
+        bins = binCount,
+        barRenderer = Some(barRenderer),
+        spacing = Some(spacing),
+        boundBuffer = Some(boundBuffer),
+        binningFunction = binningFunction).renderer
+      histRenderer.render(plot, plotExtent)
     }
 
     override val legendContext: LegendContext =
@@ -130,15 +139,14 @@ object Histogram {
 
   }
 
-  /** this render assumes the binning of the data has already been applied; i.e in cases where the plot ranges need to be pre-calculated 
-   *  @param binPoints each point x:left edge y:count of total*/
+  /** this render assumes the binning of the data has already been applied; i.e in cases where the plot ranges need to be pre-calculated
+    *  @param binPoints each point x:left edge y:count of total*/
   case class HistogramBinRenderer(
     binPoints: Seq[Point],
     binWidth: Double,
     barRenderer: BarRenderer,
     spacing: Double)
-      extends PlotRenderer 
-  {
+      extends PlotRenderer {
     def render(plot: Plot, plotExtent: Extent)(implicit theme: Theme): Drawable =
       if (binPoints.isEmpty) EmptyDrawable()
       else {
@@ -197,15 +205,16 @@ object Histogram {
     xbounds: Option[Bounds] = None,
     ybounds: Option[Bounds] = None,
     color: Option[Color] = None,
-    name: Option[String] = None)(
-    implicit theme: Theme): Plot = {
-    val binCount = if(bins != automaticBinCount) bins else defaultBinCount(values.size)
+    name: Option[String] = None)(implicit theme: Theme): Plot = {
+    val binCount = if (bins != automaticBinCount) bins else defaultBinCount(values.size)
 
     require(binCount > 0, "must have at least one bin")
 
     //--merge the multiple sources of configuration options with priority on the arguments over default and themes
     val theColor = color getOrElse theme.colors.bar
-    val theBarRenderer = barRenderer getOrElse BarRenderer.named(color=Some(theColor),name=name)
+    val theBarRenderer = barRenderer getOrElse BarRenderer.named(
+      color = Some(theColor),
+      name = name)
     val theSpacing = spacing getOrElse theme.elements.barSpacing
     val theBufRatio = boundBuffer getOrElse theme.elements.boundBuffer
     val theXbounds = xbounds getOrElse Bounds.of(values)
@@ -213,7 +222,7 @@ object Histogram {
     //--auto plot bounds from data.
     //  Note: the whole histogram shouldn't have to be re-calculated at render time if it is already computed here for the ybounds
     val binPoints = binningFunction(values, theXbounds, binCount)
-    val theYbounds = Bounds.of(binPoints.map{_.y} :+ 0d).padMax(theBufRatio)
+    val theYbounds = Bounds.of(binPoints.map { _.y } :+ 0d).padMax(theBufRatio)
     val binWidth = theXbounds.range / binCount
 
     val renderer = HistogramBinRenderer(binPoints, binWidth, theBarRenderer, theSpacing)
@@ -246,7 +255,6 @@ object Histogram {
       binRenderer.legendContext.getOrElse(LegendContext.empty)
 
   }
-
 
   def fromBins(
     bins: Seq[ContinuousBin],

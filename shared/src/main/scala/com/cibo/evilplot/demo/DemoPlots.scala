@@ -596,8 +596,9 @@ object DemoPlots {
   lazy val histogramOverlay: Drawable = {
     val forcedXBounds = Bounds(-1, 3)
 
-    def hist(xs:Seq[Double], c:Color) = Histogram(xs, color = Some(c.opacity(0.5)), xbounds = Some(forcedXBounds))
-    
+    def hist(xs: Seq[Double], c: Color) =
+      Histogram(xs, color = Some(c.opacity(0.5)), xbounds = Some(forcedXBounds))
+
     val N = 1000
     def data = Seq.fill(N)(Random.nextGaussian())
     // def data = 1 to N map {_.toDouble/N}
