@@ -38,13 +38,13 @@ import com.cibo.evilplot.colors.Color
 
 object Histogram {
 
-  private val automaticBinCount
-    : Int = -1 //to keep v0.6.x api compatibility this is used instead of an Option type to trigger automatic binning
-  val defaultBinCount
-    : Int = automaticBinCount //TODO v0.7.x deprecate -1 in favor of Option[Int] where None is automatic sizing
+  //TODO for v0.7.x deprecate -1 in favor of Option[Int] where None is automatic sizing
+  private val automaticBinCount: Int = -1
+  val defaultBinCount: Int = automaticBinCount
 
+  /** auto select number of bins Note:Rice rule: 1k => 20bins (less decimating than Sturges) */
   def defaultBinCount(nSamples: Int): Int = {
-    val bins = math.ceil(2 * math.pow(nSamples, 1d / 3)).toInt //Rice rule: 1k => 20bins (less decimating than Sturges)
+    val bins = math.ceil(2 * math.pow(nSamples, 1d / 3)).toInt
     math.min(math.max(10, bins), 1000)
   }
 
@@ -260,7 +260,8 @@ object Histogram {
     bins: Seq[ContinuousBin],
     binRenderer: Option[ContinuousBinRenderer] = None,
     spacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None)(implicit theme: Theme): Plot = {
+    boundBuffer: Option[Double] = None)(
+    implicit theme: Theme): Plot = {
     require(bins.nonEmpty, "must have at least one bin")
 
     //view bounds restricting presented(rendered) data
