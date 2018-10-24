@@ -1,18 +1,14 @@
 language: scala
+scala:
+    - 2.12.4
+    - 2.11.12
     
-jdk: oraclejdk8
-
-scala: 
-  - 2.12.4
-    #- 2.11.12
-
-# Use container-based infrastructure
-sudo: false
+jdk:
+    - oraclejdk8
 
 before_cache:
-    # Cleanup the cached directories to avoid unnecessary cache updates
-    - find $HOME/.sbt        -name "*.lock"               -print -delete
-    - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
+    - find $HOME/.sbt -name "*.lock" | xargs rm
+    - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
 
 cache:
     directories:

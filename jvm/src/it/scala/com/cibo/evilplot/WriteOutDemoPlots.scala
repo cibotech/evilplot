@@ -16,23 +16,24 @@ object WriteOutDemoPlots {
 }
 class WriteOutDemoPlots extends FunSpec with Matchers {
 
+  //-- DemoPlot name and ratio of colored pixels (to represent an simple hash)
   val plots = Seq(
-    'linePlot -> "2c7176c7",
-    'heatmap -> "6bf94558",
-    'pieChart -> "7e2b46b0",
-    'clusteredBarChart -> "cf8c82f8",
-    'clusteredStackedBarChart -> "a3dd008b",
-    'stackedBarChart -> "1285ec66",
-    'barChart -> "2f7a0025",
-    'functionPlot -> "b5814ac0",
-    'markerPlot -> "9ffe947c",
-    'crazyPlot -> "c67f3ca1",
-    'facetedPlot -> "0b80a76d",
-    'marginalHistogram -> "d4a4ec4b",
-    'scatterPlot -> "a8467f56",
-    'boxPlot -> "89fae720",
-    'facetedPlot -> "0b80a76d",
-    'histogramOverlay -> "e1ed96ca"
+    'linePlot -> 0.01498,
+    'heatmap -> 0.81790,
+    'pieChart -> 0.44209,
+    'clusteredBarChart -> 0.31712,
+    'clusteredStackedBarChart -> 0.30259,
+    'stackedBarChart -> 0.35687,
+    'barChart -> 0.18869,
+    'functionPlot -> 0.01728,
+    'markerPlot -> 0.01008,
+    'crazyPlot -> 0.10755,
+    'facetedPlot -> 0.04951,
+    'marginalHistogram -> 0.04002,
+    'scatterPlot -> 0.02314,
+    'boxPlot -> 0.29182,
+    'facetedPlot -> 0.04951,
+    'histogramOverlay -> 0.32281
   )
 
   val tmpPathOpt = {
@@ -46,39 +47,25 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
 
   describe("Demo Plots") {
     it("render to consistent murmur hash") {
-      for { (name, hashValueTruth) <- plots; plot <- DemoPlots.get(name)} {
+      for { (name, ratioTruth) <- plots; plot <- DemoPlots.get(name)} {
 
         val bi = plot.asBufferedImage
 
-        def rgb(c:Int) = {
+        def isColored(c:Int):Boolean = {
           val r = (c >> 16) & 0xFF;
           val g = (c >> 8) & 0xFF;
           val b = (c >> 8) & 0xFF;
-          (r,g,b)
-        }
-        def isColored(c:Int):Boolean = {
-          val (r,g,b) = rgb(c)
           r + g + b > 10
         }
 
-        //--hashValue of the image
-        val hashValue:String = {
-          def hex(i:Int):String = "%08x" format i
+        val ratio:Double = {
           val pixels = (for(x <- 0 until bi.getWidth; y <- 0 until bi.getHeight) yield bi.getRGB(x,y)).toArray
-          val mono = pixels.map{p => if(isColored(p)) 0 else 1}
-          val coloredRatio = pixels.count(isColored).toDouble/pixels.size
-          val monommr = hex(scala.util.hashing.MurmurHash3.arrayHash(mono))
-          val mmr = hex(scala.util.hashing.MurmurHash3.arrayHash(pixels))
-          // int javaBlue = (javaRGB >> 0) & 0xFF;
-          val xor = hex(pixels.reduce{_ ^ _})
-          println(f"${name.name}%-30s monommr:$monommr mmr:$mmr xor:$xor w:${bi.getWidth} h:${bi.getHeight} coloredRatio:$coloredRatio")
-          mmr
+          pixels.count(isColored).toDouble/pixels.size
         }
 
-        println(s"""$name -> "$hashValue",""")
+        println(f"""$name -> $ratio%5.5f,""")
 
-        s"$name-$hashValue" shouldBe s"$name-$hashValueTruth"
-
+        assert(math.abs(ratioTruth - ratio) < 0.001, s"$name out of range $ratio != $ratioTruth")
 
         //--write img to file if the tmp path is available
         for(_ <- None; tmpPath <- tmpPathOpt){
