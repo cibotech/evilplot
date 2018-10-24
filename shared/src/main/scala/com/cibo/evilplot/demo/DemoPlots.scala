@@ -593,4 +593,21 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
+  lazy val histogramOverlay: Drawable = {
+    val forcedXBounds = Bounds(-1, 3)
+
+    def hist(xs:Seq[Double], c:Color) = Histogram(xs, color = Some(c.opacity(0.5)), xbounds = Some(forcedXBounds))
+    
+    val N = 1000
+    def data = Seq.fill(N)(Random.nextGaussian())
+    // def data = 1 to N map {_.toDouble/N}
+    val hist1 = hist(data :+ 0.99d, HTMLNamedColors.dodgerBlue)
+    val hist2 = hist(data :+ 2.0d, HTMLNamedColors.crimson)
+
+    // val plot = hist1.standard()
+    val plot = Overlay(hist1, hist2).standard()
+
+    plot.xbounds(forcedXBounds).render(plotAreaSize)
+  }
+
 }
