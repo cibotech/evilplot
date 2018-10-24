@@ -50,18 +50,28 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
 
         val bi = plot.asBufferedImage
 
+        def rgb(c:Int) = {
+          val r = (c >> 16) & 0xFF;
+          val g = (c >> 8) & 0xFF;
+          val b = (c >> 8) & 0xFF;
+          (r,g,b)
+        }
+        def isColored(c:Int):Boolean = {
+          val (r,g,b) = rgb(c)
+          r + g + b > 10
+        }
+
         //--hashValue of the image
         val hashValue:String = {
           def hex(i:Int):String = "%08x" format i
           val pixels = (for(x <- 0 until bi.getWidth; y <- 0 until bi.getHeight) yield bi.getRGB(x,y)).toArray
-          val mono = pixels.map{p => if(p == 0) 0 else 1}
+          val mono = pixels.map{p => if(isColored(p)) 0 else 1}
+          val coloredRatio = pixels.count(isColored).toDouble/pixels.size
           val monommr = hex(scala.util.hashing.MurmurHash3.arrayHash(mono))
           val mmr = hex(scala.util.hashing.MurmurHash3.arrayHash(pixels))
-          // int javaRed = (javaRGB >> 16) & 0xFF;
-          // int javaGreen = (javaRGB >> 8) & 0xFF;
           // int javaBlue = (javaRGB >> 0) & 0xFF;
           val xor = hex(pixels.reduce{_ ^ _})
-          println(f"${name.name}%-30s monommr:$monommr mmr:$mmr xor:$xor w:${bi.getWidth} h:${bi.getHeight}")
+          println(f"${name.name}%-30s monommr:$monommr mmr:$mmr xor:$xor w:${bi.getWidth} h:${bi.getHeight} coloredRatio:$coloredRatio")
           mmr
         }
 
@@ -71,7 +81,7 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
 
 
         //--write img to file if the tmp path is available
-        for(tmpPath <- tmpPathOpt){
+        for(_ <- None; tmpPath <- tmpPathOpt){
           val file = new File(s"${tmpPath.toAbsolutePath.toString}/${name.name}.png")
           ImageIO.write(bi, "png", file)
           file.exists() shouldBe true

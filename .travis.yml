@@ -1,6 +1,3 @@
-#osx is needed to get the same buffered images
-os: osx
-
 language: scala
     
 jdk: oraclejdk8
