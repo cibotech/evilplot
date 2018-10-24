@@ -34,11 +34,6 @@ import scala.language.implicitConversions
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
 
-// TODO remove this since it is nice but not used right now
-// final case class Bounds2d(x: Bounds, y: Bounds) {
-//   def intersect(that: Bounds2d): Option[Bounds2d] =
-//     for (x <- this.x intersect that.x; y <- this.y intersect that.y) yield Bounds2d(x, y)
-// }
 final case class Bounds(min: Double, max: Double) {
   if (!min.isNaN && !max.isNaN) {
     require(min <= max, s"Bounds min must be <= max, $min !<= $max")
@@ -51,12 +46,7 @@ final case class Bounds(min: Double, max: Double) {
 
   def isInBounds(x: Double): Boolean = x >= min && x <= max
 
-  /**if it exists find the intersection between two bounds
-    *
-    * this   |     [    ] | [  ]        |   [   ]  |   [  ]   |    [  ]      |   [  ]
-    * that   | []         |        []   | [   ]    |   [  ]   |    [    ]    |      [  ]
-    * result |  none      |    none     |   [ ]    |   [  ]   |    [  ]      |      |
-    * */
+  /**if it exists find the intersection between two bounds*/
   def intersect(that: Bounds): Option[Bounds] = {
     val min = math.max(this.min, that.min)
     val max = math.min(this.max, that.max)
