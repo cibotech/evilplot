@@ -260,8 +260,7 @@ object Histogram {
     bins: Seq[ContinuousBin],
     binRenderer: Option[ContinuousBinRenderer] = None,
     spacing: Option[Double] = None,
-    boundBuffer: Option[Double] = None)(
-    implicit theme: Theme): Plot = {
+    boundBuffer: Option[Double] = None)(implicit theme: Theme): Plot = {
     require(bins.nonEmpty, "must have at least one bin")
 
     //view bounds restricting presented(rendered) data

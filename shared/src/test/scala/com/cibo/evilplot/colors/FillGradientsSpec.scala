@@ -35,10 +35,9 @@ import org.scalatest.{FunSpec, Matchers}
 
 class FillGradientsSpec extends FunSpec with Matchers {
 
-
   describe("Gradient distribution functions") {
 
-    it("Should distribute 1 properly"){
+    it("Should distribute 1 properly") {
 
       val gradientSeq = FillGradients.distributeEvenly(
         Seq.fill(1)(RGB.random)
@@ -51,7 +50,7 @@ class FillGradientsSpec extends FunSpec with Matchers {
 
     }
 
-    it("Should distribute 2 properly"){
+    it("Should distribute 2 properly") {
 
       val gradientSeq = FillGradients.distributeEvenly(
         Seq(HTMLNamedColors.red, HTMLNamedColors.white)
@@ -65,7 +64,7 @@ class FillGradientsSpec extends FunSpec with Matchers {
 
     }
 
-    it("Should distribute 3 properly"){
+    it("Should distribute 3 properly") {
 
       val gradientSeq = FillGradients.distributeEvenly(
         Seq(HTMLNamedColors.red, HTMLNamedColors.white, HTMLNamedColors.blue)
@@ -82,10 +81,14 @@ class FillGradientsSpec extends FunSpec with Matchers {
 
     }
 
-    it("Should distribute 4 properly"){
+    it("Should distribute 4 properly") {
 
       val gradientSeq = FillGradients.distributeEvenly(
-        Seq(HTMLNamedColors.red, HTMLNamedColors.white, HTMLNamedColors.blue, HTMLNamedColors.mintCream)
+        Seq(
+          HTMLNamedColors.red,
+          HTMLNamedColors.white,
+          HTMLNamedColors.blue,
+          HTMLNamedColors.mintCream)
       )
 
       gradientSeq(0).offset shouldEqual 0.0

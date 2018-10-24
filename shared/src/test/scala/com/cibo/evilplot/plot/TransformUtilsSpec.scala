@@ -36,10 +36,9 @@ import org.scalatest.{FunSpec, Matchers}
 
 class TransformUtilsSpec extends FunSpec with Matchers {
 
+  describe("PlotUtils") {
 
-  describe("PlotUtils"){
-
-    it("computes the correct buffer"){
+    it("computes the correct buffer") {
       val zeroTen = PlotUtils.boundsWithBuffer(xs = Seq(0.0, 10.0), 0.0)
       zeroTen shouldEqual Bounds(0.0, 10.0)
 
@@ -50,22 +49,28 @@ class TransformUtilsSpec extends FunSpec with Matchers {
       negZeroTenTen shouldEqual Bounds(-11.0, 1.0)
     }
 
-    it("computes bounds"){
+    it("computes bounds") {
       val points = Seq(Point(0.0, 0.0), Point(10.0, 10.0))
 
       PlotUtils.bounds(points, 0.1) shouldEqual (Bounds(-1.0, 11.0), Bounds(-1.0, 11.0))
-      PlotUtils.bounds(points, 0.0, xboundBuffer = Some(0.1)) shouldEqual (Bounds(-1.0, 11.0), Bounds(0, 10.0))
-      PlotUtils.bounds(points, 0.0, yboundBuffer = Some(0.1))shouldEqual (Bounds(0, 10.0), Bounds(-1.0, 11.0))
+      PlotUtils.bounds(points, 0.0, xboundBuffer = Some(0.1)) shouldEqual (Bounds(-1.0, 11.0), Bounds(
+        0,
+        10.0))
+      PlotUtils.bounds(points, 0.0, yboundBuffer = Some(0.1)) shouldEqual (Bounds(0, 10.0), Bounds(
+        -1.0,
+        11.0))
     }
 
   }
 
-  describe("TransformWorldToScreen"){
+  describe("TransformWorldToScreen") {
 
-    val xTransformer = TransformWorldToScreen.xCartesianTransformer(Bounds(0, 100), extent = Extent(100, 100))
-    val yTransformer = TransformWorldToScreen.yCartesianTransformer(Bounds(0, 100), extent = Extent(100, 100))
+    val xTransformer =
+      TransformWorldToScreen.xCartesianTransformer(Bounds(0, 100), extent = Extent(100, 100))
+    val yTransformer =
+      TransformWorldToScreen.yCartesianTransformer(Bounds(0, 100), extent = Extent(100, 100))
 
-    it("default x transformer works properly"){
+    it("default x transformer works properly") {
 
       xTransformer(-100) shouldEqual -100.0 +- 0.000001
       xTransformer(0) shouldEqual 0.0 +- 0.000001
@@ -73,18 +78,21 @@ class TransformUtilsSpec extends FunSpec with Matchers {
 
     }
 
-    it("default y transformer works properly"){
+    it("default y transformer works properly") {
 
       yTransformer(-100) shouldEqual 200.0 +- 0.000001
       yTransformer(0) shouldEqual 100.0 +- 0.000001
       yTransformer(100) shouldEqual 0.0 +- 0.000001
     }
 
-    it("Transforms to screen correctly"){
+    it("Transforms to screen correctly") {
       import TransformWorldToScreen._
-      val transformer = TransformWorldToScreen.yCartesianTransformer(Bounds(0, 10), extent = Extent(100, 100))
+      val transformer =
+        TransformWorldToScreen.yCartesianTransformer(Bounds(0, 10), extent = Extent(100, 100))
 
-      transformDatumToWorld(Point(0.0, 0.0), xTransformer, yTransformer) shouldEqual Point(0.0, 100.0)
+      transformDatumToWorld(Point(0.0, 0.0), xTransformer, yTransformer) shouldEqual Point(
+        0.0,
+        100.0)
     }
   }
 }

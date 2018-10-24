@@ -40,7 +40,10 @@ class CartesianPlotSpec extends FunSpec with Matchers {
 
   describe("Cartesian Plot") {
     it("has the right bounds") {
-      val plot = CartesianPlot(Seq(Point(1, 2), Point(3, 4)), xboundBuffer = Some(0), yboundBuffer = Some(0))()
+      val plot = CartesianPlot(
+        Seq(Point(1, 2), Point(3, 4)),
+        xboundBuffer = Some(0),
+        yboundBuffer = Some(0))()
       plot.xbounds shouldBe Bounds(1, 3)
       plot.ybounds shouldBe Bounds(2, 4)
     }
