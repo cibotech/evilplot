@@ -1,14 +1,12 @@
 language: scala
-scala:
-    - 2.12.4
-    - 2.11.12
     
-jdk:
-    - oraclejdk8
+jdk: oraclejdk8
+
 
 before_cache:
-    - find $HOME/.sbt -name "*.lock" | xargs rm
-    - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+    # Cleanup the cached directories to avoid unnecessary cache updates
+    - find $HOME/.sbt        -name "*.lock"               -print -delete
+    - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
 
 cache:
     directories:
@@ -16,7 +14,7 @@ cache:
         - $HOME/.sbt/boot/
 
 script:
-   - sbt ++$TRAVIS_SCALA_VERSION scalastyle test headerCheck test:headerCheck it:test doc
+   - sbt + scalastyle test headerCheck test:headerCheck it:test doc
 
 notifications:
   email: false

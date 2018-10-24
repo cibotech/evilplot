@@ -52,14 +52,18 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
 
         //--hashValue of the image
         val hashValue:String = {
-          val pixels = for(x <- 0 until bi.getWidth; y <- 0 until bi.getHeight) yield bi.getRGB(x,y)
-          val mhash = scala.util.hashing.MurmurHash3.arrayHash(pixels.toArray)
-          "%08x" format mhash
+          def hex(i:Int):String = "%08x" format i
+          val pixels = (for(x <- 0 until bi.getWidth; y <- 0 until bi.getHeight) yield bi.getRGB(x,y)).toArray
+          val mmr = hex(scala.util.hashing.MurmurHash3.arrayHash(pixels))
+          val xor = hex(pixels.reduce{_ ^ _})
+          println(f"${name.name}%-30s mmr:$mmr xor:$xor")
+          mmr
         }
+
+        println(s"""$name -> "$hashValue",""")
 
         s"$name-$hashValue" shouldBe s"$name-$hashValueTruth"
 
-        println(s"""$name -> "$hashValue",""")
 
         //--write img to file if the tmp path is available
         for(tmpPath <- tmpPathOpt){
