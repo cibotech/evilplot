@@ -64,8 +64,8 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
         }
 
         val delta = math.abs(ratioTruth - ratio)
-        println(f"""$name -> $ratio%5.5f, //$delta%8.8f""")
-        assert(delta < 0.003, s"$name out of range $ratio != $ratioTruth")
+        println(f"""$name -> $ratio%5.5f, //delta = $delta%8.8f""")
+        assert(delta < 0.0015, s"$name out of range $ratio != $ratioTruth")
 
         //--write img to file if the tmp path is available
         for(_ <- None; tmpPath <- tmpPathOpt){
