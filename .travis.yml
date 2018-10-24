@@ -16,7 +16,7 @@ cache:
         - $HOME/.sbt/boot/
 
 script:
-    - sbt ++$TRAVIS_SCALA_VERSION scalastyle test headerCheck test:headerCheck doc
+   - sbt ++$TRAVIS_SCALA_VERSION scalastyle test headerCheck test:headerCheck it:test doc
 
 notifications:
   email: false

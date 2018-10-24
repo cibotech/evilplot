@@ -7,6 +7,7 @@ import com.cibo.evilplot.demo.DemoPlots
 import javax.imageio.ImageIO
 import org.scalatest.{FunSpec, Matchers}
 import com.cibo.evilplot.geometry.Drawable
+import scala.util.Try
 
 class WriteOutDemoPlots extends FunSpec with Matchers {
 
@@ -31,11 +32,14 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
 
   val demoPlotMethods= DemoPlots.getClass.getMethods.map{m => Symbol(m.getName) -> m}.toMap
 
-  val tmpPath = Paths.get("/tmp/evilplot")
-  if (Files.notExists(tmpPath)) Files.createDirectories(tmpPath)
+  val tmpPathOpt = {
+    val tmpPath = Paths.get("/tmp/evilplot")
+    if (Files.notExists(tmpPath)) Try{Files.createDirectories(tmpPath)}
+    if(Files.exists(tmpPath)) Some(tmpPath) else None
+  }
 
   describe("Demo Plots") {
-    it("is generated") {
+    it("render to consistent sha1 hash") {
       for { (name, sha1Truth) <- plots } {
 
         scala.util.Random.setSeed(666L) //evil global seed renewed for each plot render
@@ -54,12 +58,15 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
 
         s"$name-$sha1" shouldBe s"$name-$sha1Truth"
 
-        val file = new File(s"${tmpPath.toAbsolutePath.toString}/${name.name}.png")
         println(s"""$name -> "$sha1",""")
 
-        //--write img to file
-        ImageIO.write(bi, "png", file)
-        file.exists() shouldBe true
+        //--write img to file if the tmp path is available
+        for(tmpPath <- tmpPathOpt){
+          val file = new File(s"${tmpPath.toAbsolutePath.toString}/${name.name}.png")
+          println(s"Write ${name.name} to $file")
+          ImageIO.write(bi, "png", file)
+          file.exists() shouldBe true
+        }
       }
     }
   }
