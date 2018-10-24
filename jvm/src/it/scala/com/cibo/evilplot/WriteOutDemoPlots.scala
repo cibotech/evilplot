@@ -17,22 +17,22 @@ object WriteOutDemoPlots {
 class WriteOutDemoPlots extends FunSpec with Matchers {
 
   val plots = Seq(
-    'linePlot -> "9fa9d6fb",
-    'heatmap -> "8eb17253",
-    'pieChart -> "e470690b",
-    'clusteredBarChart -> "0214ab04",
-    'clusteredStackedBarChart -> "c7045d0a",
-    'stackedBarChart -> "bf508e8c",
-    'barChart -> "8102586e",
-    'functionPlot -> "c537877d",
-    'markerPlot -> "f95778db",
-    'crazyPlot -> "3ff2d020",
-    'facetedPlot -> "8f4ce32d",
-    'marginalHistogram -> "6acf977e",
-    'scatterPlot -> "9abab52b",
-    'boxPlot -> "ec53bbdc",
-    'facetedPlot -> "8f4ce32d",
-    'histogramOverlay -> "3699c648"
+    'linePlot -> "2c7176c7",
+    'heatmap -> "6bf94558",
+    'pieChart -> "7e2b46b0",
+    'clusteredBarChart -> "cf8c82f8",
+    'clusteredStackedBarChart -> "a3dd008b",
+    'stackedBarChart -> "1285ec66",
+    'barChart -> "2f7a0025",
+    'functionPlot -> "b5814ac0",
+    'markerPlot -> "9ffe947c",
+    'crazyPlot -> "c67f3ca1",
+    'facetedPlot -> "0b80a76d",
+    'marginalHistogram -> "d4a4ec4b",
+    'scatterPlot -> "a8467f56",
+    'boxPlot -> "89fae720",
+    'facetedPlot -> "0b80a76d",
+    'histogramOverlay -> "e1ed96ca"
   )
 
   val tmpPathOpt = {
@@ -53,7 +53,8 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
         //--hashValue of the image
         val hashValue:String = {
           val pixels = for(x <- 0 until bi.getWidth; y <- 0 until bi.getHeight) yield bi.getRGB(x,y)
-          "%08x" format pixels.toVector.## //use scala's built in murmurhash function
+          val mhash = scala.util.hashing.MurmurHash3.arrayHash(pixels.toArray)
+          "%08x" format mhash
         }
 
         s"$name-$hashValue" shouldBe s"$name-$hashValueTruth"
@@ -61,9 +62,8 @@ class WriteOutDemoPlots extends FunSpec with Matchers {
         println(s"""$name -> "$hashValue",""")
 
         //--write img to file if the tmp path is available
-        for(_ <- None; tmpPath <- tmpPathOpt){
+        for(tmpPath <- tmpPathOpt){
           val file = new File(s"${tmpPath.toAbsolutePath.toString}/${name.name}.png")
-          // println(s"Write ${name.name} to $file")
           ImageIO.write(bi, "png", file)
           file.exists() shouldBe true
         }
