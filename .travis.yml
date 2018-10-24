@@ -2,6 +2,8 @@ language: scala
     
 jdk: oraclejdk8
 
+# Use container-based infrastructure
+sudo: false
 
 before_cache:
     # Cleanup the cached directories to avoid unnecessary cache updates
@@ -14,7 +16,7 @@ cache:
         - $HOME/.sbt/boot/
 
 script:
-   - sbt + scalastyle test headerCheck test:headerCheck it:test doc
+   - sbt +scalastyle +test +headerCheck +test:headerCheck +it:test +doc
 
 notifications:
   email: false
