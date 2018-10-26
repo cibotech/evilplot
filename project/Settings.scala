@@ -40,6 +40,20 @@ object Settings {
       "org.jupyter-scala" %% "kernel-api" % versions.jupyterScala % Provided
     ))
 
+  val sharedMathDependencies = Def.setting(
+    Seq(
+      "org.scalactic" %%% "scalactic" % versions.scalactic,
+      "org.scalatest" %%% "scalatest" % versions.scalaTest % "test",
+      compilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
+    )
+  )
+
+  val jvmMathDependencies = Def.setting(
+    Seq(
+      "org.scalanlp"               %% "breeze"          % "0.13.2",
+      "org.scalanlp"               %% "breeze-natives"  % "0.13.2", // removing will still work but will be slower
+    ))
+
   val jvmDependencies = Def.setting(
     Seq(
       ))
