@@ -120,7 +120,7 @@ package object geometry {
 
     def group: Drawable = {
       // Flatten nested groups.
-      val flattened = drawables.foldLeft(Seq.empty[Drawable]) { (ds, d) =>
+      val flattened = drawables.foldLeft(Vector.empty[Drawable]) { (ds, d) =>
         d match {
           case Group(inner)    => ds ++ inner
           case EmptyDrawable() => ds
