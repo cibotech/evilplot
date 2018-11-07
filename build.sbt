@@ -8,7 +8,7 @@ scalacOptions in ThisBuild ++= Settings.scalacOptions
 
 lazy val `evilplot-root` = project
   .in(file("."))
-  .aggregate(evilplotJVM, evilplotJS, evilplotRepl, evilplotJupyterScala, assetJVM, evilplotRunner)
+  .aggregate(evilplotJVM, evilplotJS, evilplotRepl, evilplotJupyterScala, assetJVM, evilplotRunner, mathJS, mathJVM)
   .settings(
     publishArtifact := false,
     publish := {},
@@ -56,6 +56,22 @@ lazy val evilplotAsset = crossProject
 lazy val assetJS = evilplotAsset.js
 lazy val assetJVM = evilplotAsset.jvm
 
+lazy val evilplotMath = crossProject
+  .in(file("math"))
+  .settings(commonSettings)
+  .settings(licenseSettings)
+  .settings(
+    name := "evilplot-math",
+    resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
+    libraryDependencies ++= Settings.sharedMathDependencies.value,
+  )
+  .jvmSettings(
+    libraryDependencies ++= Settings.jvmMathDependencies.value
+  )
+
+lazy val mathJS = evilplotMath.js
+lazy val mathJVM = evilplotMath.jvm
+
 lazy val evilplot = crossProject
   .in(file("."))
   .settings(commonSettings)
@@ -78,7 +94,7 @@ lazy val evilplot = crossProject
   )
   .jvmSettings(
     libraryDependencies ++= Settings.jvmDependencies.value
-  )
+  ).dependsOn(evilplotMath)
 
 lazy val evilplotJVM = evilplot.jvm
 lazy val evilplotJS = evilplot.js
