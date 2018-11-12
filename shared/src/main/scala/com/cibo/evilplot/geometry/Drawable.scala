@@ -54,8 +54,10 @@ sealed trait Drawable {
 // can start with the same character in any class extending Drawable.
 // Also you should register a shortened constructor name in JSONUtils#shortenedName
 
+case class IEInfo(innerLocation: Point, clientLocation: Point)
+
 sealed trait InteractionEvent {
-  val e: () => Unit
+  val e: IEInfo => Unit
 }
 
 // Interaction events are non-portable
@@ -70,10 +72,10 @@ object InteractionEvent {
 }
 
 case class EmptyEvent() extends InteractionEvent{
-  override val e: () => Unit = () => ()
+  override val e: IEInfo => Unit = _ => ()
 }
-case class OnClick(e: () => Unit) extends InteractionEvent
-case class OnHover(e: () => Unit) extends InteractionEvent
+case class OnClick(e: IEInfo => Unit) extends InteractionEvent
+case class OnHover(e: IEInfo => Unit) extends InteractionEvent
 
 /** Apply a fill color to a fillable Drawable. */
 final case class Interaction(r: Drawable, interactionEvent: InteractionEvent*) extends Drawable {

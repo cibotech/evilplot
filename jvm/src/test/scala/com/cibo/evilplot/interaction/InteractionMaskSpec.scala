@@ -52,7 +52,7 @@ class InteractionMaskSpec extends FunSpec with Matchers {
         }
         testInteractionMask.clearEventListeners()
 
-        (0 until 10000).foreach( _ => testInteractionMask.add(OnClick(() => ())))
+        (0 until 10000).foreach( _ => testInteractionMask.add(OnClick(_ => ())))
       }
 
       Await.result(failIfMoreThanAminute, 3.minutes)// probably should use ScalaFutures mixin

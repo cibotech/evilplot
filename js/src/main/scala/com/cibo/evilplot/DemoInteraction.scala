@@ -32,7 +32,7 @@ package com.cibo.evilplot
 
 import java.util.UUID
 
-import com.cibo.evilplot.geometry.{CanvasRenderContext, Disc, Interaction, OnClick, OnHover, Text}
+import com.cibo.evilplot.geometry.{CanvasRenderContext, Disc, IEInfo, Interaction, OnClick, OnHover, Text}
 import com.cibo.evilplot.interaction.CanvasInteractionContext
 import com.cibo.evilplot.numeric.Point3d
 import com.cibo.evilplot.plot.CartesianPlot
@@ -87,7 +87,7 @@ object DemoInteraction {
     }
 
     // define default move, to clear hovered point if there is none being hovered
-    val defaultMove: () => Unit = () => {
+    val defaultMove: IEInfo => Unit = _ => {
       hoveredPoint = None
       renderPlot() // rerender
     }
@@ -96,7 +96,11 @@ object DemoInteraction {
     val plot = CartesianPlot(data){
       _.scatter({x: Point3d[Int] => Interaction( // attach interaction events, in non interaction context, this will be ignored
         Disc(5).filled(colors.DefaultColors.lightPalette(2))
-          .translate(-5, -5), OnHover(() => onHover(x)), OnClick(() => onClick(x))
+          .translate(-5, -5), OnHover(_ => onHover(x)), OnClick{ info =>
+            println("inner location", info.innerLocation.x, info.innerLocation.y)
+            println("client location", info.clientLocation.x, info.clientLocation.y)
+            onClick(x)
+         }
       )})
     }.standard()
 

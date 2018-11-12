@@ -32,6 +32,7 @@ package com.cibo.evilplot.interaction
 
 import com.cibo.evilplot.geometry
 import com.cibo.evilplot.geometry._
+import com.cibo.evilplot.numeric.Point
 import org.scalajs.dom.raw.{CanvasRenderingContext2D, HTMLCanvasElement, MouseEvent}
 
 import scala.scalajs.js
@@ -71,22 +72,26 @@ final case class CanvasInteractionContext(canvas: CanvasRenderingContext2D)
   Event locations are in window space, map them to their location within the canvas
   */
   def attachToMainCanvas(canvas: HTMLCanvasElement,
-                         defaultClick: () => Unit = () => (),
-                         defaultMove: () => Unit = () => ()
+                         defaultClick: IEInfo => Unit = _ => (),
+                         defaultMove: IEInfo => Unit = _ => ()
                         ): Unit = {
 
     canvas.addEventListener[MouseEvent]("click", { event: MouseEvent =>
 
       val canvasY = event.clientY - canvas.getBoundingClientRect().top
       val canvasX = event.clientX - canvas.getBoundingClientRect().left
-      events(canvasX, canvasY).find(_.isInstanceOf[OnClick]).map(_.e).getOrElse(defaultClick).apply()
+      events(canvasX, canvasY).find(_.isInstanceOf[OnClick]).map(_.e).getOrElse(defaultClick).apply(
+        IEInfo(Point(event.clientX, event.clientY), Point(event.clientX, event.clientY))
+      )
     })
 
     canvas.addEventListener[MouseEvent]("mousemove", { event: MouseEvent =>
 
       val canvasY = event.clientY - canvas.getBoundingClientRect().top
       val canvasX = event.clientX - canvas.getBoundingClientRect().left
-      events(canvasX, canvasY).find(_.isInstanceOf[OnHover]).map(_.e).getOrElse(defaultMove).apply()
+      events(canvasX, canvasY).find(_.isInstanceOf[OnHover]).map(_.e).getOrElse(defaultMove).apply(
+        IEInfo(Point(event.clientX, event.clientY), Point(event.clientX, event.clientY))
+      )
     })
   }
 }
