@@ -81,7 +81,7 @@ final case class CanvasInteractionContext(canvas: CanvasRenderingContext2D)
       val canvasY = event.clientY - canvas.getBoundingClientRect().top
       val canvasX = event.clientX - canvas.getBoundingClientRect().left
       events(canvasX, canvasY).find(_.isInstanceOf[OnClick]).map(_.e).getOrElse(defaultClick).apply(
-        IEInfo(Point(event.clientX, event.clientY), Point(event.clientX, event.clientY))
+        IEInfo(Point(canvasX, canvasY), Point(event.clientX, event.clientY))
       )
     })
 
@@ -90,7 +90,7 @@ final case class CanvasInteractionContext(canvas: CanvasRenderingContext2D)
       val canvasY = event.clientY - canvas.getBoundingClientRect().top
       val canvasX = event.clientX - canvas.getBoundingClientRect().left
       events(canvasX, canvasY).find(_.isInstanceOf[OnHover]).map(_.e).getOrElse(defaultMove).apply(
-        IEInfo(Point(event.clientX, event.clientY), Point(event.clientX, event.clientY))
+        IEInfo(Point(canvasX, canvasY), Point(event.clientX, event.clientY))
       )
     })
   }
