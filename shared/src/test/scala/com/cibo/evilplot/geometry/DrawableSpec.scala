@@ -100,7 +100,7 @@ class DrawableSpec extends FunSpec with Matchers {
   describe("Interaction"){
     it("can be serialized and deserialized"){
       encodeDeocde(Interaction(Disc(10), EmptyEvent())) shouldEqual Interaction(Disc(10), EmptyEvent())
-      encodeDeocde(Interaction(Disc(10), OnClick(() => ()))) shouldEqual Interaction(Disc(10), EmptyEvent())
+      encodeDeocde(Interaction(Disc(10), OnClick(_ => ()))) shouldEqual Interaction(Disc(10), EmptyEvent())
 
     }
   }
