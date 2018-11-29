@@ -2,6 +2,14 @@
 
 ## [Changes since last release]
 
+## [0.6.1] - 2018-11-28
+### Added
+- native jvm matrix multiply
+#Changed
+- faster `group` rendering
+### Fixed
+- range and NaN handling in colorbar and gradient
+
 ## [0.6.0] - 2018-10-05
 ### Added
 - "plot composers" CartesianPlot and BinnedPlot for easier creation of custom plots (these are experimental).
@@ -100,7 +108,8 @@ correcting previously incorrect extent calculation.
 - Applying "bound buffers" to plots is no longer part of the default theme.
 - The default number of ticks on continuous axes has been decreased.
 
-[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.6.0...HEAD
+[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/cibotech/evilplot/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/cibotech/evilplot/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/cibotech/evilplot/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/cibotech/evilplot/compare/v0.4.0...v0.4.1
