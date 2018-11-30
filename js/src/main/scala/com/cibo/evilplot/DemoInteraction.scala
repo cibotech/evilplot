@@ -105,7 +105,7 @@ object DemoInteraction {
     }.standard()
 
     //Attach event handlers to the canvas that is displayed
-    interactionMaskContext.attachToMainCanvas(ctx.canvas.canvas, defaultMove = defaultMove)
+    interactionMaskContext.attachToMainCanvas(ctx.canvas.canvas, defaultMove = defaultMove, mouseLeaveCanvas = _ => println("Mouse left canvas"))
 
     //Render the "virtual" interaction mask
     (Text(s"Active Point: ${activePoint.map(_.z)}, Hovered Point: ${hoveredPoint.map(_.z)}", size = 16)

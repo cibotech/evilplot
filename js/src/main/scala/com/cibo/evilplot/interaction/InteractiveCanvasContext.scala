@@ -73,7 +73,8 @@ final case class CanvasInteractionContext(canvas: CanvasRenderingContext2D)
   */
   def attachToMainCanvas(canvas: HTMLCanvasElement,
                          defaultClick: IEInfo => Unit = _ => (),
-                         defaultMove: IEInfo => Unit = _ => ()
+                         defaultMove: IEInfo => Unit = _ => (),
+                         mouseLeaveCanvas: IEInfo => Unit =  _ => ()
                         ): Unit = {
 
     canvas.addEventListener[MouseEvent]("click", { event: MouseEvent =>
@@ -93,6 +94,12 @@ final case class CanvasInteractionContext(canvas: CanvasRenderingContext2D)
         IEInfo(Point(canvasX, canvasY), Point(event.clientX, event.clientY))
       )
     })
-  }
+
+    canvas.addEventListener[MouseEvent]("mouseleave", { event: MouseEvent =>
+        val canvasY = event.clientY - canvas.getBoundingClientRect().top
+        val canvasX = event.clientX - canvas.getBoundingClientRect().left
+        mouseLeaveCanvas(IEInfo(Point(canvasX, canvasY), Point(event.clientX, event.clientY)))
+      })
+    }
 }
 
