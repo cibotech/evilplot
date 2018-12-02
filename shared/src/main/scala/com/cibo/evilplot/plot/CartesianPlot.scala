@@ -31,7 +31,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, LineStyle}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Gradient2d, GradientFill, LineStyle}
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics, Datum2d, Point}
 import com.cibo.evilplot.plot.LinePlot.LinePlotRenderer
 import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
@@ -74,6 +74,17 @@ case class CartesianDataComposer[T <: Datum2d[T]](data: Seq[T]) {
 
   def filter(x: T => Boolean): CartesianDataComposer[T] = this.copy(data.filter(x))
 
+  def reducePoint(reducer: T => Double): CartesianDataComposer[Point] = this.copy(data.map(datum => Point(datum.x, reducer(datum))))
+
+  // appends data
+  def appendData(toAppend: Seq[T]): CartesianDataComposer[T] = this.copy(data ++ toAppend)
+
+  // appends data, and closes with the head of the existing data
+  def appendDataAndClosePath(toAppend: Seq[T]): CartesianDataComposer[T] = {
+    if(data.isEmpty) this.copy(toAppend)
+    else this.copy(data ++ toAppend :+ data.head)
+  }
+
   def scatter(pointToDrawable: T => Drawable, legendCtx: LegendContext = LegendContext.empty)(
     pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
     ScatterPlotRenderer(data, PointRenderer.custom(pointToDrawable, Some(legendCtx)))
@@ -98,6 +109,10 @@ case class CartesianDataComposer[T <: Datum2d[T]](data: Seq[T]) {
     LinePlotRenderer(data, PathRenderer.default(strokeWidth, color, label, lineStyle))
   }
 
+  def line(color: Color)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+    LinePlotRenderer(data, PathRenderer.default(color = Some(color)))
+  }
+
   def line(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
     LinePlotRenderer(data, PathRenderer.default())
   }
@@ -106,5 +121,37 @@ case class CartesianDataComposer[T <: Datum2d[T]](data: Seq[T]) {
     implicit theme: Theme): PlotRenderer = {
     LinePlotRenderer(data, pathRenderer)
   }
+
+  def areaToYBound(fill: Color,
+                 lineColor: Option[Color] = None,
+                 fillToY: Option[Double] = None)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+
+    LinePlotRenderer(data, PathRenderer.filled(fill, lineColor, fillToY))
+  }
+
+  def areaToYmin(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+    LinePlotRenderer(data, PathRenderer.filled(theme.colors.path))
+  }
+
+  def areaGradientToYBound(fill: PlotContext => Gradient2d,
+                           lineColor: Option[Color] = None,
+                           fillToY: Option[Double] = None)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+
+    LinePlotRenderer(data, PathRenderer.filledGradient(fill, lineColor, fillToY))
+  }
+
+  def areaGradientSelfClosing(fill: PlotContext => Gradient2d,
+                      lineColor: Option[Color] = None)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+
+    LinePlotRenderer(data, PathRenderer.filledGradientSelfClosing(fill, lineColor))
+  }
+
+  def areaSelfClosing(fill: Color,
+                      lineColor: Option[Color] = None)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+
+    LinePlotRenderer(data, PathRenderer.filledSelfClosing(fill, lineColor))
+  }
+
+
 
 }

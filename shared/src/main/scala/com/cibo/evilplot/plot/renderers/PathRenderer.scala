@@ -30,19 +30,8 @@
 
 package com.cibo.evilplot.plot.renderers
 
-import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{
-  Clipping,
-  Drawable,
-  EmptyDrawable,
-  Extent,
-  LineDash,
-  LineStyle,
-  Path,
-  StrokeStyle,
-  Style,
-  Text
-}
+import com.cibo.evilplot.colors.{Color, FillGradients, RGBA}
+import com.cibo.evilplot.geometry.{Clipping, Drawable, EmptyDrawable, Extent, Gradient2d, GradientFill, LineDash, LineStyle, LinearGradient, Path, Polygon, StrokeStyle, Style, Text}
 import com.cibo.evilplot.numeric.{Datum2d, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.{LegendContext, Plot, PlotContext}
@@ -101,6 +90,76 @@ object PathRenderer {
         theme.colors.legendLabel),
       lineStyle
     )
+
+  protected def polygonForFill[T <: Datum2d[T]](linePoints: Seq[T], plotctx: PlotContext, fillToY: Option[Double]) = {
+    val minX = plotctx.xCartesianTransform(plotctx.xBounds.min)
+    val minY = plotctx.yCartesianTransform(fillToY.getOrElse(plotctx.yBounds.min))
+    val maxX = plotctx.xCartesianTransform(plotctx.xBounds.max)
+
+    val points = {
+      Seq(Point(minX, minY)) ++
+        (linePoints :+ Point(maxX, minY)) :+ Point(minX, minY)
+    }
+
+    val polygon = Polygon(
+      Clipping.clipPolygon(points, plotctx.extent)
+    )
+
+    polygon
+  }
+
+  protected def clippedLine[T <: Datum2d[T]](points: Seq[T], lineColor: Option[Color], plotContext: PlotContext): Drawable = {
+    val line: Option[Drawable] = lineColor.map { color =>
+      Clipping.clipPath(points, plotContext.extent).map(segment =>
+        LineDash(
+          StrokeStyle(Path(segment, 2), color),
+          LineStyle()
+        )
+      ).group
+    }
+
+    line.getOrElse(EmptyDrawable())
+  }
+
+  def filledGradientSelfClosing[T <: Datum2d[T]](fill: PlotContext => Gradient2d, lineColor: Option[Color] = None): PathRenderer[T] = {
+    PathRenderer.custom[T]({ (plotctx, seq) =>
+
+      GradientFill(
+        Polygon(Clipping.clipPolygon(seq, plotctx.extent)),
+        fill = fill(plotctx)
+      ) behind clippedLine(seq, lineColor, plotctx)
+    })
+  }
+
+  def filledSelfClosing[T <: Datum2d[T]](fill: Color, lineColor: Option[Color] = None): PathRenderer[T] = {
+    PathRenderer.custom[T]({ (plotctx, seq) =>
+
+      Style(
+        Polygon(Clipping.clipPolygon(seq, plotctx.extent)),
+        fill = fill
+      ) behind clippedLine(seq, lineColor, plotctx)
+    })
+  }
+
+  def filledGradient[T <: Datum2d[T]](fill: PlotContext => Gradient2d, lineColor: Option[Color], fillToY: Option[Double] = None): PathRenderer[T] = {
+    PathRenderer.custom[T]({ (plotctx, seq) =>
+
+      GradientFill(
+        polygonForFill(seq, plotctx, fillToY),
+        fill = fill(plotctx)
+      ) behind clippedLine(seq, lineColor, plotctx)
+    })
+  }
+
+  def filled[T <: Datum2d[T]](fill: Color, lineColor: Option[Color] = None, fillToY: Option[Double] = None): PathRenderer[T] = {
+    PathRenderer.custom[T]({ (plotctx, seq) =>
+
+      Style(
+        polygonForFill(seq, plotctx, fillToY),
+        fill = fill
+      ) behind clippedLine(seq, lineColor, plotctx)
+    })
+  }
 
   /** Path renderer for closed paths. The first point is connected to the last point.
     * @param color the color of this path.

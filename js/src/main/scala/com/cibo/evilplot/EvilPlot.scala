@@ -77,6 +77,10 @@ object EvilPlot {
     val interactionContext = prepareInteractionContext(screenWidth, screenHeight)
     val interactionShow = prepareContext(screenWidth, screenHeight)
 
+    addExample(DemoPlots.ribbonPlot)
+    addExample(DemoPlots.areaPlot)
+    addExample(DemoPlots.areaPlotGradient)
+
     DemoInteraction.scatter(interactionShow, interactionContext, screenWidth, screenHeight)
     addExample(DemoPlots.simpleGroupedPlot)
     addExample(DemoPlots.simpleContinuousPlot)
