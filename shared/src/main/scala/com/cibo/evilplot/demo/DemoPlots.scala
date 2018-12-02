@@ -327,7 +327,7 @@ object DemoPlots {
     CartesianPlot(points)(
       _.line(color = HTMLNamedColors.white),
       _.appendDataAndClosePath(pointsUpper.reverse).areaSelfClosing(HTMLNamedColors.fireBrick),
-      _.appendDataAndClosePath(pointslower.reverse).areaSelfClosing(HTMLNamedColors.darkGreen),
+      _.appendDataAndClosePath(pointslower.reverse).areaSelfClosing(HTMLNamedColors.darkGreen)
     ).standard()
       .xLabel("x")
       .yLabel("y")
