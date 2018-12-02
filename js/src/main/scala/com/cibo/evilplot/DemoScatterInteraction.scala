@@ -32,13 +32,15 @@ package com.cibo.evilplot
 
 import java.util.UUID
 
-import com.cibo.evilplot.geometry.{CanvasRenderContext, Disc, IEInfo, Interaction, OnClick, OnHover, Text}
+import com.cibo.evilplot.colors.HTMLNamedColors
+import com.cibo.evilplot.demo.DemoPlots.plotAreaSize
+import com.cibo.evilplot.geometry.{CanvasRenderContext, Disc, Drawable, Extent, IEInfo, Interaction, OnClick, OnHover, Text}
 import com.cibo.evilplot.interaction.CanvasInteractionContext
-import com.cibo.evilplot.numeric.Point3d
+import com.cibo.evilplot.numeric.{Point, Point3d}
 import com.cibo.evilplot.plot.CartesianPlot
 import org.scalajs.dom
 
-object DemoInteraction {
+object DemoScatterInteraction {
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 
   // Crappy way to maintain state
@@ -110,6 +112,82 @@ object DemoInteraction {
     //Render the "virtual" interaction mask
     (Text(s"Active Point: ${activePoint.map(_.z)}, Hovered Point: ${hoveredPoint.map(_.z)}", size = 16)
       .padBottom(20) above plot.render()).padAll(10).draw(interactionMaskContext)
+
+    //Render displayed plot
+    renderPlot()
+  }
+}
+
+object DemoAreaInteraction {
+  import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
+  // Crappy way to maintain state
+  private var hoveredUpper: Boolean = false
+  private var hoveredLower: Boolean = false
+
+  def area(ctx: CanvasRenderContext, interactionMaskContext: CanvasInteractionContext, screenWidth: Double, screenHeight: Double) = {
+
+    val canvasId = UUID.randomUUID().toString
+
+    val points = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x)))
+    val pointslower = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x) - 0.15))
+    val pointsUpper = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x) + 0.15))
+
+
+    def plotFromData(middle: Seq[Point], upper: Seq[Point], lower: Seq[Point], plotExtent: Extent): Drawable = CartesianPlot(middle)(
+      _.line(color = HTMLNamedColors.white),
+      _.appendDataAndClosePath(upper.reverse).withPathInteraction(Seq(OnHover(_ => onHoverUpper()))).areaSelfClosing({
+        if(hoveredUpper) HTMLNamedColors.fireBrick.lighten(5) else HTMLNamedColors.fireBrick
+      }),
+      _.appendDataAndClosePath(lower.reverse).withPathInteraction(Seq(OnHover(_ => onHoverLower()))).areaSelfClosing({
+        if(hoveredLower) HTMLNamedColors.darkGreen.lighten(5) else HTMLNamedColors.darkGreen
+      })
+    ).standard()
+      .xLabel("x")
+      .yLabel("y")
+      .rightLegend()
+      .render(plotExtent)
+
+    // Rerender plot to draw updated state
+    def renderPlot() = {
+      dom.window.requestAnimationFrame { d: Double =>
+
+        val updatedPlot = plotFromData(points, pointsUpper, pointslower, plotAreaSize)
+
+        // Clear the canvas, otherwise new rendering will overlay with old
+        ctx.clear()
+        updatedPlot.draw(ctx)
+      }
+    }
+
+    def onHoverUpper() = {
+      hoveredUpper = true
+      hoveredLower = false
+      renderPlot()
+    }
+
+    def onHoverLower() = {
+      hoveredUpper = false
+      hoveredLower = true
+      renderPlot()
+    }
+
+    // define default move, to clear hovered point if there is none being hovered
+    val defaultMove: IEInfo => Unit = _ => {
+      hoveredUpper = false
+      hoveredLower = false
+      renderPlot() // rerender
+    }
+
+
+    // Initial plot
+    val initialPlot = plotFromData(points, pointsUpper, pointslower, plotAreaSize)
+
+    //Attach event handlers to the canvas that is displayed
+    interactionMaskContext.attachToMainCanvas(ctx.canvas.canvas, defaultMove = defaultMove, mouseLeaveCanvas = _ => println("Mouse left canvas"))
+
+    //Render the "virtual" interaction mask
+    initialPlot.draw(interactionMaskContext)
 
     //Render displayed plot
     renderPlot()

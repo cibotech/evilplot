@@ -31,7 +31,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Gradient2d, GradientFill, LineStyle}
+import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Gradient2d, GradientFill, InteractionEvent, LineStyle}
 import com.cibo.evilplot.numeric.{Bounds, BoxPlotSummaryStatistics, Datum2d, Point}
 import com.cibo.evilplot.plot.LinePlot.LinePlotRenderer
 import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
@@ -68,7 +68,7 @@ object CartesianPlot {
   }
 }
 
-case class CartesianDataComposer[T <: Datum2d[T]](data: Seq[T]) {
+case class CartesianDataComposer[T <: Datum2d[T]](data: Seq[T], pathInteractions: Seq[InteractionEvent] = Seq()) {
 
   def manipulate(x: Seq[T] => Seq[T]): Seq[T] = x(data)
 
@@ -78,6 +78,8 @@ case class CartesianDataComposer[T <: Datum2d[T]](data: Seq[T]) {
 
   // appends data
   def appendData(toAppend: Seq[T]): CartesianDataComposer[T] = this.copy(data ++ toAppend)
+
+  def withPathInteraction(interaction: Seq[InteractionEvent]): CartesianDataComposer[T] = this.copy(pathInteractions = interaction)
 
   // appends data, and closes with the head of the existing data
   def appendDataAndClosePath(toAppend: Seq[T]): CartesianDataComposer[T] = {
@@ -105,53 +107,50 @@ case class CartesianDataComposer[T <: Datum2d[T]](data: Seq[T]) {
     label: Drawable = EmptyDrawable(),
     lineStyle: Option[LineStyle] = None,
     legendCtx: LegendContext = LegendContext.empty
-  )(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
-    LinePlotRenderer(data, PathRenderer.default(strokeWidth, color, label, lineStyle))
+  )(pCtx: PlotContext)(implicit theme: Theme): LinePlotRenderer[T] = {
+    LinePlotRenderer(data, PathRenderer.default(strokeWidth, color, label, lineStyle)).withInteraction(pathInteractions:_*)
   }
 
-  def line(color: Color)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
-    LinePlotRenderer(data, PathRenderer.default(color = Some(color)))
+  def line(color: Color)(pCtx: PlotContext)(implicit theme: Theme): LinePlotRenderer[T] = {
+    LinePlotRenderer(data, PathRenderer.default(color = Some(color))).withInteraction(pathInteractions:_*)
   }
 
-  def line(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
-    LinePlotRenderer(data, PathRenderer.default())
+  def line(pCtx: PlotContext)(implicit theme: Theme): LinePlotRenderer[T] = {
+    LinePlotRenderer(data, PathRenderer.default()).withInteraction(pathInteractions:_*)
   }
 
   def line(pathRenderer: PathRenderer[T])(pCtx: PlotContext)(
-    implicit theme: Theme): PlotRenderer = {
-    LinePlotRenderer(data, pathRenderer)
+    implicit theme: Theme): LinePlotRenderer[T] = {
+    LinePlotRenderer(data, pathRenderer).withInteraction(pathInteractions:_*)
   }
 
   def areaToYBound(fill: Color,
                  lineColor: Option[Color] = None,
-                 fillToY: Option[Double] = None)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+                 fillToY: Option[Double] = None)(pCtx: PlotContext)(implicit theme: Theme): LinePlotRenderer[T] = {
 
-    LinePlotRenderer(data, PathRenderer.filled(fill, lineColor, fillToY))
+    LinePlotRenderer(data, PathRenderer.filled(fill, lineColor, fillToY)).withInteraction(pathInteractions:_*)
   }
 
-  def areaToYmin(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
-    LinePlotRenderer(data, PathRenderer.filled(theme.colors.path))
+  def areaToYmin(pCtx: PlotContext)(implicit theme: Theme): LinePlotRenderer[T] = {
+    LinePlotRenderer(data, PathRenderer.filled(theme.colors.path)).withInteraction(pathInteractions:_*)
   }
 
   def areaGradientToYBound(fill: PlotContext => Gradient2d,
                            lineColor: Option[Color] = None,
-                           fillToY: Option[Double] = None)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+                           fillToY: Option[Double] = None)(pCtx: PlotContext)(implicit theme: Theme): LinePlotRenderer[T] = {
 
-    LinePlotRenderer(data, PathRenderer.filledGradient(fill, lineColor, fillToY))
+    LinePlotRenderer(data, PathRenderer.filledGradient(fill, lineColor, fillToY)).withInteraction(pathInteractions:_*)
   }
 
   def areaGradientSelfClosing(fill: PlotContext => Gradient2d,
-                      lineColor: Option[Color] = None)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+                      lineColor: Option[Color] = None)(pCtx: PlotContext)(implicit theme: Theme): LinePlotRenderer[T] = {
 
-    LinePlotRenderer(data, PathRenderer.filledGradientSelfClosing(fill, lineColor))
+    LinePlotRenderer(data, PathRenderer.filledGradientSelfClosing(fill, lineColor)).withInteraction(pathInteractions:_*)
   }
 
   def areaSelfClosing(fill: Color,
-                      lineColor: Option[Color] = None)(pCtx: PlotContext)(implicit theme: Theme): PlotRenderer = {
+                      lineColor: Option[Color] = None)(pCtx: PlotContext)(implicit theme: Theme): LinePlotRenderer[T] = {
 
-    LinePlotRenderer(data, PathRenderer.filledSelfClosing(fill, lineColor))
+    LinePlotRenderer(data, PathRenderer.filledSelfClosing(fill, lineColor)).withInteraction(pathInteractions:_*)
   }
-
-
-
 }
