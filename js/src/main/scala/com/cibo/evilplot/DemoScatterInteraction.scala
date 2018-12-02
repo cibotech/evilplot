@@ -137,10 +137,10 @@ object DemoAreaInteraction {
     def plotFromData(middle: Seq[Point], upper: Seq[Point], lower: Seq[Point], plotExtent: Extent): Drawable = CartesianPlot(middle)(
       _.line(color = HTMLNamedColors.white),
       _.appendDataAndClosePath(upper.reverse).withPathInteraction(Seq(OnHover(_ => onHoverUpper()))).areaSelfClosing({
-        if(hoveredUpper) HTMLNamedColors.fireBrick.lighten(5) else HTMLNamedColors.fireBrick
+        if(hoveredUpper) HTMLNamedColors.fireBrick else HTMLNamedColors.gray
       }),
       _.appendDataAndClosePath(lower.reverse).withPathInteraction(Seq(OnHover(_ => onHoverLower()))).areaSelfClosing({
-        if(hoveredLower) HTMLNamedColors.darkGreen.lighten(5) else HTMLNamedColors.darkGreen
+        if(hoveredLower) HTMLNamedColors.darkGreen else HTMLNamedColors.gray
       })
     ).standard()
       .xLabel("x")
