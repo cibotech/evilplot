@@ -91,7 +91,7 @@ object PathRenderer {
       lineStyle
     )
 
-  protected def polygonForFill[T <: Datum2d[T]](linePoints: Seq[T], plotctx: PlotContext, fillToY: Option[Double]) = {
+  protected[evilplot] def polygonForFill[T <: Datum2d[T]](linePoints: Seq[T], plotctx: PlotContext, fillToY: Option[Double]): Drawable = {
     val minX = plotctx.xCartesianTransform(plotctx.xBounds.min)
     val minY = plotctx.yCartesianTransform(fillToY.getOrElse(plotctx.yBounds.min))
     val maxX = plotctx.xCartesianTransform(plotctx.xBounds.max)
@@ -108,9 +108,9 @@ object PathRenderer {
     polygon
   }
 
-  protected def clippedLine[T <: Datum2d[T]](points: Seq[T], lineColor: Option[Color], plotContext: PlotContext): Drawable = {
+  protected[evilplot] def clippedLine[T <: Datum2d[T]](points: Seq[T], lineColor: Option[Color], extent: Extent): Drawable = {
     val line: Option[Drawable] = lineColor.map { color =>
-      Clipping.clipPath(points, plotContext.extent).map(segment =>
+      Clipping.clipPath(points, extent).map(segment =>
         LineDash(
           StrokeStyle(Path(segment, 2), color),
           LineStyle()
@@ -127,7 +127,7 @@ object PathRenderer {
       GradientFill(
         Polygon(Clipping.clipPolygon(seq, plotctx.extent)),
         fill = fill(plotctx)
-      ) behind clippedLine(seq, lineColor, plotctx)
+      ) behind clippedLine(seq, lineColor, plotctx.extent)
     })
   }
 
@@ -137,7 +137,7 @@ object PathRenderer {
       Style(
         Polygon(Clipping.clipPolygon(seq, plotctx.extent)),
         fill = fill
-      ) behind clippedLine(seq, lineColor, plotctx)
+      ) behind clippedLine(seq, lineColor, plotctx.extent)
     })
   }
 
@@ -147,7 +147,7 @@ object PathRenderer {
       GradientFill(
         polygonForFill(seq, plotctx, fillToY),
         fill = fill(plotctx)
-      ) behind clippedLine(seq, lineColor, plotctx)
+      ) behind clippedLine(seq, lineColor, plotctx.extent)
     })
   }
 
@@ -157,7 +157,7 @@ object PathRenderer {
       Style(
         polygonForFill(seq, plotctx, fillToY),
         fill = fill
-      ) behind clippedLine(seq, lineColor, plotctx)
+      ) behind clippedLine(seq, lineColor, plotctx.extent)
     })
   }
 

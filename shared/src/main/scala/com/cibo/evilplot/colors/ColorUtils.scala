@@ -143,5 +143,6 @@ object ColorUtils {
   def rgba(c: Color): (Double, Double, Double, Double) = c match {
     case hsla: HSLA => hslaToRgba(hsla)
     case Clear      => (0, 0, 0, 0)
+    case ClearWhite => (255, 255, 255, 0)
   }
 }

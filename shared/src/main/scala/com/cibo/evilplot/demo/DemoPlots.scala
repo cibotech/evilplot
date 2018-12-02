@@ -339,11 +339,11 @@ object DemoPlots {
     val points = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x)))
 
     val gradientFnMiddle = { ctx: PlotContext =>
-      LinearGradient.topToBottom(ctx.extent, FillGradients.distributeEvenly(ColorGradients.inferno))
+      LinearGradient.topToBottom(ctx.extent, FillGradients.distributeEvenly(ColorGradients.inferno.reverse ++ ColorGradients.inferno ))
     }
 
-    CartesianPlot(points)( // creates a scatter plot
-      _.areaGradientToYBound(gradientFnMiddle, lineColor = Some(HTMLNamedColors.green), fillToY = Some(0.0))
+    CartesianPlot(points)(
+      _.areaGradientToYBound(gradientFnMiddle, fillToY = Some(0.0))
     ).standard()
       .xLabel("x")
       .yLabel("y")
@@ -358,7 +358,7 @@ object DemoPlots {
 
     val pointData = points.sortBy(_.x).map(thing => Point3d(thing.x, thing.y, Math.random()))
 
-    CartesianPlot(pointData)( // creates a scatter plot
+    CartesianPlot(pointData)(
       _.scatter({ pt: Point3d[Double] =>
         if (pt.z > 0.6) {
           Text("\uD83D\uDC10", size = 20).translate(-10, -10)

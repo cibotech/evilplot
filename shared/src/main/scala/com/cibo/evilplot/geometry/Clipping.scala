@@ -34,7 +34,7 @@ import com.cibo.evilplot.numeric.{Point, Point2d}
 
 object Clipping {
 
-  protected final case class Edge(p1: Point2d, p2: Point2d) {
+  protected[evilplot] final case class Edge(p1: Point2d, p2: Point2d) {
     lazy val vertical: Boolean = p1.x == p2.x
     lazy val slope: Double = (p2.y - p1.y) / (p2.x - p1.x)
     lazy val intercept: Double = -slope * p1.x + p1.y
