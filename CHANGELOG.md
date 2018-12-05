@@ -2,6 +2,12 @@
 
 ## [Changes since last release]
 
+## [0.6.2] - 2018-12-05
+### Added
+#Changed
+### Fixed
+- evilplot-math asset wasn't present in 2.12 version of 0.6.1 release 
+
 ## [0.6.1] - 2018-11-28
 ### Added
 - native jvm matrix multiply
@@ -109,6 +115,7 @@ correcting previously incorrect extent calculation.
 - The default number of ticks on continuous axes has been decreased.
 
 [Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.6.1...HEAD
+[0.6.2]: https://github.com/cibotech/evilplot/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/cibotech/evilplot/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/cibotech/evilplot/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/cibotech/evilplot/compare/v0.4.1...v0.5.0
