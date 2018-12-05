@@ -70,9 +70,9 @@ object CartesianPlot {
 
 case class CartesianDataComposer[T <: Datum2d[T]](data: Seq[T], pathInteractions: Seq[InteractionEvent] = Seq()) {
 
-  def manipulate(x: Seq[T] => Seq[T]): Seq[T] = x(data)
+  def manipulate(x: Seq[T] => Seq[T]): CartesianDataComposer[T] = this.copy( data = x(data))
 
-  def filter(x: T => Boolean): CartesianDataComposer[T] = this.copy(data.filter(x))
+  def filter(x: T => Boolean): CartesianDataComposer[T] = this.copy(data = data.filter(x))
 
   def reducePoint(reducer: T => Double): CartesianDataComposer[Point] = this.copy(data.map(datum => Point(datum.x, reducer(datum))))
 
