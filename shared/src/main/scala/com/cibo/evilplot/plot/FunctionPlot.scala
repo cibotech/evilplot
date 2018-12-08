@@ -61,9 +61,13 @@ object FunctionPlot {
       xbounds.getOrElse(defaultBounds),
       numPoints.getOrElse(defaultNumPoints))
 
-    CartesianPlot(pts, xBoundBuffer, yBoundBuffer)(
-      _.line(pathRenderer.getOrElse(PathRenderer.empty())),
-      _.scatter(pointRenderer.getOrElse(PointRenderer.empty()))
+    val lineRenderer = pathRenderer.getOrElse(PathRenderer.empty())
+    val scatterRenderer = pointRenderer.getOrElse(PointRenderer.empty())
+    val legendContext = scatterRenderer.legendContext.combine(lineRenderer.legendContext)
+
+    CartesianPlot(pts, xBoundBuffer, yBoundBuffer, legendContext = legendContext)(
+      _.line(lineRenderer),
+      _.scatter(scatterRenderer)
     )
   }
 
