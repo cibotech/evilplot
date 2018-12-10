@@ -61,7 +61,7 @@ object FunctionPlot {
       xbounds.getOrElse(defaultBounds),
       numPoints.getOrElse(defaultNumPoints))
 
-    val lineRenderer = pathRenderer.getOrElse(PathRenderer.empty())
+    val lineRenderer = pathRenderer.getOrElse(PathRenderer.default())
     val scatterRenderer = pointRenderer.getOrElse(PointRenderer.empty())
     val legendContext = scatterRenderer.legendContext.combine(lineRenderer.legendContext)
 
