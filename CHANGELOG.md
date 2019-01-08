@@ -2,6 +2,12 @@
 
 ## [Changes since last release]
 
+## [0.6.3] - 2018-12-13
+### Added
+#Changed
+### Fixed
+- FunctionPlot legends, especially with series are now working again (was broken in the 0.6. line)
+
 ## [0.6.2] - 2018-12-05
 ### Added
 #Changed
@@ -114,7 +120,8 @@ correcting previously incorrect extent calculation.
 - Applying "bound buffers" to plots is no longer part of the default theme.
 - The default number of ticks on continuous axes has been decreased.
 
-[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.6.1...HEAD
+[Changes since last release]: https://github.com/cibotech/evilplot/compare/v0.6.3...HEAD
+[0.6.3]: https://github.com/cibotech/evilplot/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/cibotech/evilplot/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/cibotech/evilplot/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/cibotech/evilplot/compare/v0.5.0...v0.6.0
