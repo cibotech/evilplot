@@ -64,6 +64,7 @@ Finally, the following primitives for style are available:
 * Style
 * StrokeStyle
 * StrokeWeight
+* GradientFill
 
 The `com.cibo.evilplot.geometry` package object provides several convenience functions for
 creating and composing these primitives.
