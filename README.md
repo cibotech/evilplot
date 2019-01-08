@@ -198,7 +198,7 @@ The following `PlotElementRenderer`s are provided:
 One-time setup:
 Install PhantomJS: On macOS, this is available from Homebrew: `brew install phantomjs` 
 
-To run the demo:
+To  run the demo:
 
 1. open sbt console
 2. compile, then run fastOptJS listening for changes
