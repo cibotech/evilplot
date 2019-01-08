@@ -5,7 +5,7 @@
 
 EvilPlot is about combinators for graphics.
 
-Documentation for EvilPlot is available [here](https://cibotech.github.io/evilplot).
+Documentation  for EvilPlot is available [here](https://cibotech.github.io/evilplot).
 
 ## Getting Started
 Add EvilPlot to your build with:
