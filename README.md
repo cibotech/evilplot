@@ -49,6 +49,7 @@ The following primitives for drawing are available:
 * Disc
 * Wedge
 * Text
+* Polygon
 
 The following primitives for positioning are available:
 
@@ -59,7 +60,7 @@ The following primitives for positioning are available:
 * Group
 * Resize
 
-Finally, the following primitives for style are available:
+The following primitives for style are available:
 
 * Style
 * StrokeStyle
@@ -68,6 +69,8 @@ Finally, the following primitives for style are available:
 
 The `com.cibo.evilplot.geometry` package object provides several convenience functions for
 creating and composing these primitives.
+
+For Interaction events 
 
 ## Plot API
 The plot API is in the `com.cibo.evilplot.plot` package. Using this API, one creates a plot
