@@ -261,6 +261,9 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
         gradient.r.draw(this)
     }
   }
+
+  // to implement, reference: InteractionMask.scala and InteractiveCanvasContext.scala
+  override def draw(interaction: Interaction): Unit = interaction.r.draw(this)
 }
 
 object Graphics2DRenderContext {

@@ -48,4 +48,5 @@ class MockRenderContext extends RenderContext {
   def draw(lineDash: LineDash): Unit = ???
   def draw(text: Text): Unit = ???
   def draw(gradient: GradientFill): Unit = ???
+  def draw(interaction: Interaction): Unit = ???
 }

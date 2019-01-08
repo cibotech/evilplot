@@ -28,43 +28,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.cibo.evilplot.colors
+package com.cibo.evilplot.interaction
 
-object DefaultColors {
-  val backgroundColor = HSL(0, 0, 92)
-  val barColor = HSL(0, 0, 35)
-  val titleBarColor = HSL(0, 0, 85)
-  val fillColor: Color = HTMLNamedColors.white
-  val pathColor = HSL(0, 0, 0)
+import com.cibo.evilplot.geometry.{InteractionEvent, OnClick}
+import org.scalatest.{FunSpec, Matchers}
 
-  val lightPalette: Seq[HSLA] = Seq(
-    RGB(26, 188, 156),
-    RGB(46, 204, 113),
-    RGB(52, 152, 219),
-    RGB(155, 89, 182),
-    RGB(52, 73, 94),
-    RGB(241, 196, 15),
-    RGB(230, 126, 34),
-    RGB(231, 76, 60)
-  )
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+import scala.util.Try
 
-  val darkPalette: Seq[HSLA] = Seq(
-    RGB(22, 160, 133),
-    RGB(39, 174, 96),
-    RGB(41, 128, 185),
-    RGB(142, 68, 173),
-    RGB(44, 62, 80),
-    RGB(243, 156, 18),
-    RGB(211, 84, 0),
-    RGB(192, 57, 43)
-  )
+class InteractionMaskSpec extends FunSpec with Matchers {
 
-  @deprecated(
-    "This palette contains two palettes, a light and dark. " +
-      "Using it as a single palette can be misleading/confusing. Use DefaultColors#lightPalette " +
-      "or DefaultColors#darkPalette instead.",
-    since = "29 March 2018"
-  )
-  val nicePalette: Seq[HSLA] = lightPalette ++ darkPalette
+  describe("The Interaction Mask"){
+
+    it("Doesn't collide at <= 10,000"){
+      import scala.concurrent.ExecutionContext.Implicits.global
+
+      val failIfMoreThanAminute = Future {
+        val testInteractionMask = new InteractionMask {
+          override protected def getImageData(x: Double, y: Double): Array[Int] = Array(0, 0, 0, 0)
+
+          def add(i: InteractionEvent): Unit = addEvents(Seq(i))
+        }
+        testInteractionMask.clearEventListeners()
+
+        (0 until 10000).foreach( _ => testInteractionMask.add(OnClick(_ => ())))
+      }
+
+      Await.result(failIfMoreThanAminute, 3.minutes)// probably should use ScalaFutures mixin
+
+    }
+
+  }
 
 }
