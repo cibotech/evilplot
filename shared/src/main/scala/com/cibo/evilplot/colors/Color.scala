@@ -91,6 +91,12 @@ case object Clear extends Color with HSLABasedManipulation {
   def hsla: HSLA = HSLA(0, 0, 0, 0)
 }
 
+case object ClearWhite extends Color with HSLABasedManipulation {
+  val repr = "hsla(0, 0%, 100%, 0)"
+  def rgba: (Int, Int, Int, Double) = (255, 255, 255, 0.0)
+  def hsla: HSLA = HSLA(0, 0, 100, 0)
+}
+
 case class HSLA(hue: Double, saturation: Double, lightness: Double, opacity: Double)
     extends Color
     with HSLABasedManipulation {

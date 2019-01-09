@@ -32,9 +32,9 @@ package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.numeric.{Point, Point2d}
 
-private[evilplot] object Clipping {
+object Clipping {
 
-  final case class Edge(p1: Point2d, p2: Point2d) {
+  protected[evilplot] final case class Edge(p1: Point2d, p2: Point2d) {
     lazy val vertical: Boolean = p1.x == p2.x
     lazy val slope: Double = (p2.y - p1.y) / (p2.x - p1.x)
     lazy val intercept: Double = -slope * p1.x + p1.y
@@ -113,7 +113,7 @@ private[evilplot] object Clipping {
     }
   }
 
-  private[evilplot] def clipPath(points: Seq[Point2d], extent: Extent): Seq[Seq[Point2d]] = {
+  def clipPath(points: Seq[Point2d], extent: Extent): Seq[Seq[Point2d]] = {
     boundEdges(extent).foldLeft(Seq(points.toVector)) { (segments, clipEdge) =>
       segments.foldLeft(Vector.empty[Vector[Point2d]]) { (acc, segment) =>
         val segments = segmentPathByEdge(segment, clipEdge)
@@ -123,7 +123,7 @@ private[evilplot] object Clipping {
   }
 
   // https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
-  private[evilplot] def clipPolygon(points: Seq[Point2d], extent: Extent): Seq[Point2d] = {
+  def clipPolygon(points: Seq[Point2d], extent: Extent): Seq[Point2d] = {
     boundEdges(extent).foldLeft(points.toVector) { (inputList, clipEdge) =>
       if (inputList.isEmpty) Vector.empty
       else {

@@ -74,10 +74,20 @@ object EvilPlot {
   def renderExample(canvasId: String): Unit = {
     val screenWidth = dom.window.innerWidth
     val screenHeight = dom.window.innerHeight
-    val interactionContext = prepareInteractionContext(screenWidth, screenHeight)
-    val interactionShow = prepareContext(screenWidth, screenHeight)
 
-    DemoInteraction.scatter(interactionShow, interactionContext, screenWidth, screenHeight)
+    val scatterInteractionContext = prepareInteractionContext(screenWidth, screenHeight)
+    val scatterInteractionShow = prepareContext(screenWidth, screenHeight)
+
+    val areaInteractionContext = prepareInteractionContext(screenWidth, screenHeight)
+    val areaInteractionShow = prepareContext(screenWidth, screenHeight)
+
+    DemoAreaInteraction.area(areaInteractionShow, areaInteractionContext, screenWidth, screenHeight)
+    addExample(DemoPlots.ribbonPlot)
+    addExample(DemoPlots.areaPlot)
+    addExample(DemoPlots.areaPlotGradient)
+
+    DemoScatterInteraction.scatter(scatterInteractionShow, scatterInteractionContext, screenWidth, screenHeight)
+
     addExample(DemoPlots.simpleGroupedPlot)
     addExample(DemoPlots.simpleContinuousPlot)
 

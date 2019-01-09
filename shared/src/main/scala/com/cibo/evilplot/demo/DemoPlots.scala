@@ -300,6 +300,57 @@ object DemoPlots {
       .render(plotAreaSize)
   }
 
+  lazy val areaPlot: Drawable = {
+
+    case class MultiValuePoint(x: Double, y: Double, y2: Double, y3: Double) extends Datum2d[MultiValuePoint]{
+      def withXY(x: Double, y: Double): MultiValuePoint = this.copy(x = x, y = y)
+    }
+
+    val points = (0.0 to 10.0 by 0.1).map(x => MultiValuePoint(x, Math.cos(x) + x / 2, Math.sin(x) + x, x))
+
+    CartesianPlot[MultiValuePoint](points)(
+      _.reducePoint(_.y).areaToYBound(HTMLNamedColors.blue, fillToY = Some(0.0)),
+      _.reducePoint(_.y2).areaToYBound(HTMLNamedColors.red, fillToY = Some(0.0)),
+      _.reducePoint(_.y3).areaToYBound(HTMLNamedColors.green, fillToY = Some(0.0))
+    ).standard()
+      .xLabel("x")
+      .yLabel("y")
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
+  lazy val ribbonPlot: Drawable = {
+    val points = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x)))
+    val pointslower = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x) - 0.15))
+    val pointsUpper = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x) + 0.15))
+
+    CartesianPlot(points)(
+      _.line(color = HTMLNamedColors.white),
+      _.appendDataAndClosePath(pointsUpper.reverse).areaSelfClosing(HTMLNamedColors.fireBrick),
+      _.appendDataAndClosePath(pointslower.reverse).areaSelfClosing(HTMLNamedColors.darkGreen)
+    ).standard()
+      .xLabel("x")
+      .yLabel("y")
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
+  lazy val areaPlotGradient: Drawable = {
+    val points = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x)))
+
+    val gradientFnMiddle = { ctx: PlotContext =>
+      LinearGradient.topToBottom(ctx.extent, FillGradients.distributeEvenly(ColorGradients.inferno.reverse ++ ColorGradients.inferno ))
+    }
+
+    CartesianPlot(points)(
+      _.areaGradientToYBound(gradientFnMiddle, fillToY = Some(0.0))
+    ).standard()
+      .xLabel("x")
+      .yLabel("y")
+      .rightLegend()
+      .render(plotAreaSize)
+  }
+
   lazy val simpleCartesianPlot: Drawable = {
     val points = Seq.fill(150)(Point(Random.nextDouble() * 2, Random.nextDouble())) :+ Point(
       0.0,
@@ -307,7 +358,7 @@ object DemoPlots {
 
     val pointData = points.sortBy(_.x).map(thing => Point3d(thing.x, thing.y, Math.random()))
 
-    CartesianPlot(pointData)( // creates a scatter plot
+    CartesianPlot(pointData)(
       _.scatter({ pt: Point3d[Double] =>
         if (pt.z > 0.6) {
           Text("\uD83D\uDC10", size = 20).translate(-10, -10)
