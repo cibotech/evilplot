@@ -8,7 +8,7 @@ position: 2
 To get going with EvilPlot, you'll need to add it to your build. EvilPlot is published for Scala 2.11 and 2.12.
 ```scala
 resolvers += Resolver.bintrayRepo("cibotech", "public")
-libraryDependencies += "com.cibo" %% "evilplot" % "0.6.0" // Use %%% instead of %% if you're using ScalaJS
+libraryDependencies += "com.cibo" %% "evilplot" % "0.6.3" // Use %%% instead of %% if you're using ScalaJS
 ```
 
 Throughout the getting started guide, we'll assume you're working either in a Scala REPL or the [Ammonite](http://ammonite.io). We publish an additional
@@ -16,7 +16,7 @@ utility to make using EvilPlot from the REPL easier. To import it, add:
 
 ```scala
 resolvers += Resolver.bintrayRepo("cibotech", "public")
-"com.cibo" %% "evilplot-repl" % "0.5.0"
+"com.cibo" %% "evilplot-repl" % "0.6.3"
 ```
 to your build.
 
@@ -26,7 +26,7 @@ Or, if you're using Ammonite, run
 interp.repositories() ++= Seq(
 	coursier.MavenRepository("https://dl.bintray.com/cibotech/public")
 )
-import $ivy.`com.cibo::evilplot-repl:0.5.0`
+import $ivy.`com.cibo::evilplot-repl:0.6.3`
 ```
 
 prior to beginning.

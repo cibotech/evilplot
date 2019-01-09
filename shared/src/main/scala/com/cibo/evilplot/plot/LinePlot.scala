@@ -31,7 +31,7 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.colors.Color
-import com.cibo.evilplot.geometry.{Drawable, Extent}
+import com.cibo.evilplot.geometry.{Drawable, Extent, Interaction, InteractionEvent}
 import com.cibo.evilplot.numeric.{Bounds, Datum2d, Point, Point2d}
 import com.cibo.evilplot.plot.LinePlot.LinePlotRenderer
 import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
@@ -40,7 +40,7 @@ import com.cibo.evilplot.plot.renderers.{PathRenderer, PlotRenderer, PointRender
 
 object LinePlot {
 
-  case class LinePlotRenderer[T <: Datum2d[T]](data: Seq[T], pathRenderer: PathRenderer[T])
+  case class LinePlotRenderer[T <: Datum2d[T]](data: Seq[T], pathRenderer: PathRenderer[T], interactions: Seq[InteractionEvent] = Seq())
       extends PlotRenderer {
 
     override def legendContext: LegendContext = pathRenderer.legendContext
@@ -49,8 +49,14 @@ object LinePlot {
 
       val xformedPoints: Seq[T] = PlotContext.from(plot, plotExtent).transformDatumsToWorld(data)
 
-      pathRenderer.render(plot, plotExtent, xformedPoints)
+      if(interactions.nonEmpty){
+        Interaction(
+          pathRenderer.render(plot, plotExtent, xformedPoints), interactions :_*
+        )
+      } else pathRenderer.render(plot, plotExtent, xformedPoints)
     }
+
+    def withInteraction(interaction: InteractionEvent*): LinePlotRenderer[T] = this.copy(interactions = interaction.toSeq)
   }
 
   /** Create a line plot from some data.  Convenience method on top of XyPlot

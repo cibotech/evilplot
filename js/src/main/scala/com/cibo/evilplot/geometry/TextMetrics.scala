@@ -48,7 +48,7 @@ object TextMetrics extends TextMetricsInterface {
     size.toDouble
   }
 
-  private[geometry] def withStyle[T](size: Double, fontFace: String)(
+  private[evilplot] def withStyle[T](size: Double, fontFace: String)(
     f: CanvasRenderingContext2D => T
   ): CanvasRenderingContext2D => T = { c =>
     c.textBaseline = "top"

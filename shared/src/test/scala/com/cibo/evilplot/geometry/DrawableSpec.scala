@@ -30,11 +30,18 @@
 
 package com.cibo.evilplot.geometry
 
+import com.cibo.evilplot.colors.{ColorGradients, FillGradients}
 import org.scalatest.{FunSpec, Matchers}
-
+import io.circe.syntax._
 class DrawableSpec extends FunSpec with Matchers {
 
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
+
+  def encodeDeocde(before: Drawable) = {
+    val str = Drawable.drawableEncoder(before).noSpaces
+    val after = io.circe.parser.parse(str).right.get.as[Drawable].right.get
+    after
+  }
 
   describe("EmptyDrawable") {
     it("has zero size") {
@@ -81,6 +88,29 @@ class DrawableSpec extends FunSpec with Matchers {
   describe("Wedge") {
     it("has the right extent") {
       Wedge(180, 5).extent shouldBe Extent(10, 10)
+    }
+  }
+
+  describe("extent"){
+    it("can be serialized and deserialized"){
+
+    }
+  }
+
+  describe("Interaction"){
+    it("can be serialized and deserialized"){
+      encodeDeocde(Interaction(Disc(10), EmptyEvent())) shouldEqual Interaction(Disc(10), EmptyEvent())
+      encodeDeocde(Interaction(Disc(10), OnClick(_ => ()))) shouldEqual Interaction(Disc(10), EmptyEvent())
+
+    }
+  }
+
+  describe("Gradient2d"){
+    it("can be serialized and deserialized"){
+
+      val gradient = LinearGradient.bottomToTop(Extent(100, 100),  FillGradients.distributeEvenly(ColorGradients.viridis))
+
+      encodeDeocde(GradientFill(Rect(10), gradient)) shouldEqual GradientFill(Rect(10), gradient)
     }
   }
 }

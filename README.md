@@ -11,7 +11,7 @@ Documentation for EvilPlot is available [here](https://cibotech.github.io/evilpl
 Add EvilPlot to your build with:
 ```scala
 resolvers += Resolver.bintrayRepo("cibotech", "public")
-libraryDependencies += "com.cibo" %% "evilplot" % "0.6.0" // Use %%% instead of %% if you're using ScalaJS
+libraryDependencies += "com.cibo" %% "evilplot" % "0.6.3" // Use %%% instead of %% if you're using ScalaJS
 ```
 Take a look at the full [getting started guide](https://cibotech.github.io/evilplot/getting-started.html). EvilPlot is published for Scala 2.11 and Scala 2.12.
 
@@ -49,6 +49,7 @@ The following primitives for drawing are available:
 * Disc
 * Wedge
 * Text
+* Polygon
 
 The following primitives for positioning are available:
 
@@ -59,14 +60,17 @@ The following primitives for positioning are available:
 * Group
 * Resize
 
-Finally, the following primitives for style are available:
+The following primitives for style are available:
 
 * Style
 * StrokeStyle
 * StrokeWeight
+* GradientFill
 
 The `com.cibo.evilplot.geometry` package object provides several convenience functions for
 creating and composing these primitives.
+
+For Interaction events 
 
 ## Plot API
 The plot API is in the `com.cibo.evilplot.plot` package. Using this API, one creates a plot

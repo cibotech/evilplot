@@ -163,7 +163,7 @@ object BinnedPlot {
 
 case class ContinuousDataComposer[T](data: Seq[T], binFn: BinArgs[T] => Seq[ContinuousBin]) {
 
-  def manipulate(x: Seq[T] => Seq[T]): Seq[T] = x(data)
+  def manipulate(x: Seq[T] => Seq[T]): ContinuousDataComposer[T] = this.copy(data = x(data))
 
   def filter(x: T => Boolean): ContinuousDataComposer[T] = this.copy(data.filter(x))
 
