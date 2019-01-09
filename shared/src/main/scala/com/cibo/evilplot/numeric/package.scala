@@ -37,7 +37,6 @@ import io.circe.generic.semiauto._
 package object numeric {
   type Grid = Vector[Vector[Double]]
 
-
   final case class GridData(
     grid: Grid,
     xBounds: Bounds,

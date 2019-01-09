@@ -42,7 +42,7 @@ class FunctionPlotLineSpec extends FunSpec with Matchers {
   implicit object VectorDoubleEquivalence extends Equality[Vector[Double]] {
     def areEqual(a: Vector[Double], b: Any): Boolean = b match {
       case bx: Vector[_] => a.corresponds(bx)((i, j) => doubleEquality.areEqual(i, j))
-      case _          => false
+      case _             => false
     }
   }
 

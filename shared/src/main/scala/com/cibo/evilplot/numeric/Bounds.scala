@@ -39,11 +39,28 @@ final case class Bounds(min: Double, max: Double) {
     require(min <= max, s"Bounds min must be <= max, $min !<= $max")
   }
 
+  /*absolute range (since min <= max)*/
   lazy val range: Double = max - min
 
   lazy val midpoint: Double = (max + min) / 2.0
 
   def isInBounds(x: Double): Boolean = x >= min && x <= max
+
+  /**if it exists find the intersection between two bounds*/
+  def intersect(that: Bounds): Option[Bounds] = {
+    val min = math.max(this.min, that.min)
+    val max = math.min(this.max, that.max)
+    if (min <= max) Some(Bounds(min, max)) else None
+  }
+
+  def union(that: Bounds): Bounds =
+    Bounds(math.min(this.min, that.min), math.max(this.max, that.max))
+
+  /**grow the bound by a specific amount
+    * @param p ratio of the range to lower the min raise the max (note a negative value shrinks the bound)*/
+  def pad(p: Double): Bounds = Bounds(min - range * p, max + range * p)
+  def padMax(p: Double): Bounds = Bounds(min, max + range * p)
+  def padMin(p: Double): Bounds = Bounds(min - range * p, max)
 }
 
 object Bounds {
@@ -59,12 +76,7 @@ object Bounds {
     }
   }
 
-  def union(bounds: Seq[Bounds]): Bounds = {
-    Bounds(
-      min = bounds.map(_.min).min,
-      max = bounds.map(_.max).max
-    )
-  }
+  def union(bounds: Seq[Bounds]): Bounds = bounds reduce { _ union _ }
 
   def getBy[T](data: Seq[T])(f: T => Double): Option[Bounds] = {
     val mapped = data.map(f).filterNot(_.isNaN)
@@ -73,6 +85,8 @@ object Bounds {
       max <- lift(mapped.max)
     } yield Bounds(min, max)
   }
+
+  def of(data: Seq[Double]): Bounds = Bounds.get(data) getOrElse Bounds.empty
 
   def get(data: Seq[Double]): Option[Bounds] = {
     data.foldLeft(None: Option[Bounds]) { (bounds, value) =>
@@ -83,6 +97,7 @@ object Bounds {
       }
     }
   }
+  def empty: Bounds = Bounds(0d, 0d)
 
   def widest(bounds: Seq[Option[Bounds]]): Option[Bounds] =
     bounds.flatten.foldLeft(None: Option[Bounds]) { (acc, curr) =>

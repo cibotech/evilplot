@@ -42,6 +42,7 @@ sealed trait Color {
   def analogous(offsetDegrees: Double = 14): (Color, Color)
   def darken(percent: Double): Color
   def lighten(percent: Double): Color
+  def opacity(ratio: Double): Color = hsla.copy(opacity = ratio)
 }
 
 trait HSLABasedManipulation {

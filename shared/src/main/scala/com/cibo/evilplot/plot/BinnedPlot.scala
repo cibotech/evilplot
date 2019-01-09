@@ -40,10 +40,6 @@ import com.cibo.evilplot.plot.ScatterPlot.ScatterPlotRenderer
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers._
 
-import scala.reflect.ClassTag
-
-
-
 sealed abstract class Bin[T] {
   val values: Seq[T]
   def y: Double
@@ -89,20 +85,23 @@ object Binning {
     bounds: Bounds,
     numBins: Int = 20,
     normalize: Boolean = false): Seq[ContinuousBin] = {
-    val xbounds = bounds
-    val binWidth = xbounds.range / numBins
-    val grouped = seq.groupBy { value =>
-      math.min(((value - xbounds.min) / binWidth).toInt, numBins - 1)
+    val xbounds = bounds //note this is technically the *view* bounds not the bounds of the histogram
+    val dataBounds = Bounds.get(seq) getOrElse xbounds
+    val binWidth = dataBounds.range / numBins
+    val grouped: Map[Int, Seq[Double]] = seq
+      .groupBy { value =>
+        math.min(((value - dataBounds.min) / binWidth).toInt, numBins - 1)
+      }
+      .withDefault { i =>
+        Seq.empty[Double]
+      }
+
+    grouped.toSeq.map {
+      case (i, vs) =>
+        val x = i * binWidth + dataBounds.min
+        ContinuousBin(vs, Bounds(x, x + binWidth))
     }
-    (0 until numBins).map { i =>
-      val x = i * binWidth + xbounds.min
-      grouped
-        .get(i)
-        .map { vs =>
-          ContinuousBin(vs, Bounds(x, x + binWidth))
-        }
-        .getOrElse(ContinuousBin(Seq.empty[Double], Bounds(x, x + binWidth)))
-    }
+
   }
 }
 

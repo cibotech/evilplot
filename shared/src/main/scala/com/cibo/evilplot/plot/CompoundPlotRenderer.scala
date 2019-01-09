@@ -36,11 +36,11 @@ import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
 
 final case class CompoundPlotRenderer(
-                                       drawablesToPlot: Seq[PlotContext => PlotRenderer],
-                                       xBounds: Bounds,
-                                       yBounds: Bounds,
-                                       legend: LegendContext = LegendContext())
-  extends PlotRenderer {
+  drawablesToPlot: Seq[PlotContext => PlotRenderer],
+  xBounds: Bounds,
+  yBounds: Bounds,
+  legend: LegendContext = LegendContext())
+    extends PlotRenderer {
 
   override def legendContext: LegendContext = legend
 

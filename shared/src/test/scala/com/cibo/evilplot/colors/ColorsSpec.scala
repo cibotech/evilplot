@@ -67,9 +67,9 @@ class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
       baseColor.rgba._4 shouldBe 0.0
     }
     it("should recover a rgba color") {
-      val baseColor = RGBA(77,255,22,1.0)
+      val baseColor = RGBA(77, 255, 22, 1.0)
 
-      baseColor.rgba shouldBe (75, 255,20,1.0)
+      baseColor.rgba shouldBe (75, 255, 20, 1.0)
     }
   }
 

@@ -68,7 +68,8 @@ class ComponentGroupSpec extends FunSpec with Matchers {
 
         override def size(plot: Plot): Extent = drawable.extent
 
-        def render(plot: Plot, extent: Extent, row: Int, column: Int)(implicit theme: Theme): Drawable =
+        def render(plot: Plot, extent: Extent, row: Int, column: Int)(
+          implicit theme: Theme): Drawable =
           drawable
       }
     }
@@ -182,4 +183,3 @@ class ComponentGroupSpec extends FunSpec with Matchers {
   }
 
 }
-

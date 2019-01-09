@@ -42,7 +42,8 @@ class MarkerPlotSpec extends FunSpec with Matchers {
     it("overlay marker displays correctly") {
       val marker = Marker(Position.Overlay, _ => Rect(25), Extent(25, 25), 0, 0)
       val data = Seq(Point(-1, 10), Point(20, -5))
-      val plot = ScatterPlot(data, xBoundBuffer = Some(0.1), yBoundBuffer = Some(0.1)).component(marker)
+      val plot =
+        ScatterPlot(data, xBoundBuffer = Some(0.1), yBoundBuffer = Some(0.1)).component(marker)
 
       plot.xbounds.min should be < -1.0
       plot.xbounds.max should be > 20.0
