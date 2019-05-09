@@ -9,14 +9,15 @@ object Settings {
     "-unchecked",
     "-feature",
 //    "-Xfatal-warnings", uncomment when internal deprecations are fixed
-    "-Xsource:2.12"
+    "-Xsource:2.12",
+    "-target:jvm-1.8"
   )
 
   object versions { //scalastyle:ignore
-    val crossScalaVersions = Seq("2.12.4", "2.11.12")
+    val crossScalaVersions = Seq("2.12.4")
     val scalaDom = "0.9.3"
-    val scalaTest = "3.0.1"
-    val scalactic = "3.0.1"
+    val scalaTest = "3.0.7"
+    val scalactic = "3.0.7"
     val scopt = "3.5.0"
     val circe = "0.9.0"
     val jupyterScala = "0.4.1"

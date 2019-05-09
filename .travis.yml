@@ -1,10 +1,9 @@
 language: scala
 scala:
     - 2.12.4
-    - 2.11.12
-    
+
 jdk:
-    - oraclejdk8
+    - opendjdk11
 
 before_cache:
     - find $HOME/.sbt -name "*.lock" | xargs rm
