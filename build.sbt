@@ -99,7 +99,6 @@ lazy val evilplot = crossProject
 lazy val evilplotJVM = evilplot.jvm
 lazy val evilplotJS = evilplot.js
 
-// For the workbench plugin
 lazy val evilplotRunner = project
   .in(file("runner"))
   .aggregate(evilplotJS)
@@ -110,7 +109,6 @@ lazy val evilplotRunner = project
     publishLocal := {}
   )
   .settings(licenseSettings)
-  .enablePlugins(WorkbenchPlugin)
 
 lazy val evilplotRepl = project
   .in(file("repl-plots"))
