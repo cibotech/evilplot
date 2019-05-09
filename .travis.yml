@@ -3,7 +3,7 @@ scala:
     - 2.12.4
 
 jdk:
-    - opendjdk11
+    - openjdk11
 
 before_cache:
     - find $HOME/.sbt -name "*.lock" | xargs rm
