@@ -1,10 +1,9 @@
 language: scala
 scala:
     - 2.12.4
-    - 2.11.12
-    
+
 jdk:
-    - oraclejdk8
+    - openjdk11
 
 before_cache:
     - find $HOME/.sbt -name "*.lock" | xargs rm
@@ -16,7 +15,7 @@ cache:
         - $HOME/.sbt/boot/
 
 script:
-    - SBT_OPTS="-Xms512M -Xmx2G -Xss2M -XX:MaxMetaspaceSize=1024M" sbt ++$TRAVIS_SCALA_VERSION scalastyle test headerCheck test:headerCheck it:test doc
+    - sbt ++$TRAVIS_SCALA_VERSION -J-Xms512M -J-Xmx2G -J-Xss2M -J-XX:MaxMetaspaceSize=1024M scalastyle test headerCheck test:headerCheck it:test doc
 
 notifications:
   email: false
