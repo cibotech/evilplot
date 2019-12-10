@@ -27,6 +27,7 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   licenses += ("BSD 3-Clause", url("https://opensource.org/licenses/BSD-3-Clause"))
 )
 
+// Macroparadise is included in scala 2.13. Do contortion here for 2.12/2.13 crossbuild
 Compile / scalacOptions ++= {
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, n)) if n >= 13 => "-Ymacro-annotations" :: Nil
