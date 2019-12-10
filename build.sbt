@@ -27,6 +27,20 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   licenses += ("BSD 3-Clause", url("https://opensource.org/licenses/BSD-3-Clause"))
 )
 
+Compile / scalacOptions ++= {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, n)) if n >= 13 => "-Ymacro-annotations" :: Nil
+    case _ => Nil
+  }
+}
+
+libraryDependencies ++= {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, n)) if n >= 13 => Nil
+    case _ => compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) :: Nil
+  }
+}
+
 lazy val licenseSettings = Seq(
   homepage := Some(url("https://www.github.com/cibotech/evilplot")),
   startYear := Some(2018),
@@ -41,7 +55,7 @@ lazy val evilplotAsset = crossProject
   .settings(licenseSettings)
   .settings(
     name := "evilplot-asset",
-    resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
+    resolvers += "Artima Maven Repository" at "https://repo.artima.com/releases"
   )
   .jvmSettings(
     resourceGenerators.in(Compile) += Def.task {

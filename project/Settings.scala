@@ -1,5 +1,6 @@
 import sbt._
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
+//import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
+import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Settings {
   val organization = "com.cibo"
@@ -14,14 +15,14 @@ object Settings {
   )
 
   object versions { //scalastyle:ignore
-    val crossScalaVersions = Seq("2.12.4")
-    val scalaDom = "0.9.3"
-    val scalaTest = "3.0.7"
-    val scalactic = "3.0.7"
+    val crossScalaVersions = Seq("2.12.10", "2.13.1")
+    val scalaDom = "0.9.8"
+    val scalaTest = "3.1.0"
+    val scalactic = "3.1.0"
     val scopt = "3.5.0"
-    val circe = "0.9.0"
+    val circe = "0.12.2"
     val jupyterScala = "0.4.1"
-    val scalacheck = "1.14.0"
+    val scalacheck = "1.14.2"
   }
 
   val sharedDependencies = Def.setting(
@@ -30,10 +31,10 @@ object Settings {
       "io.circe" %%% "circe-generic" % versions.circe,
       "io.circe" %%% "circe-parser" % versions.circe,
       "io.circe" %%% "circe-generic-extras" % versions.circe,
-      "org.scalactic" %%% "scalactic" % versions.scalactic,
-      "org.scalacheck" %%% "scalacheck" % versions.scalacheck % "test",
-      "org.scalatest" %%% "scalatest" % versions.scalaTest % "it,test",
-      compilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
+      "org.scalactic" %% "scalactic" % versions.scalactic,
+      "org.scalacheck" %% "scalacheck" % versions.scalacheck % "test",
+      "org.scalatest" %% "scalatest" % versions.scalaTest % "it,test",
+//      compilerPlugin("org.scalamacros" %% "paradise" % "2.1.1" cross CrossVersion.full)
     ))
 
   val jupyterScalaDependencies = Def.setting(
@@ -41,18 +42,21 @@ object Settings {
       "org.jupyter-scala" %% "kernel-api" % versions.jupyterScala % Provided
     ))
 
+
+
   val sharedMathDependencies = Def.setting(
     Seq(
-      "org.scalactic" %%% "scalactic" % versions.scalactic,
-      "org.scalatest" %%% "scalatest" % versions.scalaTest % "test",
-      compilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
+      "org.scalactic" %% "scalactic" % versions.scalactic,
+      "org.scalatest" %% "scalatest" % versions.scalaTest % "test",
+//      compilerPlugin("org.scalamacros" %% "paradise" % "2.1.1" cross CrossVersion.Full)
     )
   )
 
+
   val jvmMathDependencies = Def.setting(
     Seq(
-      "org.scalanlp"               %% "breeze"          % "0.13.2",
-      "org.scalanlp"               %% "breeze-natives"  % "0.13.2", // removing will still work but will be slower
+      "org.scalanlp"               %% "breeze"          % "1.0",
+      "org.scalanlp"               %% "breeze-natives"  % "1.0", // removing will still work but will be slower
     ))
 
   val jvmDependencies = Def.setting(
