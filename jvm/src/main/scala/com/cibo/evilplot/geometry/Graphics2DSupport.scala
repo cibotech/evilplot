@@ -113,7 +113,7 @@ final case class Graphics2DRenderContext(graphics: Graphics2D)
     graphics.draw(gpath)
   }
 
-  def draw(polygon: Polygon): Unit = applyWithFillColor(this) {
+  def draw(polygon: com.cibo.evilplot.geometry.Polygon): Unit = applyWithFillColor(this) {
     val gpath = new GeneralPath()
     gpath.moveTo(polygon.boundary.head.x, polygon.boundary.head.y)
     polygon.boundary.tail.foreach { point =>

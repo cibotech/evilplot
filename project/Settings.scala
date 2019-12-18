@@ -22,7 +22,7 @@ object Settings {
     val scopt = "3.5.0"
     val circe = "0.12.2"
     val jupyterScala = "0.4.1"
-    val scalacheck = "1.14.2"
+    val scalacheck = "1.14.3"
   }
 
   val sharedDependencies = Def.setting(
