@@ -17,7 +17,7 @@ object Settings {
   object versions { //scalastyle:ignore
     val crossScalaVersions = Seq("2.12.10", "2.13.1")
     val scalaDom = "0.9.8"
-    val scalaTest = "3.1.0"
+    val scalaTest = "3.0.8"
     val scalactic = "3.1.0"
     val scopt = "3.5.0"
     val circe = "0.12.2"
