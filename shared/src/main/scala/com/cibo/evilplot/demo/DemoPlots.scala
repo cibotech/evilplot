@@ -1,44 +1,13 @@
-/*
- * Copyright (c) 2018, CiBO Technologies, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * 3. Neither the name of the copyright holder nor the names of its contributors
- *    may be used to endorse or promote products derived from this software without
- *    specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package com.cibo.evilplot.demo
 
 import com.cibo.evilplot.colors._
-import com.cibo.evilplot.geometry._
-import com.cibo.evilplot.numeric._
-import com.cibo.evilplot.{geometry, plot}
-import com.cibo.evilplot.plot._
+import com.cibo.evilplot.geometry.{Align, Disc, Drawable, Extent, LineStyle, LinearGradient, Rect, Rotate, Style, Text, Wedge}
+import com.cibo.evilplot.numeric.{Bounds, Datum2d, Point, Point3d}
 import com.cibo.evilplot.plot.aesthetics.DefaultTheme.{DefaultFonts, DefaultTheme}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.components.{Legend, Marker, Position}
 import com.cibo.evilplot.plot.renderers._
+import com.cibo.evilplot.plot.{Bar, BarChart, BinnedPlot, BoxPlot, CartesianPlot, Facets, FunctionPlot, Heatmap, Histogram, LegendContext, LegendStyle, LinePlot, MixedBoundsOverlay, Overlay, PieChart, Plot, PlotContext, ScatterPlot}
 
 import scala.util.Random
 
@@ -73,7 +42,10 @@ object DemoPlots {
   val plotAreaSize: Extent = Extent(1000, 600)
   lazy val histogram: Drawable = {
     Random.setSeed(666L) //evil seed
-    val data = (0.0 to 3 by .25) ++ (3.0 to 5 by .05) ++ (5.0 to 8 by 1.0)
+
+    val data = (Range.BigDecimal(0, 3, .25) ++
+      Range.BigDecimal(3, 5, .05) ++
+      Range.BigDecimal(5, 8, 1)).map(_.toDouble)
 
     Histogram(data, 10)
       .standard()
@@ -339,7 +311,9 @@ object DemoPlots {
       def withXY(x: Double, y: Double): MultiValuePoint = this.copy(x = x, y = y)
     }
 
-    val points = (0.0 to 10.0 by 0.1).map(x => MultiValuePoint(x, Math.cos(x) + x / 2, Math.sin(x) + x, x))
+    val points = Range.BigDecimal(0, 10, 0.1)
+      .map(_.toDouble)
+      .map(x => MultiValuePoint(x, Math.cos(x) + x / 2, Math.sin(x) + x, x))
 
     CartesianPlot[MultiValuePoint](points)(
       _.reducePoint(_.y).areaToYBound(HTMLNamedColors.blue, fillToY = Some(0.0)),
@@ -353,9 +327,10 @@ object DemoPlots {
   }
 
   lazy val ribbonPlot: Drawable = {
-    val points = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x)))
-    val pointslower = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x) - 0.15))
-    val pointsUpper = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x) + 0.15))
+    val xs = Range.BigDecimal(0, 10, .1).map(_.toDouble)
+    val points = xs.map(x => Point(x, Math.cos(x)))
+    val pointslower = xs.map(x => Point(x, Math.cos(x) - 0.15))
+    val pointsUpper = xs.map(x => Point(x, Math.cos(x) + 0.15))
 
     CartesianPlot(points)(
       _.line(color = HTMLNamedColors.white),
@@ -369,7 +344,9 @@ object DemoPlots {
   }
 
   lazy val areaPlotGradient: Drawable = {
-    val points = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x)))
+    val points = Range.BigDecimal(0, 10, .1)
+      .map(_.toDouble)
+      .map(x => Point(x, Math.cos(x)))
 
     val gradientFnMiddle = { ctx: PlotContext =>
       LinearGradient.topToBottom(ctx.extent, FillGradients.distributeEvenly(ColorGradients.inferno.reverse ++ ColorGradients.inferno ))

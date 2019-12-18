@@ -40,7 +40,8 @@ object Settings {
   val jupyterScalaDependencies = Def.setting(
     Seq(
       // "org.jupyter-scala" %% "kernel-api" % versions.jupyterScala % Provided
-      ("sh.almond" % "scala-kernel-api" % "0.9.1" % "provided").cross(CrossVersion.full)
+//      ("sh.almond" % "jupyter-api" % "0.9.1" % "provided").cross(CrossVersion.full)
+      "sh.almond" %% "jupyter-api" % "0.9.1" % "provided"
     )
   )
 

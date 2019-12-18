@@ -129,9 +129,10 @@ object DemoAreaInteraction {
 
     val canvasId = UUID.randomUUID().toString
 
-    val points = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x)))
-    val pointslower = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x) - 0.15))
-    val pointsUpper = (0.0 to 10.0 by 0.1).map(x => Point(x, Math.cos(x) + 0.15))
+    val xs = Range.BigDecimal(0, 10, 0.1).map(_.toDouble)
+    val points = xs.map(x => Point(x, Math.cos(x)))
+    val pointslower = xs.map(x => Point(x, Math.cos(x) - 0.15))
+    val pointsUpper = xs.map(x => Point(x, Math.cos(x) + 0.15))
 
 
     def plotFromData(middle: Seq[Point], upper: Seq[Point], lower: Seq[Point], plotExtent: Extent): Drawable = CartesianPlot(middle)(
