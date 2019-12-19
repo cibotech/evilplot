@@ -3,10 +3,12 @@ asset/
 *.iml
 .cache
 .classpath
+.metals/
 .project
 .settings/
 .idea/
 .DS_Store
 node_modules
+project/.bloop
 repl-plots/src/main/scala/com/cibo/evilplot/test.scala
 
