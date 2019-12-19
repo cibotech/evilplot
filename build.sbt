@@ -87,7 +87,7 @@ lazy val evilplotMath = crossProject
   .settings(licenseSettings)
   .settings(
     name := "evilplot-math",
-    resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
+    resolvers += "Artima Maven Repository" at "https://repo.artima.com/releases",
     libraryDependencies ++= Settings.sharedMathDependencies.value
   )
   .jvmSettings(
