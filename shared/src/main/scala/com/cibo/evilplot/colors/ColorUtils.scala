@@ -69,7 +69,7 @@ object ColorUtils {
 
   def rgbaToHsla(r: Int, g: Int, b: Int, a: Double): HSLA = {
 
-    require(g >= 0 && g < 256, s"g must be within [0, 256) {was $g}")
+    require(r >= 0 && r < 256, s"r must be within [0, 256) {was $r}")
     require(g >= 0 && g < 256, s"g must be within [0, 256) {was $g}")
     require(b >= 0 && b < 256, s"b must be within [0, 256) {was $b}")
 
