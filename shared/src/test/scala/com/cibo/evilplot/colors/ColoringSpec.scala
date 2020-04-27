@@ -43,7 +43,9 @@ class ColoringSpec extends FunSpec with Matchers {
       val max: Double = 100
       val coloring =
         GradientUtils.multiGradient(Seq(HTMLNamedColors.blue), min, max, GradientMode.Linear)
-      (min to max by 1.0).foreach(datum => coloring(datum) shouldBe HTMLNamedColors.blue)
+      Range.BigDecimal(min, max, 1.0)
+        .map(_.toDouble)
+        .foreach(datum => coloring(datum) shouldBe HTMLNamedColors.blue)
     }
 
     it("should throw an exception when Colors is empty") {

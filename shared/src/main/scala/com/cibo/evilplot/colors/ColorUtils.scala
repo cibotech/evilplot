@@ -40,7 +40,8 @@ object ColorUtils {
     min: Double,
     red: Double,
     green: Double,
-    blue: Double): Double = {
+    blue: Double
+  ): Double = {
     if (max == min) {
       0.0
     } else {
@@ -114,7 +115,8 @@ object ColorUtils {
   private[colors] def interpolate(
     component1: Double,
     component2: Double,
-    coefficient: Double): Double = {
+    coefficient: Double
+  ): Double = {
     component1 * (1 - coefficient) + coefficient * component2
   }
 

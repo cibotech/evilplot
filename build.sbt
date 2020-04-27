@@ -8,7 +8,16 @@ scalacOptions in ThisBuild ++= Settings.scalacOptions
 
 lazy val `evilplot-root` = project
   .in(file("."))
-  .aggregate(evilplotJVM, evilplotJS, evilplotRepl, evilplotJupyterScala, assetJVM, evilplotRunner, mathJS, mathJVM)
+  .aggregate(
+    evilplotJVM,
+    evilplotJS,
+    evilplotRepl,
+    evilplotJupyterScala,
+    assetJVM,
+    evilplotRunner,
+    mathJS,
+    mathJVM
+  )
   .settings(
     publishArtifact := false,
     publish := {},
@@ -27,6 +36,22 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   licenses += ("BSD 3-Clause", url("https://opensource.org/licenses/BSD-3-Clause"))
 )
 
+// Macroparadise is included in scala 2.13. Do contortion here for 2.12/2.13 crossbuild
+Compile / scalacOptions ++= {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, n)) if n >= 13 => "-Ymacro-annotations" :: Nil
+    case _                       => Nil
+  }
+}
+
+libraryDependencies ++= {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, n)) if n >= 13 => Nil
+    case _ =>
+      compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) :: Nil
+  }
+}
+
 lazy val licenseSettings = Seq(
   homepage := Some(url("https://www.github.com/cibotech/evilplot")),
   startYear := Some(2018),
@@ -41,7 +66,7 @@ lazy val evilplotAsset = crossProject
   .settings(licenseSettings)
   .settings(
     name := "evilplot-asset",
-    resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
+    resolvers += "Artima Maven Repository" at "https://repo.artima.com/releases"
   )
   .jvmSettings(
     resourceGenerators.in(Compile) += Def.task {
@@ -62,8 +87,8 @@ lazy val evilplotMath = crossProject
   .settings(licenseSettings)
   .settings(
     name := "evilplot-math",
-    resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
-    libraryDependencies ++= Settings.sharedMathDependencies.value,
+    resolvers += "Artima Maven Repository" at "https://repo.artima.com/releases",
+    libraryDependencies ++= Settings.sharedMathDependencies.value
   )
   .jvmSettings(
     libraryDependencies ++= Settings.jvmMathDependencies.value
@@ -94,7 +119,8 @@ lazy val evilplot = crossProject
   )
   .jvmSettings(
     libraryDependencies ++= Settings.jvmDependencies.value
-  ).dependsOn(evilplotMath)
+  )
+  .dependsOn(evilplotMath)
 
 lazy val evilplotJVM = evilplot.jvm
 lazy val evilplotJS = evilplot.js
@@ -126,18 +152,20 @@ lazy val evilplotJupyterScala = project
   .settings(licenseSettings)
   .settings(
     name := "evilplot-jupyter-scala",
-    libraryDependencies ++= Settings.jupyterScalaDependencies.value
+    libraryDependencies ++= Settings.jupyterScalaDependencies.value,
+    resolvers += "jitpack" at "https://jitpack.io"
   )
 
 val EvilPlotJVM = config("jvm")
 val EvilPlotJS = config("js")
 lazy val apiDocProjects = Seq(evilplotJVM -> EvilPlotJVM, evilplotJS -> EvilPlotJS)
-lazy val apiDocumentation = apiDocProjects.flatMap { case (project, conf) =>
-  SiteScaladocPlugin.scaladocSettings(
-    conf,
-    mappings in (Compile, packageDoc) in project,
-    s"scaladoc/${project.id.stripPrefix("evilplot").toLowerCase}"
-  )
+lazy val apiDocumentation = apiDocProjects.flatMap {
+  case (project, conf) =>
+    SiteScaladocPlugin.scaladocSettings(
+      conf,
+      mappings in (Compile, packageDoc) in project,
+      s"scaladoc/${project.id.stripPrefix("evilplot").toLowerCase}"
+    )
 }
 
 lazy val docs = project
