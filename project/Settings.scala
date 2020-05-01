@@ -18,7 +18,7 @@ object Settings {
     val crossScalaVersions = Seq("2.12.10", "2.13.1")
     val scalaDom = "0.9.8"
     val scalaTest = "3.0.8"
-    val scalactic = "3.0.8"
+    val scalactic = "3.1.1"
     val scopt = "3.5.0"
     val circe = "0.13.0"
     val jupyterScala = "0.4.1"
