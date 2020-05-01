@@ -9,7 +9,7 @@ dependencyOverrides += "org.scala-js" % "sbt-scalajs" % "0.6.32"
 
 addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "1.5.1")
 //addSbtPlugin("com.lihaoyi" % "workbench" % "0.4.1")
-addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.18")
+addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.27")
 
 dependencyOverrides ++= Seq(
   "org.scala-js" % "sbt-scalajs" % "0.6.32",
