@@ -31,8 +31,8 @@
 package com.cibo.evilplot.numeric
 
 import org.scalactic.{Equivalence, TypeCheckedTripleEquals}
-import org.scalatest.prop.PropertyChecks
 import org.scalatest.{FunSpec, Matchers}
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 trait NumericTestSupport {
   private val tolerance = math.ulp(1.0)
@@ -47,7 +47,7 @@ class MarchingSquaresSpec
     with Matchers
     with TypeCheckedTripleEquals
     with NumericTestSupport
-    with PropertyChecks {
+    with ScalaCheckPropertyChecks {
 
   import org.scalacheck.Gen
 
