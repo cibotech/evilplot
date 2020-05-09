@@ -33,8 +33,8 @@ package com.cibo.evilplot.numeric
 import com.cibo.evilplot.numeric.Labeling.LabelingResult
 import org.scalacheck.Gen
 import org.scalacheck.Prop.forAllNoShrink
-import org.scalatest.prop.Checkers
 import org.scalatest.{FunSpec, Inside, Matchers, OptionValues}
+import org.scalatestplus.scalacheck.Checkers
 
 class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues with Inside {
   private val boundsGen = for {
