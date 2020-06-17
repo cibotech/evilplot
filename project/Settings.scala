@@ -41,7 +41,7 @@ object Settings {
     Seq(
       // "org.jupyter-scala" %% "kernel-api" % versions.jupyterScala % Provided
 //      ("sh.almond" % "jupyter-api" % "0.9.1" % "provided").cross(CrossVersion.full)
-      "sh.almond" %% "jupyter-api" % "0.9.1" % "provided"
+      "sh.almond" %% "jupyter-api" % "0.10.0" % "provided"
     )
   )
 
