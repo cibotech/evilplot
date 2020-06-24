@@ -30,10 +30,11 @@
 
 package com.cibo.evilplot.geometry
 
-import org.scalatest.{FunSpec, Matchers}
 import com.cibo.evilplot.DOMInitializer
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class GeometrySpec extends FunSpec with Matchers {
+class GeometrySpec extends AnyFunSpec with Matchers {
 
   DOMInitializer.init()
 

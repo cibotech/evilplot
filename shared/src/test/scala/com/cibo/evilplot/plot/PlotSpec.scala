@@ -35,9 +35,10 @@ import com.cibo.evilplot.DOMInitializer
 import com.cibo.evilplot.numeric.Bounds
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class PlotSpec extends FunSpec with Matchers {
+class PlotSpec extends AnyFunSpec with Matchers {
 
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 

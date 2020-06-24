@@ -31,11 +31,12 @@
 package com.cibo.evilplot.numeric
 
 import com.cibo.evilplot.numeric.KernelDensityEstimation._
-import org.scalatest.{FunSpec, Matchers}
 
 import scala.util.Random.nextDouble
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class KernelDensityEstimationSpec extends FunSpec with Matchers {
+class KernelDensityEstimationSpec extends AnyFunSpec with Matchers {
   describe("KernelDensityEstimation") {
     it("should properly calculate probability densities from the normal distribution") {
       val doubles: Seq[Double] = Seq(0.383738345, 0.678363183, 0.870892648, 0.955542032,

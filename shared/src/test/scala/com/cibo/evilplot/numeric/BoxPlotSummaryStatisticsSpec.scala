@@ -30,11 +30,12 @@
 
 package com.cibo.evilplot.numeric
 
-import org.scalatest.{FunSpec, Matchers}
 
 import scala.util.Random
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class BoxPlotSummaryStatisticsSpec extends FunSpec with Matchers {
+class BoxPlotSummaryStatisticsSpec extends AnyFunSpec with Matchers {
   val tol = 1e-8
   val data = List(-2541.335733882479, 1577.0315624249806, -808.0673232141799, 680.9128930911302,
     -2445.2589645401004, -7.260674159999326, -1762.1261882364997, -776.52236318016,

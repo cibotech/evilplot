@@ -30,10 +30,11 @@
 
 package com.cibo.evilplot.geometry
 
-import org.scalatest.{FunSpec, Matchers}
 import com.cibo.evilplot.DOMInitializer
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class TextMetricsSpec extends FunSpec with Matchers {
+class TextMetricsSpec extends AnyFunSpec with Matchers {
   DOMInitializer.init()
 
   // The size depends on the font which can vary from system to system.

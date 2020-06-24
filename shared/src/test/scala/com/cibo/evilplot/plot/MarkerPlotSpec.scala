@@ -34,9 +34,10 @@ import com.cibo.evilplot.demo.DemoPlots.{plotAreaSize, theme}
 import com.cibo.evilplot.geometry.{Extent, Rect, Rotate, Style, Text, Wedge}
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.components.{Marker, Position}
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class MarkerPlotSpec extends FunSpec with Matchers {
+class MarkerPlotSpec extends AnyFunSpec with Matchers {
 
   describe("Marker Plot") {
     it("overlay marker displays correctly") {

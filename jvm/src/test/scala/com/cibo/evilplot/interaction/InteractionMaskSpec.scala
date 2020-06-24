@@ -31,13 +31,14 @@
 package com.cibo.evilplot.interaction
 
 import com.cibo.evilplot.geometry.{InteractionEvent, OnClick}
-import org.scalatest.{FunSpec, Matchers}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Try
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class InteractionMaskSpec extends FunSpec with Matchers {
+class InteractionMaskSpec extends AnyFunSpec with Matchers {
 
   describe("The Interaction Mask"){
 
