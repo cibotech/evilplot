@@ -7,6 +7,8 @@ EvilPlot is about combinators for graphics.
 
 Documentation for EvilPlot is available [here](https://cibotech.github.io/evilplot).
 
+See all versions [on Bintray](https://bintray.com/beta/#/cibotech/public/evilplot?tab=overview)
+
 ## Getting Started
 Add EvilPlot to your build with:
 ```scala
