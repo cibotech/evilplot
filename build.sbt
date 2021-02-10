@@ -59,7 +59,7 @@ lazy val licenseSettings = Seq(
   headerLicense := Some(HeaderLicense.BSD3Clause("2018", "CiBO Technologies, Inc."))
 )
 
-lazy val evilplotAsset = crossProject
+lazy val evilplotAsset = crossProject(JSPlatform, JVMPlatform)
   .in(file("asset"))
   .dependsOn(evilplot)
   .settings(commonSettings)
@@ -81,7 +81,7 @@ lazy val evilplotAsset = crossProject
 lazy val assetJS = evilplotAsset.js
 lazy val assetJVM = evilplotAsset.jvm
 
-lazy val evilplotMath = crossProject
+lazy val evilplotMath = crossProject(JSPlatform, JVMPlatform)
   .in(file("math"))
   .settings(commonSettings)
   .settings(licenseSettings)
@@ -97,7 +97,7 @@ lazy val evilplotMath = crossProject
 lazy val mathJS = evilplotMath.js
 lazy val mathJVM = evilplotMath.jvm
 
-lazy val evilplot = crossProject
+lazy val evilplot = crossProject(JSPlatform, JVMPlatform)
   .in(file("."))
   .settings(commonSettings)
   .configs(IntegrationTest)
@@ -112,7 +112,8 @@ lazy val evilplot = crossProject
     libraryDependencies ++= Settings.sharedDependencies.value,
     jsDependencies ++= Settings.jsDependencies.value,
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
-    jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value),
+    jsEnv in Test := PhantomJSEnv().value,
+    scalaJSLinkerConfig ~= { _.withESFeatures(_.withUseECMAScript2015(false)) },
     skip in packageJSDependencies := false,
     scalaJSUseMainModuleInitializer := false,
     scalaJSUseMainModuleInitializer in Test := false
@@ -123,7 +124,7 @@ lazy val evilplot = crossProject
   .dependsOn(evilplotMath)
 
 lazy val evilplotJVM = evilplot.jvm
-lazy val evilplotJS = evilplot.js
+lazy val evilplotJS = evilplot.js.enablePlugins(JSDependenciesPlugin)
 
 lazy val evilplotRunner = project
   .in(file("runner"))
