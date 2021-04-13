@@ -10,13 +10,25 @@ scalacOptions in ThisBuild ++= Settings.scalacOptions
 
 lazy val noPublish: Seq[Setting[_]] = Seq(
   publishArtifact := false,
-  publish := {},
-  publishLocal := {},
-  publishTo := None
+  publish / skip := true,
+  publishLocal := {}
 )
+
+lazy val publishSettings: Seq[Setting[_]] = Seq(
+  organization := Settings.organization,
+  organizationName := "CiBO Technologies",
+  organizationHomepage := Some(new java.net.URL("http://www.cibotechnologies.com")),
+  licenses += ("BSD 3-Clause", url("https://opensource.org/licenses/BSD-3-Clause")),
+  sonatypeProjectHosting := Some(GitHubHosting("cibotech", "evilplot", "devops@cibotechnologies.com")),
+  sonatypeCredentialHost := "s01.oss.sonatype.org",
+  sonatypeProfileName := "io.github.cibotech",
+  pomIncludeRepository := { _ => false },
+  publishTo := sonatypePublishToBundle.value,
+  publishMavenStyle := true)
 
 lazy val `evilplot-root` = project
   .in(file("."))
+  .settings(publishSettings)
   .aggregate(
     evilplotJVM,
     evilplotJS,
@@ -27,21 +39,13 @@ lazy val `evilplot-root` = project
     mathJS,
     mathJVM
   )
-  .settings(noPublish)
   .disablePlugins(HeaderPlugin)
 
+
 lazy val commonSettings: Seq[Setting[_]] = Seq(
-  organization := Settings.organization,
   crossScalaVersions := Settings.versions.crossScalaVersions,
   scalaVersion := crossScalaVersions.value.head,
-  scalacOptions ++= Settings.scalacOptions,
-  licenses += ("BSD 3-Clause", url("https://opensource.org/licenses/BSD-3-Clause")),
-  sonatypeProjectHosting := Some(GitHubHosting("cibotech", "evilplot", "devops@cibotechnologies.com")),
-  sonatypeCredentialHost := "s01.oss.sonatype.org",
-  sonatypeProfileName := "io.github.cibotech",
-  pomIncludeRepository := { _ => false },
-  publishTo := sonatypePublishToBundle.value,
-  publishMavenStyle := true
+  scalacOptions ++= Settings.scalacOptions
 )
 
 // Macroparadise is included in scala 2.13. Do contortion here for 2.12/2.13 crossbuild
@@ -72,6 +76,7 @@ lazy val evilplotAsset = crossProject
   .dependsOn(evilplot)
   .settings(commonSettings)
   .settings(licenseSettings)
+  .settings(publishSettings)
   .settings(
     name := "evilplot-asset",
     resolvers += "Artima Maven Repository" at "https://repo.artima.com/releases"
@@ -92,6 +97,7 @@ lazy val assetJVM = evilplotAsset.jvm
 lazy val evilplotMath = crossProject
   .in(file("math"))
   .settings(commonSettings)
+  .settings(publishSettings)
   .settings(licenseSettings)
   .settings(
     name := "evilplot-math",
@@ -109,6 +115,7 @@ lazy val evilplot = crossProject
   .in(file("."))
   .settings(commonSettings)
   .configs(IntegrationTest)
+  .settings(publishSettings)
   .settings(
     name := "evilplot",
     libraryDependencies ++= Settings.sharedDependencies.value,
@@ -144,6 +151,7 @@ lazy val evilplotRepl = project
   .in(file("repl-plots"))
   .dependsOn(evilplotJVM)
   .settings(commonSettings)
+  .settings(publishSettings)
   .settings(licenseSettings)
   .settings(
     name := "evilplot-repl"
@@ -153,6 +161,7 @@ lazy val evilplotJupyterScala = project
   .in(file("jupyter-scala"))
   .dependsOn(evilplotJVM)
   .settings(commonSettings)
+  .settings(publishSettings)
   .settings(licenseSettings)
   .settings(
     name := "evilplot-jupyter-scala",
@@ -179,6 +188,7 @@ lazy val docs = project
     name := "evilplot-docs",
     micrositeName := "EvilPlot",
     description := "Combinators for graphics",
+    organization := Settings.organization,
     organizationName := "CiBO Technologies",
     organizationHomepage := Some(new java.net.URL("http://www.cibotechnologies.com")),
     micrositeGithubOwner := "cibotech",
