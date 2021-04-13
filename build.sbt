@@ -30,9 +30,6 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   crossScalaVersions := Settings.versions.crossScalaVersions,
   scalaVersion := crossScalaVersions.value.head,
   scalacOptions ++= Settings.scalacOptions,
-  bintrayOrganization := Some("cibotech"),
-  bintrayRepository := "public",
-  bintrayPackageLabels := Seq("scala", "plot", "visualization", "visualisation"),
   licenses += ("BSD 3-Clause", url("https://opensource.org/licenses/BSD-3-Clause"))
 )
 
@@ -199,3 +196,11 @@ lazy val docs = project
   )
   .settings(apiDocumentation)
   .enablePlugins(MicrositesPlugin)
+
+import xerial.sbt.Sonatype._
+sonatypeProjectHosting := Some(GitHubHosting("cibotech", "evilplot", "devops@cibotechnologies.com"))
+sonatypeCredentialHost := "s01.oss.sonatype.org"
+sonatypeProfileName := "io.github.cibotech"
+pomIncludeRepository := { _ => false }
+publishTo := sonatypePublishToBundle.value
+publishMavenStyle := true

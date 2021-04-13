@@ -3,7 +3,7 @@ import sbt._
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Settings {
-  val organization = "com.cibo"
+  val organization = "io.github.cibotech"
 
   val scalacOptions = Seq(
     "-deprecation",
