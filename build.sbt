@@ -171,6 +171,7 @@ lazy val docs = project
     name := "evilplot-docs",
     micrositeName := "EvilPlot",
     description := "Combinators for graphics",
+    organization := Settings.organization,
     organizationName := "CiBO Technologies",
     organizationHomepage := Some(new java.net.URL("http://www.cibotechnologies.com")),
     micrositeGithubOwner := "cibotech",
