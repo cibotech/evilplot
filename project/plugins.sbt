@@ -1,3 +1,4 @@
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.7")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.13")
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
@@ -16,4 +17,4 @@ dependencyOverrides ++= Seq(
   "com.typesafe.akka" %% "akka-stream" % "2.6.1"
 )
 
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.7")
+

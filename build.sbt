@@ -1,4 +1,5 @@
 import sbt.Keys.resolvers
+import xerial.sbt.Sonatype._
 
 enablePlugins(ScalaJSPlugin)
 
@@ -6,8 +7,28 @@ crossScalaVersions in ThisBuild := Settings.versions.crossScalaVersions
 scalaVersion in ThisBuild := crossScalaVersions.value.head
 scalacOptions in ThisBuild ++= Settings.scalacOptions
 
+
+lazy val noPublish: Seq[Setting[_]] = Seq(
+  publishArtifact := false,
+  publish / skip := true,
+  publishLocal := {}
+)
+
+lazy val publishSettings: Seq[Setting[_]] = Seq(
+  organization := Settings.organization,
+  organizationName := "CiBO Technologies",
+  organizationHomepage := Some(new java.net.URL("http://www.cibotechnologies.com")),
+  licenses += ("BSD 3-Clause", url("https://opensource.org/licenses/BSD-3-Clause")),
+  sonatypeProjectHosting := Some(GitHubHosting("cibotech", "evilplot", "devops@cibotechnologies.com")),
+  sonatypeCredentialHost := "s01.oss.sonatype.org",
+  sonatypeProfileName := "io.github.cibotech",
+  pomIncludeRepository := { _ => false },
+  publishTo := sonatypePublishToBundle.value,
+  publishMavenStyle := true)
+
 lazy val `evilplot-root` = project
   .in(file("."))
+  .settings(publishSettings)
   .aggregate(
     evilplotJVM,
     evilplotJS,
@@ -18,19 +39,13 @@ lazy val `evilplot-root` = project
     mathJS,
     mathJVM
   )
-  .settings(
-    publishArtifact := false,
-    publish := {},
-    publishLocal := {}
-  )
   .disablePlugins(HeaderPlugin)
 
+
 lazy val commonSettings: Seq[Setting[_]] = Seq(
-  organization := Settings.organization,
   crossScalaVersions := Settings.versions.crossScalaVersions,
   scalaVersion := crossScalaVersions.value.head,
-  scalacOptions ++= Settings.scalacOptions,
-  licenses += ("BSD 3-Clause", url("https://opensource.org/licenses/BSD-3-Clause"))
+  scalacOptions ++= Settings.scalacOptions
 )
 
 // Macroparadise is included in scala 2.13. Do contortion here for 2.12/2.13 crossbuild
@@ -61,6 +76,7 @@ lazy val evilplotAsset = crossProject
   .dependsOn(evilplot)
   .settings(commonSettings)
   .settings(licenseSettings)
+  .settings(publishSettings)
   .settings(
     name := "evilplot-asset",
     resolvers += "Artima Maven Repository" at "https://repo.artima.com/releases"
@@ -81,6 +97,7 @@ lazy val assetJVM = evilplotAsset.jvm
 lazy val evilplotMath = crossProject
   .in(file("math"))
   .settings(commonSettings)
+  .settings(publishSettings)
   .settings(licenseSettings)
   .settings(
     name := "evilplot-math",
@@ -98,6 +115,7 @@ lazy val evilplot = crossProject
   .in(file("."))
   .settings(commonSettings)
   .configs(IntegrationTest)
+  .settings(publishSettings)
   .settings(
     name := "evilplot",
     libraryDependencies ++= Settings.sharedDependencies.value,
@@ -126,17 +144,14 @@ lazy val evilplotRunner = project
   .in(file("runner"))
   .aggregate(evilplotJS)
   .dependsOn(evilplotJS)
-  .settings(
-    publishArtifact := false,
-    publish := {},
-    publishLocal := {}
-  )
+  .settings(noPublish)
   .settings(licenseSettings)
 
 lazy val evilplotRepl = project
   .in(file("repl-plots"))
   .dependsOn(evilplotJVM)
   .settings(commonSettings)
+  .settings(publishSettings)
   .settings(licenseSettings)
   .settings(
     name := "evilplot-repl"
@@ -146,6 +161,7 @@ lazy val evilplotJupyterScala = project
   .in(file("jupyter-scala"))
   .dependsOn(evilplotJVM)
   .settings(commonSettings)
+  .settings(publishSettings)
   .settings(licenseSettings)
   .settings(
     name := "evilplot-jupyter-scala",
@@ -167,6 +183,7 @@ lazy val apiDocumentation = apiDocProjects.flatMap {
 
 lazy val docs = project
   .in(file("docs"))
+  .settings(noPublish)
   .settings(
     name := "evilplot-docs",
     micrositeName := "EvilPlot",
@@ -190,18 +207,9 @@ lazy val docs = project
       "gray-light" -> "#E3E2E3",
       "gray-lighter" -> "#F4F3F4",
       "white-color" -> "#FFFFFF"
-    ),
-    publish := {},
-    publishLocal := {},
-    publishArtifact := false
+    )
   )
   .settings(apiDocumentation)
   .enablePlugins(MicrositesPlugin)
 
-import xerial.sbt.Sonatype._
-sonatypeProjectHosting := Some(GitHubHosting("cibotech", "evilplot", "devops@cibotechnologies.com"))
-sonatypeCredentialHost := "s01.oss.sonatype.org"
-sonatypeProfileName := "io.github.cibotech"
-pomIncludeRepository := { _ => false }
-publishTo := sonatypePublishToBundle.value
-publishMavenStyle := true
+
