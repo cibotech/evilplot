@@ -1,7 +1,5 @@
 # EvilPlot
-[![Build Status](https://travis-ci.org/cibotech/evilplot.svg?branch=master)](https://travis-ci.org/cibotech/evilplot)
 [![Scala.js](https://www.scala-js.org/assets/badges/scalajs-0.6.17.svg)](https://www.scala-js.org)
-[ ![Download](https://api.bintray.com/packages/cibotech/public/evilplot/images/download.svg) ](https://bintray.com/cibotech/public/evilplot/_latestVersion)
 
 EvilPlot is about combinators for graphics.
 
@@ -12,8 +10,7 @@ See all versions [on Bintray](https://bintray.com/beta/#/cibotech/public/evilplo
 ## Getting Started
 Add EvilPlot to your build with:
 ```scala
-resolvers += Resolver.bintrayRepo("cibotech", "public")
-libraryDependencies += "com.cibo" %% "evilplot" % "0.6.3" // Use %%% instead of %% if you're using ScalaJS
+libraryDependencies += "io.github.cibotech" %% "evilplot" % "0.8.1" // Use %%% instead of %% if you're using ScalaJS
 ```
 Take a look at the full [getting started guide](https://cibotech.github.io/evilplot/getting-started.html). EvilPlot is published for Scala 2.11 and Scala 2.12.
 
