@@ -32,9 +32,10 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric.{Bounds, Point}
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class TransformUtilsSpec extends FunSpec with Matchers {
+class TransformUtilsSpec extends AnyFunSpec with Matchers {
 
   describe("PlotUtils") {
 

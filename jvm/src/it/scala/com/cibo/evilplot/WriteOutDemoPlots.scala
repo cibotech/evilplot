@@ -2,11 +2,13 @@ package com.cibo.evilplot
 
 import java.io.File
 import java.nio.file.{Files, Paths}
-
 import com.cibo.evilplot.demo.DemoPlots
+
 import javax.imageio.ImageIO
-import org.scalatest.{FunSpec, Matchers}
 import com.cibo.evilplot.geometry.Drawable
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+
 import scala.util.Try
 
 object WriteOutDemoPlots {
@@ -14,7 +16,7 @@ object WriteOutDemoPlots {
     for(plotName <- args; plot <- DemoPlots.get(Symbol(plotName)))
        plot write new java.io.File(s"$plotName.png")
 }
-class WriteOutDemoPlots extends FunSpec with Matchers {
+class WriteOutDemoPlots extends AnyFunSpec with Matchers {
 
   //-- DemoPlot name and ratio of colored pixels (to represent an simple hash)
   val plots = Seq(

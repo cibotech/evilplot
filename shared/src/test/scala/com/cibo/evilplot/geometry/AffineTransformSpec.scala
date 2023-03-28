@@ -30,9 +30,10 @@
 
 package com.cibo.evilplot.geometry
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class AffineTransformSpec extends FunSpec with Matchers {
+class AffineTransformSpec extends AnyFunSpec with Matchers {
 
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 

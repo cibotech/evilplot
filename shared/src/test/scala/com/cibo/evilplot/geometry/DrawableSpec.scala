@@ -31,9 +31,10 @@
 package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.colors.{ColorGradients, FillGradients}
-import org.scalatest.{FunSpec, Matchers}
 import io.circe.syntax._
-class DrawableSpec extends FunSpec with Matchers {
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+class DrawableSpec extends AnyFunSpec with Matchers {
 
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 

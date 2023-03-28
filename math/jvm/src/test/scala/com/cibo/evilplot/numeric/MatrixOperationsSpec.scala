@@ -30,9 +30,11 @@
 
 package com.cibo.evilplot.numeric
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class KernelDensityEstimationSpec extends FunSpec with Matchers {
+
+class KernelDensityEstimationSpec extends AnyFunSpec with Matchers {
   describe("KernelDensityEstimation") {
 
     it("should properly calculate the matrix product A * B^T") {

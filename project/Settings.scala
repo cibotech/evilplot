@@ -15,14 +15,13 @@ object Settings {
   )
 
   object versions { //scalastyle:ignore
-    val crossScalaVersions = Seq("2.12.13", "2.13.4")
+    val crossScalaVersions = Seq("2.12.18", "2.13.11")
     val scalaDom = "0.9.8"
-    val scalaTest = "3.1.2"
-    val scalactic = "3.1.2"
+    val scalaTest = "3.2.15"
+    val scalactic = "3.2.15"
     val scopt = "3.5.0"
     val circe = "0.13.0"
     val jupyterScala = "0.4.1"
-    val scalacheck = "1.14.3"
   }
 
   val sharedDependencies = Def.setting(
@@ -31,9 +30,7 @@ object Settings {
       "io.circe" %%% "circe-generic" % versions.circe,
       "io.circe" %%% "circe-parser" % versions.circe,
       "io.circe" %%% "circe-generic-extras" % versions.circe,
-      "org.scalactic" %%% "scalactic" % versions.scalactic,
-      "org.scalacheck" %%% "scalacheck" % versions.scalacheck % "test",
-      "org.scalatest" %%% "scalatest" % versions.scalaTest % "it,test"
+      "org.scalatest" %%% "scalatest" % versions.scalaTest % "it,test",
     )
   )
 
@@ -61,6 +58,8 @@ object Settings {
 
   val jvmDependencies = Def.setting(
     Seq(
+      "org.scalactic" %%% "scalactic" % versions.scalactic,
+      "org.scalatestplus" %% "scalacheck-1-17" % "3.2.15.0" % "test",
       )
   )
 

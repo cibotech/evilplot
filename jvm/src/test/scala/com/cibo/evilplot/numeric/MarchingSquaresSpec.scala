@@ -31,8 +31,9 @@
 package com.cibo.evilplot.numeric
 
 import org.scalactic.{Equivalence, TypeCheckedTripleEquals}
-import org.scalatest.prop.PropertyChecks
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 trait NumericTestSupport {
   private val tolerance = math.ulp(1.0)
@@ -43,13 +44,14 @@ trait NumericTestSupport {
 }
 
 class MarchingSquaresSpec
-    extends FunSpec
+    extends AnyFunSpec
     with Matchers
     with TypeCheckedTripleEquals
     with NumericTestSupport
-    with PropertyChecks {
+    with ScalaCheckPropertyChecks
+    {
 
-  import org.scalacheck.Gen
+      import org.scalacheck.Gen
 
   val densityGrids: Gen[Vector[Vector[Double]]] = {
     val numRows = Gen.choose(10, 30)

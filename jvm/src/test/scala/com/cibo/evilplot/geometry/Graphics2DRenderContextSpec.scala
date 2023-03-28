@@ -30,12 +30,13 @@
 
 package com.cibo.evilplot.geometry
 
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+
 import java.awt.image.BufferedImage
 import java.awt.{BasicStroke, Color, Graphics2D}
 
-import org.scalatest.{FunSpec, Matchers}
-
-class Graphics2DRenderContextSpec extends FunSpec with Matchers with Graphics2DSupport {
+class Graphics2DRenderContextSpec extends AnyFunSpec with Matchers with Graphics2DSupport {
   describe("state stack operations") {
     it("The state should be the same before and after a stack op.") {
       val graphics = Graphics2DTestUtils.graphics2D

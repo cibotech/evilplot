@@ -31,9 +31,10 @@
 package com.cibo.evilplot.colors
 
 import com.cibo.evilplot.geometry.GradientFill
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class FillGradientsSpec extends FunSpec with Matchers {
+class FillGradientsSpec extends AnyFunSpec with Matchers {
 
   describe("Gradient distribution functions") {
 

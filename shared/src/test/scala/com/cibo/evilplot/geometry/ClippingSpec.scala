@@ -33,7 +33,8 @@ package com.cibo.evilplot.geometry
 import com.cibo.evilplot.geometry.Clipping.Edge
 import com.cibo.evilplot.numeric.{Point, Point2d}
 import org.scalactic.{Equality, TolerantNumerics}
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 trait PointEquivalences {
   implicit object PointEquivalence extends Equality[Point2d] {
@@ -66,7 +67,7 @@ trait PointEquivalences {
 
 object PointEquivalences extends PointEquivalences
 
-class ClippingSpec extends FunSpec with Matchers with PointEquivalences {
+class ClippingSpec extends AnyFunSpec with Matchers with PointEquivalences {
 
   describe("Edge") {
     it("vertical edge intersections are calculated correctly") {

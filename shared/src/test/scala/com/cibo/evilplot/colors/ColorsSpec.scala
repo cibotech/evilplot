@@ -31,10 +31,10 @@
 package com.cibo.evilplot.colors
 
 import org.scalactic.TypeCheckedTripleEquals
-import org.scalatest.Matchers._
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class ColorsSpec extends FunSpec with TypeCheckedTripleEquals {
+class ColorsSpec extends AnyFunSpec with TypeCheckedTripleEquals with Matchers {
   describe("ScaledColorBar") {
     it("should assign distinct colors to different years") {
       val z: Seq[Double] = Seq(2012, 2013, 2012, 2011)

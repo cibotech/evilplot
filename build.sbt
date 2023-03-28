@@ -1,11 +1,12 @@
 import sbt.Keys.resolvers
 import xerial.sbt.Sonatype._
+import org.scalajs.linker.interface.ESVersion
 
 enablePlugins(ScalaJSPlugin)
 
-crossScalaVersions in ThisBuild := Settings.versions.crossScalaVersions
-scalaVersion in ThisBuild := crossScalaVersions.value.head
-scalacOptions in ThisBuild ++= Settings.scalacOptions
+ThisBuild / crossScalaVersions := Settings.versions.crossScalaVersions
+ThisBuild / scalaVersion := crossScalaVersions.value.head
+ThisBuild / scalacOptions ++= Settings.scalacOptions
 
 
 lazy val noPublish: Seq[Setting[_]] = Seq(
@@ -82,11 +83,11 @@ lazy val evilplotAsset = crossProject(JSPlatform, JVMPlatform)
     resolvers += "Artima Maven Repository" at "https://repo.artima.com/releases"
   )
   .jvmSettings(
-    resourceGenerators.in(Compile) += Def.task {
-      val fullOptAsset = fullOptJS.in(evilplotJS).in(Compile).value.data
-      val fastOptAsset = fastOptJS.in(evilplotJS).in(Compile).value.data
-      val fullOptDest = resourceDirectory.in(Compile).value / fullOptAsset.getName
-      val fastOptDest = resourceDirectory.in(Compile).value / fastOptAsset.getName
+    Compile / resourceGenerators += Def.task {
+      val fullOptAsset = (Compile / (evilplotJS / fullOptJS)).value.data
+      val fastOptAsset = (Compile / (evilplotJS / fastOptJS)).value.data
+      val fullOptDest = (Compile / resourceDirectory).value / fullOptAsset.getName
+      val fastOptDest = (Compile / resourceDirectory).value / fastOptAsset.getName
       IO.copy(Seq(fullOptAsset -> fullOptDest, fastOptAsset -> fastOptDest)).toSeq
     }
   )
@@ -127,11 +128,11 @@ lazy val evilplot = crossProject(JSPlatform, JVMPlatform)
     libraryDependencies ++= Settings.sharedDependencies.value,
     jsDependencies ++= Settings.jsDependencies.value,
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
-    jsEnv in Test := PhantomJSEnv().value,
-    scalaJSLinkerConfig ~= { _.withESFeatures(_.withUseECMAScript2015(false)) },
-    skip in packageJSDependencies := false,
+    Test / jsEnv := PhantomJSEnv().value,
+    scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(ESVersion.ES5_1)) },
+    packageJSDependencies / skip := false,
     scalaJSUseMainModuleInitializer := false,
-    scalaJSUseMainModuleInitializer in Test := false
+    Test / scalaJSUseMainModuleInitializer := false
   )
   .jvmSettings(
     libraryDependencies ++= Settings.jvmDependencies.value
@@ -177,7 +178,7 @@ lazy val apiDocumentation = apiDocProjects.flatMap {
   case (project, conf) =>
     SiteScaladocPlugin.scaladocSettings(
       conf,
-      mappings in (Compile, packageDoc) in project,
+      project / mappings.in(Compile, packageDoc),
       s"scaladoc/${project.id.stripPrefix("evilplot").toLowerCase}"
     )
 }
