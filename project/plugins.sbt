@@ -13,8 +13,6 @@ addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.8.0")
 
 libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"
 
-dependencyOverrides += "org.scala-js" % "sbt-scalajs" % "1.8.0"
-
 addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "1.5.1")
 addSbtPlugin("com.47deg" % "sbt-microsites" % "1.4.3")
 
