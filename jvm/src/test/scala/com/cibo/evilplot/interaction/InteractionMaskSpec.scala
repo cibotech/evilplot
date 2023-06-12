@@ -36,7 +36,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Try
+import scala.language.reflectiveCalls
 
 class InteractionMaskSpec extends AnyFunSpec with Matchers {
 

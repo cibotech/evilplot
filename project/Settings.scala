@@ -9,7 +9,7 @@ object Settings {
     "-deprecation",
     "-unchecked",
     "-feature",
-//    "-Xfatal-warnings", uncomment when internal deprecations are fixed
+    "-Xfatal-warnings",
     "-Xsource:2.12",
     "-target:jvm-1.8"
   )
