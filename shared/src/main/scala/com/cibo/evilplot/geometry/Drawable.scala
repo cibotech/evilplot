@@ -105,7 +105,7 @@ object EmptyDrawable {
   * @param strokeWidth the thickness of the line
   */
 final case class Line(length: Double, strokeWidth: Double) extends Drawable {
-  lazy val extent = Extent(length, strokeWidth)
+  lazy val extent: Extent = Extent(length, strokeWidth)
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Line {
@@ -212,7 +212,7 @@ object BorderRect {
   * from its vertex.
   */
 final case class Disc(radius: Double) extends Drawable {
-  lazy val extent = Extent(radius * 2, radius * 2)
+  lazy val extent: Extent = Extent(radius * 2, radius * 2)
 
   def draw(context: RenderContext): Unit = context.draw(this)
 }
