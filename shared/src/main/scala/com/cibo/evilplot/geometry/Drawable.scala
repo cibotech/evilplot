@@ -84,8 +84,8 @@ final case class Interaction(r: Drawable, interactionEvent: InteractionEvent*) e
 }
 
 object Interaction {
-  implicit val encoder: Encoder[Interaction] = deriveEncoder[Interaction]
-  implicit val decoder: Decoder[Interaction] = deriveDecoder[Interaction]
+  implicit val encoder: Encoder[Interaction] = deriveConfiguredEncoder[Interaction]
+  implicit val decoder: Decoder[Interaction] = deriveConfiguredDecoder[Interaction]
 }
 
 /** A drawable that displays nothing when drawn. */
@@ -96,8 +96,8 @@ final case class EmptyDrawable() extends Drawable {
   override private[evilplot] def isEmpty: Boolean = true
 }
 object EmptyDrawable {
-  implicit val encoder: Encoder[EmptyDrawable] = deriveEncoder[EmptyDrawable]
-  implicit val decoder: Decoder[EmptyDrawable] = deriveDecoder[EmptyDrawable]
+  implicit val encoder: Encoder[EmptyDrawable] = deriveConfiguredEncoder[EmptyDrawable]
+  implicit val decoder: Decoder[EmptyDrawable] = deriveConfiguredDecoder[EmptyDrawable]
 }
 
 /** A horizontal line.
@@ -109,8 +109,8 @@ final case class Line(length: Double, strokeWidth: Double) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Line {
-  implicit val encoder: Encoder[Line] = deriveEncoder[Line]
-  implicit val decoder: Decoder[Line] = deriveDecoder[Line]
+  implicit val encoder: Encoder[Line] = deriveConfiguredEncoder[Line]
+  implicit val decoder: Decoder[Line] = deriveConfiguredDecoder[Line]
 }
 
 /** A path with a strokable outline.
@@ -181,8 +181,8 @@ final case class Rect(width: Double, height: Double) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Rect {
-  implicit val encoder: Encoder[Rect] = deriveEncoder[Rect]
-  implicit val decoder: Decoder[Rect] = deriveDecoder[Rect]
+  implicit val encoder: Encoder[Rect] = deriveConfiguredEncoder[Rect]
+  implicit val decoder: Decoder[Rect] = deriveConfiguredDecoder[Rect]
 
   def apply(side: Double): Rect = Rect(side, side)
   def apply(size: Extent): Rect = Rect(size.width, size.height)
@@ -197,8 +197,8 @@ final case class BorderRect(width: Double, height: Double) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object BorderRect {
-  implicit val encoder: Encoder[BorderRect] = deriveEncoder[BorderRect]
-  implicit val decoder: Decoder[BorderRect] = deriveDecoder[BorderRect]
+  implicit val encoder: Encoder[BorderRect] = deriveConfiguredEncoder[BorderRect]
+  implicit val decoder: Decoder[BorderRect] = deriveConfiguredDecoder[BorderRect]
 
   /** A rectangle that can be both filled and stroked. */
   def filled(width: Double, height: Double): Drawable = {
@@ -221,8 +221,8 @@ object Disc {
   /** Create a disc that can be positioned from its vertex. */
   def centered(radius: Double): Drawable = Disc(radius).translate(-radius, -radius)
 
-  implicit val encoder: Encoder[Disc] = deriveEncoder[Disc]
-  implicit val decoder: Decoder[Disc] = deriveDecoder[Disc]
+  implicit val encoder: Encoder[Disc] = deriveConfiguredEncoder[Disc]
+  implicit val decoder: Decoder[Disc] = deriveConfiguredDecoder[Disc]
 }
 
 /** A piece of a circle. */
@@ -231,8 +231,8 @@ final case class Wedge(degrees: Double, radius: Double) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Wedge {
-  implicit val encoder: Encoder[Wedge] = deriveEncoder[Wedge]
-  implicit val decoder: Decoder[Wedge] = deriveDecoder[Wedge]
+  implicit val encoder: Encoder[Wedge] = deriveConfiguredEncoder[Wedge]
+  implicit val decoder: Decoder[Wedge] = deriveConfiguredDecoder[Wedge]
 }
 
 /** Translate the passed in Drawable. */
@@ -246,8 +246,8 @@ final case class Translate(r: Drawable, x: Double = 0, y: Double = 0) extends Dr
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Translate {
-  implicit val encoder: Encoder[Translate] = deriveEncoder[Translate]
-  implicit val decoder: Decoder[Translate] = deriveDecoder[Translate]
+  implicit val encoder: Encoder[Translate] = deriveConfiguredEncoder[Translate]
+  implicit val decoder: Decoder[Translate] = deriveConfiguredDecoder[Translate]
 }
 
 /** Apply an affine transformation to the passed in Drawable. */
@@ -267,8 +267,8 @@ final case class Affine(r: Drawable, affine: AffineTransform) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Affine {
-  implicit val encoder: Encoder[Affine] = deriveEncoder[Affine]
-  implicit val decoder: Decoder[Affine] = deriveDecoder[Affine]
+  implicit val encoder: Encoder[Affine] = deriveConfiguredEncoder[Affine]
+  implicit val decoder: Decoder[Affine] = deriveConfiguredDecoder[Affine]
 }
 
 /** Scale the passed in Drawable. */
@@ -277,8 +277,8 @@ final case class Scale(r: Drawable, x: Double = 1, y: Double = 1) extends Drawab
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Scale {
-  implicit val encoder: Encoder[Scale] = deriveEncoder[Scale]
-  implicit val decoder: Decoder[Scale] = deriveDecoder[Scale]
+  implicit val encoder: Encoder[Scale] = deriveConfiguredEncoder[Scale]
+  implicit val decoder: Decoder[Scale] = deriveConfiguredDecoder[Scale]
 }
 
 // Our rotate semantics are, rotate about your centroid, and shift back to all positive coordinates
@@ -311,8 +311,8 @@ final case class Rotate(r: Drawable, degrees: Double) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Rotate {
-  implicit val encoder: Encoder[Rotate] = deriveEncoder[Rotate]
-  implicit val decoder: Decoder[Rotate] = deriveDecoder[Rotate]
+  implicit val encoder: Encoder[Rotate] = deriveConfiguredEncoder[Rotate]
+  implicit val decoder: Decoder[Rotate] = deriveConfiguredDecoder[Rotate]
 }
 
 /** Combined a sequence of Drawables into a single Drawable. */
@@ -328,8 +328,8 @@ final case class Group(items: Seq[Drawable]) extends Drawable {
   def draw(context: RenderContext): Unit = items.foreach(_.draw(context))
 }
 object Group {
-  implicit val encoder: Encoder[Group] = deriveEncoder[Group]
-  implicit val decoder: Decoder[Group] = deriveDecoder[Group]
+  implicit val encoder: Encoder[Group] = deriveConfiguredEncoder[Group]
+  implicit val decoder: Decoder[Group] = deriveConfiguredDecoder[Group]
 }
 
 // Change the size of the bounding box without changing the contents.
@@ -341,8 +341,8 @@ final case class Resize(r: Drawable, extent: Extent) extends Drawable {
   def draw(context: RenderContext): Unit = r.draw(context)
 }
 object Resize {
-  implicit val encoder: Encoder[Resize] = deriveEncoder[Resize]
-  implicit val decoder: Decoder[Resize] = deriveDecoder[Resize]
+  implicit val encoder: Encoder[Resize] = deriveConfiguredEncoder[Resize]
+  implicit val decoder: Decoder[Resize] = deriveConfiguredDecoder[Resize]
 }
 
 /** Apply a fill color to a fillable Drawable. */
@@ -351,8 +351,8 @@ final case class Style(r: Drawable, fill: Color) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object Style {
-  implicit val encoder: Encoder[Style] = deriveEncoder[Style]
-  implicit val decoder: Decoder[Style] = deriveDecoder[Style]
+  implicit val encoder: Encoder[Style] = deriveConfiguredEncoder[Style]
+  implicit val decoder: Decoder[Style] = deriveConfiguredDecoder[Style]
 }
 
 /** Apply a gradient fill to a fillable Drawable. */
@@ -361,8 +361,8 @@ final case class GradientFill(r: Drawable, fill: Gradient2d) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object GradientFill {
-  implicit val encoder: Encoder[GradientFill] = deriveEncoder[GradientFill]
-  implicit val decoder: Decoder[GradientFill] = deriveDecoder[GradientFill]
+  implicit val encoder: Encoder[GradientFill] = deriveConfiguredEncoder[GradientFill]
+  implicit val decoder: Decoder[GradientFill] = deriveConfiguredDecoder[GradientFill]
 }
 
 /** Apply a border color to a strokable Drawable. */
@@ -371,8 +371,8 @@ final case class StrokeStyle(r: Drawable, fill: Color) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object StrokeStyle {
-  implicit val encoder: Encoder[StrokeStyle] = deriveEncoder[StrokeStyle]
-  implicit val decoder: Decoder[StrokeStyle] = deriveDecoder[StrokeStyle]
+  implicit val encoder: Encoder[StrokeStyle] = deriveConfiguredEncoder[StrokeStyle]
+  implicit val decoder: Decoder[StrokeStyle] = deriveConfiguredDecoder[StrokeStyle]
 }
 
 /** Adjust the thickness of the border on a strokeable Drawable. */
@@ -381,8 +381,8 @@ final case class StrokeWeight(r: Drawable, weight: Double) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object StrokeWeight {
-  implicit val encoder: Encoder[StrokeWeight] = deriveEncoder[StrokeWeight]
-  implicit val decoder: Decoder[StrokeWeight] = deriveDecoder[StrokeWeight]
+  implicit val encoder: Encoder[StrokeWeight] = deriveConfiguredEncoder[StrokeWeight]
+  implicit val decoder: Decoder[StrokeWeight] = deriveConfiguredDecoder[StrokeWeight]
 }
 
 /** Apply a line dash to a Drawable.
@@ -394,8 +394,8 @@ final case class LineDash(r: Drawable, style: LineStyle) extends Drawable {
   def draw(context: RenderContext): Unit = context.draw(this)
 }
 object LineDash {
-  implicit val encoder: Encoder[LineDash] = deriveEncoder[LineDash]
-  implicit val decoder: Decoder[LineDash] = deriveDecoder[LineDash]
+  implicit val encoder: Encoder[LineDash] = deriveConfiguredEncoder[LineDash]
+  implicit val decoder: Decoder[LineDash] = deriveConfiguredDecoder[LineDash]
 }
 
 /** Some text.
@@ -419,10 +419,10 @@ object Text {
 
   implicit val encoder: Encoder[Text] = Encoder.instance[Text] { text =>
     // Lock down the extents when encoding.
-    deriveEncoder[Text].apply(text.copy(extentOpt = Some(text.extent)))
+    deriveConfiguredEncoder[Text].apply(text.copy(extentOpt = Some(text.extent)))
   }
 
-  implicit val decoder: Decoder[Text] = deriveDecoder[Text]
+  implicit val decoder: Decoder[Text] = deriveConfiguredDecoder[Text]
 
   val defaultSize: Double = 10
   val defaultFontFace: String = "sans-serif"
@@ -430,8 +430,8 @@ object Text {
 
 object Drawable {
   require(implicitly[Configuration] == minifyProperties) // prevent auto removal.
-  implicit val drawableEncoder: Encoder[Drawable] = deriveEncoder[Drawable]
-  implicit val drawableDecoder: Decoder[Drawable] = deriveDecoder[Drawable]
+  implicit val drawableEncoder: Encoder[Drawable] = deriveConfiguredEncoder[Drawable]
+  implicit val drawableDecoder: Decoder[Drawable] = deriveConfiguredDecoder[Drawable]
 }
 
 // scalastyle:on

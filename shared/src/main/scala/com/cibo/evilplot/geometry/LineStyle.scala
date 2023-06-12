@@ -49,8 +49,8 @@ final case class LineStyle(
 object LineStyle {
   import io.circe.generic.extras.semiauto._
   private implicit val jsonConfig: Configuration = JSONUtils.minifyProperties
-  implicit val lineStyleEncoder: Encoder[LineStyle] = deriveEncoder[LineStyle]
-  implicit val lineStyleDecoder: Decoder[LineStyle] = deriveDecoder[LineStyle]
+  implicit val lineStyleEncoder: Encoder[LineStyle] = deriveConfiguredEncoder[LineStyle]
+  implicit val lineStyleDecoder: Decoder[LineStyle] = deriveConfiguredDecoder[LineStyle]
 
   val Solid: LineStyle = LineStyle()
   val Dotted: LineStyle = LineStyle(Seq(1, 2))
