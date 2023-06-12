@@ -31,7 +31,7 @@
 package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.JSONUtils
-import com.cibo.evilplot.numeric.{Point, Point2d}
+import com.cibo.evilplot.numeric.Point2d
 import io.circe.generic.extras.Configuration
 import io.circe.{Decoder, Encoder}
 
