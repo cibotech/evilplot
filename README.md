@@ -208,7 +208,7 @@ $ sbt
 > compile
 > ~ fastOptJS
 ```
-3. go to `localhost:12345/index.html` in your browser
+3. Open `./index.html` in your browser
 
 Running the unit tests requires PhantomJS.
 Unit tests must be run from `sbt`, not from within IntelliJ.
