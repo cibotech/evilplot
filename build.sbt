@@ -178,7 +178,7 @@ lazy val apiDocumentation = apiDocProjects.flatMap {
   case (project, conf) =>
     SiteScaladocPlugin.scaladocSettings(
       conf,
-      project / mappings.in(Compile, packageDoc),
+      project / (mappings in Scope(This, Select(Compile), Select(packageDoc.key), This)),
       s"scaladoc/${project.id.stripPrefix("evilplot").toLowerCase}"
     )
 }
@@ -193,6 +193,7 @@ lazy val docs = project
     organization := Settings.organization,
     organizationName := "CiBO Technologies",
     organizationHomepage := Some(new java.net.URL("http://www.cibotechnologies.com")),
+    mdocIn := file("docs/src/main/tut"),
     micrositeGithubOwner := "cibotech",
     micrositeGithubRepo := "evilplot",
     micrositeFooterText := None,
@@ -209,7 +210,8 @@ lazy val docs = project
       "gray-light" -> "#E3E2E3",
       "gray-lighter" -> "#F4F3F4",
       "white-color" -> "#FFFFFF"
-    )
+    ),
+    micrositeTheme := "pattern",
   )
   .settings(apiDocumentation)
   .enablePlugins(MicrositesPlugin)
