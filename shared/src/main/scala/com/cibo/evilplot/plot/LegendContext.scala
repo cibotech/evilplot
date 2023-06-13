@@ -117,7 +117,7 @@ object LegendContext {
           math.ceil(colorBar.colorValue(c))
         case LegendStyle.Categorical =>
           // Otherwise round
-          math.round(colorBar.colorValue(c))
+          math.round(colorBar.colorValue(c)).toDouble
       }
       Style(
         Text(value.toString, size = theme.fonts.legendLabelSize, fontFace = theme.fonts.fontFace),

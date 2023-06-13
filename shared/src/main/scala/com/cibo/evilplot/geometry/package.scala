@@ -105,9 +105,9 @@ package object geometry {
 
     // Draw a box around the drawable for debugging.
     def debug: Drawable = {
-      val red = (math.random * 255.0).toInt
-      val green = (math.random * 255.0).toInt
-      val blue = (math.random * 255.0).toInt
+      val red = (math.random() * 255.0).toInt
+      val green = (math.random() * 255.0).toInt
+      val blue = (math.random() * 255.0).toInt
       Seq(StrokeStyle(BorderRect(r.extent.width, r.extent.height), RGB(red, green, blue)), r).group
     }
   }

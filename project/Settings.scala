@@ -9,9 +9,6 @@ object Settings {
     "-deprecation",
     "-unchecked",
     "-feature",
-    "-Xfatal-warnings",
-    "-Xsource:2.12",
-    "-target:jvm-1.8"
   )
 
   object versions { //scalastyle:ignore

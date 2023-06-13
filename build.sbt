@@ -52,8 +52,8 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
 // Macroparadise is included in scala 2.13. Do contortion here for 2.12/2.13 crossbuild
 Compile / scalacOptions ++= {
   CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, n)) if n >= 13 => "-Ymacro-annotations" :: Nil
-    case _                       => Nil
+    case Some((2, n)) if n >= 13 => "-Ymacro-annotations" :: "-release:8" :: Nil
+    case _                       => "-Xfatal-warnings" :: "-Xsource:2.12" :: "-target:jvm-1.8" :: Nil
   }
 }
 

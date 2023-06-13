@@ -30,6 +30,7 @@
 
 package com.cibo.evilplot.colors
 
+import io.circe.generic.extras.Configuration
 import io.circe.{Decoder, Encoder}
 
 import scala.util.Random
@@ -147,7 +148,7 @@ object HEX {
 }
 
 object Color {
-  private implicit val cfg = com.cibo.evilplot.JSONUtils.minifyProperties
+  private implicit val cfg: Configuration = com.cibo.evilplot.JSONUtils.minifyProperties
   implicit val encoder: Encoder[Color] = io.circe.generic.extras.semiauto.deriveConfiguredEncoder[Color]
   implicit val decoder: Decoder[Color] = io.circe.generic.extras.semiauto.deriveConfiguredDecoder[Color]
 

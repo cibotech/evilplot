@@ -156,8 +156,8 @@ object EvilPlot {
   ): CanvasRenderingContext2D = {
     val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
-    ctx.canvas.style.width = extent.width + "px"
-    ctx.canvas.style.height = extent.height + "px"
+    ctx.canvas.style.width = extent.width.toString + "px"
+    ctx.canvas.style.height = extent.height.toString + "px"
     ctx.canvas.width = (extent.width.toInt * scaleHack).toInt
     ctx.canvas.height = (extent.height.toInt * scaleHack).toInt
 
