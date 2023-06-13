@@ -18,7 +18,7 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v3
@@ -28,6 +28,10 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: 'sbt'
+    - name: Install phantomjs package
+      run: |
+        sudo apt-get update
+        sudo apt-get install phantomjs
     - name: Run tests
       run: sbt -J-Xms512M -J-Xmx2G -J-Xss2M -J-XX:MaxMetaspaceSize=1024M scalastyle +test headerCheck test:headerCheck +it:test doc
       # Optional: This step uploads information to the GitHub dependency graph and unblocking Dependabot alerts for the repository
