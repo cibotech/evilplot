@@ -35,6 +35,6 @@ jobs:
     - name: Run tests
       run: sbt -J-Xms512M -J-Xmx2G -J-Xss2M -J-XX:MaxMetaspaceSize=1024M scalastyle +test headerCheck test:headerCheck +it:test doc
       # Optional: This step uploads information to the GitHub dependency graph and unblocking Dependabot alerts for the repository
-    - name: Upload dependency graph
-      uses: scalacenter/sbt-dependency-submission@ab086b50c947c9774b70f39fc7f6e20ca2706c91
+#   - name: Upload dependency graph
+#     uses: scalacenter/sbt-dependency-submission@ab086b50c947c9774b70f39fc7f6e20ca2706c91
 
