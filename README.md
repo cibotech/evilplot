@@ -1,5 +1,6 @@
 # EvilPlot
-[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-0.6.17.svg)](https://www.scala-js.org)
+![Test Status](https://github.com/cibotech/evilplot/actions/workflows/scala.yml/badge.svg)
+[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.8.0.svg)](https://www.scala-js.org)
 
 EvilPlot is about combinators for graphics.
 
