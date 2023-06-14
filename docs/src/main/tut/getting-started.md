@@ -5,7 +5,7 @@ position: 2
 ---
 # Getting Started
 
-To get going with EvilPlot, you'll need to add it to your build. EvilPlot is published for Scala 2.11 and 2.12.
+To get going with EvilPlot, you'll need to add it to your build. EvilPlot is published for Scala 2.12 and 2.13.
 ```scala
 libraryDependencies += "io.github.cibotech" %% "evilplot" % "0.8.1" // Use %%% instead of %% if you're using ScalaJS
 ```
