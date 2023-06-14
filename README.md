@@ -9,7 +9,7 @@ Documentation for EvilPlot is available [here](https://cibotech.github.io/evilpl
 ## Getting Started
 Add EvilPlot to your build with:
 ```scala
-libraryDependencies += "io.github.cibotech" %% "evilplot" % "0.8.1" // Use %%% instead of %% if you're using ScalaJS
+libraryDependencies += "io.github.cibotech" %% "evilplot" % "0.9.0" // Use %%% instead of %% if you're using ScalaJS
 ```
 Take a look at the full [getting started guide](https://cibotech.github.io/evilplot/getting-started.html). EvilPlot is published for Scala 2.12 and Scala 2.13.
 
