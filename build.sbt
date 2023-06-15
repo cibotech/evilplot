@@ -1,11 +1,12 @@
 import sbt.Keys.resolvers
 import xerial.sbt.Sonatype._
+import org.scalajs.linker.interface.ESVersion
 
 enablePlugins(ScalaJSPlugin)
 
-crossScalaVersions in ThisBuild := Settings.versions.crossScalaVersions
-scalaVersion in ThisBuild := crossScalaVersions.value.head
-scalacOptions in ThisBuild ++= Settings.scalacOptions
+ThisBuild / crossScalaVersions := Settings.versions.crossScalaVersions
+ThisBuild / scalaVersion := crossScalaVersions.value.head
+ThisBuild / scalacOptions ++= Settings.scalacOptions
 
 
 lazy val noPublish: Seq[Setting[_]] = Seq(
@@ -51,8 +52,8 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
 // Macroparadise is included in scala 2.13. Do contortion here for 2.12/2.13 crossbuild
 Compile / scalacOptions ++= {
   CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, n)) if n >= 13 => "-Ymacro-annotations" :: Nil
-    case _                       => Nil
+    case Some((2, n)) if n >= 13 => "-Ymacro-annotations" :: "-release:8" :: Nil
+    case _                       => "-Xfatal-warnings" :: "-Xsource:2.12" :: "-target:jvm-1.8" :: Nil
   }
 }
 
@@ -71,7 +72,7 @@ lazy val licenseSettings = Seq(
   headerLicense := Some(HeaderLicense.BSD3Clause("2018", "CiBO Technologies, Inc."))
 )
 
-lazy val evilplotAsset = crossProject
+lazy val evilplotAsset = crossProject(JSPlatform, JVMPlatform)
   .in(file("asset"))
   .dependsOn(evilplot)
   .settings(commonSettings)
@@ -82,11 +83,11 @@ lazy val evilplotAsset = crossProject
     resolvers += "Artima Maven Repository" at "https://repo.artima.com/releases"
   )
   .jvmSettings(
-    resourceGenerators.in(Compile) += Def.task {
-      val fullOptAsset = fullOptJS.in(evilplotJS).in(Compile).value.data
-      val fastOptAsset = fastOptJS.in(evilplotJS).in(Compile).value.data
-      val fullOptDest = resourceDirectory.in(Compile).value / fullOptAsset.getName
-      val fastOptDest = resourceDirectory.in(Compile).value / fastOptAsset.getName
+    Compile / resourceGenerators += Def.task {
+      val fullOptAsset = (Compile / (evilplotJS / fullOptJS)).value.data
+      val fastOptAsset = (Compile / (evilplotJS / fastOptJS)).value.data
+      val fullOptDest = (Compile / resourceDirectory).value / fullOptAsset.getName
+      val fastOptDest = (Compile / resourceDirectory).value / fastOptAsset.getName
       IO.copy(Seq(fullOptAsset -> fullOptDest, fastOptAsset -> fastOptDest)).toSeq
     }
   )
@@ -94,7 +95,7 @@ lazy val evilplotAsset = crossProject
 lazy val assetJS = evilplotAsset.js
 lazy val assetJVM = evilplotAsset.jvm
 
-lazy val evilplotMath = crossProject
+lazy val evilplotMath = crossProject(JSPlatform, JVMPlatform)
   .in(file("math"))
   .settings(commonSettings)
   .settings(publishSettings)
@@ -111,7 +112,7 @@ lazy val evilplotMath = crossProject
 lazy val mathJS = evilplotMath.js
 lazy val mathJVM = evilplotMath.jvm
 
-lazy val evilplot = crossProject
+lazy val evilplot = crossProject(JSPlatform, JVMPlatform)
   .in(file("."))
   .settings(commonSettings)
   .configs(IntegrationTest)
@@ -127,10 +128,11 @@ lazy val evilplot = crossProject
     libraryDependencies ++= Settings.sharedDependencies.value,
     jsDependencies ++= Settings.jsDependencies.value,
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
-    jsEnv in Test := new PhantomJS2Env(scalaJSPhantomJSClassLoader.value),
-    skip in packageJSDependencies := false,
+    Test / jsEnv := PhantomJSEnv().value,
+    scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(ESVersion.ES5_1)) },
+    packageJSDependencies / skip := false,
     scalaJSUseMainModuleInitializer := false,
-    scalaJSUseMainModuleInitializer in Test := false
+    Test / scalaJSUseMainModuleInitializer := false
   )
   .jvmSettings(
     libraryDependencies ++= Settings.jvmDependencies.value
@@ -138,7 +140,7 @@ lazy val evilplot = crossProject
   .dependsOn(evilplotMath)
 
 lazy val evilplotJVM = evilplot.jvm
-lazy val evilplotJS = evilplot.js
+lazy val evilplotJS = evilplot.js.enablePlugins(JSDependenciesPlugin)
 
 lazy val evilplotRunner = project
   .in(file("runner"))
@@ -176,7 +178,7 @@ lazy val apiDocumentation = apiDocProjects.flatMap {
   case (project, conf) =>
     SiteScaladocPlugin.scaladocSettings(
       conf,
-      mappings in (Compile, packageDoc) in project,
+      project / (mappings in Scope(This, Select(Compile), Select(packageDoc.key), This)),
       s"scaladoc/${project.id.stripPrefix("evilplot").toLowerCase}"
     )
 }
@@ -191,6 +193,7 @@ lazy val docs = project
     organization := Settings.organization,
     organizationName := "CiBO Technologies",
     organizationHomepage := Some(new java.net.URL("http://www.cibotechnologies.com")),
+    mdocIn := file("docs/src/main/tut"),
     micrositeGithubOwner := "cibotech",
     micrositeGithubRepo := "evilplot",
     micrositeFooterText := None,
@@ -207,7 +210,8 @@ lazy val docs = project
       "gray-light" -> "#E3E2E3",
       "gray-lighter" -> "#F4F3F4",
       "white-color" -> "#FFFFFF"
-    )
+    ),
+    micrositeTheme := "pattern",
   )
   .settings(apiDocumentation)
   .enablePlugins(MicrositesPlugin)

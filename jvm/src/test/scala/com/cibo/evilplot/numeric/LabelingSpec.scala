@@ -33,10 +33,13 @@ package com.cibo.evilplot.numeric
 import com.cibo.evilplot.numeric.Labeling.LabelingResult
 import org.scalacheck.Gen
 import org.scalacheck.Prop.forAllNoShrink
-import org.scalatest.prop.Checkers
-import org.scalatest.{FunSpec, Inside, Matchers, OptionValues}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{Inside, OptionValues}
+import org.scalatestplus.scalacheck.Checkers
 
-class LabelingSpec extends FunSpec with Matchers with Checkers with OptionValues with Inside {
+
+class LabelingSpec extends AnyFunSpec with Matchers with OptionValues with Inside with Checkers {
   private val boundsGen = for {
     x <- Gen.chooseNum[Double](-10000, 10000)
     y <- Gen.posNum[Double]

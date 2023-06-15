@@ -310,6 +310,7 @@ private[geometry] trait Graphics2DSupport {
         val (r, g, b, a) = ColorUtils.hslaToRgba(hsla)
         new java.awt.Color(r.toFloat, g.toFloat, b.toFloat, a.toFloat)
       case Clear => new java.awt.Color(0, 0, 0, 0)
+      case ClearWhite => new java.awt.Color(255, 255, 255, 0)
     }
   }
 

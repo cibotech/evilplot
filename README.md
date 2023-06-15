@@ -1,5 +1,6 @@
 # EvilPlot
-[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-0.6.17.svg)](https://www.scala-js.org)
+![Test Status](https://github.com/cibotech/evilplot/actions/workflows/scala.yml/badge.svg)
+[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.8.0.svg)](https://www.scala-js.org)
 
 EvilPlot is about combinators for graphics.
 
@@ -8,9 +9,9 @@ Documentation for EvilPlot is available [here](https://cibotech.github.io/evilpl
 ## Getting Started
 Add EvilPlot to your build with:
 ```scala
-libraryDependencies += "io.github.cibotech" %% "evilplot" % "0.8.1" // Use %%% instead of %% if you're using ScalaJS
+libraryDependencies += "io.github.cibotech" %% "evilplot" % "0.9.0" // Use %%% instead of %% if you're using ScalaJS
 ```
-Take a look at the full [getting started guide](https://cibotech.github.io/evilplot/getting-started.html). EvilPlot is published for Scala 2.11 and Scala 2.12.
+Take a look at the full [getting started guide](https://cibotech.github.io/evilplot/getting-started.html). EvilPlot is published for Scala 2.12 and Scala 2.13.
 
 ### Table of Contents
   * [Low-Level Drawing API](#low-level-drawing-api)
@@ -208,7 +209,7 @@ $ sbt
 > compile
 > ~ fastOptJS
 ```
-3. go to `localhost:12345/index.html` in your browser
+3. Open `./index.html` in your browser
 
 Running the unit tests requires PhantomJS.
 Unit tests must be run from `sbt`, not from within IntelliJ.

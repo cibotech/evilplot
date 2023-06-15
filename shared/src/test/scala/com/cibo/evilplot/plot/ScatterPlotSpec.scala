@@ -31,9 +31,10 @@
 package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.numeric.Point
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class ScatterPlotSpec extends FunSpec with Matchers {
+class ScatterPlotSpec extends AnyFunSpec with Matchers {
 
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 

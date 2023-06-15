@@ -32,9 +32,10 @@ package com.cibo.evilplot.plot.components
 
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import org.scalactic.{Equality, TolerantNumerics}
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class FunctionPlotLineSpec extends FunSpec with Matchers {
+class FunctionPlotLineSpec extends AnyFunSpec with Matchers {
 
   implicit val doubleEquality: Equality[Double] =
     TolerantNumerics.tolerantDoubleEquality(1e-10)

@@ -5,16 +5,16 @@ position: 2
 ---
 # Getting Started
 
-To get going with EvilPlot, you'll need to add it to your build. EvilPlot is published for Scala 2.11 and 2.12.
+To get going with EvilPlot, you'll need to add it to your build. EvilPlot is published for Scala 2.12 and 2.13.
 ```scala
-libraryDependencies += "io.github.cibotech" %% "evilplot" % "0.8.1" // Use %%% instead of %% if you're using ScalaJS
+libraryDependencies += "io.github.cibotech" %% "evilplot" % "0.9.0" // Use %%% instead of %% if you're using ScalaJS
 ```
 
 Throughout the getting started guide, we'll assume you're working either in a Scala REPL or the [Ammonite](http://ammonite.io). We publish an additional
 utility to make using EvilPlot from the REPL easier. To import it, add:
 
 ```scala
-libraryDependencies += "io.github.cibotech" %% "evilplot-repl" % "0.8.1" // Use %%% instead of %% if you're using ScalaJS
+libraryDependencies += "io.github.cibotech" %% "evilplot-repl" % "0.9.0" // Use %%% instead of %% if you're using ScalaJS
 ```
 to your build.
 

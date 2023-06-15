@@ -32,9 +32,10 @@ package com.cibo.evilplot.plot
 
 import com.cibo.evilplot.geometry.Extent
 import com.cibo.evilplot.numeric.Bounds
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class BarChartSpec extends FunSpec with Matchers {
+class BarChartSpec extends AnyFunSpec with Matchers {
 
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 

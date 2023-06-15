@@ -31,7 +31,7 @@
 package com.cibo.evilplot.geometry
 
 import com.cibo.evilplot.JSONUtils
-import com.cibo.evilplot.numeric.{Point, Point2d}
+import com.cibo.evilplot.numeric.Point2d
 import io.circe.generic.extras.Configuration
 import io.circe.{Decoder, Encoder}
 
@@ -57,7 +57,7 @@ case class Extent(width: Double, height: Double) {
 object Extent {
   private implicit val cfg: Configuration = JSONUtils.minifyProperties
   implicit val extentEncoder: Encoder[Extent] =
-    io.circe.generic.extras.semiauto.deriveEncoder[Extent]
+    io.circe.generic.extras.semiauto.deriveConfiguredEncoder[Extent]
   implicit val extentDecoder: Decoder[Extent] =
-    io.circe.generic.extras.semiauto.deriveDecoder[Extent]
+    io.circe.generic.extras.semiauto.deriveConfiguredDecoder[Extent]
 }

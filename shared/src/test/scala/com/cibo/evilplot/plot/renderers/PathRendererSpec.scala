@@ -31,9 +31,10 @@
 package com.cibo.evilplot.plot.renderers
 
 import com.cibo.evilplot.geometry.LineStyle
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class PathRendererSpec extends FunSpec with Matchers {
+class PathRendererSpec extends AnyFunSpec with Matchers {
   describe("Legend stroke lengths") {
     import LineStyle._
     import PathRenderer._

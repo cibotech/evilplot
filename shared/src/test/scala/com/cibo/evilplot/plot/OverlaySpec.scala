@@ -34,9 +34,10 @@ import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent}
 import com.cibo.evilplot.numeric.{Bounds, Point}
 import com.cibo.evilplot.plot.aesthetics.Theme
 import com.cibo.evilplot.plot.renderers.PlotRenderer
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class OverlaySpec extends FunSpec with Matchers {
+class OverlaySpec extends AnyFunSpec with Matchers {
 
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 

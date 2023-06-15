@@ -33,10 +33,11 @@ package com.cibo.evilplot.plot
 import com.cibo.evilplot.geometry.{Drawable, EmptyDrawable, Extent, Rect}
 import com.cibo.evilplot.numeric.Point
 import com.cibo.evilplot.plot.aesthetics.Theme
-import org.scalatest.{FunSpec, Matchers}
 import com.cibo.evilplot.plot.components.{FacetedPlotComponent, Position}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class FacetsSpec extends FunSpec with Matchers {
+class FacetsSpec extends AnyFunSpec with Matchers {
 
   import com.cibo.evilplot.plot.aesthetics.DefaultTheme._
 

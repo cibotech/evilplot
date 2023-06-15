@@ -45,22 +45,22 @@ import scala.util.Random
 object DemoPlots {
 
   lazy val plotLookup = Map(
-    'linePlot -> linePlot,
-    'heatmap -> heatmap,
-    'pieChart -> pieChart,
-    'clusteredBarChart -> clusteredBarChart,
-    'clusteredStackedBarChart -> clusteredStackedBarChart,
-    'stackedBarChart -> stackedBarChart,
-    'barChart -> barChart,
-    'functionPlot -> functionPlot,
-    'markerPlot -> markerPlot,
-    'crazyPlot -> crazyPlot,
-    'facetedPlot -> facetedPlot,
-    'marginalHistogram -> marginalHistogram,
-    'scatterPlot -> scatterPlot,
-    'boxPlot -> boxPlot,
-    'facetedPlot -> facetedPlot,
-    'histogramOverlay -> histogramOverlay
+    Symbol("linePlot") -> linePlot,
+    Symbol("heatmap") -> heatmap,
+    Symbol("pieChart") -> pieChart,
+    Symbol("clusteredBarChart") -> clusteredBarChart,
+    Symbol("clusteredStackedBarChart") -> clusteredStackedBarChart,
+    Symbol("stackedBarChart") -> stackedBarChart,
+    Symbol("barChart") -> barChart,
+    Symbol("functionPlot") -> functionPlot,
+    Symbol("markerPlot") -> markerPlot,
+    Symbol("crazyPlot") -> crazyPlot,
+    Symbol("facetedPlot") -> facetedPlot,
+    Symbol("marginalHistogram") -> marginalHistogram,
+    Symbol("scatterPlot") -> scatterPlot,
+    Symbol("boxPlot") -> boxPlot,
+    Symbol("facetedPlot") -> facetedPlot,
+    Symbol("histogramOverlay") -> histogramOverlay
   )
   def get(plotName:Symbol):Option[Drawable] = plotLookup.get(plotName)
 

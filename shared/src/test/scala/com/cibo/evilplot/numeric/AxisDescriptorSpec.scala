@@ -30,10 +30,10 @@
 
 package com.cibo.evilplot.numeric
 
-import org.scalatest.Matchers._
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class AxisDescriptorSpec extends FunSpec {
+class AxisDescriptorSpec extends AnyFunSpec with Matchers {
 
   describe("Ticks") {
 

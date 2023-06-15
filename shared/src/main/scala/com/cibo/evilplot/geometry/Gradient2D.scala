@@ -41,22 +41,22 @@ sealed trait Gradient2d {
   val stops: Seq[GradientStop]
 }
 object Gradient2d {
-  implicit val decoder: Decoder[Gradient2d] = deriveDecoder[Gradient2d]
-  implicit val encoder: Encoder[Gradient2d] = deriveEncoder[Gradient2d]
+  implicit val decoder: Decoder[Gradient2d] = deriveConfiguredDecoder[Gradient2d]
+  implicit val encoder: Encoder[Gradient2d] = deriveConfiguredEncoder[Gradient2d]
 }
 
 case class GradientStop(offset: Double, color: Color)
 object GradientStop {
-  implicit val decoder: Decoder[GradientStop] = deriveDecoder[GradientStop]
-  implicit val encoder: Encoder[GradientStop] = deriveEncoder[GradientStop]
+  implicit val decoder: Decoder[GradientStop] = deriveConfiguredDecoder[GradientStop]
+  implicit val encoder: Encoder[GradientStop] = deriveConfiguredEncoder[GradientStop]
 }
 
 case class LinearGradient(x0: Double, y0: Double, x1: Double, y1: Double, stops: Seq[GradientStop])
     extends Gradient2d
 
 object LinearGradient {
-  implicit val decoder: Decoder[LinearGradient] = deriveDecoder[LinearGradient]
-  implicit val encoder: Encoder[LinearGradient] = deriveEncoder[LinearGradient]
+  implicit val decoder: Decoder[LinearGradient] = deriveConfiguredDecoder[LinearGradient]
+  implicit val encoder: Encoder[LinearGradient] = deriveConfiguredEncoder[LinearGradient]
 
   def leftToRight(ex: Extent, stops: Seq[GradientStop]): LinearGradient =
     LinearGradient(0, 0, x1 = ex.width, 0, stops)
@@ -82,8 +82,8 @@ case class RadialGradient(
     extends Gradient2d
 
 object RadialGradient {
-  implicit val decoder: Decoder[RadialGradient] = deriveDecoder[RadialGradient]
-  implicit val encoder: Encoder[RadialGradient] = deriveEncoder[RadialGradient]
+  implicit val decoder: Decoder[RadialGradient] = deriveConfiguredDecoder[RadialGradient]
+  implicit val encoder: Encoder[RadialGradient] = deriveConfiguredEncoder[RadialGradient]
 
   def withinExtent(extent: Extent, stops: Seq[GradientStop]): RadialGradient = {
     val radius = extent.height.min(extent.width) / 2
