@@ -2,7 +2,7 @@
 
 ## [Changes since last release]
 
-## [0.9.0] - 2023-06-15
+## [0.9.0] - 2023-06-21
 ### Added
 #Changed
 - Updated Scala minor versions: 2.12.10 -> 2.12.18 and 2.13.1 -> 2.13.11
