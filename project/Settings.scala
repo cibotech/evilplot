@@ -41,7 +41,7 @@ object Settings {
 
   val sharedMathDependencies = Def.setting(
     Seq(
-      "org.scalactic" %%% "scalactic" % versions.scalactic,
+      "org.scalactic" %%% "scalactic" % versions.scalactic % "test",
       "org.scalatest" %%% "scalatest" % versions.scalaTest % "test"
     )
   )
@@ -55,7 +55,7 @@ object Settings {
 
   val jvmDependencies = Def.setting(
     Seq(
-      "org.scalactic" %%% "scalactic" % versions.scalactic,
+      "org.scalactic" %%% "scalactic" % versions.scalactic % "test",
       "org.scalatestplus" %% "scalacheck-1-17" % "3.2.15.0" % "test",
       )
   )
