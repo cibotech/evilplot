@@ -2,6 +2,10 @@
 
 ## [Changes since last release]
 
+## [0.9.1] - 2023-11-15
+### Fixed
+- scalactic dependency version no longer leaks to downstream projects
+
 ## [0.9.0] - 2023-06-21
 ### Added
 #Changed
