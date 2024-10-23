@@ -17,7 +17,8 @@ object Settings {
     val scalaTest = "3.2.15"
     val scalactic = "3.2.15"
     val scopt = "3.5.0"
-    val circe = "0.13.0"
+    val circe = "0.14.9"
+    val circeGenericExtras = "0.14.4"
     val jupyterScala = "0.4.1"
   }
 
@@ -26,7 +27,7 @@ object Settings {
       "io.circe" %%% "circe-core" % versions.circe,
       "io.circe" %%% "circe-generic" % versions.circe,
       "io.circe" %%% "circe-parser" % versions.circe,
-      "io.circe" %%% "circe-generic-extras" % versions.circe,
+      "io.circe" %%% "circe-generic-extras" % versions.circeGenericExtras,
       "org.scalatest" %%% "scalatest" % versions.scalaTest % "it,test",
     )
   )
