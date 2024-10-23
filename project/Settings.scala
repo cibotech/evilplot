@@ -63,7 +63,8 @@ object Settings {
 
   val scalajsDependencies = Def.setting(
     Seq(
-      "org.scala-js" %%% "scalajs-dom" % versions.scalaDom
+      "org.scala-js" %%% "scalajs-dom" % versions.scalaDom,
+      "org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0",
     )
   )
 
