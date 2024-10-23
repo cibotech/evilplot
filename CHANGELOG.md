@@ -2,6 +2,12 @@
 
 ## [Changes since last release]
 
+### Fixed
+- Updated circe patch version to 0.13.0 -> 0.14.9 to support updates in cibo standard versions
+- Updated circe-generic-extras 0.13.0 -> 0.14.4
+- Updated ScalaJS version 1.8.0 -> 1.17.0
+- Added external scalajs-java-securerandom dependency as required in ScalaJS >= 1.10.0
+
 ## [0.9.1] - 2023-11-15
 ### Fixed
 - scalactic dependency version no longer leaks to downstream projects
