@@ -35,7 +35,7 @@ import com.cibo.evilplot.colors.Color
 import com.cibo.evilplot.numeric.{Point, Point2d}
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
-import io.circe.{Decoder, Encoder, ObjectEncoder}
+import io.circe.{Decoder, Encoder}
 
 sealed trait Gradient2d {
   val stops: Seq[GradientStop]
