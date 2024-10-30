@@ -2,6 +2,7 @@ target/
 asset/
 *.iml
 .bloop/
+.bsp/
 .cache
 .classpath
 .metals/

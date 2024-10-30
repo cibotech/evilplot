@@ -1,0 +1,7 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: scala-ci-evilplot-{{ .Values.ci.revision | trunc 10 }}
+  labels:
+    scala-ci: evilplot
+spec: {{ .Values.ci.workflowSpec | nindent 2 }}

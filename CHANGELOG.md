@@ -8,6 +8,9 @@
 - Updated ScalaJS version 1.8.0 -> 1.17.0
 - Added external scalajs-java-securerandom dependency as required in ScalaJS >= 1.10.0
 
+### Changed
+- CI Updates
+
 ## [0.9.1] - 2023-11-15
 ### Fixed
 - scalactic dependency version no longer leaks to downstream projects
