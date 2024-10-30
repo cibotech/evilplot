@@ -8,6 +8,7 @@ addSbtPlugin("com.github.sbt" % "sbt-release" % "1.1.0")
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.4.0")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.0")
+addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.3.0")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.17.0")
 
