@@ -2,6 +2,7 @@
 
 ## [Changes since last release]
 
+## [ 0.9.2] - 2024-10-30
 ### Fixed
 - Updated circe patch version to 0.13.0 -> 0.14.9 to support updates in cibo standard versions
 - Updated circe-generic-extras 0.13.0 -> 0.14.4
