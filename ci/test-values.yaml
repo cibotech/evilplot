@@ -1,0 +1,8 @@
+ciboEnvironment: dev
+awsAccountId: "473"
+ci:
+  name: evilplot
+  repo: cibotech/evilplot
+  revision: deafdeef
+  workflowSpec: |
+    arguments: {}
